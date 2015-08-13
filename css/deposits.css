@@ -1,0 +1,315 @@
+
+/* deposit sidebar styles */
+ul#deposit-other-authors-entry-list {
+	list-style-type: none;
+	margin-left: 0px;
+}
+li#deposits-groups-li a:before,
+li#deposits-personal-li a:before,
+#user-deposits:before {
+    content: "M"
+}
+/* deposit search styles */
+.search-page #content {
+    width: 75% !important;
+}
+.search-page div.item-list-tabs ul li {
+	float: none;
+}
+#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul {
+	margin-top: 0px;
+}
+#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item ul {
+	height:auto;
+	overflow:hidden;
+	overflow-y:hidden;
+}
+#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item {
+	background-color: #ebebeb;
+	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+}
+#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item:before {
+	font-weight: normal;
+	font-family: "iconsweetsRegular";
+	color: inherit;
+	padding-right: 2px;
+	font-size: 130%;
+	position: relative;
+	top: 2px;
+	text-transform: none;
+    content: "?";
+}
+/* deposit directory styles */
+.deposits-directory-page .dir-form h3 .button {
+	top: -2px;
+	left: 45px;
+}
+.deposits-directory-page #content {
+    width: 75% !important;
+}
+.deposits-directory-page div.item-list-tabs ul li {
+	float: none;
+}
+div.item-list-tabs div#search-again-link {
+	display: inline;
+	float: right;
+}
+div.item-list-tabs ul#search-results-header {
+	display: inline;
+}
+div.item-list-tabs ul#search-results-header li span {
+	display: block;
+	padding: 4px 5px;
+	text-decoration: none;
+	color: #777;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul {
+	margin-top: 0px;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.descriptive-item {
+	background-color: #ebebeb;
+	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	font-weight: normal;
+	padding-left: 10px;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.descriptive-item ul {
+	color: #999999;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item {
+	background-color: #ebebeb;
+	border-top: 1px solid #ddd;
+	border-left: 1px solid #ddd;
+	padding-left: 5px;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item:before {
+	font-weight: normal;
+	font-family: "iconsweetsRegular";
+	color: inherit;
+	padding-right: 2px;
+	font-size: 130%;
+	position: relative;
+	top: 2px;
+	text-transform: none;
+    content: "?";
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li {
+	margin: 0;
+	border: 0;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li a {
+	padding: 0 !important;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li:hover{
+	border: 1px solid #cccccc;
+	background-color: #eeeeee;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list {
+	padding: 5px 0 5px 0;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list div {
+	margin: 5px 0 0 0;
+}
+#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li span.count {
+    font-size: 75%;
+    font-weight: bolder;
+    margin: 0 0 0 2px;
+    padding: 0 4px 0 4px;
+	border: 0;
+    border-left: 1px solid #dddddd;
+    border-right: 1px solid #dddddd;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+}
+/* deposit form styles */
+.deposits-new-item-page div.main-wrap.row {
+	margin-left: 0;
+}
+#progressbar {
+  width: 200px;
+  margin: 5px 0 5px 0;
+  border: 1px solid grey;
+  background-color: white;
+  height: 12px;
+  display: none;
+}
+#indicator {
+  width: 0%;
+  background-color: gray;
+  height: 11px;
+  margin: 0;
+}
+#progressnum {
+  text-align: center;
+  width: 300px;
+}
+#console {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+#deposit-book-pages-entry label, #deposit-journal-volume-entry label, #deposit-journal-pages-entry label, #deposit-proceeding-pages-entry label {
+	float: left;
+	margin: 5px 10px 5px 0;
+}
+#deposit-book-pages-entry span, #deposit-journal-volume-entry span, #deposit-journal-pages-entry span, #deposit-proceeding-pages-entry span {
+	display: block;
+	padding: 5px 10px 5px 0;
+}
+#deposit-other-authors-entry-table td.borderTop {
+        border-top: 1px solid #eee;
+}
+#deposit-other-authors-entry-table td.noBorderTop {
+	border-top: 0;
+}
+.button.button-large {
+	font-size: 100%;
+}
+/* deposit entry styles */
+dl.defList {
+	float: right;
+}
+dl.defList dt {
+	float: left;
+	text-align: right;
+	width: 20%;
+	/*clear: both;*/
+	color: #888;
+	margin: 0;
+	padding: 2px .5em 2px 0px;
+	font-weight: normal;
+}
+dl.defList dd {
+	float: left;
+	text-align: left;
+	margin: 0;
+	padding: 2px 0;
+	width: 80%;
+}
+table.view_statistics {
+	margin-left: 10px;
+	width: 100%;
+}
+table.view_statistics td {
+	border: 0;
+}
+table.view_statistics td.prompt {
+	width: 20%;
+}
+table.view_statistics td.value {
+	width: 80%;
+}
+.bp-deposits-download.button:before {
+    font-size: 130%;
+    content: "[";
+}
+ul.deposit-list > li:first-child {
+	padding-top: 30px;
+}
+ul.deposit-list li {
+	overflow: hidden;
+}
+ul.deposit-list li .deposit-content {
+	display: inline-block;
+	width: 86%;
+	margin-left: 2%;
+}
+img.deposit-thumb {
+	border-radius: 3px;
+	box-shadow: 0px 1px 4px 1px rgba(0, 0, 0, 0.2);
+}
+/* search box styles
+div.search-term:before {
+	font-family: dashIcons;
+	content: "";
+	position: relative;
+	left: 9px;
+	top: 40px;
+}
+div.search-term {
+	float: right;
+	margin-top: -18px;
+}
+div.search-term input[type=text] {
+	display: inline-block;
+	box-shadow: none;
+	border: 1px solid #eee;
+	border-top: 2px solid #ddd;
+	border-left: 2px solid #ddd;
+	width: 200px;
+	padding-left: 28px;
+}
+div.search-term input[type=submit] {
+	float: right;
+	margin-left: 8px;
+	margin-top: 2px;
+}
+ */
+/* other */
+.iconify {
+	border: none !important;
+	display: inline !important;
+	padding-left: 0 !important;
+	font-family: "iconsweetsRegular";
+}
+.bp-deposits-deposit.button:before {
+        font-size: 130%;
+        content: "]";
+}
+.deposits-return.button:before {
+		padding: 10px !important;
+        font-size: 130%;
+        content: "<";
+}
+/* media queries */
+@media only screen and (max-width: 640px) {
+	dl.defList {
+     	float: none;
+		margin-left: 20px;
+    }
+	dl.defList dt {
+     	float: none;
+		text-align: left;
+    }
+	dl.defList dd {
+     	padding-bottom: 10px;
+		text-align: left;
+    }
+}
+@media only screen and (max-width: 320px) {
+	dl.defList {
+     	float: none;
+		margin-left: 20px;
+    }
+	dl.defList dt {
+     	float: none;
+		text-align: left;
+    }
+	dl.defList dd {
+     	padding-bottom: 10px;
+		text-align: left;
+    }
+    h3 {
+    	font-size: 1.5em !important;
+    }
+}
+/* select2 overrides */
+.select2-selection--multiple {
+	border-color: #ddd;
+}
+.select2-container--default .select2-selection--multiple {
+	height: auto;
+}
+.select2-selection__rendered {
+	line-height: 1.8em;
+	font-size: 85.7%;
+	margin-bottom: -5px;
+}
+
+input[type="search"].select2-search__field {
+	border: 0px;
+	box-shadow: inset 0 0px 2px rgba( 0, 0, 0, 0 );
+	padding: 5px 0 0 0;
+	width: auto !important;
+}
