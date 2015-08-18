@@ -1226,6 +1226,7 @@
 		$cIngest = $fedora_api->ingest( array( 'xmlContent' => $collectionFoxml ) );
 		if ( is_wp_error( $cIngest ) ) {
 			echo 'Error - cIngest : ' . esc_html( $cIngest->get_error_message() );
+			return $cIngest;
 		}
 
 		echo '<br />', __( 'Object Created: ', 'humcore_domain' ), date( 'Y-m-d H:i:s' ), var_export( $cIngest, true );
