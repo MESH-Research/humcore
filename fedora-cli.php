@@ -9,6 +9,36 @@
 class Fedora_Command extends WP_CLI_Command {
 
     /**
+     * Create a collection object.
+     * 
+     * ## OPTIONS
+     * 
+     * ## EXAMPLES
+     * 
+     *     wp fedora create_collection
+     *
+     * @synopsis
+     */
+    public function create_collection( $args, $assoc_args ) {
+
+        global $fedora_api;
+
+        if ( empty( $fedora_api->namespace ) ) {
+            WP_CLI::error( 'Please add a Namespace on the HumCORE Settings page first.' );
+            exit();
+        }
+
+        $cStatus = create_collection_object();
+
+        if ( is_wp_error( $cStatus ) ) {
+            WP_CLI::error( sprintf( 'Error creating collection object. : %1$s-%2$s', $cStatus->get_error_code(), $cStatus->get_error_message() ) );
+        } else {
+            // Print a success message
+            WP_CLI::success( 'Collection object created.' );
+        }
+    }
+
+    /**
      * Delete a PID.
      * 
      * ## OPTIONS
@@ -35,7 +65,6 @@ class Fedora_Command extends WP_CLI_Command {
         if ( is_wp_error( $fStatus ) ) {
             WP_CLI::error( sprintf( 'Error deleting pid : %1$s, %2$s-%3$s', $id, $fStatus->get_error_code(), $fStatus->get_error_message() ) );
         } else {
-
             // Print a success message
             WP_CLI::success( sprintf( 'Deleted pid : %1$s!', $id ) );
         }
