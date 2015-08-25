@@ -169,6 +169,7 @@ div.item-list-tabs ul#search-results-header li span {
 /* deposit entry styles */
 dl.defList {
 	float: right;
+	width: 100%;
 }
 dl.defList dt {
 	float: left;

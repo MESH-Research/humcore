@@ -41,7 +41,7 @@ function humcore_deposit_form() {
 
 	if ( ! humcore_check_externals() ) {
 		echo '<h3>New CORE Deposit</h3>';
-		echo '<p>We are unable to take deposits of new items at this time. Please try again later.</p>';
+		echo "<p>We're so sorry, but one of the components of CORE is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to share your work) so please come back and try again later.</p>";
 		$wp_referer = wp_get_referer();
 		printf(
 			'<a href="%1$s" class="button white" style="line-height: 1.2em;">Go Back</a>',
@@ -198,7 +198,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
-		<span class="description">Assign one or more subject fields to your item.<br />Please let us know if you would like to <a href="mailto:commons@mla.org?subject=CORE" target="_blank">suggest additional subject
+		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:commons@mla.org?subject=CORE" target="_blank">suggest additional subject
  fields</a>.</span><br />
 		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select subjects">
 <?php
@@ -221,7 +221,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-group-entry">
 		<label for="deposit-group">Forums</label>
-		<span class="description">Share this item with one or more <em>MLA Commons</em> forums.</span><br />
+		<span class="description">Share this item with up to five <em>MLA Commons</em> forums.</span><br />
 		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select forums">
 <?php
 	$group_list = humcore_deposits_group_list();
@@ -241,7 +241,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-keyword-entry">
 		<label for="deposit-keyword">Tags</label>
-		<span class="description">Enter tags to further categorize this item.</span><br />
+		<span class="description">Enter up to five tags to further categorize this item.</span><br />
 		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-tags" multiple="multiple" data-placeholder="Enter tags">
 <?php
 	$keyword_list = humcore_deposits_keyword_list();

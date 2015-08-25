@@ -15,13 +15,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function humcore_deposits_front_cssjs() {
 
-	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '060315' );
+	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '082515' );
 	wp_enqueue_style( 'humcore_deposits_css' );
 
 	if ( bp_is_new_deposit_page() ) {
 		wp_enqueue_script( 'plupload', array( 'jquery' ) );
 
-		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '081115', true );
+		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '082515', true );
 		wp_enqueue_script( 'humcore_deposits_js' );
 
 		wp_register_script( 'humcore_deposits_select2_js', plugins_url( 'select2/dist/js/select2.min.js', __FILE__ ), array( 'jquery' ), '060215', true );

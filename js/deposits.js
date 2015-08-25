@@ -75,6 +75,8 @@ jQuery(document).ready( function($) {
 			alert('Please upload a file and enter the mandatory fields Title and Description.');
 			return false;
 		} else {
+			$('#submit').attr('value', 'Please wait...');
+			$('#submit').prop('disabled', true);
 			return true;
 		}
 	});
