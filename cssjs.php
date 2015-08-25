@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function humcore_deposits_front_cssjs() {
 
-	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '060315' );
+	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '082515' );
 	wp_enqueue_style( 'humcore_deposits_css' );
 
 	if ( bp_is_new_deposit_page() ) {
