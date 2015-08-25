@@ -198,7 +198,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
-		<span class="description">Assign one or more subject fields to your item.<br />Please let us know if you would like to <a href="mailto:commons@mla.org?subject=CORE" target="_blank">suggest additional subject
+		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:commons@mla.org?subject=CORE" target="_blank">suggest additional subject
  fields</a>.</span><br />
 		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select subjects">
 <?php
@@ -221,7 +221,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-group-entry">
 		<label for="deposit-group">Forums</label>
-		<span class="description">Share this item with one or more <em>MLA Commons</em> forums.</span><br />
+		<span class="description">Share this item with up to five <em>MLA Commons</em> forums.</span><br />
 		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select forums">
 <?php
 	$group_list = humcore_deposits_group_list();
@@ -241,7 +241,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-keyword-entry">
 		<label for="deposit-keyword">Tags</label>
-		<span class="description">Enter tags to further categorize this item.</span><br />
+		<span class="description">Enter up to five tags to further categorize this item.</span><br />
 		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-tags" multiple="multiple" data-placeholder="Enter tags">
 <?php
 	$keyword_list = humcore_deposits_keyword_list();
