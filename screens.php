@@ -41,7 +41,7 @@ function humcore_deposit_form() {
 
 	if ( ! humcore_check_externals() ) {
 		echo '<h3>New CORE Deposit</h3>';
-		echo '<p>We are unable to take deposits of new items at this time. Please try again later.</p>';
+		echo "<p>We're so sorry, but one of the components of CORE is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to share your work) so please come back and try again later.</p>";
 		$wp_referer = wp_get_referer();
 		printf(
 			'<a href="%1$s" class="button white" style="line-height: 1.2em;">Go Back</a>',
