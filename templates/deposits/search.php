@@ -34,7 +34,7 @@ get_header( 'buddypress' ); ?>
 						<span><?php _e( 'Order By:', 'humcore_domain' ); ?>
 						<select id="deposits-order-by">
 							<option value="date"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
-							<option value="author"><?php _e( 'Primary Author', 'humcore_domain' ); ?></option>
+							<!-- <option value="author"><?php _e( 'Primary Author', 'humcore_domain' ); ?></option> -->
 							<option value="title"><?php _e( 'Title', 'humcore_domain' ); ?></option>
 
 							<?php do_action( 'humcore_deposits_results_order_options' ); ?>
