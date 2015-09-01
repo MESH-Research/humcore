@@ -168,18 +168,18 @@ function humcore_register_sidebars() {
 		'name' => 'Deposits Directory Sidebar',
 		'id' => 'deposits-directory-sidebar',
 		'description' => __( 'The Deposits directory widget area', 'humcore_domain' ),
-		'before_widget' => '<aside id="sidebar" class="%2$s column four sidebar-left" role="complementary">',
-		'after_widget' => 'View <a href="/core/faq">FAQ</a>' . "\n" . '</aside>',
-		'before_title' => '<h4>',
-		'after_title' => '</h4>',
+		'before_widget' => '',
+		'after_widget' => '',
+		'before_title' => '',
+		'after_title' => '',
 	) );
 
 	register_sidebar( array(
 		'name' => 'Deposits Search Sidebar',
 		'id' => 'deposits-search-sidebar',
 		'description' => __( 'The Deposits faceted search widget area', 'humcore_domain' ),
-		'before_widget' => '<aside id="sidebar" class="%2$s column four sidebar-left" role="complementary">',
-		'after_widget' => '</aside>',
+		'before_widget' => '',
+		'after_widget' => '',
 		'before_title' => '<h4>',
 		'after_title' => '</h4>',
 	) );
