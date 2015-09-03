@@ -42,7 +42,7 @@ get_header( 'buddypress' ); ?>
 						<label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
 						<select id="deposits-order-by">
 							<option value="date"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
-							<option value="author"><?php _e( 'Primary Author', 'humcore_domain' ); ?></option>
+							<!-- <option value="author"><?php _e( 'Primary Author', 'humcore_domain' ); ?></option> -->
 							<option value="title"><?php _e( 'Title', 'humcore_domain' ); ?></option>
 
 							<?php do_action( 'humcore_deposits_directory_order_options' ); ?>
@@ -71,8 +71,9 @@ get_header( 'buddypress' ); ?>
 		</div><!-- .padder -->
 	</div><!-- #content -->
 
+	<aside id="sidebar" class="widget_deposits_directory_sidebar_widget column four sidebar-left" role="complementary">
 	<?php dynamic_sidebar( 'deposits-directory-sidebar' ); ?>
-
+	</aside>
 	<?php do_action( 'bp_after_directory_deposits_page' ); ?>
 
 <?php get_footer( 'buddypress' ); ?>
