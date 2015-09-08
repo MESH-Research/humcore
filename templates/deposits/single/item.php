@@ -104,6 +104,8 @@
 </div><!-- .padder -->
 </div><!-- #content -->
 
+<aside id="sidebar" class="widget_deposits_directory_sidebar_widget column four sidebar-left" role="complementary">
 <?php dynamic_sidebar( 'deposits-directory-sidebar' ); ?>
+</aside>
 
 <?php get_footer( 'buddypress' ); ?>
