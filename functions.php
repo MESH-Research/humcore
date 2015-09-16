@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin support functions.
  *
@@ -107,6 +108,9 @@ function humcore_new_deposit_activity( $deposit_id, $deposit_content = '', $depo
 		)
 	);
 
+	// Update the members's last activity
+	bp_update_user_last_activity( $user_id );
+
 	return $activity_ID;
 }
 
@@ -144,6 +148,9 @@ function humcore_new_group_deposit_activity( $deposit_id, $group_id, $deposit_co
 			'hide_sitewide' => $hide_sitewide,
 		)
 	);
+
+	// Update the group's last activity
+	groups_update_last_activity( $group_id );
 
 	return $activity_ID;
 }
