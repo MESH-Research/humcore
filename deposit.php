@@ -975,7 +975,7 @@
 		/**
 		 * Format MODS xml fragment for one or more subjects.
 		 */
-		$full_subject_list = array_unique( array_merge( $metadata['group'], $metadata['subject'] ), SORT_REGULAR );
+		$full_subject_list = $metadata['subject'];
 		$subjectMODS = '';
 		foreach ( $full_subject_list as $subject ) {
 

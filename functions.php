@@ -238,8 +238,8 @@ function humcore_deposit_item_search_meta() {
 		printf( '<meta name="citation_isbn" content="%1$s">' . "\n\r", htmlentities( $metadata['isbn'] ) );
 	}
 
-	if ( ! empty( $metadata['subject'] ) && ! empty( $metadata['group'] ) ) {
-		$full_subject_list = array_unique( array_merge( $metadata['group'], $metadata['subject'] ), SORT_REGULAR );
+	if ( ! empty( $metadata['subject'] ) ) {
+		$full_subject_list = $metadata['subject'];
 		foreach ( $full_subject_list as $subject ) {
 			printf( '<meta name="citation_keywords" content="%1$s">' . "\n\r", htmlentities( $subject ) );
 		}
