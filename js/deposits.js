@@ -63,7 +63,7 @@ jQuery(document).ready( function($) {
 		e.preventDefault();
 		$('#deposit-other-authors-entry-table>tbody').append('		<tr><td class="borderTop"><input type="text" name="deposit-other-authors-first-name[]" class="text" value="" /></td>' +
 				'<td class="borderTop"><input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="" /></td>' +
-				'<td class="borderTop"><input type="radio" name="deposit-authors-primary-author" class="deposit-other-authors-primary-flag" value="2">Primary&nbsp;Author</td><td class="borderTop"></td></tr>');
+				'<td class="borderTop"></td></tr>');
 	});
 
  	$('#deposit-form').on('submit', function(e) {

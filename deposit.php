@@ -462,7 +462,6 @@
 		$user_lastname = get_the_author_meta( 'last_name', $user_id );
 		$user_affiliation = bp_get_profile_field_data( array( 'field' => 2, 'user_id' => $user_id ) );
 		$metadata['organization'] = $user_affiliation;
-		$primary_author_flag = sanitize_text_field( $_POST['deposit-authors-primary-author'] );
 
 		$metadata['authors'][] = array(
 			'fullname' => $user_fullname,
@@ -488,9 +487,6 @@
 						$author_lastname = get_the_author_meta( 'last_name', $mla_userid );
 						$author_affiliation = bp_get_profile_field_data( array( 'field' => 2, 'user_id' => $mla_userid ) );
 						$author_uni = $mla_username;
-						if ( ! empty( $primary_author_flag ) && $primary_author_flag != $author_lastname ) {
-							$primary_author_flag = $author_lastname;
-						}
 					} else {
 						$author_firstname = $author_array['first_name'];
 						$author_lastname = $author_array['last_name'];
@@ -509,12 +505,8 @@
 			}
 		}
 
-		usort( $metadata['authors'], function( $a, $b ) use ( $primary_author_flag ) {
-			if ( $a['family'] === $primary_author_flag ) {
-				return -1;
-			} else {
-				return strcasecmp( $a['family'], $b['family'] );
-			}
+		usort( $metadata['authors'], function( $a, $b ) {
+			return strcasecmp( $a['family'], $b['family'] );
 		} );
 
 		/**

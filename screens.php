@@ -146,7 +146,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-other-authors-entry">
 		<label for="deposit-other-authors-entry-list">Authors</label>
-		<span class="description">Add any authors in addition to yourself. Please identify the primary author.</span>
+		<span class="description">Add any authors in addition to yourself.</span>
 		<ul id="deposit-other-authors-entry-list">
 		<li>
 		<table id="deposit-other-authors-entry-table"><tbody>
@@ -161,8 +161,6 @@ function humcore_deposit_form() {
 		<?php echo esc_html( $user_firstname ); ?>
 		</td><td class="borderTop" style="width:205px;">
 		<?php echo esc_html( $user_lastname ); ?>
-		</td><td class="borderTop">
-		<input type="radio" name="deposit-authors-primary-author" <?php if ( ! empty( $_POST['deposit-authors-primary-author'] ) ) { checked( sanitize_text_field( $_POST['deposit-authors-primary-author'] ), $user_lastname ); } else { echo 'checked="checked"'; } ?> value="<?php echo esc_html( $user_lastname ); ?>">I'm the primary author.
 		</td><td class="borderTop">
 		<input type="button" id="deposit-insert-other-author-button" class="button add_author" value="Add Another">
 		</td></tr>
@@ -181,8 +179,6 @@ function humcore_deposit_form() {
 		<input type="text" name="deposit-other-authors-first-name[]" class="text" value="<?php echo $author_array['first_name']; ?>" />
 		</td><td class="borderTop" style="width:205px;">
 		<input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
-		</td><td class="borderTop">
-		<input type="radio" name="deposit-authors-primary-author" class="deposit-other-authors-primary-flag" <?php checked( sanitize_text_field( $_POST['deposit-authors-primary-author'] ), $author_array['last_name'] ); ?> value="<?php echo esc_html( $author_array['last_name'] ); ?>">Primary&nbsp;author
 		</td><td class="borderTop">
 		</td></tr>
 <?php
