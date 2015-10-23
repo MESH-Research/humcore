@@ -200,7 +200,11 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_get_group_deposit_count() {
 
-		humcore_has_deposits( sprintf( 'facets[group_facet][]=%s', urlencode( bp_get_current_group_name() ) ) );
+		if ( mla_is_group_committee() ) {
+			humcore_has_deposits( sprintf( 'facets[author_facet][]=%s', urlencode( bp_get_current_group_name() ) ) );
+		} else {
+			humcore_has_deposits( sprintf( 'facets[group_facet][]=%s', urlencode( bp_get_current_group_name() ) ) );
+		}
 		return (int) humcore_get_deposit_count();
 
 		/*
@@ -297,7 +301,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_before_directory_deposits_content() {
 
-		if ( is_user_logged_in() && bp_is_deposits_directory() ) {
+		if ( is_user_logged_in() && humcore_is_deposit_directory() ) {
 			echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item">Deposit an Item</a>';
 		}
 

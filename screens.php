@@ -32,9 +32,10 @@ function humcore_deposits_search_form() {
 function humcore_deposit_form() {
 
 	if ( ! empty( $_POST ) ) {
-		$deposit_status = humcore_deposit_file();
-		if ( $deposit_status ) {
-			Humcore_Deposit_Component::humcore_user_deposits_list();
+		$deposit_id = humcore_deposit_file();
+		if ( $deposit_id ) {
+                	$review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
+                	wp_redirect( $review_url );
 			exit();
 		}
 	}
@@ -144,6 +145,22 @@ function humcore_deposit_form() {
 	</div>
 	</p>
 	<p>
+	<div id="deposit-on-behalf-flag-entry">
+<?php
+        $committee_list = humcore_deposits_user_committee_list( bp_loggedin_user_id() );
+        if ( empty( $committee_list ) ) {
+?>
+        <input type="hidden" name="deposit-on-behalf-flag" id="deposit-on-behalf-flag" value="" />
+<?php   } else { ?>
+		<label for="deposit-on-behalf-flag-list">Depositor</label>
+		<span class="description">Is this deposit being made on behalf of a committee?</span>
+			<input type="radio" name="deposit-on-behalf-flag" value="yes" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'yes' ); } ?>>Yes &nbsp;
+			<input type="radio" name="deposit-on-behalf-flag" value="no" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
+<?php
+	} ?>
+	</div>
+	</p>
+	<p>
 	<div id="deposit-other-authors-entry">
 		<label for="deposit-other-authors-entry-list">Authors</label>
 		<span class="description">Add any authors in addition to yourself.</span>
@@ -189,6 +206,33 @@ function humcore_deposit_form() {
 		</tbody></table>
 		</li>
 		</ul>
+	</div>
+	</p>
+	<p>
+	<div id="deposit-committee-entry">
+<?php
+	if ( empty( $committee_list ) ) {
+?>
+	<input type="hidden" name="deposit-committee" id="deposit-committee" value="" />
+<?php	} else { ?>
+
+		<label for="deposit-committee">Committee</label>
+		<select name="deposit-committee" id="deposit-committee" class="js-basic-single-optional" data-placeholder="Select committee">
+			<option class="level-0" selected value=""></option>
+<?php
+	$posted_committee = '';
+	if ( ! empty( $_POST['deposit-committee'] ) ) { $posted_committee = sanitize_text_field( $_POST['deposit-committee'] ); }
+	foreach ( $committee_list as $committee_key => $committee_value ) {
+		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $committee_key == $posted_committee ) ? 'selected="selected"' : '',
+			$committee_key,
+			$committee_value
+		);
+	}
+?>
+		</select>
+<?php
+	} ?>
 	</div>
 	</p>
 	<p>
@@ -314,7 +358,7 @@ function humcore_deposit_form() {
 			<input type="radio" name="deposit-publication-type" value="book" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'book' ); } ?>>Book &nbsp;
 			<input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal &nbsp;
 			<input type="radio" name="deposit-publication-type" value="conference-proceeding" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'conference-proceeding' ); } ?>>Conference proceeding &nbsp;
-			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'none' ); } ?>>Not published &nbsp;
+			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'none' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
 	</div>
 	</p>
 	<div id="deposit-book-entries">
@@ -496,8 +540,9 @@ function humcore_deposits_entry_content() {
 		$subject_list = implode( ', ', array_map( 'humcore_linkify_subject', $subjects ) );
 	}
 	$authors = array_filter( $metadata['authors'] );
-	$author_meta = humcore_deposit_parse_author_info( $metadata['author_info'][0] );
-	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_meta ) );
+	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 ?>
 <h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo esc_html( $metadata['title'] ); ?></a></h4>
@@ -559,9 +604,11 @@ function humcore_deposit_item_content() {
 	}
 
 	$authors = array_filter( $metadata['authors'] );
-	$author_meta = humcore_deposit_parse_author_info( $metadata['author_info'][0] );
-	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_meta ) );
+	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
 	$deposit_post_id = $metadata['record_identifier'];
+	$post_data = get_post( $deposit_post_id );
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
 	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
@@ -569,7 +616,9 @@ function humcore_deposit_item_content() {
 
 	$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
 	$total_views = get_post_meta( $deposit_post_id, '_total_views', true ) + 1; // Views counted at item page level.
-	$post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+	if ( $post_data->post_author != bp_loggedin_user_id() ) {
+		$post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+	}
 	$download_url = sprintf( '/deposits/download/%s/%s/%s/',
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],

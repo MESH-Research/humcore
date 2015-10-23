@@ -18,6 +18,17 @@ jQuery(document).ready( function($) {
 		}
 	}
 
+ 	function maybe_show_committee_fields(event) {
+		var value = $(this).val();
+		if ( value == 'yes' ) {
+		   	$('#deposit-other-authors-entry').hide();
+		   	$('#deposit-committee-entry').show();
+		} else {
+			$('#deposit-other-authors-entry').show();
+			$('#deposit-committee-entry').hide();
+		}
+	}
+
  	function maybe_show_publication_fields(event) {
 		var value = $(this).val();
 		if ( value == 'book' ) {
@@ -47,17 +58,14 @@ jQuery(document).ready( function($) {
     $('#deposit-conference-title-entry').hide();
     $('#deposit-organization-entry').hide();
     $('#deposit-institution-entry').hide();
+    $('#deposit-committee-entry').hide();
     $('#deposit-book-entries').hide();
     $('#deposit-journal-entries').hide();
     $('#deposit-conference-proceedings').hide();
 //	$('#deposit-non-published-entries').hide();
  	$('select[name=deposit-genre]').on('change', maybe_show_conference_fields);
+ 	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
  	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_fields);
-
- 	$('#deposit-other-authors-entry-table>tbody').on('click', 'input.deposit-other-authors-primary-flag', function() {
-		var value = $(this).parent().siblings().children('input.deposit-other-authors-last-name').val();
-		$(this).attr('value', value);
-	});
 
  	$('#deposit-insert-other-author-button').on('click', function(e) {
 		e.preventDefault();
@@ -203,6 +211,7 @@ uploader.init();
 
 // Deposit select 2 controls
 jQuery(document).ready( function($) {
+
 	$(".js-basic-multiple").select2({
 		maximumSelectionLength: 5,
 		width: "75%"

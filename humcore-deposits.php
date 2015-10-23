@@ -229,8 +229,8 @@ register_deactivation_hook( __FILE__, 'humcore_deactivate' );
 function humcore_add_rewrite_rule() {
 
 	add_rewrite_rule(
-		'(deposits/item)/([^/]+)/?$',
-		'index.php?pagename=$matches[1]&deposits_item=$matches[2]',
+		'(deposits/item)/([^/]+)(/(review))?/?$',
+		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
 		'top'
 	);
 
@@ -258,6 +258,7 @@ function humcore_add_rewrite_tag() {
 	add_rewrite_tag( '%deposits_item%', '([^/]*)' );
 	add_rewrite_tag( '%deposits_datastream%', '([^/]*)' );
 	add_rewrite_tag( '%deposits_filename%', '([^/]*)' );
+	add_rewrite_tag( '%deposits_command%', '([^/]*)' );
 	add_rewrite_tag( '%facets%', '([^&]*)' );
 
 }
