@@ -76,7 +76,7 @@ function humcore_has_deposits( $args = '' ) {
 		'page_arg'          => 'dpage',
 		'sort'              => 'date',       // Sort date, author or title.
 		'page'              => 1,            // Which page to load.
-		'per_page'          => 10,           // Number of items per page.
+		'per_page'          => 25,           // Number of items per page.
 		'max'               => false,        // Max number to return.
 		'include'           => false,        // Specify pid to get.
 		'search_tag'        => false,        // Specify tag to search for (keyword_search field).
@@ -456,7 +456,7 @@ class Humcore_Deposit_Search_Results {
 
 		$defaults = array(
 			'page'              => 1,
-			'per_page'          => 20,
+			'per_page'          => 25,
 			'page_arg'          => 'dpage',
 			'max'               => false,
 			'sort'              => 'date',

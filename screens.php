@@ -78,6 +78,7 @@ function humcore_deposit_form() {
 	<div id="indicator"></div>
 </div>
 <div id="console">Select the file you wish to upload and deposit. *</div>
+
 <div id="container">
 	<button id="pickfile">Select File</button> 
 <!--    <button id="uploadfile">Upload</button> -->
@@ -355,6 +356,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-publication-type-entry">
 		<label for="deposit-publication-type">Published?</label>
+		<span class="description">Check journal or publisher open access policies at <a onclick="target='_blank': href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> for previously published work.</span><br /><br />
 			<input type="radio" name="deposit-publication-type" value="book" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'book' ); } ?>>Book &nbsp;
 			<input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal &nbsp;
 			<input type="radio" name="deposit-publication-type" value="conference-proceeding" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'conference-proceeding' ); } ?>>Conference proceeding &nbsp;
@@ -651,9 +653,15 @@ function humcore_deposit_item_content() {
 	}
 ?>
 
+<?php if ( ! humcore_is_deposit_item_review() ) : ?>
 <h3 class="bp-group-documents-title"><?php echo esc_html( $metadata['title'] ); ?></h3>
+<?php endif; ?>
 <div class="bp-group-documents-meta">
 <dl class='defList'>
+<?php if ( humcore_is_deposit_item_review() ) : ?>
+<dt><strong><?php _e( 'Title:', 'humcore_domain' ); ?></strong></dt>
+<dd><span><?php echo $metadata['title']; // XSS OK. ?></span></dd>
+<?php endif; ?>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo $authors_list; // XSS OK. ?></dd>
 <?php if ( ! empty( $metadata['date'] ) ) : ?>
@@ -686,8 +694,10 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'Notes:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $metadata['notes'] ); ?></dd>
 <?php endif; ?>
+<?php if ( ! humcore_is_deposit_item_review() ) : ?>
 <dt><?php _e( 'Metadata:', 'humcore_domain' ); ?></dt>
 <dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
+<?php endif; ?>
 <?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $post_metadata['type_of_license'] ); ?></dd>
@@ -695,6 +705,7 @@ function humcore_deposit_item_content() {
 </dl>
 </div>
 <br style='clear:both'>
+<?php if ( ! humcore_is_deposit_item_review() ) : ?>
 <div><h3><?php _e( 'Downloads', 'humcore_domain' ); ?></h3>
 <div class="doc-attachments">
 	<table class="view_statistics">
@@ -709,6 +720,9 @@ function humcore_deposit_item_content() {
 	</table>
 </div>
 </div>
+<?php else : ?>
+	<a onclick="target='_blank'" class="bp-deposits-view button white" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View your deposit', 'humcore_domain' ); ?></a>
+<?php endif; ?>
 <?php
 
 }
@@ -728,7 +742,11 @@ function humcore_search_sidebar_content() {
 		if ( ! empty( $facet_display_titles[ $facet_key ] ) ) : ?>
 		<li class="facet-set-item"><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
 			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
-			foreach ( $facet_values['counts'] as $facet_value_counts ) {
+			$sorted_counts = $facet_values['counts'];
+			if ( "pub_date" === $facet_key ) {
+				arsort( $sorted_counts );
+			}
+			foreach ( $sorted_counts as $facet_value_counts ) {
 				if ( ! empty( $facet_value_counts[0] ) ) {
 					$facet_list_item_selected = false;
 					if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
@@ -784,7 +802,9 @@ function humcore_directory_sidebar_content() {
 		<li class="facet-set-item">Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
 		<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
 		$sorted_counts = $facet_values['counts'];
-		asort( $sorted_counts );
+		if ( "pub_date" === $facet_key ) {
+			arsort( $sorted_counts );
+		}
 		foreach ( $sorted_counts as $facet_value_counts ) {
 			if ( ! empty( $facet_value_counts[0] ) ) {
 				$facet_list_item_selected = false;

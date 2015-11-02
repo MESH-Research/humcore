@@ -492,7 +492,7 @@ class Humcore_Deposit_Solr_Api {
 
 		$search_result = array();
 		$fac_count = -1; // All the facet values.
-		$number_of_res = 10;
+		$number_of_res = 25; // Per_page
 		$lucene_reserved_characters = preg_quote( '+-&|!(){}[]^"~*?:\\' );
 		$facets_array = array(
 			'author_facet', 'organization_facet', 'group_facet', 'subject_facet', 'genre_facet', 'pub_date_facet', 'type_of_resource_facet',

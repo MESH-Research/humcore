@@ -39,7 +39,7 @@
 
 <div id="item-body" role="main">
 <h2>Deposit Complete!</h2>
-<p>Please review your entry.</p>
+Thank you for your submission! We strive to make the CORE deposit process as easy as possible. If you notice any omissions in your entry or you realize that you have made this deposit in error, please <a href="mailto:commons@mla.org?subject=CORE">contact us</a> and we'll be happy to assist you.
 <?php do_action( 'bp_before_deposit_item' ); ?>
 <ul class="deposit-list item-list">
 <?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
@@ -52,6 +52,7 @@
 
 		<?php if ( is_user_logged_in() ) : ?>
 
+			<?php if ( ! humcore_is_deposit_item_review() ) : ?>
 			<div class="deposit-meta">
 <!--TODO check if activity component is active -->
 				<?php if ( 1 == 1 ) : ?>
@@ -82,6 +83,12 @@
 				<?php do_action( 'humcore_deposit_entry_meta' ); ?>
 
 			</div>
+			<?php else : ?>
+				<?php $wp_referer = wp_get_referer();
+				printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',
+					( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/' );
+				?>
+			<?php endif; ?>
 
 		<?php else : ?>
 		<?php $wp_referer = wp_get_referer();
