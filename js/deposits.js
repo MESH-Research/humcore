@@ -54,20 +54,26 @@ jQuery(document).ready( function($) {
 		}
 	}
 
-    //Hide the published forms by default, expand as needed
-    $('#deposit-conference-title-entry').hide();
-    $('#deposit-organization-entry').hide();
-    $('#deposit-institution-entry').hide();
-    $('#deposit-committee-entry').hide();
-    $('#deposit-book-entries').hide();
-    $('#deposit-journal-entries').hide();
-    $('#deposit-conference-proceedings').hide();
-//	$('#deposit-non-published-entries').hide();
- 	$('select[name=deposit-genre]').on('change', maybe_show_conference_fields);
- 	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
- 	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_fields);
+	//Hide the published forms by default, expand as needed
+	$('#deposit-conference-title-entry').hide();
+	$('#deposit-organization-entry').hide();
+	$('#deposit-institution-entry').hide();
+	$('#deposit-committee-entry').hide();
+	$('#deposit-book-entries').hide();
+	$('#deposit-journal-entries').hide();
+	$('#deposit-conference-proceedings').hide();
+	$('select[name=deposit-genre]').on('change', maybe_show_conference_fields);
+	$('select[name=deposit-genre]').on('genreload', maybe_show_conference_fields);
+	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
+	$('input[type=radio][name=deposit-on-behalf-flag]').on('committeeload', maybe_show_committee_fields);
+	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_fields);
+	$('input[type=radio][name=deposit-publication-type]').on('pubload', maybe_show_publication_fields);
 
- 	$('#deposit-insert-other-author-button').on('click', function(e) {
+	$('select[name=deposit-genre]').trigger('genreload');
+	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
+	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubload');
+
+	$('#deposit-insert-other-author-button').on('click', function(e) {
 		e.preventDefault();
 		$('#deposit-other-authors-entry-table>tbody').append('		<tr><td class="borderTop"><input type="text" name="deposit-other-authors-first-name[]" class="text" value="" /></td>' +
 				'<td class="borderTop"><input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="" /></td>' +
