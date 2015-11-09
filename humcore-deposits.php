@@ -25,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( defined('WP_CLI') && WP_CLI ) {
     require_once dirname( __FILE__ ) . '/ezid-cli.php';
     require_once dirname( __FILE__ ) . '/fedora-cli.php';
+/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
     require_once dirname( __FILE__ ) . '/solr-cli.php';
 }
 
@@ -240,6 +241,8 @@ function humcore_add_rewrite_rule() {
 		'top'
 	);
 
+	// Rewrite for deposits/objects handled as ngix proxy pass.
+
 	add_rewrite_rule(
 		'(deposits/view)/([^/]+)/([^/]+)/([^/]+)/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_datastream=$matches[3]&deposits_filename=$matches[4]',
@@ -313,7 +316,7 @@ add_action( 'plugins_loaded', 'humcore_deposit_api_classes_init' );
  */
 function humcore_deposit_show_user_fields( $user ) {
 ?>
-        <h3>CORE Details</h3>
+        <h3><em>CORE</em> Details</h3>
 
         <table class="form-table">
             <tbody>

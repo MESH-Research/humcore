@@ -219,7 +219,7 @@ function humcore_deposit_item_search_meta() {
 		printf( '<meta name="citation_author" content="%1$s">' . "\n\r", htmlentities( $author ) );
 	}
 
-	if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Thesis' ) ) && ! empty( $metadata['institution'][0] ) ) {
+	if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && ! empty( $metadata['institution'][0] ) ) {
 		printf( '<meta name="citation_dissertation_institution" content="%1$s">' . "\n\r", htmlentities( $metadata['institution'][0] ) );
 	}
 	if ( ! empty( $metadata['genre'] ) && 'Technical report' == $metadata['genre'] && ! empty( $metadata['institution'] ) ) {
@@ -737,6 +737,33 @@ function humcore_linkify_author( $author, $author_meta, $author_type ) {
 }
 
 /**
+ * Returns license with link.
+ *
+ * @return string
+ */
+function humcore_linkify_license( $license ) {
+
+
+$license_link_list = array();
+
+        $license_link_list['All Rights Reserved'] = '';
+        $license_link_list['Attribution'] = 'https://creativecommons.org/licenses/by/4.0/';
+        $license_link_list['Attribution-NonCommercial'] = 'https://creativecommons.org/licenses/by-nc/4.0/';
+        $license_link_list['Attribution-ShareAlike'] = 'https://creativecommons.org/licenses/by-sa/4.0/';
+        $license_link_list['Attribution-NonCommercial-ShareAlike'] = 'https://creativecommons.org/licenses/by-nc-sa/4.0/';
+        $license_link_list['Attribution-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nd/4.0/';
+        $license_link_list['Attribution-NonCommercial-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nc-nd/4.0/';
+        $license_link_list['All-Rights-Granted'] = 'https://creativecommons.org/publicdomain/zero/1.0/';
+
+	if ( ! empty( $license_link_list[$license] ) ) {
+        	return sprintf( '<a onclick="target=' . "'" . '_blank' . "'" . '" href="%s">%s</a>', $license_link_list[$license], $license );
+	} else {
+        	return $license;
+	}
+
+}
+
+/**
  * Returns group slug for a given group name.
  *
  * @return string
@@ -822,7 +849,7 @@ function humcore_deposits_genre_list() {
 	$genre_list['Abstract'] = 'Abstract';
 	$genre_list['Article'] = 'Article';
 	$genre_list['Bibliography'] = 'Bibliography';
-	$genre_list['Blog Post'] = 'Blog Post';
+	$genre_list['Blog Post'] = 'Blog post';
 	$genre_list['Book'] = 'Book';
 	$genre_list['Book chapter'] = 'Book chapter';
 	$genre_list['Catalog'] = 'Catalog';

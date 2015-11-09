@@ -76,11 +76,24 @@ jQuery(document).ready( function($) {
 
  	$('#deposit-form').on('submit', function(e) {
 		var title = $.trim($('#deposit-title').val());
+		var item_type = $.trim($('#deposit-genre').val());
 		var description = $.trim($('#deposit-abstract').val());
 		var selected_file = $.trim($('input[type=hidden][name=selected_file_name]').val());
-
-		if ( title === '' || description === '' || selected_file === '' ) {
-			alert('Please upload a file and enter the mandatory fields Title and Description.');
+		var message = "Please complete the following steps before pressing Deposit:\n\n";
+		if ( selected_file === '' ) {
+			message += "Upload a file.\n";
+		}
+		if ( title === '' ) {
+			message += "Enter a Title.\n";
+		}
+		if ( item_type === '' ) {
+			message += "Select an Item Type.\n";
+		}
+		if ( description === '' ) {
+			message += "Enter a Description.\n";
+		}
+		if ( title === '' || item_type === '' || description === '' || selected_file === '' ) {
+			alert(message);
 			return false;
 		} else {
 			$('#submit').attr('value', 'Please wait...');

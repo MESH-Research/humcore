@@ -204,9 +204,7 @@ class Humcore_Deposit_Solr_Api {
 				$record['subject'] = $document->subject_facet;
 				$record['keyword'] = $document->keyword_search;
 				$record['handle'] = $document->handle;
-				if ( ! empty( $document->genre_facet ) ) {
-					$record['genre'] = implode( ',', $document->genre_facet );
-				}
+				$record['genre'] = $document->genre_facet[0];
 				$record['notes'] = implode( ' ', $document->notes );
 				$record['book_journal_title'] = $document->book_journal_title;
 				$record['book_author'] = $document->book_author;
@@ -220,9 +218,7 @@ class Humcore_Deposit_Solr_Api {
 				$record['start_page'] = $document->start_page;
 				$record['end_page'] = $document->end_page;
 				$record['language'] = $document->language;
-				if ( ! empty( $document->type_of_resource_facet ) ) {
-					$record['type_of_resource'] = implode( ',', $document->type_of_resource_facet );
-				}
+				$record['type_of_resource'] = $document->type_of_resource_facet[0];
 				$record['record_content_source'] = $document->record_content_source;
 				$record['record_creation_date'] = $document->record_creation_date;
 				$record['record_identifier'] = $document->record_identifier;
@@ -663,9 +659,7 @@ class Humcore_Deposit_Solr_Api {
 			$record['subject'] = $document->subject_facet;
 			$record['keyword'] = $document->keyword_search;
 			$record['handle'] = $document->handle;
-			if ( ! empty( $document->genre_facet ) ) {
-				$record['genre'] = implode( ',', $document->genre_facet );
-			}
+			$record['genre'] = $document->genre_facet[0];
 			$record['notes'] = implode( ' ', $document->notes );
 			$record['book_journal_title'] = $document->book_journal_title;
 			$record['book_author'] = $document->book_author;
@@ -679,9 +673,7 @@ class Humcore_Deposit_Solr_Api {
 			$record['start_page'] = $document->start_page;
 			$record['end_page'] = $document->end_page;
 			$record['language'] = $document->language;
-			if ( ! empty( $document->type_of_resource_facet ) ) {
-				$record['type_of_resource'] = implode( ',', $document->type_of_resource_facet );
-			}
+			$record['type_of_resource'] = $document->type_of_resource_facet[0];
 			$record['record_content_source'] = $document->record_content_source;
 			$record['record_creation_date'] = $document->record_creation_date;
 			$record['record_identifier'] = $document->record_identifier;

@@ -39,7 +39,7 @@
 
 <div id="item-body" role="main">
 <h2>Deposit Complete!</h2>
-Thank you for your submission! We strive to make the CORE deposit process as easy as possible. If you notice any omissions in your entry or you realize that you have made this deposit in error, please <a href="mailto:commons@mla.org?subject=CORE">contact us</a> and we'll be happy to assist you.
+Thank you for your submission! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or you realize that you have made this deposit in error, please <a href="mailto:commons@mla.org?subject=CORE">contact us</a> and we'll be happy to assist you.
 <?php do_action( 'bp_before_deposit_item' ); ?>
 <ul class="deposit-list item-list">
 <?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
@@ -48,7 +48,7 @@ Thank you for your submission! We strive to make the CORE deposit process as eas
 
 	<div class="deposit-content">
 
-		<?php do_action( 'humcore_deposit_item_content' ); ?>
+		<?php do_action( 'humcore_deposit_item_review_content' ); ?>
 
 		<?php if ( is_user_logged_in() ) : ?>
 

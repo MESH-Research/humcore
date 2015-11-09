@@ -110,6 +110,7 @@ class Humcore_Deposit_Component extends BP_Component {
 		add_action( 'bp_before_directory_deposits_content', array( $this, 'humcore_before_directory_deposits_content' ) );
 		add_action( 'humcore_deposits_entry_content', 'humcore_deposits_entry_content' );
 		add_action( 'humcore_deposit_item_content', 'humcore_deposit_item_content' );
+		add_action( 'humcore_deposit_item_review_content', 'humcore_deposit_item_review_content' );
 
 		add_action( 'bp_activity_filter_options', array( $this, 'display_activity_actions' ) );
 		add_action( 'bp_member_activity_filter_options', array( $this, 'display_activity_actions' ) );
