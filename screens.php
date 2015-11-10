@@ -704,11 +704,11 @@ function humcore_deposit_item_content() {
 	<table class="view_statistics">
 	<tr><td class="prompt"><a class="bp-deposits-download button" title="Download" href="<?php echo esc_url( $download_url ); ?>"><?php _e( 'Download', 'humcore_domain' ); ?></a></td>
 		<td class="value"><?php echo $file_type_icon . ' ' . esc_attr( $file_metadata['files'][0]['filename'] ); // XSS OK. ?></td></tr>
-		<tr><td class="prompt"><?php _e( 'Total downloads:', 'humcore_domain' ); ?></td>
+		<tr><td class="prompt"><?php _e( 'Total Downloads:', 'humcore_domain' ); ?></td>
 			<td class="value"><?php echo esc_html( $total_downloads ); ?></td></tr>
-	<tr><td class="prompt"><a onclick="target='_blank'" class="bp-deposits-view button" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View this item', 'humcore_domain' ); ?></a></td>
+	<tr><td class="prompt"><a onclick="target='_blank'" class="bp-deposits-view button" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View this Item', 'humcore_domain' ); ?></a></td>
 		<td class="value"><?php echo $thumb_url;// XSS OK. ?></td></tr>
-		<tr><td class="prompt"><?php _e( 'Total views:', 'humcore_domain' ); ?></td>
+		<tr><td class="prompt"><?php _e( 'Total Views:', 'humcore_domain' ); ?></td>
 			<td class="value"><?php echo esc_html( $total_views ); ?></td></tr>
 	</table>
 </div>
@@ -1027,7 +1027,7 @@ function humcore_deposit_item_review_content() {
 </dl>
 </div>
 <br style='clear:both'>
-<a onclick="target='_blank'" class="bp-deposits-view button white" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View your deposit', 'humcore_domain' ); ?></a>
+<a onclick="target='_blank'" class="bp-deposits-view button white" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View your Deposit', 'humcore_domain' ); ?></a>
 <?php
 
 }
