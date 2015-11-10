@@ -51,7 +51,7 @@
 
 				$displayed_user_fullname = bp_get_displayed_user_fullname();
 
-				if ( is_user_logged_in() ) {
+				if ( is_user_logged_in() && humcore_is_group_forum() ) {
 					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item">Deposit an Item</a><p />';
 				} ?>
 

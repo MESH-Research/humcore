@@ -102,6 +102,24 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 		<p>
+			<label>Committee Deposit<br>
+				<input type="hidden" name="aggregator_committee_deposit" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['committee_deposit'] ); ?>">
+				<input type="text" name="aggregator_committee_deposit_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['committee_deposit'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Committee ID<br>
+				<input type="hidden" name="aggregator_committee_id" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['committee_id'] ); ?>">
+				<input type="text" name="aggregator_committee_id_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['committee_id'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Submitter<br>
+				<input type="hidden" name="aggregator_submitter" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
+				<input type="text" name="aggregator_submitter_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
+			</label>
+		</p>
+		<p>
 			<label>Author(s)<br>
 			<?php foreach ( $aggregator_metadata['authors'] as $author ) { ?>
 				<label>Given: 
@@ -115,6 +133,9 @@ function humcore_deposit_metabox( $post ) {
 				</label>
 				<label>UNI: 
 				<input type="text" name="aggregator_author_uni[]" class="widefat" value="<?php echo esc_attr( $author['uni'] ); ?>">
+				</label>
+				<label>Role: 
+				<input type="text" name="aggregator_author_role[]" class="widefat" value="<?php echo esc_attr( $author['role'] ); ?>">
 				</label>
 				<label>Affiliation: 
 				<input type="text" name="aggregator_author_affiliation[]" class="widefat" value="<?php echo esc_attr( $author['affiliation'] ); ?>">
@@ -131,6 +152,9 @@ function humcore_deposit_metabox( $post ) {
 				</label>
 				<label>UNI: 
 				<input type="text" name="aggregator_author_uni[]" class="widefat" value="">
+				</label>
+				<label>Role: 
+				<input type="text" name="aggregator_author_role[]" class="widefat" value="">
 				</label>
 				<label>Affiliation: 
 				<input type="text" name="aggregator_author_affiliation[]" class="widefat" value="">
@@ -493,21 +517,26 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['institution'] = sanitize_text_field( stripslashes( $_POST['aggregator_institution'] ) );
 	$aggregator_metadata['conference_title'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_title'] ) );
 	$aggregator_metadata['conference_organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_organization'] ) );
+	//$aggregator_metadata['committee_deposit'] = sanitize_text_field( $_POST['aggregator_committee_deposit'] );
+	//$aggregator_metadata['committee_id'] = sanitize_text_field( $_POST['aggregator_committee_id'] );
+	//$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
 
 	$aggregator_metadata['authors'] = array();
 	$authors = array();
-	$authors = array_map( function ( $given, $family, $fullname, $uni, $affiliation ) {
+	$authors = array_map( function ( $given, $family, $fullname, $uni, $role, $affiliation ) {
 		return array(
 			'given' => sanitize_text_field( stripslashes( $given ) ),
 			'family' => sanitize_text_field( stripslashes( $family ) ),
 			'fullname' => sanitize_text_field( stripslashes( $fullname ) ),
 			'uni' => sanitize_text_field( stripslashes( $uni ) ),
+			'role' => sanitize_text_field( stripslashes( $role ) ),
 			'affiliation' => sanitize_text_field( stripslashes( $affiliation ) ),
 		); },
 		$_POST['aggregator_author_given'],
 		$_POST['aggregator_author_family'],
 		$_POST['aggregator_author_fullname'],
 		$_POST['aggregator_author_uni'],
+		$_POST['aggregator_author_role'],
 		$_POST['aggregator_author_affiliation']
 	);
 

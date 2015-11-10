@@ -142,7 +142,6 @@
 							'rdfContent' => $resourceRdf,
 						 ) );
 		/* echo "<br />DEBUG  2 ", date ( 'Y-m-d H:i:s' ), var_export( $resourceFoxml, true ); */
-
 		// TODO handle file write error.
 		$file_write_status = file_put_contents( $MODS_file, $metadataMODS );
 		/* echo "<br />DEBUG  3 ", date ( 'Y-m-d H:i:s' ), var_export( $metadataMODS, true ); */
@@ -427,7 +426,7 @@
 
 		error_log( '*****HumCORE deposit complete.*****' );
 		echo '<h3>', __( 'Deposit complete!', 'humcore_domain' ), '</h3><br />';
-		return true;
+		return $nextPids[0];
 
 	}
 
@@ -451,28 +450,43 @@
 		$metadata['title'] = wp_strip_all_tags( stripslashes( $_POST['deposit-title'] ) );
 		$metadata['abstract'] = wp_strip_all_tags( stripslashes( $_POST['deposit-abstract'] ) );
 		$metadata['genre'] = sanitize_text_field( $_POST['deposit-genre'] );
+		$metadata['committee_deposit'] = sanitize_text_field( $_POST['deposit-on-behalf-flag'] );
+		$metadata['committee_id'] = sanitize_text_field( $_POST['deposit-committee'] );
+		$metadata['submitter'] = bp_loggedin_user_id();
 
 		/**
-		 * Get author metadata about this user.
+		 * Get committee or author metadata.
 		 */
-		$user_id = bp_loggedin_user_id();
-		$user_username = bp_get_loggedin_user_username();
-		$user_fullname = bp_get_loggedin_user_fullname();
-		$user_firstname = get_the_author_meta( 'first_name', $user_id );
-		$user_lastname = get_the_author_meta( 'last_name', $user_id );
-		$user_affiliation = bp_get_profile_field_data( array( 'field' => 2, 'user_id' => $user_id ) );
-		$metadata['organization'] = $user_affiliation;
-		$primary_author_flag = sanitize_text_field( $_POST['deposit-authors-primary-author'] );
 
-		$metadata['authors'][] = array(
-			'fullname' => $user_fullname,
-			'given' => $user_firstname,
-			'family' => $user_lastname,
-			'uni' => $user_username,
-			'affiliation' => $user_affiliation,
-		);
+		if ( 'yes' === $metadata['committee_deposit'] ) {
+			$committee = groups_get_group( array( 'group_id' => $metadata['committee_id'] ) );
+			$metadata['organization'] = 'MLA';
+			$metadata['authors'][] = array(
+				'fullname' => $committee->name,
+				'given' => '',
+				'family' => '',
+				'uni' => $committee->slug,
+				'role' => 'creator',
+				'affiliation' => 'MLA',
+			);
+		} else {
+			$user_id = bp_loggedin_user_id();
+			$user_firstname = get_the_author_meta( 'first_name', $user_id );
+			$user_lastname = get_the_author_meta( 'last_name', $user_id );
+			$user_affiliation = bp_get_profile_field_data( array( 'field' => 2, 'user_id' => $user_id ) );
+			$metadata['organization'] = $user_affiliation;
+			$metadata['authors'][] = array(
+				'fullname' => bp_get_loggedin_user_fullname(),
+				'given' => $user_firstname,
+				'family' => $user_lastname,
+				'uni' => bp_get_loggedin_user_username(),
+				'role' => 'author',
+				'affiliation' => $user_affiliation,
+			);
+		}
 
-		if ( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) {
+		if ( ( empty( $metadata['committee_deposit'] ) || 'yes' !== $metadata['committee_deposit'] ) &&
+			( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) ) {
 			$other_authors = array_map( function ( $first_name, $last_name ) { return array( 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ) ); },
 				$_POST['deposit-other-authors-first-name'], $_POST['deposit-other-authors-last-name']
 			);
@@ -488,9 +502,6 @@
 						$author_lastname = get_the_author_meta( 'last_name', $mla_userid );
 						$author_affiliation = bp_get_profile_field_data( array( 'field' => 2, 'user_id' => $mla_userid ) );
 						$author_uni = $mla_username;
-						if ( ! empty( $primary_author_flag ) && $primary_author_flag != $author_lastname ) {
-							$primary_author_flag = $author_lastname;
-						}
 					} else {
 						$author_firstname = $author_array['first_name'];
 						$author_lastname = $author_array['last_name'];
@@ -503,18 +514,15 @@
 						'given' => $author_firstname,
 						'family' => $author_lastname,
 						'uni' => $author_uni,
+						'role' => 'author',
 						'affiliation' => $author_affiliation,
 					);
 				}
 			}
 		}
 
-		usort( $metadata['authors'], function( $a, $b ) use ( $primary_author_flag ) {
-			if ( $a['family'] === $primary_author_flag ) {
-				return -1;
-			} else {
-				return strcasecmp( $a['family'], $b['family'] );
-			}
+		usort( $metadata['authors'], function( $a, $b ) {
+			return strcasecmp( $a['family'], $b['family'] );
 		} );
 
 		/**
@@ -522,9 +530,9 @@
 		 */
 		$metadata['author_info'] = humcore_deposits_format_author_info( $metadata['authors'] );
 
-		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Thesis' ) ) && ! empty( $_POST['deposit-institution'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && ! empty( $_POST['deposit-institution'] ) ) {
 			$metadata['institution'] = sanitize_text_field( $_POST['deposit-institution'] );
-		} else if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Thesis' ) ) && empty( $_POST['deposit-institution'] ) ) {
+		} else if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && empty( $_POST['deposit-institution'] ) ) {
 			$metadata['institution'] = $metadata['organization'];
 		}
 
@@ -903,15 +911,20 @@
 		$authorMODS = '';
 		foreach ( $metadata['authors'] as $author ) {
 
-			if ( ! empty( $author['uni'] ) ) {
+			if ( 'creator' === $author['role'] ) {
 				$authorMODS .= '
-				<name type="personal" ID="' . $author['uni'] . '">';
+				<name type="corporate">';
 			} else {
-				$authorMODS .= '
-				<name type="personal">';
+				if ( ! empty( $author['uni'] ) ) {
+					$authorMODS .= '
+					<name type="personal" ID="' . $author['uni'] . '">';
+				} else {
+					$authorMODS .= '
+					<name type="personal">';
+				}
 			}
 
-			if ( ! empty( $author['family'] ) || ! empty( $author['given'] ) ) {
+			if ( ( 'author' === $author['role'] ) && ( ! empty( $author['family'] ) || ! empty( $author['given'] ) ) ) {
 				$authorMODS .= '
 				  <namePart type="family">' . $author['family'] . '</namePart>
 				  <namePart type="given">' . $author['given'] . '</namePart>';
@@ -920,10 +933,17 @@
 				<namePart>' . $author['fullname'] . '</namePart>';
 			}
 
-			$authorMODS .= '
-				  <role>
-					<roleTerm type="text">author</roleTerm>
-				  </role>';
+			if ( 'creator' === $author['role'] ) {
+				$authorMODS .= '
+					<role>
+						<roleTerm type="text">creator</roleTerm>
+					</role>';
+			} else {
+				$authorMODS .= '
+					<role>
+						<roleTerm type="text">author</roleTerm>
+					</role>';
+			}
 
 			if ( ! empty( $author['affiliation'] ) ) {
 				$authorMODS .= '
@@ -939,7 +959,7 @@
 		 * Format MODS xml fragment for organization affiliation.
 		 */
 		$orgMODS = '';
-		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Thesis' ) ) && ! empty( $metadata['institution'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && ! empty( $metadata['institution'] ) ) {
 			$orgMODS .= '
 				<name type="corporate">
 				  <namePart>
@@ -983,7 +1003,7 @@
 		/**
 		 * Format MODS xml fragment for one or more subjects.
 		 */
-		$full_subject_list = array_unique( array_merge( $metadata['group'], $metadata['subject'] ), SORT_REGULAR );
+		$full_subject_list = $metadata['subject'];
 		$subjectMODS = '';
 		foreach ( $full_subject_list as $subject ) {
 

@@ -18,6 +18,17 @@ jQuery(document).ready( function($) {
 		}
 	}
 
+ 	function maybe_show_committee_fields(event) {
+		var value = $(this).val();
+		if ( value == 'yes' ) {
+		   	$('#deposit-other-authors-entry').hide();
+		   	$('#deposit-committee-entry').show();
+		} else {
+			$('#deposit-other-authors-entry').show();
+			$('#deposit-committee-entry').hide();
+		}
+	}
+
  	function maybe_show_publication_fields(event) {
 		var value = $(this).val();
 		if ( value == 'book' ) {
@@ -43,36 +54,52 @@ jQuery(document).ready( function($) {
 		}
 	}
 
-    //Hide the published forms by default, expand as needed
-    $('#deposit-conference-title-entry').hide();
-    $('#deposit-organization-entry').hide();
-    $('#deposit-institution-entry').hide();
-    $('#deposit-book-entries').hide();
-    $('#deposit-journal-entries').hide();
-    $('#deposit-conference-proceedings').hide();
-//	$('#deposit-non-published-entries').hide();
- 	$('select[name=deposit-genre]').on('change', maybe_show_conference_fields);
- 	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_fields);
+	//Hide the published forms by default, expand as needed
+	$('#deposit-conference-title-entry').hide();
+	$('#deposit-organization-entry').hide();
+	$('#deposit-institution-entry').hide();
+	$('#deposit-committee-entry').hide();
+	$('#deposit-book-entries').hide();
+	$('#deposit-journal-entries').hide();
+	$('#deposit-conference-proceedings').hide();
+	$('select[name=deposit-genre]').on('change', maybe_show_conference_fields);
+	$('select[name=deposit-genre]').on('genreload', maybe_show_conference_fields);
+	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
+	$('input[type=radio][name=deposit-on-behalf-flag]').on('committeeload', maybe_show_committee_fields);
+	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_fields);
+	$('input[type=radio][name=deposit-publication-type]').on('pubload', maybe_show_publication_fields);
 
- 	$('#deposit-other-authors-entry-table>tbody').on('click', 'input.deposit-other-authors-primary-flag', function() {
-		var value = $(this).parent().siblings().children('input.deposit-other-authors-last-name').val();
-		$(this).attr('value', value);
-	});
+	$('select[name=deposit-genre]').trigger('genreload');
+	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
+	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubload');
 
- 	$('#deposit-insert-other-author-button').on('click', function(e) {
+	$('#deposit-insert-other-author-button').on('click', function(e) {
 		e.preventDefault();
 		$('#deposit-other-authors-entry-table>tbody').append('		<tr><td class="borderTop"><input type="text" name="deposit-other-authors-first-name[]" class="text" value="" /></td>' +
 				'<td class="borderTop"><input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="" /></td>' +
-				'<td class="borderTop"><input type="radio" name="deposit-authors-primary-author" class="deposit-other-authors-primary-flag" value="2">Primary&nbsp;Author</td><td class="borderTop"></td></tr>');
+				'<td class="borderTop"></td></tr>');
 	});
 
  	$('#deposit-form').on('submit', function(e) {
 		var title = $.trim($('#deposit-title').val());
+		var item_type = $.trim($('#deposit-genre').val());
 		var description = $.trim($('#deposit-abstract').val());
 		var selected_file = $.trim($('input[type=hidden][name=selected_file_name]').val());
-
-		if ( title === '' || description === '' || selected_file === '' ) {
-			alert('Please upload a file and enter the mandatory fields Title and Description.');
+		var message = "Please complete the following steps before pressing Deposit:\n\n";
+		if ( selected_file === '' ) {
+			message += "Upload a file.\n";
+		}
+		if ( title === '' ) {
+			message += "Enter a Title.\n";
+		}
+		if ( item_type === '' ) {
+			message += "Select an Item Type.\n";
+		}
+		if ( description === '' ) {
+			message += "Enter a Description.\n";
+		}
+		if ( title === '' || item_type === '' || description === '' || selected_file === '' ) {
+			alert(message);
 			return false;
 		} else {
 			$('#submit').attr('value', 'Please wait...');
@@ -203,6 +230,7 @@ uploader.init();
 
 // Deposit select 2 controls
 jQuery(document).ready( function($) {
+
 	$(".js-basic-multiple").select2({
 		maximumSelectionLength: 5,
 		width: "75%"

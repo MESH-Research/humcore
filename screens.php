@@ -32,16 +32,17 @@ function humcore_deposits_search_form() {
 function humcore_deposit_form() {
 
 	if ( ! empty( $_POST ) ) {
-		$deposit_status = humcore_deposit_file();
-		if ( $deposit_status ) {
-			Humcore_Deposit_Component::humcore_user_deposits_list();
+		$deposit_id = humcore_deposit_file();
+		if ( $deposit_id ) {
+                	$review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
+                	wp_redirect( $review_url );
 			exit();
 		}
 	}
 
 	if ( ! humcore_check_externals() ) {
-		echo '<h3>New CORE Deposit</h3>';
-		echo "<p>We're so sorry, but one of the components of CORE is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to share your work) so please come back and try again later.</p>";
+		echo '<h3>New <em>CORE</em> Deposit</h3>';
+		echo "<p>We're so sorry, but one of the components of <em>CORE</em> is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to share your work) so please come back and try again later.</p>";
 		$wp_referer = wp_get_referer();
 		printf(
 			'<a href="%1$s" class="button white" style="line-height: 1.2em;">Go Back</a>',
@@ -77,6 +78,7 @@ function humcore_deposit_form() {
 	<div id="indicator"></div>
 </div>
 <div id="console">Select the file you wish to upload and deposit. *</div>
+
 <div id="container">
 	<button id="pickfile">Select File</button> 
 <!--    <button id="uploadfile">Upload</button> -->
@@ -103,7 +105,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-genre-entry">
 		<label for="deposit-genre">Item Type</label>
-		<select name="deposit-genre" id="deposit-genre" class="js-basic-single-optional" data-placeholder="Select an item type">
+		<select name="deposit-genre" id="deposit-genre" class="js-basic-single-required" data-placeholder="Select an item type">
 			<option class="level-0" value=""></option>
 <?php
 	$genre_list = humcore_deposits_genre_list();
@@ -120,6 +122,7 @@ function humcore_deposit_form() {
 	}
 ?>
 		</select>
+		<span class="description">*</span>
 	</div>
 	</p>
 	<div id="deposit-conference-title-entry">
@@ -144,9 +147,26 @@ function humcore_deposit_form() {
 	</div>
 	</p>
 	<p>
+	<div id="deposit-on-behalf-flag-entry">
+<?php
+        $committee_list = humcore_deposits_user_committee_list( bp_loggedin_user_id() );
+	$committee_list = ''; //disable for now
+        if ( empty( $committee_list ) ) {
+?>
+        <input type="hidden" name="deposit-on-behalf-flag" id="deposit-on-behalf-flag" value="" />
+<?php   } else { ?>
+		<label for="deposit-on-behalf-flag-list">Depositor</label>
+		<span class="description">Is this deposit being made on behalf of a committee?</span>
+			<input type="radio" name="deposit-on-behalf-flag" value="yes" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'yes' ); } ?>>Yes &nbsp;
+			<input type="radio" name="deposit-on-behalf-flag" value="no" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
+<?php
+	} ?>
+	</div>
+	</p>
+	<p>
 	<div id="deposit-other-authors-entry">
 		<label for="deposit-other-authors-entry-list">Authors</label>
-		<span class="description">Add any authors in addition to yourself. Please identify the primary author.</span>
+		<span class="description">Add any authors in addition to yourself.</span>
 		<ul id="deposit-other-authors-entry-list">
 		<li>
 		<table id="deposit-other-authors-entry-table"><tbody>
@@ -161,8 +181,6 @@ function humcore_deposit_form() {
 		<?php echo esc_html( $user_firstname ); ?>
 		</td><td class="borderTop" style="width:205px;">
 		<?php echo esc_html( $user_lastname ); ?>
-		</td><td class="borderTop">
-		<input type="radio" name="deposit-authors-primary-author" <?php if ( ! empty( $_POST['deposit-authors-primary-author'] ) ) { checked( sanitize_text_field( $_POST['deposit-authors-primary-author'] ), $user_lastname ); } else { echo 'checked="checked"'; } ?> value="<?php echo esc_html( $user_lastname ); ?>">I'm the primary author.
 		</td><td class="borderTop">
 		<input type="button" id="deposit-insert-other-author-button" class="button add_author" value="Add Another">
 		</td></tr>
@@ -182,8 +200,6 @@ function humcore_deposit_form() {
 		</td><td class="borderTop" style="width:205px;">
 		<input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
 		</td><td class="borderTop">
-		<input type="radio" name="deposit-authors-primary-author" class="deposit-other-authors-primary-flag" <?php checked( sanitize_text_field( $_POST['deposit-authors-primary-author'] ), $author_array['last_name'] ); ?> value="<?php echo esc_html( $author_array['last_name'] ); ?>">Primary&nbsp;author
-		</td><td class="borderTop">
 		</td></tr>
 <?php
 			}
@@ -193,6 +209,33 @@ function humcore_deposit_form() {
 		</tbody></table>
 		</li>
 		</ul>
+	</div>
+	</p>
+	<p>
+	<div id="deposit-committee-entry">
+<?php
+	if ( empty( $committee_list ) ) {
+?>
+	<input type="hidden" name="deposit-committee" id="deposit-committee" value="" />
+<?php	} else { ?>
+
+		<label for="deposit-committee">Committee</label>
+		<select name="deposit-committee" id="deposit-committee" class="js-basic-single-optional" data-placeholder="Select committee">
+			<option class="level-0" selected value=""></option>
+<?php
+	$posted_committee = '';
+	if ( ! empty( $_POST['deposit-committee'] ) ) { $posted_committee = sanitize_text_field( $_POST['deposit-committee'] ); }
+	foreach ( $committee_list as $committee_key => $committee_value ) {
+		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $committee_key == $posted_committee ) ? 'selected="selected"' : '',
+			$committee_key,
+			$committee_value
+		);
+	}
+?>
+		</select>
+<?php
+	} ?>
 	</div>
 	</p>
 	<p>
@@ -315,10 +358,11 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-publication-type-entry">
 		<label for="deposit-publication-type">Published?</label>
+		<span class="description">Check journal or publisher open access policies at <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> for previously published work.</span><br /><br />
 			<input type="radio" name="deposit-publication-type" value="book" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'book' ); } ?>>Book &nbsp;
 			<input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal &nbsp;
 			<input type="radio" name="deposit-publication-type" value="conference-proceeding" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'conference-proceeding' ); } ?>>Conference proceeding &nbsp;
-			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'none' ); } ?>>Not published &nbsp;
+			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'none' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
 	</div>
 	</p>
 	<div id="deposit-book-entries">
@@ -500,8 +544,9 @@ function humcore_deposits_entry_content() {
 		$subject_list = implode( ', ', array_map( 'humcore_linkify_subject', $subjects ) );
 	}
 	$authors = array_filter( $metadata['authors'] );
-	$author_meta = humcore_deposit_parse_author_info( $metadata['author_info'][0] );
-	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_meta ) );
+	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 ?>
 <h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo esc_html( $metadata['title'] ); ?></a></h4>
@@ -563,9 +608,11 @@ function humcore_deposit_item_content() {
 	}
 
 	$authors = array_filter( $metadata['authors'] );
-	$author_meta = humcore_deposit_parse_author_info( $metadata['author_info'][0] );
-	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_meta ) );
+	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
 	$deposit_post_id = $metadata['record_identifier'];
+	$post_data = get_post( $deposit_post_id );
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
 	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
@@ -573,7 +620,9 @@ function humcore_deposit_item_content() {
 
 	$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
 	$total_views = get_post_meta( $deposit_post_id, '_total_views', true ) + 1; // Views counted at item page level.
-	$post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+	if ( $post_data->post_author != bp_loggedin_user_id() ) {
+		$post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+	}
 	$download_url = sprintf( '/deposits/download/%s/%s/%s/',
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],
@@ -633,7 +682,7 @@ function humcore_deposit_item_content() {
 <?php endif; ?>
 <dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt>
 <dd><a href="<?php echo esc_attr( $metadata['handle'] ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
-<dt><?php ( ! empty( $metadata['genre'] ) && 'Abstract' == $metadata['genre'] ) ? _e( 'Description:', 'humcore_domain' ) : _e( 'Description:', 'humcore_domain' ); // Always Description or Abstract for now. ?></dt>
+<dt><?php ( ! empty( $metadata['genre'] ) && 'Abstract' == $metadata['genre'] ) ? _e( 'Abstract:', 'humcore_domain' ) : _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
 <?php if ( ! empty( $metadata['abstract'] ) ) : ?>
 <dd><?php echo esc_html( $metadata['abstract'] ); ?></dd>
 <?php endif; ?>
@@ -645,7 +694,7 @@ function humcore_deposit_item_content() {
 <dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
 <?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
-<dd><?php echo esc_html( $post_metadata['type_of_license'] ); ?></dd>
+<dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
 <?php endif; ?>
 </dl>
 </div>
@@ -669,6 +718,321 @@ function humcore_deposit_item_content() {
 }
 
 /**
+ * Output deposits single item review page html.
+ */
+function humcore_deposit_item_review_content() {
+
+        $metadata = (array) humcore_get_current_deposit();
+//echo var_export($metadata,true);
+        if ( ! empty( $metadata['group'] ) ) {
+                $groups = array_filter( $metadata['group'] );
+        }
+        if ( ! empty( $groups ) ) {
+                $group_list = implode( ', ', array_map( 'esc_html', $groups ) );
+        }
+        if ( ! empty( $metadata['subject'] ) ) {
+                $subjects = array_filter( $metadata['subject'] );
+        }
+        if ( ! empty( $subjects ) ) {
+                $subject_list = implode( ', ', array_map( 'esc_html', $subjects ) );
+        }
+        if ( ! empty( $metadata['keyword'] ) ) {
+                $keywords = array_filter( $metadata['keyword'] );
+        }
+        if ( ! empty( $keywords ) ) {
+                $keyword_list = implode( ', ', array_map( 'esc_html', $keywords ) );
+        }
+
+        $authors = array_filter( $metadata['authors'] );
+        $author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+        $author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+        $authors_list = implode( ', ', array_map( 'esc_html', $authors ) );
+        $deposit_post_id = $metadata['record_identifier'];
+        $post_data = get_post( $deposit_post_id );
+        $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
+
+        $file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
+        $downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['filename'] );
+
+        $total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
+        $total_views = get_post_meta( $deposit_post_id, '_total_views', true ) + 1; // Views counted at item page level.
+        if ( $post_data->post_author != bp_loggedin_user_id() ) {
+                $post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+        }
+        $download_url = sprintf( '/deposits/download/%s/%s/%s/',
+                $file_metadata['files'][0]['pid'],
+                $file_metadata['files'][0]['datastream_id'],
+                $file_metadata['files'][0]['filename']
+        );
+        $view_url = sprintf( '/deposits/view/%s/%s/%s/',
+                $file_metadata['files'][0]['pid'],
+                $file_metadata['files'][0]['datastream_id'],
+                $file_metadata['files'][0]['filename']
+        );
+        $metadata_url = sprintf( '/deposits/download/%s/%s/%s/',
+                $metadata['pid'],
+                'descMetadata',
+                'xml'
+        );
+        $file_type_data = wp_check_filetype( $file_metadata['files'][0]['filename'], wp_get_mime_types() );
+        $file_type_icon = sprintf( '<img class="deposit-icon" src="%s" alt="%s" />',
+                plugins_url( 'assets/' . esc_attr( $file_type_data['ext'] ) . '-icon-48x48.png', __FILE__ ),
+                esc_attr( $file_type_data['ext'] )
+        );
+        if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
+                $thumb_url = sprintf( '<img class="deposit-thumb" src="/deposits/view/%s/%s/%s/" alt="%s" />',
+                        $file_metadata['files'][0]['pid'],
+                        $file_metadata['files'][0]['thumb_datastream_id'],
+                        $file_metadata['files'][0]['thumb_filename'],
+                        'thumbnail'
+                );
+        } else {
+                $thumb_url = '';
+        }
+?>
+
+<div class="bp-group-documents-meta">
+<dl class='defList'>
+<dt><?php _e( 'Title:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['title']; // XSS OK. ?></span></dd>
+<dt><?php _e( 'Item Type:', 'humcore_domain' ); ?></dt>
+<dd><?php echo esc_html( $metadata['genre'] ); ?></dd>
+<!-- //new stuff -->
+<?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] ) : ?>
+<dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $post_metadata['conference_title'] ) ) : ?>
+<dd><span><?php echo $post_metadata['conference_title']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Conf. Org.:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $post_metadata['conference_organization'] ) ) : ?>
+<dd><span><?php echo $post_metadata['conference_organization']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical Report' == $metadata['genre'] ) : ?>
+<dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $post_metadata['institution'] ) ) : ?>
+<dd><span><?php echo $post_metadata['institution']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php endif; ?>
+<dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
+<dd><?php echo esc_html( $metadata['abstract'] ); ?></dd>
+<?php if ( 'yes' === $metadata['committee_deposit'] ) : // Do not show unless this is a committee deposit. ?>
+<dt><?php _e( 'Deposit Type:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'Committee'; ?></span></dd>
+<?php endif; ?>
+<dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo $authors_list; // XSS OK. ?></dd>
+<dt><?php _e( 'Subject(s):', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $subjects ) ) : ?>
+<dd><?php echo $subject_list; // XSS OK. ?></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Forum(s):', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $groups ) ) : ?>
+<dd><?php echo $group_list; // XSS OK. ?></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Tag(s):', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $keywords ) ) : ?>
+<dd><?php echo $keyword_list; // XSS OK. ?></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'File Type:', 'humcore_domain' ); ?></dt>
+<dd><?php echo esc_html( $metadata['type_of_resource'] ); ?></dd>
+<dt><?php _e( 'Notes:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['notes'] ) ) : ?>
+<dd><?php echo esc_html( $metadata['notes'] ); ?></dd>
+<?php else : ?>
+<dd>( None )</dd>
+<?php endif; ?>
+<?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
+<dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
+<dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
+<?php endif; ?>
+<?php if ( 'journal-article' == $post_metadata['publication-type'] ) : ?>
+<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'Journal Article'; // XSS OK. ?></span></dd>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['doi'] ) ) : ?>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['date'] ) ) : ?>
+<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Journal:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Volume:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['volume'] ) ) : ?>
+<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Issue:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['issue'] ) ) : ?>
+<dd><span><?php echo $metadata['issue']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'ISSN:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['issn'] ) ) : ?>
+<dd><span><?php echo $metadata['issn']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php elseif ( 'book' == $post_metadata['publication-type'] ) : ?>
+<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'Book'; // XSS OK. ?></span></dd>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['doi'] ) ) : ?>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['date'] ) ) : ?>
+<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Author/Editor:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['book_author'] ) ) : ?>
+<dd><span><?php echo $metadata['book_author']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $post_metadata['chapter'] ) ) : ?>
+<dd><span><?php echo $post_metadata['chapter']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['isbn'] ) ) : ?>
+<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php elseif ( 'conference-proceeding' == $post_metadata['publication-type'] ) : ?>
+<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'Conference Proceeding'; // XSS OK. ?></span></dd>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['doi'] ) ) : ?>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['date'] ) ) : ?>
+<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Proceeding:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php elseif ( empty( $post_metadata['publication-type'] ) || 'none' == $post_metadata['publication-type'] ) : ?>
+<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'None'; // XSS OK. ?></span></dd>
+<dt><?php _e( 'Creation Date:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['date'] ) ) : ?>
+<dd><?php echo esc_html( $metadata['date'] ); ?></dd>
+<?php else : ?>
+<dd>( None entered )</dd>
+<?php endif; ?>
+<?php endif; ?>
+<dt><?php _e( 'File Name:', 'humcore_domain' ); ?></dt>
+<dd><?php echo esc_html( $file_metadata['files'][0]['filename'] ); ?></dd>
+<dt><?php _e( 'File Size:', 'humcore_domain' ); ?></dt>
+<dd><?php echo number_format( $file_metadata['files'][0]['filesize'] ), " bytes"; ?></dd>
+</dl>
+</div>
+<br style='clear:both'>
+<a onclick="target='_blank'" class="bp-deposits-view button white" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View your deposit', 'humcore_domain' ); ?></a>
+<?php
+
+}
+
+/**
  * Output the search sidebar facet list content.
  */
 function humcore_search_sidebar_content() {
@@ -683,7 +1047,11 @@ function humcore_search_sidebar_content() {
 		if ( ! empty( $facet_display_titles[ $facet_key ] ) ) : ?>
 		<li class="facet-set-item"><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
 			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
-			foreach ( $facet_values['counts'] as $facet_value_counts ) {
+			$sorted_counts = $facet_values['counts'];
+			if ( "pub_date_facet" === $facet_key ) {
+				arsort( $sorted_counts );
+			}
+			foreach ( $sorted_counts as $facet_value_counts ) {
 				if ( ! empty( $facet_value_counts[0] ) ) {
 					$facet_list_item_selected = false;
 					if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
@@ -739,7 +1107,9 @@ function humcore_directory_sidebar_content() {
 		<li class="facet-set-item">Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
 		<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
 		$sorted_counts = $facet_values['counts'];
-		asort( $sorted_counts );
+		if ( "pub_date_facet" === $facet_key ) {
+			arsort( $sorted_counts );
+		}
 		foreach ( $sorted_counts as $facet_value_counts ) {
 			if ( ! empty( $facet_value_counts[0] ) ) {
 				$facet_list_item_selected = false;

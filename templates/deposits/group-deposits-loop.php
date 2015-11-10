@@ -20,7 +20,11 @@
 // An easy way to get this list is to check out the html source
 // and get all the values of the <option>s.
 
-$my_querystring = sprintf( 'facets[group_facet][]=%s', urlencode( bp_get_current_group_name() ) );
+if ( mla_is_group_committee() ) {
+	$my_querystring = sprintf( 'facets[author_facet][]=%s', urlencode( bp_get_current_group_name() ) );
+} else {
+	$my_querystring = sprintf( 'facets[group_facet][]=%s', urlencode( bp_get_current_group_name() ) );
+}
 
 // If the ajax string is empty, that usually means that
 // it's the first page of the "everything" filter.

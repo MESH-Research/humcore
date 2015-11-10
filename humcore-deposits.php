@@ -25,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( defined('WP_CLI') && WP_CLI ) {
     require_once dirname( __FILE__ ) . '/ezid-cli.php';
     require_once dirname( __FILE__ ) . '/fedora-cli.php';
+/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
     require_once dirname( __FILE__ ) . '/solr-cli.php';
 }
 
@@ -229,8 +230,8 @@ register_deactivation_hook( __FILE__, 'humcore_deactivate' );
 function humcore_add_rewrite_rule() {
 
 	add_rewrite_rule(
-		'(deposits/item)/([^/]+)/?$',
-		'index.php?pagename=$matches[1]&deposits_item=$matches[2]',
+		'(deposits/item)/([^/]+)(/(review))?/?$',
+		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
 		'top'
 	);
 
@@ -239,6 +240,8 @@ function humcore_add_rewrite_rule() {
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_datastream=$matches[3]&deposits_filename=$matches[4]',
 		'top'
 	);
+
+	// Rewrite for deposits/objects handled as ngix proxy pass.
 
 	add_rewrite_rule(
 		'(deposits/view)/([^/]+)/([^/]+)/([^/]+)/?$',
@@ -258,6 +261,7 @@ function humcore_add_rewrite_tag() {
 	add_rewrite_tag( '%deposits_item%', '([^/]*)' );
 	add_rewrite_tag( '%deposits_datastream%', '([^/]*)' );
 	add_rewrite_tag( '%deposits_filename%', '([^/]*)' );
+	add_rewrite_tag( '%deposits_command%', '([^/]*)' );
 	add_rewrite_tag( '%facets%', '([^&]*)' );
 
 }
@@ -312,7 +316,7 @@ add_action( 'plugins_loaded', 'humcore_deposit_api_classes_init' );
  */
 function humcore_deposit_show_user_fields( $user ) {
 ?>
-        <h3>CORE Details</h3>
+        <h3><em>CORE</em> Details</h3>
 
         <table class="form-table">
             <tbody>
