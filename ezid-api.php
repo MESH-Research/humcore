@@ -30,18 +30,56 @@ class Humcore_Deposit_Ezid_Api {
 	public function __construct() {
 
 		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
-		$this->servername_hash = $humcoreSettings['servername_hash'];
+
+		if ( defined( 'EZID_HOST' ) && ! empty( EZID_HOST ) ) { // Better have a value if defined.
+			$this->servername_hash = md5( $humcoreSettings['servername'] );
+		} else {
+			$this->servername_hash = $humcoreSettings['servername_hash'];
+		}
+
 		$this->service_status = $humcoreSettings['service_status'];
-		$this->namespace = $humcoreSettings['namespace'];
-		$this->tempDir = $humcoreSettings['tempdir'];
+
+		if ( defined( 'HUMCORE_NAMESPACE' ) && ! empty( HUMCORE_NAMESPACE ) ) { 
+			$this->namespace = HUMCORE_NAMESPACE;
+		} else {
+			$this->namespace = $humcoreSettings['namespace'];
+		}
+		if ( defined( 'HUMCORE_TEMP_DIR' ) && ! empty( HUMCORE_TEMP_DIR ) ) { 
+			$this->tempDir = HUMCORE_TEMP_DIR;
+		} else {
+			$this->tempDir = $humcoreSettings['tempdir'];
+		}
 
 		$this->ezidSettings = get_option( 'humcore-deposits-ezid-settings' );
+
+                if ( defined( 'EZID_PROTOCOL' ) ) {
+                        $this->ezidSettings['protocol'] = EZID_PROTOCOL;
+                }
+                if ( defined( 'EZID_HOST' ) ) {
+                        $this->ezidSettings['host'] = EZID_HOST;
+                }
+                if ( defined( 'EZID_PORT' ) ) {
+                        $this->ezidSettings['port'] = EZID_PORT;
+                }
+                if ( defined( 'EZID_PATH' ) ) {
+                        $this->ezidSettings['path'] = EZID_PATH;
+                }
+                if ( defined( 'EZID_LOGIN' ) ) {
+                        $this->ezidSettings['login'] = EZID_LOGIN;
+                }
+                if ( defined( 'EZID_PASSWORD' ) ) {
+                        $this->ezidSettings['password'] = EZID_PASSWORD;
+                }
+                if ( defined( 'EZID_PREFIX' ) ) {
+                        $this->ezidSettings['prefix'] = EZID_PREFIX;
+                }
+
 		if ( ! empty( $this->ezidSettings['port'] ) ) {
 			$this->baseUrl = $this->ezidSettings['protocol'] . $this->ezidSettings['host'] . ':' . $this->ezidSettings['port'];
 		} else {
 			$this->baseUrl = $this->ezidSettings['protocol'] . $this->ezidSettings['host'];
-
 		}
+
 		$this->ezidPath = $this->ezidSettings['path'];
 		$this->ezidMintPath = $this->ezidSettings['mintpath'];
 		$this->ezidPrefix = $this->ezidSettings['prefix'];
@@ -83,7 +121,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( 'missingArg', 'DOI is missing.' );
 		}
 
-		$url = sprintf( '%1$s%2$s/%3$s', $this->baseUrl, $this->ezidPath, $doi );
+		$url = sprintf( '%1$s/id/%2$s', $this->baseUrl, $doi );
 
 		$request_args = $this->options['api'];
 		$request_args['method'] = 'GET';
@@ -162,7 +200,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( 'missingArg', 'Title is missing.' );
 		}
 
-		$url = sprintf( '%1$s%2$s/%3$s%4$s', $this->baseUrl, $this->ezidPath, $this->ezidPrefix, $doi );
+		$url = sprintf( '%1$s/id/%2$s%3$s', $this->baseUrl, $this->ezidPrefix, $doi );
 
 		$content = '';
 		foreach ( $params as $key => $value ) {
@@ -237,7 +275,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( 'missingArg', 'Title is missing.' );
 		}
 
-		$url = sprintf( '%1$s%2$s/%3$s', $this->baseUrl, $this->ezidMintPath, $this->ezidPrefix );
+		$url = sprintf( '%1$s/shoulder/%2$s', $this->baseUrl, $this->ezidPrefix );
 
 		$content = '';
 		foreach ( $params as $key => $value ) {
@@ -314,7 +352,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( 'missingArg', 'Metadata is missing.' );
 		}
 
-		$url = sprintf( '%1$s%2$s/%3$s', $this->baseUrl, $this->ezidPath, $doi );
+		$url = sprintf( '%1$s/id/%2$s', $this->baseUrl, $doi );
 
 		$content = '';
 		foreach ( $params as $key => $value ) {
@@ -376,7 +414,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( 'missingArg', 'DOI is missing.' );
 		}
 
-		$url = sprintf( '%1$s%2$s/%3$s', $this->baseUrl, $this->ezidPath, $doi );
+		$url = sprintf( '%1$s/id/%2$s', $this->baseUrl, $doi );
 
 		$request_args = $this->options['api-auth'];
 		$request_args['method'] = 'DELETE';

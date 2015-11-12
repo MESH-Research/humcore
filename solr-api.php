@@ -30,13 +30,42 @@ class Humcore_Deposit_Solr_Api {
 		}
 
 		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
-		$this->servername_hash = $humcoreSettings['servername_hash'];
-		$this->service_status = $humcoreSettings['service_status'];
-		$this->namespace = $humcoreSettings['namespace'];
-		$this->tempDir = $humcoreSettings['tempdir'];
+                if ( defined( 'SOLR_HOST' ) && ! empty( SOLR_HOST ) ) { // Better have a value if defined.
+                        $this->servername_hash = md5( $humcoreSettings['servername'] );
+                } else {
+                        $this->servername_hash = $humcoreSettings['servername_hash'];
+                }
+                
+                $this->service_status = $humcoreSettings['service_status'];
+                
+                if ( defined( 'HUMCORE_NAMESPACE' ) && ! empty( HUMCORE_NAMESPACE ) ) {
+                        $this->namespace = HUMCORE_NAMESPACE;
+                } else {
+                        $this->namespace = $humcoreSettings['namespace'];
+                }
+                if ( defined( 'HUMCORE_TEMP_DIR' ) && ! empty( HUMCORE_TEMP_DIR ) ) { 
+                        $this->tempDir = HUMCORE_TEMP_DIR;
+                } else {
+                        $this->tempDir = $humcoreSettings['tempdir'];
+                }
 
 		$solrSettings = get_option( 'humcore-deposits-solr-settings' );
 
+                if ( defined( 'SOLR_PROTOCOL' ) ) { 
+                        $solrSettings['scheme'] = preg_replace( '~://$~', '', SOLR_PROTOCOL );
+                }
+                if ( defined( 'SOLR_HOST' ) ) { 
+                        $solrSettings['host'] = SOLR_HOST;
+                }
+                if ( defined( 'SOLR_PORT' ) ) { 
+                        $solrSettings['port'] = SOLR_PORT;
+                }
+                if ( defined( 'SOLR_PATH' ) ) { 
+                        $solrSettings['path'] = SOLR_PATH;
+                }
+                if ( defined( 'SOLR_CORE' ) ) { 
+                        $solrSettings['core'] = SOLR_CORE;
+                }
 		$config = array(
 			'endpoint' => array(
 				'solrhost' => array(

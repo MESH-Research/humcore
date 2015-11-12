@@ -31,12 +31,50 @@ class Humcore_Deposit_Fedora_Api {
 		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
 
 		$this->fedoraSettings = get_option( 'humcore-deposits-fedora-settings' );
+                if ( defined( 'FEDORA_PROTOCOL' ) ) {
+                        $this->fedoraSettings['protocol'] = FEDORA_PROTOCOL;
+                }
+                if ( defined( 'FEDORA_HOST' ) ) {
+                        $this->fedoraSettings['host'] = FEDORA_HOST;
+                }
+                if ( defined( 'FEDORA_PORT' ) ) {
+                        $this->fedoraSettings['port'] = FEDORA_PORT;
+                }
+                if ( defined( 'FEDORA_PATH' ) ) {
+                        $this->fedoraSettings['path'] = FEDORA_PATH;
+                }
+                if ( defined( 'FEDORA_LOGIN' ) ) {
+                        $this->fedoraSettings['login'] = FEDORA_LOGIN;
+                }
+                if ( defined( 'FEDORA_PASSWORD' ) ) {
+                        $this->fedoraSettings['password'] = FEDORA_PASSWORD;
+                }
 		$this->baseUrl = $this->fedoraSettings['protocol'] . $this->fedoraSettings['host'] . ':' . $this->fedoraSettings['port'] . $this->fedoraSettings['path'];
-		$this->servername_hash = $humcoreSettings['servername_hash'];
-		$this->service_status = $humcoreSettings['service_status'];
-		$this->namespace = $humcoreSettings['namespace'];
-		$this->tempDir = $humcoreSettings['tempdir'];
-		$this->collectionPid = $humcoreSettings['collectionpid'];
+                if ( defined( 'FEDORA_HOST' ) && ! empty( FEDORA_HOST ) ) { // Better have a value if defined.
+                        $this->servername_hash = md5( $humcoreSettings['servername'] );
+                } else {
+                        $this->servername_hash = $humcoreSettings['servername_hash'];
+                }
+
+                $this->service_status = $humcoreSettings['service_status'];
+
+                if ( defined( 'HUMCORE_NAMESPACE' ) && ! empty( HUMCORE_NAMESPACE ) ) {
+                        $this->namespace = HUMCORE_NAMESPACE;
+                } else {
+                        $this->namespace = $humcoreSettings['namespace'];
+                }
+                if ( defined( 'HUMCORE_TEMP_DIR' ) && ! empty( HUMCORE_TEMP_DIR ) ) { 
+                        $this->tempDir = HUMCORE_TEMP_DIR;
+                } else {
+                        $this->tempDir = $humcoreSettings['tempdir'];
+                }
+
+                if ( defined( 'HUMCORE_COLLECTION_PID' ) && ! empty( HUMCORE_COLLECTION_PID ) ) { 
+			$this->collectionPid = HUMCORE_COLLECTION_PID;
+                } else {
+			$this->collectionPid = $humcoreSettings['collectionpid'];
+		}
+
 		$this->maxResults = 512;
 		$this->options['api-m']['headers']['Authorization'] = 'Basic ' . base64_encode( $this->fedoraSettings['login'] . ':' . $this->fedoraSettings['password'] );
 		$this->options['api-m']['httpversion'] = '1.1';
