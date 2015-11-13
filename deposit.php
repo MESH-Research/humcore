@@ -447,8 +447,16 @@
 		$metadata['id'] = $nextPids[0];
 		$metadata['pid'] = $nextPids[0];
 		$metadata['creator'] = 'HumCORE';
-		$metadata['title'] = wp_strip_all_tags( stripslashes( $_POST['deposit-title'] ) );
-		$metadata['abstract'] = wp_strip_all_tags( stripslashes( $_POST['deposit-abstract'] ) );
+		$metadata['title'] = wp_strip_all_tags( stripslashes( $_POST['deposit-title-unchanged'] ) );
+		$metadata['title_unchanged'] = wp_kses(
+				stripslashes( $_POST['deposit-title-unchanged'] ),
+				array( 'b' => array(), 'em' => array(), 'strong' => array() )
+			);
+		$metadata['abstract'] = wp_strip_all_tags( stripslashes( $_POST['deposit-abstract-unchanged'] ) );
+		$metadata['abstract_unchanged'] = wp_kses(
+				stripslashes( $_POST['deposit-abstract-unchanged'] ),
+				array( 'b' => array(), 'em' => array(), 'strong' => array() )
+			);
 		$metadata['genre'] = sanitize_text_field( $_POST['deposit-genre'] );
 		$metadata['committee_deposit'] = sanitize_text_field( $_POST['deposit-on-behalf-flag'] );
 		$metadata['committee_id'] = sanitize_text_field( $_POST['deposit-committee'] );
@@ -565,7 +573,11 @@
 
 		$metadata['type_of_resource'] = sanitize_text_field( $_POST['deposit-resource-type'] );
 		$metadata['language'] = 'English';
-		$metadata['notes'] = sanitize_text_field( stripslashes( $_POST['deposit-notes'] ) ); // Where do they go in MODS?
+		$metadata['notes'] = sanitize_text_field( stripslashes( $_POST['deposit-notes-unchanged'] ) ); // Where do they go in MODS?
+		$metadata['notes_unchanged'] = wp_kses(
+				stripslashes( $_POST['deposit-notes-unchanged'] ),
+				array( 'b' => array(), 'em' => array(), 'strong' => array() )
+			);
 		$metadata['type_of_license'] = sanitize_text_field( $_POST['deposit-license-type'] );
 		$metadata['record_content_source'] = 'HumCORE';
 		$metadata['record_creation_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );

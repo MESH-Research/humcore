@@ -27,6 +27,15 @@ function humcore_deposit_metabox( $post ) {
 
 	if ( ! empty( $aggregator_metadata ) ) {
 
+		if ( empty( $aggregator_metadata['title_unchanged'] ) ) {
+			$aggregator_metadata['title_unchanged'] = $aggregator_metadata['title'];
+		}
+		if ( empty( $aggregator_metadata['abstract_unchanged'] ) ) {
+			$aggregator_metadata['abstract_unchanged'] = $aggregator_metadata['abstract'];
+		}
+		if ( empty( $aggregator_metadata['notes_unchanged'] ) ) {
+			$aggregator_metadata['notes_unchanged'] = $aggregator_metadata['notes'];
+		}
 		// Echo out the array.
 	?>
 	<div class="width_full p_box">
@@ -52,12 +61,12 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Title<br>
-				<input type="text" name="aggregator_title" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['title'] ); ?>">
+				<input type="text" name="aggregator_title_unchanged" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['title_unchanged'] ); ?>">
 			</label>
 		</p>
 		<p>
 			<label>Abstract<br>
-				<textarea name="aggregator_abstract" class="widefat"><?php echo esc_attr( $aggregator_metadata['abstract'] ); ?></textarea>
+				<textarea name="aggregator_abstract_unchanged" class="widefat"><?php echo esc_attr( $aggregator_metadata['abstract_unchanged'] ); ?></textarea>
 			</label>
 		</p>
 		<p>
@@ -268,7 +277,7 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Notes<br>
-				<textarea name="aggregator_notes" class="widefat"><?php echo esc_attr( $aggregator_metadata['notes'] ); ?></textarea>
+				<textarea name="aggregator_notes_unchanged" class="widefat"><?php echo esc_attr( $aggregator_metadata['notes_unchanged'] ); ?></textarea>
 			</label>
 		</p>
 		<p>
@@ -510,8 +519,16 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// $aggregator_metadata['id'] = sanitize_text_field( $_POST['aggregator_id'] );
 	// $aggregator_metadata['pid'] = sanitize_text_field( $_POST['aggregator_pid'] );
 	// $aggregator_metadata['creator'] = sanitize_text_field( $_POST['aggregator_creator'] );
-	$aggregator_metadata['title'] = sanitize_text_field( stripslashes( $_POST['aggregator_title'] ) );
-	$aggregator_metadata['abstract'] = sanitize_text_field( stripslashes( $_POST['aggregator_abstract'] ) );
+	$aggregator_metadata['title'] = sanitize_text_field( stripslashes( $_POST['aggregator_title_unchanged'] ) );
+        $aggregator_metadata['title_unchanged'] = wp_kses( 
+                        stripslashes( $_POST['aggregator_title_unchanged'] ),
+                        array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
+                );
+	$aggregator_metadata['abstract'] = sanitize_text_field( stripslashes( $_POST['aggregator_abstract_unchanged'] ) );
+        $aggregator_metadata['abstract_unchanged'] = wp_kses( 
+                        stripslashes( $_POST['aggregator_abstract_unchanged'] ),
+                        array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
+                );
 	$aggregator_metadata['genre'] = sanitize_text_field( $_POST['aggregator_genre'] );
 	$aggregator_metadata['organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_organization'] ) );
 	$aggregator_metadata['institution'] = sanitize_text_field( stripslashes( $_POST['aggregator_institution'] ) );
@@ -603,6 +620,11 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['type_of_resource'] = sanitize_text_field( $_POST['aggregator_type_of_resource'] );
 	$aggregator_metadata['language'] = sanitize_text_field( $_POST['aggregator_language'] );
 	$aggregator_metadata['notes'] = sanitize_text_field( stripslashes( $_POST['aggregator_notes'] ) );
+	$aggregator_metadata['notes_unchanged'] = sanitize_text_field( stripslashes( $_POST['aggregator_notes_unchanged'] ) );
+        $aggregator_metadata['notes_unchanged'] = wp_kses( 
+                        stripslashes( $_POST['aggregator_notes_unchanged'] ),
+                        array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
+                );
 	$aggregator_metadata['type_of_license'] = sanitize_text_field( $_POST['aggregator_type_of_license'] );
 	// $aggregator_metadata['record_content_source'] = sanitize_text_field( $_POST['aggregator_record_content_source'] );
 	// $aggregator_metadata['record_creation_date'] = sanitize_text_field( $_POST['aggregator_record_creation_date'] );
@@ -697,7 +719,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 		}
 
 	}
-
+//error_log( "**********debugcreate**********".var_export($aggregator_metadata,true));
 	return $post_id;
 
 }
