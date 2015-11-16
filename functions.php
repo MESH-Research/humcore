@@ -431,13 +431,17 @@ function humcore_check_externals() {
 /**
  * Reserve a DOI using EZID API.
  */
-function humcore_create_handle( $title, $pid ) {
+function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher ) {
 
 	global $ezid_api;
 
 	$eStatus = $ezid_api->mint_identifier( array(
 		'dc.title' => $title,
 		'_target' => sprintf( bp_get_root_domain() . '/deposits/item/%s/', $pid ),
+		'dc.creator' => $creator,
+		'dc.type' => $type,
+		'dc.date' => $date,
+		'dc.publisher' => $publisher,
 	) );
 
 	if ( is_wp_error( $eStatus ) ) {

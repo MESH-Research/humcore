@@ -137,11 +137,11 @@ class Humcore_Deposit_Ezid_Api {
 			'_status'           => 'reserved',
 			'_export'           => 'no',
 			'_profile'          => 'dc',
-			'dc.publisher'      => 'MLA',
+			'dc.publisher'      => 'Not provided.',
 			'_target'           => '',
-			'dc.type'           => 'Text',
-			'dc.date'           => date( 'Y' ),
-			'dc.creator'        => 'HumCORE',
+			'dc.type'           => '',
+			'dc.date'           => '',
+			'dc.creator'        => '',
 			'dc.title'          => '',
 		 );
 		$params = wp_parse_args( $args, $defaults );
@@ -218,11 +218,11 @@ class Humcore_Deposit_Ezid_Api {
 			'_status'           => 'reserved',
 			'_export'           => 'no',
 			'_profile'          => 'dc',
-			'dc.publisher'      => 'MLA',
+			'dc.publisher'      => 'Not provided.',
 			'_target'           => '',
-			'dc.type'           => 'Text',
-			'dc.date'           => date( 'Y' ),
-			'dc.creator'        => 'HumCORE',
+			'dc.type'           => '',
+			'dc.date'           => '',
+			'dc.creator'        => '',
 			'dc.title'          => '',
 		 );
 		$params = wp_parse_args( $args, $defaults );

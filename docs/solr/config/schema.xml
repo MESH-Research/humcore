@@ -88,7 +88,7 @@
 	
 	<field name="title_display" type="string" indexed="true" stored="true"/>
 	<field name="title_search" type="text_general" indexed="true" stored="true"/>
-	<field name="title_unchanged" type="string" indexed="true" stored="true"/>
+	<field name="title_unchanged" type="string" indexed="false" stored="true"/>
 	
 	<field name="author_display" type="text_general" indexed="true" stored="true"/>
 	<field name="author_uni" type="string" indexed="true" stored="true" multiValued="true"/>
@@ -103,11 +103,11 @@
 	<field name="subject_search" type="text_general" indexed="true" stored="true" multiValued="true" />
 	
 	<field name="abstract" type="string" indexed="true" stored="true"/>
-	<field name="abstract_unchanged" type="string" indexed="true" stored="true"/>
+	<field name="abstract_unchanged" type="string" indexed="false" stored="true"/>
 	<field name="handle" type="string" indexed="true" stored="true"/>
 	<field name="table_of_contents" type="string" indexed="true" stored="true" />
 	<field name="notes" type="string" indexed="true" stored="true" multiValued="true" />
-	<field name="notes_unchanged" type="string" indexed="true" stored="true" multiValued="true" />
+	<field name="notes_unchanged" type="string" indexed="false" stored="true" multiValued="true" />
 	<field name="book_journal_title" type="string" indexed="true" stored="true" />
 	<field name="book_author" type="string" indexed="true" stored="true" multiValued="true" />
 	<field name="publisher" type="string" indexed="true" stored="true" />
