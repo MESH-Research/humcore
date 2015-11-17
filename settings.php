@@ -199,7 +199,7 @@ function humcore_deposits_fedora_settings_callback() {
 		<label for="humcore-deposits-fedora-settings[host]"><?php _e( 'Host', 'humcore_domain' ); ?></label>
 	</td><td>
 		<?php if ( defined( 'FEDORA_HOST' ) ) { ?>
-		<input id="humcore-deposits-fedora-settings[host]" name="humcore-deposits-fedora-settings[host]" disabled="disabled" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['host'] ); ?>" />
+		<input id="humcore-deposits-fedora-settings[host]" name="humcore-deposits-fedora-settings[host]" disabled="disabled" type="text" value="<?php echo FEDORA_HOST; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-fedora-settings[host]" name="humcore-deposits-fedora-settings[host]" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['host'] ); ?>" />
@@ -368,6 +368,7 @@ function humcore_deposits_ezid_settings_callback() {
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[port]" name="humcore-deposits-ezid-settings[port]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['port'] ); ?>" />
+		<p class="description"><?php _e( 'Not currently used.', 'humcore_domain' ); ?></p>
 		<?php } ?>
 	</td></tr>
 	<tr><td>
@@ -378,6 +379,7 @@ function humcore_deposits_ezid_settings_callback() {
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[path]" name="humcore-deposits-ezid-settings[path]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['path'] ); ?>" />
+                <p class="description"><?php _e( 'Not currently used.', 'humcore_domain' ); ?></p>
 		<?php } ?>
 	</td></tr>
 <?php /*
