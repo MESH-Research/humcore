@@ -515,10 +515,12 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$current_subjects = $aggregator_metadata['subject'];
 	$current_keywords = $aggregator_metadata['keyword'];
 
-	// Sanitize user input.
+	// No changes allowed.
 	// $aggregator_metadata['id'] = sanitize_text_field( $_POST['aggregator_id'] );
 	// $aggregator_metadata['pid'] = sanitize_text_field( $_POST['aggregator_pid'] );
 	// $aggregator_metadata['creator'] = sanitize_text_field( $_POST['aggregator_creator'] );
+
+	// Sanitize user input.
 	$aggregator_metadata['title'] = sanitize_text_field( stripslashes( $_POST['aggregator_title_unchanged'] ) );
         $aggregator_metadata['title_unchanged'] = wp_kses( 
                         stripslashes( $_POST['aggregator_title_unchanged'] ),
@@ -534,6 +536,8 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['institution'] = sanitize_text_field( stripslashes( $_POST['aggregator_institution'] ) );
 	$aggregator_metadata['conference_title'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_title'] ) );
 	$aggregator_metadata['conference_organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_organization'] ) );
+
+	// No changes allowed.
 	//$aggregator_metadata['committee_deposit'] = sanitize_text_field( $_POST['aggregator_committee_deposit'] );
 	//$aggregator_metadata['committee_id'] = sanitize_text_field( $_POST['aggregator_committee_id'] );
 	//$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
@@ -626,9 +630,12 @@ function humcore_deposit_metabox_save( $post_id ) {
                         array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
                 );
 	$aggregator_metadata['type_of_license'] = sanitize_text_field( $_POST['aggregator_type_of_license'] );
+
+	// No changes allowed.
 	// $aggregator_metadata['record_content_source'] = sanitize_text_field( $_POST['aggregator_record_content_source'] );
 	// $aggregator_metadata['record_creation_date'] = sanitize_text_field( $_POST['aggregator_record_creation_date'] );
 	// $aggregator_metadata['member_of'] = sanitize_text_field( $_POST['aggregator_member_of'] );
+
 	$aggregator_metadata['publication-type'] = sanitize_text_field( $_POST['aggregator_publication-type'] );
 	$aggregator_metadata['publisher'] = sanitize_text_field( stripslashes( $_POST['aggregator_publisher'] ) );
 	$aggregator_metadata['date'] = sanitize_text_field( $_POST['aggregator_date'] );
@@ -645,7 +652,10 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['issn'] = sanitize_text_field( $_POST['aggregator_issn'] );
 	$aggregator_metadata['handle'] = sanitize_text_field( $_POST['aggregator_handle'] );
 	$aggregator_metadata['deposit_doi'] = sanitize_text_field( $_POST['aggregator_deposit_doi'] );
+
+	// No changes allowed.
 	// $aggregator_metadata['record_identifier'] = sanitize_text_field( $_POST['aggregator_record_identifier'] );
+
 	$json_aggregator_metadata = json_encode( $aggregator_metadata, JSON_HEX_APOS );
 
 	// Update the meta field in the database.
@@ -654,7 +664,6 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	// Reindex solr doc.
 	$resource_file_metadata = json_decode( get_post_meta( $post_id, '_deposit_file_metadata', true ), true );
-
 	if ( ! empty( $resource_file_metadata ) ) {
 		$resource_pid = $resource_file_metadata['files'][0]['pid'];
 		$resource_datastream_id = $resource_file_metadata['files'][0]['datastream_id'];
@@ -688,12 +697,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 			error_log( sprintf( '*****WP Admin HumCORE Deposit Error***** - mContent : %1$s-%2$s',  $mContent->get_error_code(), $mContent->get_error_message() ) );
 		}
 
-		$resource_Xml = create_resource_xml( array(
-			'pid' => $thesePids[0],
-			'creator' => $aggregator_metadata['creator'],
-			'title' => htmlspecialchars( $aggregator_metadata['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ),
-			'filetype' => $resource_filetype,
-		) );
+		$resource_Xml = create_resource_xml( $aggregator_metadata, $resource_filetype );
 
 		$rContent = $fedora_api->modify_datastream( array(
 			'pid' => $thesePids[1],
@@ -716,6 +720,29 @@ function humcore_deposit_metabox_save( $post_id ) {
 			echo '<h3>', __( 'An error occurred while depositing your file!', 'humcore_domain' ), '</h3>';
 			error_log( sprintf( '*****WP Admin HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
 			return  $post_id;
+		}
+
+		// Handle doi metadata changes.
+		if ( ! empty( $aggregator_metadata['deposit_doi'] ) ) {
+                	$creators = array();
+                	foreach ( $aggregator_metadata['authors'] as $author ) {
+                        	if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
+                                	$creators[] = $author['fullname'];
+                        	}
+                	}
+                	$creator_list = implode( ',', $creators );
+
+                	$eStatus = humcore_modify_handle(
+				$aggregator_metadata['deposit_doi'],	
+                                $aggregator_metadata['title'],
+                                $creator_list,
+                                $aggregator_metadata['genre'],
+                                $aggregator_metadata['date_issued'],
+                                $aggregator_metadata['publisher']
+                        );
+                        if ( false === $eStatus ) {
+                                echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
+                        }
 		}
 
 	}

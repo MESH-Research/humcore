@@ -478,6 +478,32 @@ function humcore_publish_handle( $humcore_doi ) {
 }
 
 /**
+ * Modify DOI metdata using EZID API.
+ */
+function humcore_modify_handle( $humcore_doi, $title, $creator, $type, $date, $publisher ) {
+
+	global $ezid_api;
+
+	$eStatus = $ezid_api->modify_identifier( array(
+		'doi' => $humcore_doi,
+		'dc.title' => $title,
+		'dc.creator' => $creator,
+		'dc.type' => $type,
+		'dc.date' => $date,
+		'dc.publisher' => $publisher,
+	) );
+
+	if ( is_wp_error( $eStatus ) ) {
+		echo 'Error - ezid modify : ' . esc_html( $eStatus->get_error_code() ) . '-' . esc_html( $eStatus->get_error_message() );
+		error_log( sprintf( '*****HumCORE Deposit Error***** - ezid modify :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
+		return false;
+	}
+
+	return $eStatus;
+
+}
+
+/**
  * Register the location of the plugin templates.
  */
 function humcore_register_template_location() {
