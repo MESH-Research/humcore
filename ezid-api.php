@@ -31,7 +31,7 @@ class Humcore_Deposit_Ezid_Api {
 
 		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
 
-		if ( defined( 'EZID_HOST' ) && ! empty( EZID_HOST ) ) { // Better have a value if defined.
+		if ( defined( 'CORE_EZID_HOST' ) && ! empty( CORE_EZID_HOST ) ) { // Better have a value if defined.
 			$this->servername_hash = md5( $humcoreSettings['servername'] );
 		} else {
 			$this->servername_hash = $humcoreSettings['servername_hash'];
@@ -39,39 +39,39 @@ class Humcore_Deposit_Ezid_Api {
 
 		$this->service_status = $humcoreSettings['service_status'];
 
-		if ( defined( 'HUMCORE_NAMESPACE' ) && ! empty( HUMCORE_NAMESPACE ) ) { 
-			$this->namespace = HUMCORE_NAMESPACE;
+		if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) { 
+			$this->namespace = CORE_HUMCORE_NAMESPACE;
 		} else {
 			$this->namespace = $humcoreSettings['namespace'];
 		}
-		if ( defined( 'HUMCORE_TEMP_DIR' ) && ! empty( HUMCORE_TEMP_DIR ) ) { 
-			$this->tempDir = HUMCORE_TEMP_DIR;
+		if ( defined( 'CORE_HUMCORE_TEMP_DIR' ) && ! empty( CORE_HUMCORE_TEMP_DIR ) ) { 
+			$this->tempDir = CORE_HUMCORE_TEMP_DIR;
 		} else {
 			$this->tempDir = $humcoreSettings['tempdir'];
 		}
 
 		$this->ezidSettings = get_option( 'humcore-deposits-ezid-settings' );
 
-                if ( defined( 'EZID_PROTOCOL' ) ) {
-                        $this->ezidSettings['protocol'] = EZID_PROTOCOL;
+                if ( defined( 'CORE_EZID_PROTOCOL' ) ) {
+                        $this->ezidSettings['protocol'] = CORE_EZID_PROTOCOL;
                 }
-                if ( defined( 'EZID_HOST' ) ) {
-                        $this->ezidSettings['host'] = EZID_HOST;
+                if ( defined( 'CORE_EZID_HOST' ) ) {
+                        $this->ezidSettings['host'] = CORE_EZID_HOST;
                 }
-                if ( defined( 'EZID_PORT' ) ) {
-                        $this->ezidSettings['port'] = EZID_PORT;
+                if ( defined( 'CORE_EZID_PORT' ) ) {
+                        $this->ezidSettings['port'] = CORE_EZID_PORT;
                 }
-                if ( defined( 'EZID_PATH' ) ) {
-                        $this->ezidSettings['path'] = EZID_PATH;
+                if ( defined( 'CORE_EZID_PATH' ) ) {
+                        $this->ezidSettings['path'] = CORE_EZID_PATH;
                 }
-                if ( defined( 'EZID_LOGIN' ) ) {
-                        $this->ezidSettings['login'] = EZID_LOGIN;
+                if ( defined( 'CORE_EZID_LOGIN' ) ) {
+                        $this->ezidSettings['login'] = CORE_EZID_LOGIN;
                 }
-                if ( defined( 'EZID_PASSWORD' ) ) {
-                        $this->ezidSettings['password'] = EZID_PASSWORD;
+                if ( defined( 'CORE_EZID_PASSWORD' ) ) {
+                        $this->ezidSettings['password'] = CORE_EZID_PASSWORD;
                 }
-                if ( defined( 'EZID_PREFIX' ) ) {
-                        $this->ezidSettings['prefix'] = EZID_PREFIX;
+                if ( defined( 'CORE_EZID_PREFIX' ) ) {
+                        $this->ezidSettings['prefix'] = CORE_EZID_PREFIX;
                 }
 
 		if ( ! empty( $this->ezidSettings['port'] ) ) {

@@ -124,8 +124,8 @@ function humcore_deposits_humcore_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-humcore-settings[namespace]"><?php _e( 'Namespace', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'HUMCORE_NAMESPACE' ) && ! empty( HUMCORE_NAMESPACE ) ) { ?>
-		<input id="humcore-deposits-humcore-settings[namespace]" name="humcore-deposits-humcore-settings[namespace]" disabled="disabled" type="text" value="<?php echo HUMCORE_NAMESPACE; ?>" />
+		<?php if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) { ?>
+		<input id="humcore-deposits-humcore-settings[namespace]" name="humcore-deposits-humcore-settings[namespace]" disabled="disabled" type="text" value="<?php echo CORE_HUMCORE_NAMESPACE; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-humcore-settings[namespace]" name="humcore-deposits-humcore-settings[namespace]" type="text" value="<?php echo esc_attr( $humcore_deposits_humcore_settings['namespace'] ); ?>" />
@@ -134,8 +134,8 @@ function humcore_deposits_humcore_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-humcore-settings[tempdir]"><?php _e( 'Temp Dir', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'HUMCORE_TEMP_DIR' ) && ! empty( HUMCORE_TEMP_DIR ) ) { ?>
-		<input id="humcore-deposits-humcore-settings[tempdir]" name="humcore-deposits-humcore-settings[tempdir]" disabled="disabled" type="text" value="<?php echo HUMCORE_TEMP_DIR; ?>" />
+		<?php if ( defined( 'CORE_HUMCORE_TEMP_DIR' ) && ! empty( CORE_HUMCORE_TEMP_DIR ) ) { ?>
+		<input id="humcore-deposits-humcore-settings[tempdir]" name="humcore-deposits-humcore-settings[tempdir]" disabled="disabled" type="text" value="<?php echo CORE_HUMCORE_TEMP_DIR; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-humcore-settings[tempdir]" name="humcore-deposits-humcore-settings[tempdir]" type="text" value="<?php echo esc_attr( $humcore_deposits_humcore_settings['tempdir'] ); ?>" />
@@ -144,8 +144,8 @@ function humcore_deposits_humcore_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-humcore-settings[collectionpid]"><?php _e( 'Collection PID', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'HUMCORE_COLLECTION_PID' ) && ! empty( HUMCORE_COLLECTION_PID ) ) { ?>
-		<input id="humcore-deposits-humcore-settings[collectionpid]" name="humcore-deposits-humcore-settings[collectionpid]" disabled="disabled" type="text" value="<?php echo HUMCORE_COLLECTION_PID; ?>" />
+		<?php if ( defined( 'CORE_HUMCORE_COLLECTION_PID' ) && ! empty( CORE_HUMCORE_COLLECTION_PID ) ) { ?>
+		<input id="humcore-deposits-humcore-settings[collectionpid]" name="humcore-deposits-humcore-settings[collectionpid]" disabled="disabled" type="text" value="<?php echo CORE_HUMCORE_COLLECTION_PID; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-humcore-settings[collectionpid]" name="humcore-deposits-humcore-settings[collectionpid]" type="text" value="<?php echo esc_attr( $humcore_deposits_humcore_settings['collectionpid'] ); ?>" />
@@ -188,8 +188,8 @@ function humcore_deposits_fedora_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-fedora-settings[protocol]"><?php _e( 'Protocol', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'FEDORA_PROTOCOL' ) ) { ?>
-		<input id="humcore-deposits-fedora-settings[protocol]" name="humcore-deposits-fedora-settings[protocol]" disabled="disabled" type="text" value="<?php echo FEDORA_PROTOCOL; ?>" />
+		<?php if ( defined( 'CORE_FEDORA_PROTOCOL' ) ) { ?>
+		<input id="humcore-deposits-fedora-settings[protocol]" name="humcore-deposits-fedora-settings[protocol]" disabled="disabled" type="text" value="<?php echo CORE_FEDORA_PROTOCOL; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-fedora-settings[protocol]" name="humcore-deposits-fedora-settings[protocol]" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['protocol'] ); ?>" />
@@ -198,8 +198,8 @@ function humcore_deposits_fedora_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-fedora-settings[host]"><?php _e( 'Host', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'FEDORA_HOST' ) ) { ?>
-		<input id="humcore-deposits-fedora-settings[host]" name="humcore-deposits-fedora-settings[host]" disabled="disabled" type="text" value="<?php echo FEDORA_HOST; ?>" />
+		<?php if ( defined( 'CORE_FEDORA_HOST' ) ) { ?>
+		<input id="humcore-deposits-fedora-settings[host]" name="humcore-deposits-fedora-settings[host]" disabled="disabled" type="text" value="<?php echo CORE_FEDORA_HOST; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-fedora-settings[host]" name="humcore-deposits-fedora-settings[host]" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['host'] ); ?>" />
@@ -208,8 +208,8 @@ function humcore_deposits_fedora_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-fedora-settings[port]"><?php _e( 'Port', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'FEDORA_PORT' ) ) { ?>
-		<input id="humcore-deposits-fedora-settings[port]" name="humcore-deposits-fedora-settings[port]" disabled="disabled" type="text" value="<?php echo FEDORA_PORT; ?>" />
+		<?php if ( defined( 'CORE_FEDORA_PORT' ) ) { ?>
+		<input id="humcore-deposits-fedora-settings[port]" name="humcore-deposits-fedora-settings[port]" disabled="disabled" type="text" value="<?php echo CORE_FEDORA_PORT; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-fedora-settings[port]" name="humcore-deposits-fedora-settings[port]" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['port'] ); ?>" />
@@ -218,8 +218,8 @@ function humcore_deposits_fedora_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-fedora-settings[path]"><?php _e( 'Path', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'FEDORA_PATH' ) ) { ?>
-		<input id="humcore-deposits-fedora-settings[path]" name="humcore-deposits-fedora-settings[path]" disabled="disabled" type="text" value="<?php echo FEDORA_PATH; ?>" />
+		<?php if ( defined( 'CORE_FEDORA_PATH' ) ) { ?>
+		<input id="humcore-deposits-fedora-settings[path]" name="humcore-deposits-fedora-settings[path]" disabled="disabled" type="text" value="<?php echo CORE_FEDORA_PATH; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-fedora-settings[path]" name="humcore-deposits-fedora-settings[path]" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['path'] ); ?>" />
@@ -228,8 +228,8 @@ function humcore_deposits_fedora_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-fedora-settings[login]"><?php _e( 'Login', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'FEDORA_LOGIN' ) ) { ?>
-		<input id="humcore-deposits-fedora-settings[login]" name="humcore-deposits-fedora-settings[login]" disabled="disabled" type="text" value="<?php echo FEDORA_LOGIN; ?>" />
+		<?php if ( defined( 'CORE_FEDORA_LOGIN' ) ) { ?>
+		<input id="humcore-deposits-fedora-settings[login]" name="humcore-deposits-fedora-settings[login]" disabled="disabled" type="text" value="<?php echo CORE_FEDORA_LOGIN; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-fedora-settings[login]" name="humcore-deposits-fedora-settings[login]" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['login'] ); ?>" />
@@ -238,8 +238,8 @@ function humcore_deposits_fedora_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-fedora-settings[password]"><?php _e( 'Password', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'FEDORA_PASSWORD' ) ) { ?>
-		<input id="humcore-deposits-fedora-settings[password]" name="humcore-deposits-fedora-settings[password]" disabled="disabled" type="text" value="<?php echo FEDORA_PASSWORD; ?>" />
+		<?php if ( defined( 'CORE_FEDORA_PASSWORD' ) ) { ?>
+		<input id="humcore-deposits-fedora-settings[password]" name="humcore-deposits-fedora-settings[password]" disabled="disabled" type="text" value="<?php echo CORE_FEDORA_PASSWORD; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-fedora-settings[password]" name="humcore-deposits-fedora-settings[password]" type="text" value="<?php echo esc_attr( $humcore_deposits_fedora_settings['password'] ); ?>" />
@@ -269,8 +269,8 @@ function humcore_deposits_solr_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-solr-settings[protocol]"><?php _e( 'Protocol', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'SOLR_PROTOCOL' ) ) { ?>
-		<input id="humcore-deposits-solr-settings[protocol]" name="humcore-deposits-solr-settings[protocol]" disabled="disabled" type="text" value="<?php echo SOLR_PROTOCOL; ?>" />
+		<?php if ( defined( 'CORE_SOLR_PROTOCOL' ) ) { ?>
+		<input id="humcore-deposits-solr-settings[protocol]" name="humcore-deposits-solr-settings[protocol]" disabled="disabled" type="text" value="<?php echo CORE_SOLR_PROTOCOL; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-solr-settings[protocol]" name="humcore-deposits-solr-settings[protocol]" type="text" value="<?php echo esc_attr( $humcore_deposits_solr_settings['protocol'] ); ?>" />
@@ -279,8 +279,8 @@ function humcore_deposits_solr_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-solr-settings[host]"><?php _e( 'Host', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'SOLR_HOST' ) ) { ?>
-		<input id="humcore-deposits-solr-settings[host]" name="humcore-deposits-solr-settings[host]" disabled="disabled" type="text" value="<?php echo SOLR_HOST; ?>" />
+		<?php if ( defined( 'CORE_SOLR_HOST' ) ) { ?>
+		<input id="humcore-deposits-solr-settings[host]" name="humcore-deposits-solr-settings[host]" disabled="disabled" type="text" value="<?php echo CORE_SOLR_HOST; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-solr-settings[host]" name="humcore-deposits-solr-settings[host]" type="text" value="<?php echo esc_attr( $humcore_deposits_solr_settings['host'] ); ?>" />
@@ -289,8 +289,8 @@ function humcore_deposits_solr_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-solr-settings[port]"><?php _e( 'Port', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'SOLR_PORT' ) ) { ?>
-		<input id="humcore-deposits-solr-settings[port]" name="humcore-deposits-solr-settings[port]" disabled="disabled" type="text" value="<?php echo SOLR_PORT; ?>" />
+		<?php if ( defined( 'CORE_SOLR_PORT' ) ) { ?>
+		<input id="humcore-deposits-solr-settings[port]" name="humcore-deposits-solr-settings[port]" disabled="disabled" type="text" value="<?php echo CORE_SOLR_PORT; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-solr-settings[port]" name="humcore-deposits-solr-settings[port]" type="text" value="<?php echo esc_attr( $humcore_deposits_solr_settings['port'] ); ?>" />
@@ -299,8 +299,8 @@ function humcore_deposits_solr_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-solr-settings[path]"><?php _e( 'Path', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'SOLR_PATH' ) ) { ?>
-		<input id="humcore-deposits-solr-settings[path]" name="humcore-deposits-solr-settings[path]" disabled="disabled" type="text" value="<?php echo SOLR_PATH; ?>" />
+		<?php if ( defined( 'CORE_SOLR_PATH' ) ) { ?>
+		<input id="humcore-deposits-solr-settings[path]" name="humcore-deposits-solr-settings[path]" disabled="disabled" type="text" value="<?php echo CORE_SOLR_PATH; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-solr-settings[path]" name="humcore-deposits-solr-settings[path]" type="text" value="<?php echo esc_attr( $humcore_deposits_solr_settings['path'] ); ?>" />
@@ -309,8 +309,8 @@ function humcore_deposits_solr_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-solr-settings[core]"><?php _e( 'Core', 'humcore_domain' ); ?></label>
 	</td><td>
-		<?php if ( defined( 'SOLR_CORE' ) ) { ?>
-		<input id="humcore-deposits-solr-settings[core]" name="humcore-deposits-solr-settings[core]" disabled="disabled" type="text" value="<?php echo SOLR_CORE; ?>" />
+		<?php if ( defined( 'CORE_SOLR_CORE' ) ) { ?>
+		<input id="humcore-deposits-solr-settings[core]" name="humcore-deposits-solr-settings[core]" disabled="disabled" type="text" value="<?php echo CORE_SOLR_CORE; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-solr-settings[core]" name="humcore-deposits-solr-settings[core]" type="text" value="<?php echo esc_attr( $humcore_deposits_solr_settings['core'] ); ?>" />
@@ -343,8 +343,8 @@ function humcore_deposits_ezid_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-ezid-settings[protocol]"><?php _e( 'Protocol', 'humcore_domain' ); ?></label>
 	</td><td>
-                <?php if ( defined( 'EZID_PROTOCOL' ) ) { ?>
-		<input id="humcore-deposits-ezid-settings[protocol]" name="humcore-deposits-ezid-settings[protocol]" disabled="disabled" type="text" value="<?php echo EZID_PROTOCOL; ?>" />
+                <?php if ( defined( 'CORE_EZID_PROTOCOL' ) ) { ?>
+		<input id="humcore-deposits-ezid-settings[protocol]" name="humcore-deposits-ezid-settings[protocol]" disabled="disabled" type="text" value="<?php echo CORE_EZID_PROTOCOL; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[protocol]" name="humcore-deposits-ezid-settings[protocol]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['protocol'] ); ?>" />
@@ -353,8 +353,8 @@ function humcore_deposits_ezid_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-ezid-settings[host]"><?php _e( 'Host', 'humcore_domain' ); ?></label>
 	</td><td>
-                <?php if ( defined( 'EZID_HOST' ) ) { ?>
-		<input id="humcore-deposits-ezid-settings[host]" name="humcore-deposits-ezid-settings[host]" disabled="disabled" type="text" value="<?php echo EZID_HOST; ?>" />
+                <?php if ( defined( 'CORE_EZID_HOST' ) ) { ?>
+		<input id="humcore-deposits-ezid-settings[host]" name="humcore-deposits-ezid-settings[host]" disabled="disabled" type="text" value="<?php echo CORE_EZID_HOST; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[host]" name="humcore-deposits-ezid-settings[host]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['host'] ); ?>" />
@@ -363,8 +363,8 @@ function humcore_deposits_ezid_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-ezid-settings[port]"><?php _e( 'Port', 'humcore_domain' ); ?></label>
 	</td><td>
-                <?php if ( defined( 'EZID_PORT' ) ) { ?>
-		<input id="humcore-deposits-ezid-settings[port]" name="humcore-deposits-ezid-settings[port]" disabled="disabled" type="text" value="<?php echo EZID_PORT; ?>" />
+                <?php if ( defined( 'CORE_EZID_PORT' ) ) { ?>
+		<input id="humcore-deposits-ezid-settings[port]" name="humcore-deposits-ezid-settings[port]" disabled="disabled" type="text" value="<?php echo CORE_EZID_PORT; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[port]" name="humcore-deposits-ezid-settings[port]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['port'] ); ?>" />
@@ -374,8 +374,8 @@ function humcore_deposits_ezid_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-ezid-settings[path]"><?php _e( 'Path', 'humcore_domain' ); ?></label>
 	</td><td>
-                <?php if ( defined( 'EZID_PATH' ) ) { ?>
-		<input id="humcore-deposits-ezid-settings[path]" name="humcore-deposits-ezid-settings[path]" disabled="disabled" type="text" value="<?php echo EZID_PATH; ?>" />
+                <?php if ( defined( 'CORE_EZID_PATH' ) ) { ?>
+		<input id="humcore-deposits-ezid-settings[path]" name="humcore-deposits-ezid-settings[path]" disabled="disabled" type="text" value="<?php echo CORE_EZID_PATH; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[path]" name="humcore-deposits-ezid-settings[path]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['path'] ); ?>" />
@@ -392,8 +392,8 @@ function humcore_deposits_ezid_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-ezid-settings[login]"><?php _e( 'Login', 'humcore_domain' ); ?></label>
 	</td><td>
-                <?php if ( defined( 'EZID_LOGIN' ) ) { ?>
-		<input id="humcore-deposits-ezid-settings[login]" name="humcore-deposits-ezid-settings[login]" disabled="disabled" type="text" value="<?php echo EZID_LOGIN; ?>" />
+                <?php if ( defined( 'CORE_EZID_LOGIN' ) ) { ?>
+		<input id="humcore-deposits-ezid-settings[login]" name="humcore-deposits-ezid-settings[login]" disabled="disabled" type="text" value="<?php echo CORE_EZID_LOGIN; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[login]" name="humcore-deposits-ezid-settings[login]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['login'] ); ?>" />
@@ -402,8 +402,8 @@ function humcore_deposits_ezid_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-ezid-settings[password]"><?php _e( 'Password', 'humcore_domain' ); ?></label>
 	</td><td>
-                <?php if ( defined( 'EZID_PASSWORD' ) ) { ?>
-		<input id="humcore-deposits-ezid-settings[password]" name="humcore-deposits-ezid-settings[password]" disabled="disabled" type="text" value="<?php echo EZID_PASSWORD; ?>" />
+                <?php if ( defined( 'CORE_EZID_PASSWORD' ) ) { ?>
+		<input id="humcore-deposits-ezid-settings[password]" name="humcore-deposits-ezid-settings[password]" disabled="disabled" type="text" value="<?php echo CORE_EZID_PASSWORD; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[password]" name="humcore-deposits-ezid-settings[password]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['password'] ); ?>" />
@@ -412,8 +412,8 @@ function humcore_deposits_ezid_settings_callback() {
 	<tr><td>
 		<label for="humcore-deposits-ezid-settings[prefix]"><?php _e( 'Prefix', 'humcore_domain' ); ?></label>
 	</td><td>
-                <?php if ( defined( 'EZID_PREFIX' ) ) { ?>
-		<input id="humcore-deposits-ezid-settings[prefix]" name="humcore-deposits-ezid-settings[prefix]" disabled="disabled" type="text" value="<?php echo EZID_PREFIX; ?>" />
+                <?php if ( defined( 'CORE_EZID_PREFIX' ) ) { ?>
+		<input id="humcore-deposits-ezid-settings[prefix]" name="humcore-deposits-ezid-settings[prefix]" disabled="disabled" type="text" value="<?php echo CORE_EZID_PREFIX; ?>" />
 		<p class="description"><?php _e( 'This variable is set in the server enviroment.', 'humcore_domain' ); ?></p>
 		<?php } else { ?>
 		<input id="humcore-deposits-ezid-settings[prefix]" name="humcore-deposits-ezid-settings[prefix]" type="text" value="<?php echo esc_attr( $humcore_deposits_ezid_settings['prefix'] ); ?>" />
