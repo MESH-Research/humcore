@@ -778,7 +778,6 @@
 		$title = htmlspecialchars( $metadata['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
  		$type = htmlspecialchars( $metadata['genre'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
 		$description = htmlspecialchars( $metadata['abstract'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
-		$filetype = $filetype;
 		$creator_list = '';
                 foreach ( $metadata['authors'] as $author ) {
                         if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
