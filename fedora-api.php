@@ -31,12 +31,50 @@ class Humcore_Deposit_Fedora_Api {
 		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
 
 		$this->fedoraSettings = get_option( 'humcore-deposits-fedora-settings' );
+                if ( defined( 'CORE_FEDORA_PROTOCOL' ) ) {
+                        $this->fedoraSettings['protocol'] = CORE_FEDORA_PROTOCOL;
+                }
+                if ( defined( 'CORE_FEDORA_HOST' ) ) {
+                        $this->fedoraSettings['host'] = CORE_FEDORA_HOST;
+                }
+                if ( defined( 'CORE_FEDORA_PORT' ) ) {
+                        $this->fedoraSettings['port'] = CORE_FEDORA_PORT;
+                }
+                if ( defined( 'CORE_FEDORA_PATH' ) ) {
+                        $this->fedoraSettings['path'] = CORE_FEDORA_PATH;
+                }
+                if ( defined( 'CORE_FEDORA_LOGIN' ) ) {
+                        $this->fedoraSettings['login'] = CORE_FEDORA_LOGIN;
+                }
+                if ( defined( 'CORE_FEDORA_PASSWORD' ) ) {
+                        $this->fedoraSettings['password'] = CORE_FEDORA_PASSWORD;
+                }
 		$this->baseUrl = $this->fedoraSettings['protocol'] . $this->fedoraSettings['host'] . ':' . $this->fedoraSettings['port'] . $this->fedoraSettings['path'];
-		$this->servername_hash = $humcoreSettings['servername_hash'];
-		$this->service_status = $humcoreSettings['service_status'];
-		$this->namespace = $humcoreSettings['namespace'];
-		$this->tempDir = $humcoreSettings['tempdir'];
-		$this->collectionPid = $humcoreSettings['collectionpid'];
+                if ( defined( 'CORE_FEDORA_HOST' ) && ! empty( CORE_FEDORA_HOST ) ) { // Better have a value if defined.
+                        $this->servername_hash = md5( $humcoreSettings['servername'] );
+                } else {
+                        $this->servername_hash = $humcoreSettings['servername_hash'];
+                }
+
+                $this->service_status = $humcoreSettings['service_status'];
+
+                if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) {
+                        $this->namespace = CORE_HUMCORE_NAMESPACE;
+                } else {
+                        $this->namespace = $humcoreSettings['namespace'];
+                }
+                if ( defined( 'CORE_HUMCORE_TEMP_DIR' ) && ! empty( CORE_HUMCORE_TEMP_DIR ) ) { 
+                        $this->tempDir = CORE_HUMCORE_TEMP_DIR;
+                } else {
+                        $this->tempDir = $humcoreSettings['tempdir'];
+                }
+
+                if ( defined( 'CORE_HUMCORE_COLLECTION_PID' ) && ! empty( CORE_HUMCORE_COLLECTION_PID ) ) { 
+			$this->collectionPid = CORE_HUMCORE_COLLECTION_PID;
+                } else {
+			$this->collectionPid = $humcoreSettings['collectionpid'];
+		}
+
 		$this->maxResults = 512;
 		$this->options['api-m']['headers']['Authorization'] = 'Basic ' . base64_encode( $this->fedoraSettings['login'] . ':' . $this->fedoraSettings['password'] );
 		$this->options['api-m']['httpversion'] = '1.1';
