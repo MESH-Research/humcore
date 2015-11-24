@@ -175,30 +175,39 @@ class Humcore_Deposit_Ezid_Api {
 			'_status'           => 'reserved',
 			'_export'           => 'no',
 			'_profile'          => 'dc',
-			'dc.publisher'      => 'MLA',
+			'dc.publisher'      => '',
 			'_target'           => '',
-			'dc.type'           => 'Text',
-			'dc.date'           => date( 'Y' ),
-			'dc.creator'        => 'HumCORE',
+			'dc.type'           => '',
+			'dc.date'           => '',
+			'dc.creator'        => '',
 			'dc.title'          => '',
 		 );
 		$params = wp_parse_args( $args, $defaults );
 
 		$doi = $params['doi'];
 		unset( $params['doi'] ); // Leave out of the body.
-		$target = $params['_target'];
-		$title = $params['dc.title'];
 
 		if ( empty( $doi ) ) {
 			return new WP_Error( 'missingArg', 'DOI is missing.' );
 		}
-
-		if ( empty( $target ) ) {
-			return new WP_Error( 'missingArg', 'Target URL is missing.' );
-		}
-		if ( empty( $title ) ) {
-			return new WP_Error( 'missingArg', 'Title is missing.' );
-		}
+                if ( empty( $params['dc.publisher'] ) ) {
+                        $params['dc.publisher'] = 'Not provided.';
+                }
+                if ( empty( $params['_target'] ) ) {
+                        return new WP_Error( 'missingArg', 'Target URL is missing.' );
+                }
+                if ( empty( $params['dc.type'] ) ) {
+                        return new WP_Error( 'missingArg', 'Type is missing.' );
+                }
+                if ( empty( $params['dc.date'] ) ) {
+                        return new WP_Error( 'missingArg', 'Date is missing.' ); 
+                }
+                if ( empty( $params['dc.creator'] ) ) {
+                        return new WP_Error( 'missingArg', 'Creator is missing.' );
+                }
+                if ( empty( $params['dc.title'] ) ) {
+                        return new WP_Error( 'missingArg', 'Title is missing.' );
+                }
 
 		$url = sprintf( '%1$s/id/%2$s%3$s', $this->baseUrl, $this->ezidPrefix, $doi );
 
@@ -256,22 +265,31 @@ class Humcore_Deposit_Ezid_Api {
 			'_status'           => 'reserved',
 			'_export'           => 'no',
 			'_profile'          => 'dc',
-			'dc.publisher'      => 'MLA',
+			'dc.publisher'      => '',
 			'_target'           => '',
-			'dc.type'           => 'Text',
-			'dc.date'           => date( 'Y' ),
-			'dc.creator'        => 'HumCORE',
+			'dc.type'           => '',
+			'dc.date'           => '',
+			'dc.creator'        => '',
 			'dc.title'          => '',
 		 );
 		$params = wp_parse_args( $args, $defaults );
 
-		$target = $params['_target'];
-		$title = $params['dc.title'];
-
-		if ( empty( $target ) ) {
+		if ( empty( $params['dc.publisher'] ) ) {
+			$params['dc.publisher'] = 'Not provided.';
+		}
+		if ( empty( $params['_target'] ) ) {
 			return new WP_Error( 'missingArg', 'Target URL is missing.' );
 		}
-		if ( empty( $title ) ) {
+		if ( empty( $params['dc.type'] ) ) {
+			return new WP_Error( 'missingArg', 'Type is missing.' );
+		}
+		if ( empty( $params['dc.date'] ) ) {
+			return new WP_Error( 'missingArg', 'Date is missing.' );
+		}
+		if ( empty( $params['dc.creator'] ) ) {
+			return new WP_Error( 'missingArg', 'Creator is missing.' );
+		}
+		if ( empty( $params['dc.title'] ) ) {
 			return new WP_Error( 'missingArg', 'Title is missing.' );
 		}
 
@@ -291,6 +309,7 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['body'] = $content;
 
 		$response = wp_remote_request( $url, $request_args );
+
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
@@ -347,10 +366,9 @@ class Humcore_Deposit_Ezid_Api {
 		if ( empty( $doi ) ) {
 			return new WP_Error( 'missingArg', 'DOI is missing.' );
 		}
-
-		if ( empty( $params ) ) {
-			return new WP_Error( 'missingArg', 'Metadata is missing.' );
-		}
+                if ( empty( $params ) ) {
+                        return new WP_Error( 'missingArg', 'Metadata is missing.' );
+                }
 
 		$url = sprintf( '%1$s/id/%2$s', $this->baseUrl, $doi );
 
@@ -368,6 +386,7 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['body'] = $content;
 
 		$response = wp_remote_request( $url, $request_args );
+
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}

@@ -81,9 +81,9 @@ jQuery(document).ready( function($) {
 	});
 
  	$('#deposit-form').on('submit', function(e) {
-		var title = $.trim($('#deposit-title').val());
+		var title = $.trim($('#deposit-title-unchanged').val());
 		var item_type = $.trim($('#deposit-genre').val());
-		var description = $.trim($('#deposit-abstract').val());
+		var description = $.trim($('#deposit-abstract-unchanged').val());
 		var selected_file = $.trim($('input[type=hidden][name=selected_file_name]').val());
 		var message = "Please complete the following steps before pressing Deposit:\n\n";
 		if ( selected_file === '' ) {
@@ -179,7 +179,7 @@ var uploader = new plupload.Uploader( {
 				document.getElementById( 'indicator' ).style.width = '0%';
 			} else {
 //		   		document.getElementById( 'deposit-metadata-entries' ).style.display = 'block';
-				document.getElementById( 'deposit-title' ).focus();
+				document.getElementById( 'deposit-title-unchanged' ).focus();
 				document.getElementById( 'console' ).innerHTML = 'The file has been uploaded. Use the fields below to enter information about the file and press Deposit.';
 
 				var file_size = document.createElement( 'input' );

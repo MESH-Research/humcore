@@ -99,7 +99,7 @@ function humcore_deposit_form() {
 
 	<div id="deposit-title-entry">
 		<label for="deposit-title">Title</label>
-		<input type="text" id="deposit-title" name="deposit-title" size="75" class="long" value="<?php if ( ! empty( $_POST['deposit-title'] ) ) {  echo wp_strip_all_tags( stripslashes( $_POST['deposit-title'] ) ); } ?>" />
+		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" class="long" value="<?php if ( ! empty( $_POST['deposit-title-unchanged'] ) ) {  echo wp_kses( stripslashes( $_POST['deposit-title-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?>" />
 		<span class="description">*</span>
 	</div>
 	<p>
@@ -142,7 +142,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-abstract-entry">
 		<label for="deposit-abstract">Description or Abstract</label>
-		<textarea class="abstract_area" rows="12" autocomplete="off" cols="80" name="deposit-abstract" id="deposit-abstract"><?php if ( ! empty( $_POST['deposit-abstract'] ) ) { echo wp_strip_all_tags( stripslashes( $_POST['deposit-abstract'] ) ); } ?></textarea>
+		<textarea class="abstract_area" rows="12" autocomplete="off" cols="80" name="deposit-abstract-unchanged" id="deposit-abstract-unchanged"><?php if ( ! empty( $_POST['deposit-abstract-unchanged'] ) ) { echo wp_kses( stripslashes( $_POST['deposit-abstract-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
 		<span class="description">*</span>
 	</div>
 	</p>
@@ -329,7 +329,7 @@ function humcore_deposit_form() {
 	<div id="deposit-notes-entry">
 		<label for="deposit-notes">Notes or Background</label>
 		<span class="description">Any additional information about your item?</span><br />
-		<textarea name="deposit-notes" class="the-notes" id="deposit-notes"><?php if ( ! empty( $_POST['deposit-notes'] ) ) { echo sanitize_text_field( stripslashes( $_POST['deposit-notes'] ) ); } ?></textarea>
+		<textarea name="deposit-notes-unchanged" class="the-notes" id="deposit-notes-unchanged"><?php if ( ! empty( $_POST['deposit-notes-unchanged'] ) ) { echo wp_kses( stripslashes( $_POST['deposit-notes-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
 	</div>
 	</p>
 	<p>
@@ -549,7 +549,7 @@ function humcore_deposits_entry_content() {
 	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 ?>
-<h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo esc_html( $metadata['title'] ); ?></a></h4>
+<h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo $metadata['title_unchanged']; ?></a></h4>
 <div class="bp-group-documents-meta">
 <dl class='defList'>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
@@ -655,7 +655,7 @@ function humcore_deposit_item_content() {
 	}
 ?>
 
-<h3 class="bp-group-documents-title"><?php echo esc_html( $metadata['title'] ); ?></h3>
+<h3 class="bp-group-documents-title"><?php echo $metadata['title_unchanged']; ?></h3>
 <div class="bp-group-documents-meta">
 <dl class='defList'>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
@@ -682,13 +682,13 @@ function humcore_deposit_item_content() {
 <?php endif; ?>
 <dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt>
 <dd><a href="<?php echo esc_attr( $metadata['handle'] ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
-<dt><?php ( ! empty( $metadata['genre'] ) && 'Abstract' == $metadata['genre'] ) ? _e( 'Abstract:', 'humcore_domain' ) : _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
-<?php if ( ! empty( $metadata['abstract'] ) ) : ?>
-<dd><?php echo esc_html( $metadata['abstract'] ); ?></dd>
+<dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
+<?php if ( ! empty( $metadata['abstract_unchanged'] ) ) : ?>
+<dd><?php echo $metadata['abstract_unchanged']; ?></dd>
 <?php endif; ?>
-<?php if ( ! empty( $metadata['notes'] ) ) : ?>
+<?php if ( ! empty( $metadata['notes_unchanged'] ) ) : ?>
 <dt><?php _e( 'Notes:', 'humcore_domain' ); ?></dt>
-<dd><?php echo esc_html( $metadata['notes'] ); ?></dd>
+<dd><?php echo $metadata['notes_unchanged']; ?></dd>
 <?php endif; ?>
 <dt><?php _e( 'Metadata:', 'humcore_domain' ); ?></dt>
 <dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
@@ -723,7 +723,6 @@ function humcore_deposit_item_content() {
 function humcore_deposit_item_review_content() {
 
         $metadata = (array) humcore_get_current_deposit();
-//echo var_export($metadata,true);
         if ( ! empty( $metadata['group'] ) ) {
                 $groups = array_filter( $metadata['group'] );
         }
@@ -794,7 +793,7 @@ function humcore_deposit_item_review_content() {
 <div class="bp-group-documents-meta">
 <dl class='defList'>
 <dt><?php _e( 'Title:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['title']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['title_unchanged']; // XSS OK. ?></span></dd>
 <dt><?php _e( 'Item Type:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $metadata['genre'] ); ?></dd>
 <!-- //new stuff -->
@@ -820,7 +819,7 @@ function humcore_deposit_item_review_content() {
 <?php endif; ?>
 <?php endif; ?>
 <dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
-<dd><?php echo esc_html( $metadata['abstract'] ); ?></dd>
+<dd><?php echo $metadata['abstract_unchanged']; ?></dd>
 <?php if ( 'yes' === $metadata['committee_deposit'] ) : // Do not show unless this is a committee deposit. ?>
 <dt><?php _e( 'Deposit Type:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo 'Committee'; ?></span></dd>
@@ -848,8 +847,8 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'File Type:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $metadata['type_of_resource'] ); ?></dd>
 <dt><?php _e( 'Notes:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['notes'] ) ) : ?>
-<dd><?php echo esc_html( $metadata['notes'] ); ?></dd>
+<?php if ( ! empty( $metadata['notes_unchanged'] ) ) : ?>
+<dd><?php echo $metadata['notes_unchanged']; ?></dd>
 <?php else : ?>
 <dd>( None )</dd>
 <?php endif; ?>
@@ -941,15 +940,15 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>
-<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $post_metadata['chapter'] ) ) : ?>
-<dd><span><?php echo $post_metadata['chapter']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
 <dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
 <dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['chapter'] ) ) : ?>
+<dd><span><?php echo $metadata['chapter']; // XSS OK. ?></span></dd>
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>

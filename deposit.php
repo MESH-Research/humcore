@@ -122,12 +122,7 @@
 
 		$metadataMODS = create_mods_xml( $metadata );
 
-		$resourceXml = create_resource_xml( array(
-								'pid' => $nextPids[0],
-								'creator' => $metadata['creator'],
-								'title' => htmlspecialchars( $metadata['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ),
-								'filetype' => $filetype,
-						) );
+		$resourceXml = create_resource_xml( $metadata, $filetype );
 
 		$resourceRdf = create_resource_rdf( array(
 								'aggregatorPid' => $nextPids[0],
@@ -447,8 +442,16 @@
 		$metadata['id'] = $nextPids[0];
 		$metadata['pid'] = $nextPids[0];
 		$metadata['creator'] = 'HumCORE';
-		$metadata['title'] = wp_strip_all_tags( stripslashes( $_POST['deposit-title'] ) );
-		$metadata['abstract'] = wp_strip_all_tags( stripslashes( $_POST['deposit-abstract'] ) );
+		$metadata['title'] = wp_strip_all_tags( stripslashes( $_POST['deposit-title-unchanged'] ) );
+		$metadata['title_unchanged'] = wp_kses(
+				stripslashes( $_POST['deposit-title-unchanged'] ),
+				array( 'b' => array(), 'em' => array(), 'strong' => array() )
+			);
+		$metadata['abstract'] = wp_strip_all_tags( stripslashes( $_POST['deposit-abstract-unchanged'] ) );
+		$metadata['abstract_unchanged'] = wp_kses(
+				stripslashes( $_POST['deposit-abstract-unchanged'] ),
+				array( 'b' => array(), 'em' => array(), 'strong' => array() )
+			);
 		$metadata['genre'] = sanitize_text_field( $_POST['deposit-genre'] );
 		$metadata['committee_deposit'] = sanitize_text_field( $_POST['deposit-on-behalf-flag'] );
 		$metadata['committee_id'] = sanitize_text_field( $_POST['deposit-committee'] );
@@ -565,7 +568,11 @@
 
 		$metadata['type_of_resource'] = sanitize_text_field( $_POST['deposit-resource-type'] );
 		$metadata['language'] = 'English';
-		$metadata['notes'] = sanitize_text_field( stripslashes( $_POST['deposit-notes'] ) ); // Where do they go in MODS?
+		$metadata['notes'] = sanitize_text_field( stripslashes( $_POST['deposit-notes-unchanged'] ) ); // Where do they go in MODS?
+		$metadata['notes_unchanged'] = wp_kses(
+				stripslashes( $_POST['deposit-notes-unchanged'] ),
+				array( 'b' => array(), 'em' => array(), 'strong' => array() )
+			);
 		$metadata['type_of_license'] = sanitize_text_field( $_POST['deposit-license-type'] );
 		$metadata['record_content_source'] = 'HumCORE';
 		$metadata['record_creation_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
@@ -634,7 +641,22 @@
 		/**
 		 * Mint and reserve a DOI.
 		 */
-		$deposit_doi = humcore_create_handle( $metadata['title'], $nextPids[0] );
+		$creators = array();
+                foreach ( $metadata['authors'] as $author ) {
+                        if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
+                                $creators[] = $author['fullname'];
+                        }
+                }
+		$creator_list = implode( ',', $creators );
+
+		$deposit_doi = humcore_create_handle(
+				$metadata['title'],
+				$nextPids[0],
+				$creator_list,
+				$metadata['genre'],
+				$metadata['date_issued'],
+				$metadata['publisher']
+			);
 		if ( ! $deposit_doi ) {
 			$metadata['handle'] = sprintf( bp_get_root_domain() . '/deposits/item/%s/', $nextPids[0] );
 			$metadata['deposit_doi'] = ''; // Not stored in solr.
@@ -744,34 +766,50 @@
 	 * @return WP_Error|string xml content
 	 * @see wp_parse_args()
 	 */
-	function create_resource_xml( $args ) {
+	function create_resource_xml( $metadata, $filetype = '' ) {
 
-		$defaults = array(
-			'pid'               => '',
-			'creator'           => 'HumCORE',
-			'title'             => '',
-			'type'              => '',
-			'filetype'          => '',
-		);
-		$params = wp_parse_args( $args, $defaults );
-
-		$pid = $params['pid'];
-		$creator = $params['creator'];
-		$title = $params['title'];
-		$type = $params['type'];
-		$filetype = $params['filetype'];
-
+		if ( empty( $metadata ) ) {
+			return new WP_Error( 'missingArg', 'metadata is missing.' );
+		}
+		$pid = $metadata['pid'];
 		if ( empty( $pid ) ) {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
+		$title = htmlspecialchars( $metadata['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+ 		$type = htmlspecialchars( $metadata['genre'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+		$description = htmlspecialchars( $metadata['abstract'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+		$creator_list = '';
+                foreach ( $metadata['authors'] as $author ) {
+                        if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
+                                $creator_list .= '
+                                  <dc:creator>' . $author['fullname'] . '</dc:creator>';
+                        }
+                }
+
+                $subject_list = '';
+                foreach ( $metadata['subject'] as $subject ) {
+                        $subject_list .= '
+                        <dc:subject>' . htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) . '</dc:subject>';
+                }
+		if ( ! empty( $metadata['publisher'] ) ) {
+			$publisher = '<dc:publisher>' . htmlspecialchars( $metadata['publisher'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) . '</dc:publisher>';
+		}
+                if ( ! empty( $metadata['date_issued'] ) ) {
+                        $date .= '
+                        <dc:date encoding="w3cdtf">' . $metadata['date_issued'] . '</dc:date>';
+                }
 
 		return '<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
 			xmlns:dc="http://purl.org/dc/elements/1.1/"
 			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 			xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
 		  <dc:identifier>' . $pid . '</dc:identifier>
-		  <dc:creator>' .$creator . '</dc:creator>
+		  ' .$creator_list . '
+		  ' . $date . '
 		  <dc:title>' . $title . '</dc:title>
+		  <dc:description>' . $description . '</dc:description>
+		  ' . $subject_list . '
+		  ' . $publisher . '
 		  <dc:type>' . $type . '</dc:type>
 		  <dc:format>' . $filetype . '</dc:format>
 		</oai_dc:dc>';
