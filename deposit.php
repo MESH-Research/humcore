@@ -57,7 +57,6 @@
 		$tempname = sanitize_file_name( $_POST['selected_temp_name'] );
 		$fileloc = $fedora_api->tempDir . '/' . $tempname;
 		$filename = strtolower( sanitize_file_name( $_POST['selected_file_name'] ) );
-		$filetype = sanitize_text_field( $_POST['selected_file_type'] );
 		$filesize = sanitize_text_field( $_POST['selected_file_size'] );
 		$renamed_file = $fileloc . '.' . $filename;
 		$MODS_file = $fileloc . '.MODS.' . $filename . '.xml';
@@ -69,6 +68,7 @@
 		$file_rename_status = rename( $fileloc, $renamed_file );
 		// TODO handle rename error.
 		$check_filetype = wp_check_filetype( $filename, wp_get_mime_types() );
+		$filetype = $check_filetype['type'];
 		if ( preg_match( '~^image/~', $check_filetype['type'] ) ) {
 			$thumb_image = wp_get_image_editor( $renamed_file );
 			if ( ! is_wp_error( $thumb_image ) ) {
