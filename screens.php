@@ -95,6 +95,11 @@ function humcore_deposit_form() {
 	<input type="hidden" name="action" id="action" value="deposit_file" />
 	<?php wp_nonce_field( 'new_core_deposit', 'new_core_deposit_nonce' ); ?>
 
+        <input type="hidden" name="selected_temp_name" id="selected_temp_name" value="<?php if ( ! empty( $_POST['selected_temp_name'] ) ) { echo sanitize_text_field( $_POST['selected_temp_name'] ); } ?>" />
+        <input type="hidden" name="selected_file_name" id="selected_file_name" value="<?php if ( ! empty( $_POST['selected_file_name'] ) ) { echo sanitize_text_field( $_POST['selected_file_name'] ); } ?>" />
+        <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_type'] ); } ?>" />
+        <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_size'] ); } ?>" />
+
 	<div id="deposit-metadata-entries">
 
 	<div id="deposit-title-entry">
