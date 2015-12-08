@@ -184,8 +184,7 @@ function humcore_deposit_metabox( $post ) {
 	$group_list = humcore_deposits_group_list();
 	$posted_group_list = array();
 	if ( ! empty( $aggregator_metadata['group'] ) ) {
-		foreach ( $aggregator_metadata['group'] as $group_name ) {
-			$group_id = humcore_get_id_from_name( $group_name );
+		foreach ( $aggregator_metadata['group_ids'] as $group_id ) {
 			if ( ! empty( $group_id ) ) {
 				$posted_group_list[] = $group_id;
 			}
@@ -209,9 +208,12 @@ function humcore_deposit_metabox( $post ) {
 <?php
 	$subject_list = humcore_deposits_subject_list();
 	$posted_subject_list = array();
+//error_log('****************$aggregator_metadata****************'.var_export($aggregator_metadata,true));
 	if ( ! empty( $aggregator_metadata['subject'] ) ) {
-                foreach ( $aggregator_metadata['subject'] as $subject ) {
-                        $posted_subject_list[] = sanitize_text_field( stripslashes( $subject ) );
+                foreach ( $aggregator_metadata['subject_ids'] as $subject_id ) {
+                        $term = get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
+                        $posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
+error_log('****************$term****************'.var_export($term,true));
                 }
 	}
 	foreach ( $subject_list as $subject_key => $subject_value ) {
@@ -233,8 +235,9 @@ function humcore_deposit_metabox( $post ) {
 	$keyword_list = humcore_deposits_keyword_list();
 	$posted_keyword_list = array();
 	if ( ! empty( $aggregator_metadata['keyword'] ) ) {
-                foreach ( $aggregator_metadata['keyword'] as $keyword ) {
-                        $posted_keyword_list[] = sanitize_text_field( stripslashes( $keyword ) );
+                foreach ( $aggregator_metadata['keyword_ids'] as $keyword_id ) {
+			$term = get_term_by( 'term_taxonomy_id', $keyword_id, 'humcore_deposit_tag' );
+                        $posted_keyword_list[] = sanitize_text_field( stripslashes( $term->name ) );
                 }
 	}
 	foreach ( $keyword_list as $keyword_key => $keyword_value ) {
@@ -512,8 +515,11 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	$aggregator_metadata = json_decode( get_post_meta( $post_id, '_deposit_metadata', true ), true );
 	$current_groups = $aggregator_metadata['group'];
+	$current_group_ids = $aggregator_metadata['group_ids'];
 	$current_subjects = $aggregator_metadata['subject'];
+	$current_subject_ids = $aggregator_metadata['subject_ids'];
 	$current_keywords = $aggregator_metadata['keyword'];
+	$current_keyword_ids = $aggregator_metadata['keyword_ids'];
 
 	// No changes allowed.
 	// $aggregator_metadata['id'] = sanitize_text_field( $_POST['aggregator_id'] );
@@ -569,11 +575,13 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['author_info'] = humcore_deposits_format_author_info( $aggregator_metadata['authors'] );
 
 	$aggregator_metadata['group'] = array();
+	$aggregator_metadata['group_ids'] = array();
 	if ( ! empty( $_POST['aggregator_group'] ) ) {
 		foreach ( $_POST['aggregator_group'] as $group_id ) {
 			$group = groups_get_group( array( 'group_id' => sanitize_text_field( $group_id ) ) );
 			if ( ! empty( $group ) ) {
 				$aggregator_metadata['group'][] = $group->name;
+				$aggregator_metadata['group_ids'][] = $group_id;
 			}
 		}
 	}
@@ -585,6 +593,7 @@ function humcore_deposit_metabox_save( $post_id ) {
                 }
 		if ( $aggregator_metadata['subject'] != $current_subjects ) {
 			$term_ids = array();
+			$aggregator_metadata['subject_ids'] = array();
 			foreach ( $_POST['aggregator_subject'] as $subject ) {
 				$term_key = term_exists( $subject, 'humcore_deposit_subject' );
 				if ( ! is_wp_error( $term_key ) ) {
@@ -595,6 +604,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 			}
 			// Support add and remove.
 			$term_taxonomy_ids = wp_set_object_terms( $post_id, $term_ids, 'humcore_deposit_subject' );
+			$aggregator_metadata['subject_ids'] = $term_taxonomy_ids;
 		}
 	}
 
@@ -605,6 +615,7 @@ function humcore_deposit_metabox_save( $post_id ) {
                 }
 		if ( $aggregator_metadata['keyword'] != $current_keywords ) {
 			$term_ids = array();
+			$aggregator_metadata['keyword_ids'] = array();
 			foreach ( $_POST['aggregator_keyword'] as $keyword ) {
 				$term_key = term_exists( $keyword, 'humcore_deposit_tag' );
 				if ( empty( $term_key ) ) {
@@ -618,6 +629,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 			}
 			// Support add and remove.
 			$term_taxonomy_ids = wp_set_object_terms( $post_id, $term_ids, 'humcore_deposit_tag' );
+			$aggregator_metadata['keyword_ids'] = $term_taxonomy_ids;
 		}
 	}
 
@@ -655,6 +667,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	// No changes allowed.
 	// $aggregator_metadata['record_identifier'] = sanitize_text_field( $_POST['aggregator_record_identifier'] );
+error_log('****************$aggregator_metadata****************'.var_export($aggregator_metadata,true));
 
 	$json_aggregator_metadata = json_encode( $aggregator_metadata, JSON_HEX_APOS );
 

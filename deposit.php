@@ -17,6 +17,8 @@
 	 * Get the next 2 object id values for Fedora.
 	 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
 	 * Create the aggregator post so that we can reference the ID in the Solr document.
+	 * Set object terms for subjects.
+	 * Add any new keywords and set object terms for tags.
 	 * Add to metadata and store in post meta.
 	 * Index the deposit content and metadata in Solr.
 	 * Create the aggregator Fedora object along with the DC and RELS-EXT datastreams.
@@ -28,8 +30,6 @@
 	 * Prepare an array of post data for the resource post.
 	 * Insert the resource post.
 	 * Add the activity entry for the author.
-	 * Set object terms for subjects.
-	 * Add any new keywords and set object terms for tags.
 	 * Publish the reserved DOI.
 	 * Add any group activity entries.
 	 */
@@ -65,10 +65,13 @@
 		$generated_thumb_name = '';
 
 		// Make a usable unique filename.
-		$file_rename_status = rename( $fileloc, $renamed_file );
-		// TODO handle rename error.
+		if ( file_exists( $fileloc ) ) {
+			$file_rename_status = rename( $fileloc, $renamed_file );
+		}
+		// TODO handle file error.
 		$check_filetype = wp_check_filetype( $filename, wp_get_mime_types() );
 		$filetype = $check_filetype['type'];
+
 		if ( preg_match( '~^image/~', $check_filetype['type'] ) ) {
 			$thumb_image = wp_get_image_editor( $renamed_file );
 			if ( ! is_wp_error( $thumb_image ) ) {
@@ -142,59 +145,100 @@
 		/* echo "<br />DEBUG  3 ", date ( 'Y-m-d H:i:s' ), var_export( $metadataMODS, true ); */
 		error_log( '*****HumCORE deposit metadata complete.*****' );
 
+		/* echo "<br />DEBUG 10 ", date ( 'Y-m-d H:i:s' ), var_export( $metadata, true ); */
+
+		/**
+		 * Create the aggregator post now so that we can reference the ID in the Solr document.
+		 */
+		$deposit_post_data = array(
+			'post_title'   => $metadata['title'],
+			'post_excerpt' => $metadata['abstract'],
+			'post_status'  => 'publish',
+			'post_type'    => 'humcore_deposit',
+			'post_name'    => $nextPids[0],
+			'post_author'  => bp_loggedin_user_id()
+		);
+
+		$deposit_post_ID = wp_insert_post( $deposit_post_data );
+		$metadata['record_identifier'] = $deposit_post_ID;
+
+		/**
+		 * Set object terms for subjects.
+		 */
+		if ( ! empty( $_POST['deposit-subject'] ) ) {
+			$term_ids = array();
+			foreach ( $_POST['deposit-subject'] as $subject ) {
+				$term_key = term_exists( $subject, 'humcore_deposit_subject' );
+				if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
+					$term_ids[] = intval( $term_key['term_id'] );
+				} else {
+					error_log( '*****HumCORE Deposit Error - bad subject*****' . var_export( $term_key, true ) );
+				}
+			}
+			if ( ! empty( $term_ids ) ) {
+				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_subject' );
+				$metadata['subject_ids'] = $term_taxonomy_ids;
+			}
+		}
+
+		/**
+		 * Add any new keywords and set object terms for tags.
+		 */
+		if ( ! empty( $_POST['deposit-keyword'] ) ) {
+			$term_ids = array();
+			foreach ( $_POST['deposit-keyword'] as $keyword ) {
+				$term_key = term_exists( $keyword, 'humcore_deposit_tag' );
+				if ( empty( $term_key ) ) {
+					$term_key = wp_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
+				}
+				if ( ! is_wp_error( $term_key ) ) {
+					$term_ids[] = intval( $term_key['term_id'] );
+				} else {
+					error_log( '*****HumCORE Deposit Error - bad tag*****' . var_export( $term_key, true ) );
+				}
+			}
+			if ( ! empty( $term_ids ) ) {
+				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_tag' );
+				$metadata['keyword_ids'] = $term_taxonomy_ids;
+			}
+		}
+
+		$json_metadata = json_encode( $metadata, JSON_HEX_APOS );
+		if ( json_last_error() ) {
+			error_log( '*****HumCORE Deposit Error***** Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
+		}
+		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_metadata', wp_slash( $json_metadata ) );
+		error_log( sprintf( '*****HumCORE Deposit***** - post_meta (1) : %1$s',  var_export( $json_metadata, true ) ) );
+		/* echo "<br />DEBUG 12 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
+
+		/**
+		 * Add to metadata and store in post meta.
+		 */
+		$post_metadata['files'][] = array(
+			'pid' => $nextPids[1],
+			'datastream_id' => $datastream_id,
+			'filename' => $filename,
+			'filetype' => $filetype,
+			'filesize' => $filesize,
+			'fileloc' => $renamed_file,
+			'thumb_datastream_id' => ( ! empty( $generated_thumb_name ) ) ? $thumb_datastream_id : '',
+			'thumb_filename' => ( ! empty( $generated_thumb_name ) ) ? $generated_thumb_name : '',
+		);
+
+		$json_metadata = json_encode( $post_metadata, JSON_HEX_APOS );
+		if ( json_last_error() ) {
+			error_log( '*****HumCORE Deposit Error***** File Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
+		}
+		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_file_metadata', wp_slash( $json_metadata ) );
+		error_log( sprintf( '*****HumCORE Deposit***** - post_meta (2) : %1$s',  var_export( $json_metadata, true ) ) );
+		/* echo "<br />DEBUG 13 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
+
 		/**
 		 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
 		 *
 		 * Index the deposit content and metadata in Solr.
 		 */
 		try {
-			/* echo "<br />DEBUG 10 ", date ( 'Y-m-d H:i:s' ), var_export( $metadata, true ); */
-
-			/**
-			 * Create the aggregator post now so that we can reference the ID in the Solr document.
-			 */
-			$deposit_post_data = array(
-				'post_title'   => $metadata['title'],
-				'post_excerpt' => $metadata['abstract'],
-				'post_status'  => 'publish',
-				'post_type'    => 'humcore_deposit',
-				'post_name'    => $nextPids[0],
-				'post_author'  => bp_loggedin_user_id()
-			);
-
-			$deposit_post_ID = wp_insert_post( $deposit_post_data );
-			$metadata['record_identifier'] = $deposit_post_ID;
-
-			$json_metadata = json_encode( $metadata, JSON_HEX_APOS );
-			if ( json_last_error() ) {
-				error_log( '*****HumCORE Deposit Error***** Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
-			}
-			$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_metadata', wp_slash( $json_metadata ) );
-			error_log( sprintf( '*****HumCORE Deposit***** - post_meta (1) : %1$s',  var_export( $json_metadata, true ) ) );
-			/* echo "<br />DEBUG 12 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
-
-			/**
-			 * Add to metadata and store in post meta.
-			 */
-			$post_metadata['files'][] = array(
-				'pid' => $nextPids[1],
-				'datastream_id' => $datastream_id,
-				'filename' => $filename,
-				'filetype' => $filetype,
-				'filesize' => $filesize,
-				'fileloc' => $renamed_file,
-				'thumb_datastream_id' => ( ! empty( $generated_thumb_name ) ) ? $thumb_datastream_id : '',
-				'thumb_filename' => ( ! empty( $generated_thumb_name ) ) ? $generated_thumb_name : '',
-			);
-
-			$json_metadata = json_encode( $post_metadata, JSON_HEX_APOS );
-			if ( json_last_error() ) {
-				error_log( '*****HumCORE Deposit Error***** File Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
-			}
-			$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_file_metadata', wp_slash( $json_metadata ) );
-			error_log( sprintf( '*****HumCORE Deposit***** - post_meta (2) : %1$s',  var_export( $json_metadata, true ) ) );
-			/* echo "<br />DEBUG 13 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
-
 			if ( preg_match( '~^audio/|^image/|^video/~', $check_filetype['type'] ) ) {
 				$sResult = $solr_client->create_humcore_document( '', $metadata );
 				/* echo "<br />DEBUG 11.1 ", date ( 'Y-m-d H:i:s' ), var_export( $sResult, true ); */
@@ -359,45 +403,6 @@
 		$activity_ID = humcore_new_deposit_activity( $deposit_post_ID, $metadata['abstract'], $local_link );
 
 		/**
-		 * Set object terms for subjects.
-		 */
-		if ( ! empty( $_POST['deposit-subject'] ) ) {
-			$term_ids = array();
-			foreach ( $_POST['deposit-subject'] as $subject ) {
-				$term_key = term_exists( $subject, 'humcore_deposit_subject' );
-				if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
-					$term_ids[] = intval( $term_key['term_id'] );
-				} else {
-					error_log( '*****HumCORE Deposit Error - bad subject*****' . var_export( $term_key, true ) );
-				}
-			}
-			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_subject' );
-			}
-		}
-
-		/**
-		 * Add any new keywords and set object terms for tags.
-		 */
-		if ( ! empty( $_POST['deposit-keyword'] ) ) {
-			$term_ids = array();
-			foreach ( $_POST['deposit-keyword'] as $keyword ) {
-				$term_key = term_exists( $keyword, 'humcore_deposit_tag' );
-				if ( empty( $term_key ) ) {
-					$term_key = wp_insert_term( strtolower( sanitize_text_field( $keyword ) ), 'humcore_deposit_tag' );
-				}
-				if ( ! is_wp_error( $term_key ) ) {
-					$term_ids[] = intval( $term_key['term_id'] );
-				} else {
-					error_log( '*****HumCORE Deposit Error - bad tag*****' . var_export( $term_key, true ) );
-				}
-			}
-			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_tag' );
-			}
-		}
-
-		/**
 		 * Publish the reserved DOI.
 		 */
 		if ( ! empty( $metadata['deposit_doi'] ) ) {
@@ -549,6 +554,7 @@
 			foreach ( $_POST['deposit-group'] as $group_id ) {
 				$group = groups_get_group( array( 'group_id' => sanitize_text_field( $group_id ) ) );
 				$metadata['group'][] = $group->name;
+				$metadata['group_ids'][] = $group_id;
 			}
 		}
 
@@ -556,6 +562,7 @@
 		if ( ! empty( $_POST['deposit-subject'] ) ) {
 			foreach ( $_POST['deposit-subject'] as $subject ) {
 				$metadata['subject'][] = sanitize_text_field( stripslashes( $subject ) );
+				// Subject ids will be set later.
 			}
 		}
 
@@ -563,6 +570,7 @@
 		if ( ! empty( $_POST['deposit-keyword'] ) ) {
 			foreach ( $_POST['deposit-keyword'] as $keyword ) {
 				$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
+				// Keyword ids will be set later.
 			}
 		}
 
