@@ -69,7 +69,7 @@ class Humcore_Deposit_Solr_Api {
 		$config = array(
 			'endpoint' => array(
 				'solrhost' => array(
-					'scheme' => preg_replace( '~://$~', '', $solrSettings['protocol'] ),
+					'scheme' => preg_replace( '~://$~', '', $solrSettings['scheme'] ),
 					'host' => $solrSettings['host'],
 					'port' => $solrSettings['port'],
 					'path' => $solrSettings['path'] . '/',
