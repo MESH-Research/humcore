@@ -95,6 +95,11 @@ function humcore_deposit_form() {
 	<input type="hidden" name="action" id="action" value="deposit_file" />
 	<?php wp_nonce_field( 'new_core_deposit', 'new_core_deposit_nonce' ); ?>
 
+        <input type="hidden" name="selected_temp_name" id="selected_temp_name" value="<?php if ( ! empty( $_POST['selected_temp_name'] ) ) { echo sanitize_text_field( $_POST['selected_temp_name'] ); } ?>" />
+        <input type="hidden" name="selected_file_name" id="selected_file_name" value="<?php if ( ! empty( $_POST['selected_file_name'] ) ) { echo sanitize_text_field( $_POST['selected_file_name'] ); } ?>" />
+        <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_type'] ); } ?>" />
+        <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_size'] ); } ?>" />
+
 	<div id="deposit-metadata-entries">
 
 	<div id="deposit-title-entry">
@@ -696,10 +701,104 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
 <?php endif; ?>
+<?php if ( 'journal-article' == $post_metadata['publication-type'] ) : ?>
+<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'Journal Article'; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['doi'] ) ) : ?>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['doi'] ) ) : ?>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
+<dt><?php _e( 'Journal:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['volume'] ) ) : ?>
+<dt><?php _e( 'Volume:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['issue'] ) ) : ?>
+<dt><?php _e( 'Issue:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['issue']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['issn'] ) ) : ?>
+<dt><?php _e( 'ISSN:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['issn']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php elseif ( 'book' == $post_metadata['publication-type'] ) : ?>
+<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'Book'; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['doi'] ) ) : ?>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_author'] ) ) : ?>
+<dt><?php _e( 'Author/Editor:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_author']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
+<dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['chapter'] ) ) : ?>
+<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['chapter']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['isbn'] ) ) : ?>
+<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php elseif ( 'conference-proceeding' == $post_metadata['publication-type'] ) : ?>
+<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo 'Conference Proceeding'; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['doi'] ) ) : ?>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
+<dt><?php _e( 'Proceeding:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php endif; ?>
 </dl>
-</div>
-<br style='clear:both'>
-<div><h3><?php _e( 'Downloads', 'humcore_domain' ); ?></h3>
+<div><h4><?php _e( 'Downloads', 'humcore_domain' ); ?></h4>
 <div class="doc-attachments">
 	<table class="view_statistics">
 	<tr><td class="prompt"><a class="bp-deposits-download button" title="Download" href="<?php echo esc_url( $download_url ); ?>"><?php _e( 'Download', 'humcore_domain' ); ?></a></td>
@@ -713,6 +812,8 @@ function humcore_deposit_item_content() {
 	</table>
 </div>
 </div>
+</div>
+<br style='clear:both'>
 <?php
 
 }

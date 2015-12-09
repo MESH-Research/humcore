@@ -146,7 +146,15 @@ var uploader = new plupload.Uploader( {
 	},
 	init: {
 		PostInit: function() {
-			document.getElementById( 'filelist' ).innerHTML = '';
+			if ( "" != $('#selected_file_name').val() ) {
+        			$('#filelist').html(
+                			'<div>' + $('#selected_file_name').val() +
+					' (' + plupload.formatSize( $('#selected_file_size').val() ) + ') <b></b></div>');
+        			$('#console').html(
+                			'The file has been uploaded. Use the fields below to enter information about the file and press Deposit.');
+			} else {
+				$('#filelist').html('');
+			}
 //			document.getElementById( 'uploadfile' ).onclick = function() {
 //				uploader.start();
 //				return false;
@@ -181,30 +189,10 @@ var uploader = new plupload.Uploader( {
 //		   		document.getElementById( 'deposit-metadata-entries' ).style.display = 'block';
 				document.getElementById( 'deposit-title-unchanged' ).focus();
 				document.getElementById( 'console' ).innerHTML = 'The file has been uploaded. Use the fields below to enter information about the file and press Deposit.';
-
-				var file_size = document.createElement( 'input' );
-				file_size.setAttribute( 'type', 'hidden' );
-				file_size.setAttribute( 'name', 'selected_file_size' );
-				file_size.setAttribute( 'value',  file.size );
-				document.getElementById( 'deposit-form' ).appendChild( file_size );
-
-                var target_name = document.createElement( 'input' );
-                target_name.setAttribute( 'type', 'hidden' );
-                target_name.setAttribute( 'name', 'selected_temp_name' );
-                target_name.setAttribute( 'value',  file.target_name );
-                document.getElementById( 'deposit-form' ).appendChild( target_name );
-
-                var file_name = document.createElement( 'input' );
-                file_name.setAttribute( 'type', 'hidden' );
-                file_name.setAttribute( 'name', 'selected_file_name' );
-                file_name.setAttribute( 'value',  file.name );
-                document.getElementById( 'deposit-form' ).appendChild( file_name );
-
-                var file_type = document.createElement( 'input' );
-                file_type.setAttribute( 'type', 'hidden' );
-                file_type.setAttribute( 'name', 'selected_file_type' );
-                file_type.setAttribute( 'value',  file.type );
-                document.getElementById( 'deposit-form' ).appendChild( file_type );
+				document.getElementById( 'selected_file_size' ).setAttribute( 'value', file.size );
+				document.getElementById( 'selected_temp_name' ).setAttribute( 'value', file.target_name );
+				document.getElementById( 'selected_file_name' ).setAttribute( 'value', file.name );
+				document.getElementById( 'selected_file_type' ).setAttribute( 'value', file.type );
 
 			}
 		},
@@ -225,7 +213,6 @@ var uploader = new plupload.Uploader( {
 } );
 
 uploader.init();
-
 } );
 
 // Deposit select 2 controls
