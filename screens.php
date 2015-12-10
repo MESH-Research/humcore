@@ -340,7 +340,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-license-type-entry">
 		<label for="deposit-license-type">Creative Commons License</label>
-		<span class="description">By default, and in accordance with section 2 of the <em>MLA Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the dropdown menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
+		<span class="description">By default, and in accordance with section 2 of the <em>MLA Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
 		<select name="deposit-license-type" id="deposit-license-type" class="js-basic-single-required">
 <?php
 	$license_type_list = humcore_deposits_license_type_list();
