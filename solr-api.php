@@ -542,11 +542,10 @@ class Humcore_Deposit_Solr_Api {
 	 * Result['documents']= Array of documents
 	 * Result['info']=Result info
 	 */
-	public function get_search_results( $term, $facet_options, $start, $sort ) {
+	public function get_search_results( $term, $facet_options, $start, $sort, $number_of_res = 10 ) {
 
 		$search_result = array();
 		$fac_count = -1; // All the facet values.
-		$number_of_res = 10;
 		$lucene_reserved_characters = preg_quote( '+-&|!(){}[]^"~*?:\\' );
 		$facets_array = array(
 			'author_facet', 'organization_facet', 'group_facet', 'subject_facet', 'genre_facet', 'pub_date_facet', 'type_of_resource_facet',

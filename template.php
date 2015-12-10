@@ -523,12 +523,12 @@ class Humcore_Deposit_Search_Results {
 
 		if ( ! $include ) {
 
-			$cache_key = http_build_query( array( $restricted_search_terms, $search_facets, $this->pag_page, $sort ), 'param_' );
+			$cache_key = http_build_query( array( $restricted_search_terms, $search_facets, $this->pag_page, $sort, $this->pag_num ), 'param_' );
 			// Check cache for search results.
 			$results = wp_cache_get( $cache_key, 'humcore_solr_search_results' );
 			if ( false === $results ) {
 				try {
-					$results = $solr_client->get_search_results( $restricted_search_terms, $search_facets, $this->pag_page, $sort );
+					$results = $solr_client->get_search_results( $restricted_search_terms, $search_facets, $this->pag_page, $sort, $this->pag_num );
 					$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', 30 );
 				} catch ( Exception $e ) {
 					$this->total_deposit_count = 0;
