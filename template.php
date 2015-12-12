@@ -307,6 +307,20 @@ function humcore_get_deposit_pagination_links() {
 }
 
 /**
+ * Return the deposit page number.
+ *
+ * @global object $deposits_results {@link Humcore_Deposit_Search_Results}
+ * @uses apply_filters() To call the 'humcore_get_deposit_page_number' hook.
+ *
+ * @return string The page number.
+ */
+function humcore_get_deposit_page_number() {
+        global $deposits_results;
+
+        return apply_filters( 'humcore_get_deposit_page_number', $deposits_results->pag_page );
+}
+
+/**
  * Return true when there are more deposit items to be shown than currently appear.
  *
  * @global object $deposits_results {@link Humcore_Deposit_Search_Results}

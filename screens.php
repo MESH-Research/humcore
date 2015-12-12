@@ -530,6 +530,39 @@ function humcore_deposit_form() {
 }
 
 /**
+ * Output deposits list entry html.
+ */
+function humcore_deposits_list_entry_content() {
+
+	$metadata = (array) humcore_get_current_deposit();
+        $authors = array_filter( $metadata['authors'] );
+        $authors_list = implode( ', ', $authors );
+
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+?>
+<ul class="deposits-item">
+<li>
+<span class="list-item-label">Title</span>
+<span class="list-item-value"><?php echo $metadata['title']; ?></span>
+</li>
+<li>
+<span class="list-item-label">URL</span>
+<span class="list-item-value"><a href="<?php echo esc_url( $item_url ); ?>"><?php echo esc_url( $item_url ); ?></a></span>
+</li>
+<li>
+<span class="list-item-label">Author(s)</span>
+<span class="list-item-value"><?php echo esc_html( $authors_list ); ?></span>
+</li>
+<li>
+<span class="list-item-label">Date</span>
+<span class="list-item-value"><?php echo esc_html( $metadata['date'] ); ?></span>
+</li>
+</ul>
+<?php
+
+}
+
+/**
  * Output deposits loop entry html.
  */
 function humcore_deposits_entry_content() {
