@@ -654,12 +654,12 @@ function humcore_deposit_item_content() {
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
 	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
-	$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['filename'] );
-
+	$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
 	$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
-	$total_views = get_post_meta( $deposit_post_id, '_total_views', true ) + 1; // Views counted at item page level.
+	$views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
+	$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
 	if ( $post_data->post_author != bp_loggedin_user_id() ) {
-		$post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+		$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 	}
 	$download_url = sprintf( '/deposits/download/%s/%s/%s/',
 		$file_metadata['files'][0]['pid'],
@@ -885,12 +885,12 @@ function humcore_deposit_item_review_content() {
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
         $file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
-        $downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['filename'] );
-
+        $downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
         $total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
-        $total_views = get_post_meta( $deposit_post_id, '_total_views', true ) + 1; // Views counted at item page level.
+        $views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
+        $total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
         if ( $post_data->post_author != bp_loggedin_user_id() ) {
-                $post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+                $post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
         }
         $download_url = sprintf( '/deposits/download/%s/%s/%s/',
                 $file_metadata['files'][0]['pid'],

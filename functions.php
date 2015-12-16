@@ -686,9 +686,13 @@ function humcore_deposits_download() {
 		do_action( 'humcore_deposits_download' );
 		$deposit_id = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];
+		if ( empty( $deposit_id ) || empty( $deposit_datastream ) ) {
+			bp_do_404();
+			return;
+		}
 		$deposit_filename = $wp->query_vars['deposits_filename'];
 		$download_param = ( 'xml' == $deposit_filename ) ? '' : '?download=true';
-		$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $deposit_datastream, $deposit_filename );
+		$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $deposit_datastream, $deposit_id );
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
 		$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true ) + 1; // Downloads counted at file level.
@@ -714,8 +718,12 @@ function humcore_deposits_view() {
 		do_action( 'humcore_deposits_view' );
 		$deposit_id = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];
+                if ( empty( $deposit_id ) || empty( $deposit_datastream ) ) {
+                        bp_do_404();
+                        return;
+                }
 		$deposit_filename = $wp->query_vars['deposits_filename'];
-		$views_meta_key = sprintf( '_total_views_%s_%s', $deposit_datastream, $deposit_filename );
+		$views_meta_key = sprintf( '_total_views_%s_%s', $deposit_datastream, $deposit_id );
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
 		$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // views counted at file level
