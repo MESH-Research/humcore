@@ -309,6 +309,21 @@ function humcore_is_deposit_directory() {
 }
 
 /**
+ * Is the current page the deposit list?
+ *
+ * @return true If the current page is the deposit list.
+ */
+function humcore_is_deposit_list() {
+
+        global $wp;
+        if ( 'deposits/list' === $wp->query_vars['pagename'] ) {
+                return true;
+        } else {
+                return false;
+        }
+}
+
+/**
  * Is the current page the deposit item?
  *
  * @return true If the current page is a deposit item.
@@ -576,6 +591,18 @@ function humcore_deposits_screen_index() {
 add_action( 'bp_screens', 'humcore_deposits_screen_index' );
 
 /**
+ * Load the Deposits list page.
+ */
+function humcore_deposits_list_screen() {
+	if ( humcore_is_deposit_list() ) {
+		bp_update_is_directory( false, 'humcore_deposits' );
+		do_action( 'humcore_deposits_list_screen' );
+		bp_core_load_template( apply_filters( 'humcore_deposits_list_screen', 'deposits/deposits-list' ) );
+	}
+}
+add_action( 'bp_screens', 'humcore_deposits_list_screen' );
+
+/**
  * Load the Deposits item screen.
  */
 function humcore_deposits_item_screen() {
@@ -583,11 +610,21 @@ function humcore_deposits_item_screen() {
 	global $wp;
 	if ( humcore_is_deposit_item() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
-		do_action( 'humcore_deposits_item_screen' );
-		add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 		$deposit_id = $wp->query_vars['deposits_item'];
-		humcore_has_deposits( 'include=' . $deposit_id );
-		bp_core_load_template( apply_filters( 'humcore_deposits_item_screen', 'deposits/single/item' ) );
+		if ( empty( $deposit_id ) ) {
+			bp_do_404();
+			//bp_core_load_template( apply_filters( 'humcore_deposits_item_screen', 'deposits/404' ) );
+			return;
+		}
+		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
+		if ( $item_found) { 
+			do_action( 'humcore_deposits_item_screen' );
+			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
+			bp_core_load_template( apply_filters( 'humcore_deposits_item_screen', 'deposits/single/item' ) );
+		} else {
+			//bp_core_load_template( apply_filters( 'humcore_deposits_item_screen', 'deposits/404' ) );
+			bp_do_404();
+		}
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_item_screen' );
@@ -600,11 +637,19 @@ function humcore_deposits_item_review_screen() {
 	global $wp;
 	if ( humcore_is_deposit_item_review() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
-		do_action( 'humcore_deposits_item_review_screen' );
-		add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 		$deposit_id = $wp->query_vars['deposits_item'];
-		humcore_has_deposits( 'include=' . $deposit_id );
-		bp_core_load_template( apply_filters( 'humcore_deposits_item_review_screen', 'deposits/single/review' ) );
+		if ( empty( $deposit_id ) ) {
+			bp_do_404();
+			return;
+		}
+		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
+		if ( $item_found) { 
+			do_action( 'humcore_deposits_item_review_screen' );
+			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
+			bp_core_load_template( apply_filters( 'humcore_deposits_item_review_screen', 'deposits/single/review' ) );
+		} else {
+			bp_do_404();
+		}
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_item_review_screen' );
@@ -641,9 +686,13 @@ function humcore_deposits_download() {
 		do_action( 'humcore_deposits_download' );
 		$deposit_id = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];
+		if ( empty( $deposit_id ) || empty( $deposit_datastream ) ) {
+			bp_do_404();
+			return;
+		}
 		$deposit_filename = $wp->query_vars['deposits_filename'];
 		$download_param = ( 'xml' == $deposit_filename ) ? '' : '?download=true';
-		$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $deposit_datastream, $deposit_filename );
+		$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $deposit_datastream, $deposit_id );
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
 		$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true ) + 1; // Downloads counted at file level.
@@ -669,8 +718,12 @@ function humcore_deposits_view() {
 		do_action( 'humcore_deposits_view' );
 		$deposit_id = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];
+                if ( empty( $deposit_id ) || empty( $deposit_datastream ) ) {
+                        bp_do_404();
+                        return;
+                }
 		$deposit_filename = $wp->query_vars['deposits_filename'];
-		$views_meta_key = sprintf( '_total_views_%s_%s', $deposit_datastream, $deposit_filename );
+		$views_meta_key = sprintf( '_total_views_%s_%s', $deposit_datastream, $deposit_id );
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
 		$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // views counted at file level

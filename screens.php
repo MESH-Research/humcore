@@ -530,6 +530,39 @@ function humcore_deposit_form() {
 }
 
 /**
+ * Output deposits list entry html.
+ */
+function humcore_deposits_list_entry_content() {
+
+	$metadata = (array) humcore_get_current_deposit();
+        $authors = array_filter( $metadata['authors'] );
+        $authors_list = implode( ', ', $authors );
+
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+?>
+<ul class="deposits-item">
+<li>
+<span class="list-item-label">Title</span>
+<span class="list-item-value"><?php echo $metadata['title']; ?></span>
+</li>
+<li>
+<span class="list-item-label">URL</span>
+<span class="list-item-value"><a href="<?php echo esc_url( $item_url ); ?>"><?php echo esc_url( $item_url ); ?></a></span>
+</li>
+<li>
+<span class="list-item-label">Author(s)</span>
+<span class="list-item-value"><?php echo esc_html( $authors_list ); ?></span>
+</li>
+<li>
+<span class="list-item-label">Date</span>
+<span class="list-item-value"><?php echo esc_html( $metadata['date'] ); ?></span>
+</li>
+</ul>
+<?php
+
+}
+
+/**
  * Output deposits loop entry html.
  */
 function humcore_deposits_entry_content() {
@@ -621,12 +654,12 @@ function humcore_deposit_item_content() {
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
 	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
-	$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['filename'] );
-
+	$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
 	$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
-	$total_views = get_post_meta( $deposit_post_id, '_total_views', true ) + 1; // Views counted at item page level.
+	$views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
+	$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
 	if ( $post_data->post_author != bp_loggedin_user_id() ) {
-		$post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+		$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 	}
 	$download_url = sprintf( '/deposits/download/%s/%s/%s/',
 		$file_metadata['files'][0]['pid'],
@@ -852,12 +885,12 @@ function humcore_deposit_item_review_content() {
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
         $file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
-        $downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['filename'] );
-
+        $downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
         $total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
-        $total_views = get_post_meta( $deposit_post_id, '_total_views', true ) + 1; // Views counted at item page level.
+        $views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
+        $total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
         if ( $post_data->post_author != bp_loggedin_user_id() ) {
-                $post_meta_ID = update_post_meta( $deposit_post_id, '_total_views', $total_views );
+                $post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
         }
         $download_url = sprintf( '/deposits/download/%s/%s/%s/',
                 $file_metadata['files'][0]['pid'],

@@ -249,6 +249,12 @@ function humcore_add_rewrite_rule() {
 		'top'
 	);
 
+        add_rewrite_rule(
+                '(deposits/list)/?$',
+                'index.php?pagename=$matches[1]',
+                'top'
+        );
+
 }
 // Hook into the init action and call humcore_add_rewrite_rule when init fires.
 add_action( 'init', 'humcore_add_rewrite_rule' );

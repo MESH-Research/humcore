@@ -123,6 +123,22 @@ div.item-list-tabs ul#search-results-header li span {
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
 }
+/* deposit list styles */
+ul.deposits-item {
+	list-style-type: none;
+	font-size: 62%;
+	line-height: 1.5em;
+	display: inline;
+}
+ul.deposits-item .list-item-label {
+        float: left;
+	width: 15%;
+	clear: both;
+}
+ul.deposits-item .list-item-value {
+        float: left;
+	width: 85%;
+}
 /* deposit form styles */
 .deposits-new-item-page div.main-wrap.row {
 	margin-left: 0;

@@ -108,6 +108,7 @@ class Humcore_Deposit_Component extends BP_Component {
 
 		add_action( 'humcore_deposits_results_deposit_sub_types', array( $this, 'humcore_deposits_results_deposit_sub_types' ) );
 		add_action( 'bp_before_directory_deposits_content', array( $this, 'humcore_before_directory_deposits_content' ) );
+		add_action( 'humcore_deposits_list_entry_content', 'humcore_deposits_list_entry_content' );
 		add_action( 'humcore_deposits_entry_content', 'humcore_deposits_entry_content' );
 		add_action( 'humcore_deposit_item_content', 'humcore_deposit_item_content' );
 		add_action( 'humcore_deposit_item_review_content', 'humcore_deposit_item_review_content' );
@@ -123,6 +124,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function setup_filters() {
 
+		add_filter( 'wp_title', array( $this, 'humcore_filter_item_wp_title' ), 11, 2 );
 		/* add_filter( 'bp_dtheme_ajax_querystring', array( $this, 'humcore_override_ajax_querystring' ), 10, 7 ); */
 	}
 
@@ -335,6 +337,32 @@ class Humcore_Deposit_Component extends BP_Component {
 		</span></li>
 		<?php }
 	}
+
+	/**
+	 * Create a unique title for a deposit item.
+	 *
+	 * @param string $title Default title text for current view.
+	 * @param string $sep Optional separator.
+	 * @return string Filtered title.
+	 */
+	public function humcore_filter_item_wp_title( $title, $sep ) {
+
+		global $wp, $paged, $page;
+ 
+		if ( is_feed() ) {
+			return $title;
+		}
+ 
+        	if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
+			$title = 'Deposit Item' . " $sep " . $wp->query_vars['deposits_item'] . " $sep ";
+                	if ( 'review' === $wp->query_vars['deposits_command'] ) {
+				$title .= $wp->query_vars['deposits_command'] . " $sep ";
+			}
+		}
+
+		return $title;
+	}
+
 }
 
 /**
