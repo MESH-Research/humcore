@@ -54,6 +54,16 @@ jQuery(document).ready( function($) {
 		}
 	}
 
+	function update_char_counter() {
+		var total_chars = $(this).val().length;
+		$(this).siblings('.character-count').text(total_chars + " chars");
+	}
+
+	$('#deposit-abstract-unchanged').keyup(update_char_counter);
+	$('#deposit-abstract-unchanged').keydown(update_char_counter);
+	$('#deposit-notes-unchanged').keyup(update_char_counter);
+	$('#deposit-notes-unchanged').keydown(update_char_counter);
+
 	//Hide the published forms by default, expand as needed
 	$('#deposit-conference-title-entry').hide();
 	$('#deposit-organization-entry').hide();
@@ -85,6 +95,8 @@ jQuery(document).ready( function($) {
 		var item_type = $.trim($('#deposit-genre').val());
 		var description = $.trim($('#deposit-abstract-unchanged').val());
 		var selected_file = $.trim($('input[type=hidden][name=selected_file_name]').val());
+		var description_length = $('#deposit-abstract-unchanged').val().length;
+		var notes_length = $('#deposit-notes-unchanged').val().length;
 		var message = "Please complete the following steps before pressing Deposit:\n\n";
 		if ( selected_file === '' ) {
 			message += "Upload a file.\n";
@@ -98,7 +110,13 @@ jQuery(document).ready( function($) {
 		if ( description === '' ) {
 			message += "Enter a Description.\n";
 		}
-		if ( title === '' || item_type === '' || description === '' || selected_file === '' ) {
+		if ( description_length > 2000 ) {
+			message += "Limit Description to 2000 characters.\n";
+		}
+		if ( notes_length > 500 ) {
+			message += "Limit Notes to 500 characters.\n";
+		}
+		if ( title === '' || item_type === '' || description === '' || selected_file === '' || description_length > 2000 || notes_length > 500 ) {
 			alert(message);
 			return false;
 		} else {

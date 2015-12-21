@@ -149,6 +149,7 @@ function humcore_deposit_form() {
 		<label for="deposit-abstract">Description or Abstract</label>
 		<textarea class="abstract_area" rows="12" autocomplete="off" cols="80" name="deposit-abstract-unchanged" id="deposit-abstract-unchanged"><?php if ( ! empty( $_POST['deposit-abstract-unchanged'] ) ) { echo wp_kses( stripslashes( $_POST['deposit-abstract-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
 		<span class="description">*</span>
+	<div class="character-count"></div>
 	</div>
 	</p>
 	<p>
@@ -335,6 +336,7 @@ function humcore_deposit_form() {
 		<label for="deposit-notes">Notes or Background</label>
 		<span class="description">Any additional information about your item?</span><br />
 		<textarea name="deposit-notes-unchanged" class="the-notes" id="deposit-notes-unchanged"><?php if ( ! empty( $_POST['deposit-notes-unchanged'] ) ) { echo wp_kses( stripslashes( $_POST['deposit-notes-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
+	<div class="character-count"></div>
 	</div>
 	</p>
 	<p>
