@@ -716,6 +716,27 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'Item Type:', 'humcore_domain' ); ?></dt>
 <dd><a href="/deposits/?facets[genre_facet][]=<?php echo urlencode( $metadata['genre'] ); ?>"><?php echo esc_html( $metadata['genre'] ); ?></a></dd>
 <?php endif; ?>
+<?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] ) : ?>
+<?php if ( ! empty( $post_metadata['conference_title'] ) ) : ?>
+<dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $post_metadata['conference_title']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php if ( ! empty( $post_metadata['conference_organization'] ) ) : ?>
+<dt><?php _e( 'Conf. Org.:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $post_metadata['conference_organization']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical Report' == $metadata['genre'] ) : ?>
+<?php if ( ! empty( $post_metadata['institution'] ) ) : ?>
+<dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $post_metadata['institution']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php endif; ?>
 <?php if ( ! empty( $keywords ) ) : ?>
 <dt><?php _e( 'Tag(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo $keyword_list; // XSS OK. ?></dd>
