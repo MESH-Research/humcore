@@ -109,9 +109,8 @@ class Humcore_Deposit_Solr_Api {
 				'status'          => $result->getStatus(),
 				'response'        => $result->getData(),
 			);
-			if ( defined( 'HUMCORE_DEBUG' ) && HUMCORE_DEBUG && defined( 'HUMCORE_DEBUG_LOG' ) && '' != HUMCORE_DEBUG_LOG ) {
-				ini_set( 'log_errors_max_len', '0' );
-				error_log( '[' . date( 'd-M-Y H:i:s T' ) . '] solr debug: ' . var_export( $info, true ), 3, HUMCORE_DEBUG_LOG );
+			if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+			        humcore_write_error_log( 'solr debug', $info );
 			}
 			// End of debug.
 			$res = $result->getData();
@@ -130,9 +129,8 @@ class Humcore_Deposit_Solr_Api {
 				'status'          => $e->getCode(),
 				'response'        => $e->getMessage(),
 			);
-			if ( defined( 'HUMCORE_DEBUG' ) && HUMCORE_DEBUG && defined( 'HUMCORE_DEBUG_LOG' ) && '' != HUMCORE_DEBUG_LOG ) {
-				ini_set( 'log_errors_max_len', '0' );
-				error_log( '[' . date( 'd-M-Y H:i:s T' ) . '] solr debug: ' . var_export( $info, true ), 3, HUMCORE_DEBUG_LOG );
+			if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+			        humcore_write_error_log( 'solr debug', $info );
 			}
 			// End of debug.
 			return new WP_Error( $e->getCode(), $e->getStatusMessage(), $e->getMessage() );
@@ -359,8 +357,6 @@ class Humcore_Deposit_Solr_Api {
 		$doc->record_identifier = $metadata['record_identifier'];
 		$doc->member_of = $metadata['member_of'];
 
-//error_log("***********debugsolr***********".var_export($metadata,true));
-
 		$query->setDocument( $doc );
 
 		// This executes the query and returns the result.
@@ -381,9 +377,8 @@ class Humcore_Deposit_Solr_Api {
 				'status'          => $result->getStatus(),
 				'time'            => $result->getQueryTime(),
 			);
-			if ( defined( 'HUMCORE_DEBUG' ) && HUMCORE_DEBUG && defined( 'HUMCORE_DEBUG_LOG' ) && '' != HUMCORE_DEBUG_LOG ) {
-				ini_set( 'log_errors_max_len', '0' );
-				error_log( '[' . date( 'd-M-Y H:i:s T' ) . '] solr debug: ' . var_export( $info, true ), 3, HUMCORE_DEBUG_LOG );
+			if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+			        humcore_write_error_log( 'solr debug', $info );
 			}
 			// End of debug.
 			throw $e;
@@ -403,9 +398,8 @@ class Humcore_Deposit_Solr_Api {
 			'status'          => $result->getStatus(),
 			'time'            => $result->getQueryTime(),
 		);
-		if ( defined( 'HUMCORE_DEBUG' ) && HUMCORE_DEBUG && defined( 'HUMCORE_DEBUG_LOG' ) && '' != HUMCORE_DEBUG_LOG ) {
-			ini_set( 'log_errors_max_len', '0' );
-			error_log( '[' . date( 'd-M-Y H:i:s T' ) . '] solr debug: ' . var_export( $info, true ), 3, HUMCORE_DEBUG_LOG );
+		if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+			humcore_write_error_log( 'solr debug', $info );
 		}
 		// End of debug.
 		return true;
@@ -508,9 +502,8 @@ class Humcore_Deposit_Solr_Api {
 			'status'          => $result->getStatus(),
 			'time'            => $result->getQueryTime(),
 		);
-		if ( defined( 'HUMCORE_DEBUG' ) && HUMCORE_DEBUG && defined( 'HUMCORE_DEBUG_LOG' ) && '' != HUMCORE_DEBUG_LOG ) {
-			ini_set( 'log_errors_max_len', '0' );
-			error_log( '[' . date( 'd-M-Y H:i:s T' ) . '] solr debug: ' . var_export( $info, true ), 3, HUMCORE_DEBUG_LOG );
+		if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+			humcore_write_error_log( 'solr debug', $info );
 		}
 		// End of debug.
 		return true;
