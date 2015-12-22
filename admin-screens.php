@@ -208,12 +208,10 @@ function humcore_deposit_metabox( $post ) {
 <?php
 	$subject_list = humcore_deposits_subject_list();
 	$posted_subject_list = array();
-//error_log('****************$aggregator_metadata****************'.var_export($aggregator_metadata,true));
 	if ( ! empty( $aggregator_metadata['subject'] ) ) {
                 foreach ( $aggregator_metadata['subject_ids'] as $subject_id ) {
                         $term = get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
                         $posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
-error_log('****************$term****************'.var_export($term,true));
                 }
 	}
 	foreach ( $subject_list as $subject_key => $subject_value ) {
@@ -667,13 +665,14 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	// No changes allowed.
 	// $aggregator_metadata['record_identifier'] = sanitize_text_field( $_POST['aggregator_record_identifier'] );
-error_log('****************$aggregator_metadata****************'.var_export($aggregator_metadata,true));
 
 	$json_aggregator_metadata = json_encode( $aggregator_metadata, JSON_HEX_APOS );
 
 	// Update the meta field in the database.
 	$post_meta_ID = update_post_meta( $post_id, '_deposit_metadata', wp_slash( $json_aggregator_metadata ) );
-	error_log( '*****WP Admin HumCORE Deposit Meta Update*****' . var_export( $json_aggregator_metadata, true ) );
+	if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+		humcore_write_error_log( 'WP Admin HumCORE Deposit Meta Update', $json_aggregator_metadata );
+	}
 
 	// Reindex solr doc.
 	$resource_file_metadata = json_decode( get_post_meta( $post_id, '_deposit_file_metadata', true ), true );
@@ -759,7 +758,7 @@ error_log('****************$aggregator_metadata****************'.var_export($agg
 		}
 
 	}
-//error_log( "**********debugcreate**********".var_export($aggregator_metadata,true));
+
 	return $post_id;
 
 }

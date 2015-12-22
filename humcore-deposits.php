@@ -362,6 +362,20 @@ if ( is_admin() ) {
 }
 
 /**
+ * Write a formatted HumCORE error or informational message.
+ */
+function humcore_write_error_log( $error_type = '', $info = null ) {
+
+	ini_set( 'log_errors_max_len', '0' );
+	if ( empty( $info ) ) {
+		error_log( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_type . '.' . "\n\r", 3, CORE_ERROR_LOG );
+	} else {
+		error_log( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_type . ': ' . var_export( $info, true ) . "\n\r", 3, CORE_ERROR_LOG );
+	}
+
+}
+
+/**
  * Writes wp http data to a custom log file if debugging is active.
  */
 function humcore_http_api_debug( $response = null, $state = null, $class = null, $args = null, $url = null ) {
@@ -378,8 +392,7 @@ function humcore_http_api_debug( $response = null, $state = null, $class = null,
 		'url'             => $url,
 		'response'        => $response,
 	);
-	ini_set( 'log_errors_max_len', '0' );
-	error_log( '[' . date( 'd-M-Y H:i:s T' ) . '] http api debug: ' . var_export( $info, true ), 3, HUMCORE_DEBUG_LOG );
+	humcore_write_error_log( 'http api debug', $info );
 
 }
 
@@ -388,7 +401,7 @@ function humcore_http_api_debug( $response = null, $state = null, $class = null,
  */
 function humcore_http_api_debug_action() {
 
-	if ( defined( 'HUMCORE_DEBUG' ) && HUMCORE_DEBUG && defined( 'HUMCORE_DEBUG_LOG' ) && '' != HUMCORE_DEBUG_LOG ) {
+	if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
 		// Hook into the http_api_debug action and call humcore_http_api_debug when http_api_debug fires.
 		add_action( 'http_api_debug', 'humcore_http_api_debug', 1000, 5 );
 	}

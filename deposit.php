@@ -88,7 +88,10 @@
 			}
 		}
 
-		error_log( '*****HumCORE deposit started.*****' );
+		if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+			humcore_write_error_log( 'HumCORE deposit started' );
+		}
+
 		/**
 		 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr.
 		 * Get the next 2 object id values for Fedora.
@@ -143,7 +146,9 @@
 		// TODO handle file write error.
 		$file_write_status = file_put_contents( $MODS_file, $metadataMODS );
 		/* echo "<br />DEBUG  3 ", date ( 'Y-m-d H:i:s' ), var_export( $metadataMODS, true ); */
-		error_log( '*****HumCORE deposit metadata complete.*****' );
+                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        humcore_write_error_log( 'HumCORE deposit metadata complete' );
+                }
 
 		/* echo "<br />DEBUG 10 ", date ( 'Y-m-d H:i:s' ), var_export( $metadata, true ); */
 
@@ -208,7 +213,10 @@
 			error_log( '*****HumCORE Deposit Error***** Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
 		}
 		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_metadata', wp_slash( $json_metadata ) );
-		error_log( sprintf( '*****HumCORE Deposit***** - post_meta (1) : %1$s',  var_export( $json_metadata, true ) ) );
+                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        humcore_write_error_log( 'HumCORE deposit - postmeta (1)', $json_metadata );
+                }
+
 		/* echo "<br />DEBUG 12 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
 
 		/**
@@ -230,7 +238,10 @@
 			error_log( '*****HumCORE Deposit Error***** File Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
 		}
 		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_file_metadata', wp_slash( $json_metadata ) );
-		error_log( sprintf( '*****HumCORE Deposit***** - post_meta (2) : %1$s',  var_export( $json_metadata, true ) ) );
+                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        humcore_write_error_log( 'HumCORE deposit - postmeta (2)', $json_metadata );
+                }
+
 		/* echo "<br />DEBUG 13 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
 
 		/**
@@ -376,7 +387,9 @@
 			}
 			/* echo "<br />DEBUG  8.2 ", date ( 'Y-m-d H:i:s' ), var_export( $tContent, true ); */
 		}
-		error_log( '*****HumCORE deposit fedora/solr writes complete.*****' );
+                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        humcore_write_error_log( 'HumCORE deposit fedora/solr writes complete' );
+                }
 
 		/**
 		 * Prepare an array of post data for the resource post.
@@ -410,7 +423,9 @@
 			if ( false === $eStatus ) {
 				echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
 			}
-			error_log( '*****HumCORE deposit DOI published.*****' );
+	                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        	humcore_write_error_log( 'HumCORE deposit DOI published' );
+                	}
 		}
 
 		/**
@@ -424,7 +439,9 @@
 			}
 		}
 
-		error_log( '*****HumCORE deposit complete.*****' );
+                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        humcore_write_error_log( 'HumCORE deposit transaction complete' );
+                }
 		echo '<h3>', __( 'Deposit complete!', 'humcore_domain' ), '</h3><br />';
 		return $nextPids[0];
 
