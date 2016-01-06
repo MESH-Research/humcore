@@ -140,6 +140,16 @@ function humcore_deposit_form() {
 		<input type="text" name="deposit-organization" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-organization'] ) ) { echo sanitize_text_field( $_POST['deposit-organization'] ); } ?>" />
 	</div>
 
+	<div id="deposit-conference-location-entry">
+		<label for="deposit-conference-location-entry-list">Conference Location</label>
+		<input type="text" name="deposit-conference-location" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-location'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-location'] ); } ?>" />
+	</div>
+
+	<div id="deposit-conference-date-entry">
+		<label for="deposit-conference-date-entry-list">Conference Date</label>
+		<input type="text" name="deposit-conference-date" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-date'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-date'] ); } ?>" />
+	</div>
+
 	<div id="deposit-institution-entry">
 		<label for="deposit-institution-entry-list">Name of Institution</label>
 		<input type="text" name="deposit-institution" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-institution'] ) ) { echo sanitize_text_field( $_POST['deposit-institution'] ); } ?>" />
@@ -729,6 +739,18 @@ function humcore_deposit_item_content() {
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>
+<?php if ( ! empty( $post_metadata['conference_location'] ) ) : ?>
+<dt><?php _e( 'Conf. Loc.:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $post_metadata['conference_location']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<?php if ( ! empty( $post_metadata['conference_date'] ) ) : ?>
+<dt><?php _e( 'Conf. Date:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $post_metadata['conference_date']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
 <?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical Report' == $metadata['genre'] ) : ?>
 <?php if ( ! empty( $post_metadata['institution'] ) ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
@@ -964,6 +986,18 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'Conf. Org.:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $post_metadata['conference_organization'] ) ) : ?>
 <dd><span><?php echo $post_metadata['conference_organization']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Conf. Loc.:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $post_metadata['conference_location'] ) ) : ?>
+<dd><span><?php echo $post_metadata['conference_location']; // XSS OK. ?></span></dd>
+<?php else : ?>
+<dd>&nbsp;</dd>
+<?php endif; ?>
+<dt><?php _e( 'Conf. Date:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $post_metadata['conference_date'] ) ) : ?>
+<dd><span><?php echo $post_metadata['conference_date']; // XSS OK. ?></span></dd>
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>

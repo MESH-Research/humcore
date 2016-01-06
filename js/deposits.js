@@ -7,14 +7,20 @@ jQuery(document).ready( function($) {
 			$('#deposit-conference-title-entry').hide();
 		   	$('#deposit-organization-entry').hide();
 		   	$('#deposit-institution-entry').show();
+			$('#deposit-conference-location-entry').hide();
+			$('#deposit-conference-date-entry').hide();
 		} else if ( value == 'Conference paper' || value == 'Conference proceeding' ) {
 			$('#deposit-conference-title-entry').show();
 		   	$('#deposit-organization-entry').show();
 			$('#deposit-institution-entry').hide();
+			$('#deposit-conference-location-entry').show();
+			$('#deposit-conference-date-entry').show();
 		} else {
 			$('#deposit-conference-title-entry').hide();
 			$('#deposit-organization-entry').hide();
 			$('#deposit-institution-entry').hide();
+			$('#deposit-conference-location-entry').hide();
+			$('#deposit-conference-date-entry').hide();
 		}
 	}
 
@@ -68,6 +74,8 @@ jQuery(document).ready( function($) {
 	$('#deposit-conference-title-entry').hide();
 	$('#deposit-organization-entry').hide();
 	$('#deposit-institution-entry').hide();
+	$('#deposit-conference-location-entry').hide();
+	$('#deposit-conference-date-entry').hide();
 	$('#deposit-committee-entry').hide();
 	$('#deposit-book-entries').hide();
 	$('#deposit-journal-entries').hide();

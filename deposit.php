@@ -561,9 +561,11 @@
 			$metadata['institution'] = $metadata['organization'];
 		}
 
-		if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) && ! empty( $_POST['deposit-conference-title'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
 			$metadata['conference_title'] = sanitize_text_field( $_POST['deposit-conference-title'] );
 			$metadata['conference_organization'] = sanitize_text_field( $_POST['deposit-organization'] );
+			$metadata['conference_location'] = sanitize_text_field( $_POST['deposit-conference-location'] );
+			$metadata['conference_date'] = sanitize_text_field( $_POST['deposit-conference-date'] );
 		}
 
 		$metadata['group'] = array();
