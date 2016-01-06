@@ -1,26 +1,48 @@
 // Deposit form button control
 jQuery(document).ready( function($) {
 
- 	function maybe_show_conference_fields(event) {
+ 	function maybe_show_extra_genre_fields(event) {
 		var value = $(this).val();
-		if ( value == 'Dissertation' || value == 'Thesis' ) {
+		if ( value == 'Dissertation' || value == 'Technical report' || value == 'Thesis' ) {
 			$('#deposit-conference-title-entry').hide();
 		   	$('#deposit-organization-entry').hide();
 		   	$('#deposit-institution-entry').show();
 			$('#deposit-conference-location-entry').hide();
 			$('#deposit-conference-date-entry').hide();
+			$('#deposit-meeting-title-entry').hide();
+			$('#deposit-meeting-organization-entry').hide();
+			$('#deposit-meeting-location-entry').hide();
+			$('#deposit-meeting-date-entry').hide();
 		} else if ( value == 'Conference paper' || value == 'Conference proceeding' ) {
 			$('#deposit-conference-title-entry').show();
 		   	$('#deposit-organization-entry').show();
 			$('#deposit-institution-entry').hide();
 			$('#deposit-conference-location-entry').show();
 			$('#deposit-conference-date-entry').show();
+			$('#deposit-meeting-title-entry').hide();
+			$('#deposit-meeting-organization-entry').hide();
+			$('#deposit-meeting-location-entry').hide();
+			$('#deposit-meeting-date-entry').hide();
+		} else if ( value == 'Presentation' ) {
+			$('#deposit-conference-title-entry').hide();
+		   	$('#deposit-organization-entry').hide();
+			$('#deposit-institution-entry').hide();
+			$('#deposit-conference-location-entry').hide();
+			$('#deposit-conference-date-entry').hide();
+			$('#deposit-meeting-title-entry').show();
+			$('#deposit-meeting-organization-entry').show();
+			$('#deposit-meeting-location-entry').show();
+			$('#deposit-meeting-date-entry').show();
 		} else {
 			$('#deposit-conference-title-entry').hide();
 			$('#deposit-organization-entry').hide();
 			$('#deposit-institution-entry').hide();
 			$('#deposit-conference-location-entry').hide();
 			$('#deposit-conference-date-entry').hide();
+			$('#deposit-meeting-title-entry').hide();
+			$('#deposit-meeting-organization-entry').hide();
+			$('#deposit-meeting-location-entry').hide();
+			$('#deposit-meeting-date-entry').hide();
 		}
 	}
 
@@ -76,12 +98,16 @@ jQuery(document).ready( function($) {
 	$('#deposit-institution-entry').hide();
 	$('#deposit-conference-location-entry').hide();
 	$('#deposit-conference-date-entry').hide();
+	$('#deposit-meeting-title-entry').hide();
+	$('#deposit-meeting-organization-entry').hide();
+	$('#deposit-meeting-location-entry').hide();
+	$('#deposit-meeting-date-entry').hide();
 	$('#deposit-committee-entry').hide();
 	$('#deposit-book-entries').hide();
 	$('#deposit-journal-entries').hide();
 	$('#deposit-conference-proceedings').hide();
-	$('select[name=deposit-genre]').on('change', maybe_show_conference_fields);
-	$('select[name=deposit-genre]').on('genreload', maybe_show_conference_fields);
+	$('select[name=deposit-genre]').on('change', maybe_show_extra_genre_fields);
+	$('select[name=deposit-genre]').on('genreload', maybe_show_extra_genre_fields);
 	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
 	$('input[type=radio][name=deposit-on-behalf-flag]').on('committeeload', maybe_show_committee_fields);
 	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_fields);
