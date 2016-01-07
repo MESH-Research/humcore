@@ -565,6 +565,32 @@ function humcore_deposits_list_entry_content() {
 }
 
 /**
+ * Output deposits feed item html.
+ */
+function humcore_deposits_feed_item_content() {
+
+	$metadata = (array) humcore_get_current_deposit();
+
+        $authors = array_filter( $metadata['authors'] );
+        $authors_list = '';
+        foreach ( $authors as $author ) {
+		$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $authors, ENT_QUOTES ) );
+	}
+
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+	$pub_date = DateTime::createFromFormat( 'Y-m-d\TH:i:s\Z', '2016-01-06T17:14:03Z' );
+?>
+		<title><?php echo htmlspecialchars( $metadata['title'], ENT_QUOTES ); ?></title>
+		<link><?php echo esc_url( $item_url ); ?></link>
+		<pubDate><?php echo $pub_date->format( 'D, d M Y H:i:s +0000' ); ?></pubDate>
+		<?php echo $authors_list; ?>
+		<guid isPermaLink="false"><?php echo esc_url( $item_url ); ?></guid>
+		<description><![CDATA[<?php echo $metadata['abstract']; ?>]]></description>
+<?php
+
+}
+
+/**
  * Output deposits loop entry html.
  */
 function humcore_deposits_entry_content() {
