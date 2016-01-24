@@ -90,6 +90,8 @@ function humcore_deposit_form() {
 	?>
 </div>
 
+<script type='text/javascript' src='/js/retrieveDOI.js'></script>
+
 <form id="deposit-form" class="standard-form" method="post" action="" enctype="multipart/form-data">
 
 	<input type="hidden" name="action" id="action" value="deposit_file" />
