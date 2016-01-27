@@ -57,23 +57,21 @@
 
       error.text('Retrieving DOI.');
 
-      var yql = 'select content from data.headers where url="' + url + '"';
       $.ajax({
           type: "GET",
           accepts: "application/vnd.citationstyles.csl+json",
-          url: 'http://query.yahooapis.com/v1/public/yql?q=' + encodeURIComponent(yql) + '&format=json&diagnostics=true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=?',
+          url: url,
           async: false,
+          crossDomain: true,
           dataType: 'json',
           success: function (data) {
-              response = data.query.results.resources.content;
-
-              console.log(response);
+              console.log(data);
 
               // parse the received JSON
-              var title = returnJSON(response.json.message, "title");
-              var containertitle = returnJSON(response.json.message, "container-title");
-              var subject = returnJSON(response.json.message, "subject");
-              var pages = returnJSON(response.json.message, "page");
+              var title = returnJSON(data.message, "title");
+              var containertitle = returnJSON(data.message, "container-title");
+              var subject = returnJSON(data.message, "subject");
+              var pages = returnJSON(data.message, "page");
 
               if (pages == '' || pages == null)
               { 
@@ -88,10 +86,10 @@
                 pages = pages.split('-'); 
               }
 
-              var DOIUrl = returnJSON(response.json.message, "URL");
-              var publisher = returnJSON(response.json.message, "publisher");
-              var deposittype = returnJSON(response.json.message, "type");
-              var issn = returnJSON(response.json.message, "ISSN");
+              var DOIUrl = returnJSON(data.message, "URL");
+              var publisher = returnJSON(data.message, "publisher");
+              var deposittype = returnJSON(data.message, "type");
+              var issn = returnJSON(data.message, "ISSN");
 
               if (typeof(issn) == 'Array')
               {
@@ -99,9 +97,9 @@
                 issn = issn[0];
               }
 
-              var volume = returnJSON(response.json.message, "volume");
-              var issue = returnJSON(response.json.message, "issue");
-              var createddate = response.json.message["created"]["date-parts"].json;
+              var volume = returnJSON(data.message, "volume");
+              var issue = returnJSON(data.message, "issue");
+              var createddate = data.message["created"]["date-parts"][0];
               
               $('#deposit-title-unchanged').val(title);
 
@@ -124,7 +122,9 @@
                 $('#deposit-journal-issue').val(issue);
                 $('#deposit-journal-start-page').val(pages[0]);
                 $('#deposit-journal-end-page').val(pages[1]);
-                $('#deposit-journal-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
+                if (createddate != null) {
+                    $('#deposit-journal-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
+                }
               }
               
           }
