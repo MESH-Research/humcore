@@ -111,6 +111,36 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 		<p>
+			<label>Conference Location<br>
+				<input type="text" name="aggregator_conference_location" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['conference_location'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Conference Date<br>
+				<input type="text" name="aggregator_conference_date" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['conference_date'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Meeting Title<br>
+				<input type="text" name="aggregator_meeting_title" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['meeting_title'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Meeting Organization<br>
+				<input type="text" name="aggregator_meeting_organization" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['meeting_organization'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Meeting Location<br>
+				<input type="text" name="aggregator_meeting_location" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['meeting_location'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Meeting Date<br>
+				<input type="text" name="aggregator_meeting_date" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['meeting_date'] ); ?>">
+			</label>
+		</p>
+		<p>
 			<label>Committee Deposit<br>
 				<input type="hidden" name="aggregator_committee_deposit" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['committee_deposit'] ); ?>">
 				<input type="text" name="aggregator_committee_deposit_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['committee_deposit'] ); ?>">
@@ -540,6 +570,12 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['institution'] = sanitize_text_field( stripslashes( $_POST['aggregator_institution'] ) );
 	$aggregator_metadata['conference_title'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_title'] ) );
 	$aggregator_metadata['conference_organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_organization'] ) );
+	$aggregator_metadata['conference_location'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_location'] ) );
+	$aggregator_metadata['conference_date'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_date'] ) );
+	$aggregator_metadata['meeting_title'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_title'] ) );
+	$aggregator_metadata['meeting_organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_organization'] ) );
+	$aggregator_metadata['meeting_location'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_location'] ) );
+	$aggregator_metadata['meeting_date'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_date'] ) );
 
 	// No changes allowed.
 	//$aggregator_metadata['committee_deposit'] = sanitize_text_field( $_POST['aggregator_committee_deposit'] );

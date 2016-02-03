@@ -260,6 +260,12 @@ class Humcore_Deposit_Solr_Api {
 				$record['institution'] = $document->institution;
 				$record['conference_title'] = $document->conference_title;
 				$record['conference_organization'] = $document->conference_organization;
+				$record['conference_location'] = $document->conference_location;
+				$record['conference_date'] = $document->conference_date;
+				$record['meeting_title'] = $document->meeting_title;
+				$record['meeting_organization'] = $document->meeting_organization;
+				$record['meeting_location'] = $document->meeting_location;
+				$record['meeting_date'] = $document->meeting_date;
 				$record['language'] = $document->language;
 				$record['type_of_resource'] = $document->type_of_resource_facet[0];
 				$record['record_content_source'] = $document->record_content_source;
@@ -347,6 +353,12 @@ class Humcore_Deposit_Solr_Api {
 		if ( ! empty( $metadata['institution'] ) ) { $doc->institution = $metadata['institution']; }
 		if ( ! empty( $metadata['conference_title'] ) ) { $doc->conference_title = $metadata['conference_title']; }
 		if ( ! empty( $metadata['conference_organization'] ) ) { $doc->conference_organization = $metadata['conference_organization']; }
+		if ( ! empty( $metadata['conference_location'] ) ) { $doc->conference_location = $metadata['conference_location']; }
+		if ( ! empty( $metadata['conference_date'] ) ) { $doc->conference_date = $metadata['conference_date']; }
+		if ( ! empty( $metadata['meeting_title'] ) ) { $doc->meeting_title = $metadata['meeting_title']; }
+		if ( ! empty( $metadata['meeting_organization'] ) ) { $doc->meeting_organization = $metadata['meeting_organization']; }
+		if ( ! empty( $metadata['meeting_location'] ) ) { $doc->meeting_location = $metadata['meeting_location']; }
+		if ( ! empty( $metadata['meeting_date'] ) ) { $doc->meeting_date = $metadata['meeting_date']; }
 		$doc->date_issued = $metadata['date_issued'];
 		$doc->pub_date_facet = array( $metadata['date_issued'] );
 		if ( ! empty( $metadata['type_of_resource'] ) ) {
@@ -472,6 +484,12 @@ class Humcore_Deposit_Solr_Api {
 		if ( ! empty( $metadata['institution'] ) ) { $doc->institution = $metadata['institution']; }
 		if ( ! empty( $metadata['conference_title'] ) ) { $doc->conference_title = $metadata['conference_title']; }
 		if ( ! empty( $metadata['conference_organization'] ) ) { $doc->conference_organization = $metadata['conference_organization']; }
+		if ( ! empty( $metadata['conference_location'] ) ) { $doc->conference_location = $metadata['conference_location']; }
+		if ( ! empty( $metadata['conference_date'] ) ) { $doc->conference_date = $metadata['conference_date']; }
+		if ( ! empty( $metadata['meeting_title'] ) ) { $doc->meeting_title = $metadata['meeting_title']; }
+		if ( ! empty( $metadata['meeting_organization'] ) ) { $doc->meeting_organization = $metadata['meeting_organization']; }
+		if ( ! empty( $metadata['meeting_location'] ) ) { $doc->meeting_location = $metadata['meeting_location']; }
+		if ( ! empty( $metadata['meeting_date'] ) ) { $doc->meeting_date = $metadata['meeting_date']; }
 		$doc->date_issued = $metadata['date_issued'];
 		$doc->pub_date_facet = array( $metadata['date_issued'] );
 		if ( ! empty( $metadata['type_of_resource'] ) ) {
@@ -560,6 +578,7 @@ class Humcore_Deposit_Solr_Api {
 			'author_facet', 'author_uni', 'author_info', 'organization_facet', 'group_facet', 'subject_facet', 'keyword_search', 'handle',
 			'genre_facet', 'notes', 'notes_unchanged', 'book_journal_title', 'book_author', 'publisher', 'isbn', 'issn', 'doi', 'volume',
 			'issue', 'book_chapter', 'start_page', 'end_page', 'language', 'institution', 'conference_title', 'conference_organization',
+			'conference_location', 'conference_date', 'meeting_title', 'meeting_organization', 'meeting_location', 'meeting_date',
 			'date_issued', 'type_of_resource_facet', 'record_content_source', 'record_creation_date', 'record_identifier', 'member_of',
 			'score',
 		) );
@@ -741,6 +760,12 @@ class Humcore_Deposit_Solr_Api {
 			$record['institution'] = $document->institution;
 			$record['conference_title'] = $document->conference_title;
 			$record['conference_organization'] = $document->conference_organization;
+			$record['conference_location'] = $document->conference_location;
+			$record['conference_date'] = $document->conference_date;
+			$record['meeting_title'] = $document->meeting_title;
+			$record['meeting_organization'] = $document->meeting_organization;
+			$record['meeting_location'] = $document->meeting_location;
+			$record['meeting_date'] = $document->meeting_date;
 			$record['record_content_source'] = $document->record_content_source;
 			$record['record_content_source'] = $document->record_content_source;
 			$record['record_creation_date'] = $document->record_creation_date;

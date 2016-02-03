@@ -219,7 +219,7 @@ function humcore_deposit_item_search_meta() {
 		printf( '<meta name="citation_author" content="%1$s">' . "\n\r", htmlentities( $author ) );
 	}
 
-	if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && ! empty( $metadata['institution'][0] ) ) {
+	if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Thesis' ) ) && ! empty( $metadata['institution'][0] ) ) {
 		printf( '<meta name="citation_dissertation_institution" content="%1$s">' . "\n\r", htmlentities( $metadata['institution'][0] ) );
 	}
 	if ( ! empty( $metadata['genre'] ) && 'Technical report' == $metadata['genre'] && ! empty( $metadata['institution'] ) ) {

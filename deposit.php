@@ -555,15 +555,24 @@
 		 */
 		$metadata['author_info'] = humcore_deposits_format_author_info( $metadata['authors'] );
 
-		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && ! empty( $_POST['deposit-institution'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis' ) ) && ! empty( $_POST['deposit-institution'] ) ) {
 			$metadata['institution'] = sanitize_text_field( $_POST['deposit-institution'] );
-		} else if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && empty( $_POST['deposit-institution'] ) ) {
+		} else if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis' ) ) && empty( $_POST['deposit-institution'] ) ) {
 			$metadata['institution'] = $metadata['organization'];
 		}
 
-		if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) && ! empty( $_POST['deposit-conference-title'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
 			$metadata['conference_title'] = sanitize_text_field( $_POST['deposit-conference-title'] );
 			$metadata['conference_organization'] = sanitize_text_field( $_POST['deposit-organization'] );
+			$metadata['conference_location'] = sanitize_text_field( $_POST['deposit-conference-location'] );
+			$metadata['conference_date'] = sanitize_text_field( $_POST['deposit-conference-date'] );
+		}
+
+		if ( ! empty( $metadata['genre'] ) && 'Presentation' == $metadata['genre'] ) {
+			$metadata['meeting_title'] = sanitize_text_field( $_POST['deposit-meeting-title'] );
+			$metadata['meeting_organization'] = sanitize_text_field( $_POST['deposit-meeting-organization'] );
+			$metadata['meeting_location'] = sanitize_text_field( $_POST['deposit-meeting-location'] );
+			$metadata['meeting_date'] = sanitize_text_field( $_POST['deposit-meeting-date'] );
 		}
 
 		$metadata['group'] = array();
@@ -1022,7 +1031,7 @@
 		 * Format MODS xml fragment for organization affiliation.
 		 */
 		$orgMODS = '';
-		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical Report', 'Thesis' ) ) && ! empty( $metadata['institution'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis' ) ) && ! empty( $metadata['institution'] ) ) {
 			$orgMODS .= '
 				<name type="corporate">
 				  <namePart>
@@ -1202,7 +1211,7 @@
 			}
 			$relatedItemMODS .= '
 				</relatedItem>';
-		} elseif ( ! empty( $metadata['genre'] ) && ( 'Conference publication' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
+		} elseif ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
 			$relatedItemMODS = '
 				<relatedItem type="host">
 					<titleInfo>';
