@@ -301,11 +301,26 @@ function humcore_is_deposit_search() {
 function humcore_is_deposit_directory() {
 
 	global $wp;
-	if ( 'deposits' == $wp->query_vars['pagename'] ) {
+	if ( 'deposits' == $wp->query_vars['pagename'] && ! is_feed() ) {
 		return true;
 	} else {
 		return false;
 	}
+}
+
+/**
+ * Is the current page the deposit feed?
+ *
+ * @return true If the current page is the deposit feed.
+ */
+function humcore_is_deposit_feed() {
+
+        global $wp;
+        if ( 'deposits' === $wp->query_vars['pagename'] && is_feed() ) {
+                return true;
+        } else {
+                return false;
+        }
 }
 
 /**
@@ -589,6 +604,18 @@ function humcore_deposits_screen_index() {
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_screen_index' );
+
+/**
+ * Load the Deposits feed.
+ */
+function humcore_deposits_feed() {
+	if ( humcore_is_deposit_feed() ) {
+		bp_update_is_directory( false, 'humcore_deposits' );
+		do_action( 'humcore_deposits_feed' );
+		bp_core_load_template( apply_filters( 'humcore_deposits_feed', 'deposits/deposits-feed' ) );
+	}
+}
+add_action( 'bp_screens', 'humcore_deposits_feed' );
 
 /**
  * Load the Deposits list page.
