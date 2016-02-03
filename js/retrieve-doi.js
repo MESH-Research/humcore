@@ -41,7 +41,7 @@
       $ = jQuery;
       var response = '';
       var DOI = $('#lookup-doi').val();
-      var url = 'http://api.crossref.org/works/' + DOI;
+      var url = 'https://api.crossref.org/works/' + DOI;
       var DOIregex = '(10[.][0-9]{4,}(?:[.][0-9]+)*/(?:(?![%"#? ])\\S)+)';
       var error = $('#lookup-doi-error');
 
