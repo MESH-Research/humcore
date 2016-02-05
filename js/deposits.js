@@ -239,7 +239,7 @@ var uploader = new plupload.Uploader( {
 				document.getElementById( 'indicator' ).style.width = '0%';
 			} else {
 //		   		document.getElementById( 'deposit-metadata-entries' ).style.display = 'block';
-				document.getElementById( 'deposit-title-unchanged' ).focus();
+				document.getElementById( 'lookup-doi' ).focus();
 				document.getElementById( 'console' ).innerHTML = 'The file has been uploaded. Use the fields below to enter information about the file and press Deposit.';
 				document.getElementById( 'selected_file_size' ).setAttribute( 'value', file.size );
 				document.getElementById( 'selected_temp_name' ).setAttribute( 'value', file.target_name );
