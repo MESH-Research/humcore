@@ -101,7 +101,15 @@ function humcore_deposit_form() {
         <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_size'] ); } ?>" />
 
 	<div id="deposit-metadata-entries">
-
+	<p>
+	<div id="lookup-doi-entry">
+		<label for="lookup-doi">Retrieve metadata for previously published items (optional)</label>
+		<span class="description">If this item has been previously published, you can enter the existing DOI and attempt to retrieve metadata from the CrossRef API.</span> <br /> <br />
+		<input type="text" id="lookup-doi" name="lookup-doi" class="long" value="" placeholder="Enter an existing DOI for this item." />
+		<button onClick="javascript:retrieveDOI(); return false;">Retrieve</button>
+		<div id="lookup-doi-message"></div>
+	</div>
+	</p>
 	<div id="deposit-title-entry">
 		<label for="deposit-title">Title</label>
 		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" class="long" value="<?php if ( ! empty( $_POST['deposit-title-unchanged'] ) ) {  echo wp_kses( stripslashes( $_POST['deposit-title-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?>" />

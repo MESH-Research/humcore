@@ -171,6 +171,13 @@ ul.deposits-item .list-item-value {
   font-weight: bold;
   margin-bottom: 5px;
 }
+#lookup-doi {
+	width: 40%;
+}
+#lookup-doi-message {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
 #deposit-title-unchanged {
 	width: 80%;
 }
