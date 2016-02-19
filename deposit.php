@@ -563,7 +563,7 @@
 
 		if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
 			$metadata['conference_title'] = sanitize_text_field( $_POST['deposit-conference-title'] );
-			$metadata['conference_organization'] = sanitize_text_field( $_POST['deposit-organization'] );
+			$metadata['conference_organization'] = sanitize_text_field( $_POST['deposit-conference-organization'] );
 			$metadata['conference_location'] = sanitize_text_field( $_POST['deposit-conference-location'] );
 			$metadata['conference_date'] = sanitize_text_field( $_POST['deposit-conference-date'] );
 		}
@@ -611,6 +611,7 @@
 		$metadata['record_content_source'] = 'HumCORE';
 		$metadata['record_creation_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
 		$metadata['member_of'] = $fedora_api->collectionPid;
+		$metadata['published'] = sanitize_text_field( $_POST['deposit-published'] ); // Not stored in solr.
 		if ( ! empty( $_POST['deposit-publication-type'] ) ) {
 			$metadata['publication-type'] = sanitize_text_field( $_POST['deposit-publication-type'] ); // Not stored in solr.
 		} else {
@@ -633,7 +634,7 @@
 			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-journal-end-page'] );
 			$metadata['issn'] = sanitize_text_field( $_POST['deposit-journal-issn'] );
 			$metadata['doi'] = sanitize_text_field( $_POST['deposit-journal-doi'] );
-		} elseif ( 'book' == $metadata['publication-type'] ) {
+		} elseif ( 'book-chapter' == $metadata['publication-type'] ) {
 			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-publisher'] );
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
@@ -649,7 +650,7 @@
 			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-book-end-page'] );
 			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-isbn'] );
 			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-doi'] );
-		} elseif ( 'conference-proceeding' == $metadata['publication-type'] ) {
+		} elseif ( 'proceedings-article' == $metadata['publication-type'] ) {
 			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-proceeding-publisher'] );
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-proceeding-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
@@ -1147,7 +1148,7 @@
 			}
 			$relatedItemMODS .= '
 				</relatedItem>';
-		} elseif ( 'book' == $metadata['publication-type'] ) {
+		} elseif ( 'book-chapter' == $metadata['publication-type'] ) {
 			$relatedItemMODS = '
 				<relatedItem type="host">
 					<titleInfo>';

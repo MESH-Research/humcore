@@ -1,48 +1,37 @@
 // Deposit form button control
 jQuery(document).ready( function($) {
 
+ 	function maybe_show_published_fields(event) {
+		var value = $(this).val();
+		if ( value == 'published' ) {
+		   	$('#lookup-doi-entry').show();
+//			$('input[type=radio][name="deposit-publication-type"]:checked').prop('checked', false);
+		} else if ( value == 'not-published' ) {
+			$('#lookup-doi-entry').hide();
+			$('input[type=radio][name="deposit-publication-type"][value="none"]').prop('checked', true);
+		} else {
+			$('#lookup-doi-entry').hide();
+		}
+	}
+
  	function maybe_show_extra_genre_fields(event) {
 		var value = $(this).val();
 		if ( value == 'Dissertation' || value == 'Technical report' || value == 'Thesis' ) {
-			$('#deposit-conference-title-entry').hide();
-		   	$('#deposit-organization-entry').hide();
-		   	$('#deposit-institution-entry').show();
-			$('#deposit-conference-location-entry').hide();
-			$('#deposit-conference-date-entry').hide();
-			$('#deposit-meeting-title-entry').hide();
-			$('#deposit-meeting-organization-entry').hide();
-			$('#deposit-meeting-location-entry').hide();
-			$('#deposit-meeting-date-entry').hide();
+			$('#deposit-conference-entries').hide();
+		   	$('#deposit-institution-entries').show();
+			$('#deposit-meeting-entries').hide();
 		} else if ( value == 'Conference paper' || value == 'Conference proceeding' ) {
-			$('#deposit-conference-title-entry').show();
-		   	$('#deposit-organization-entry').show();
-			$('#deposit-institution-entry').hide();
-			$('#deposit-conference-location-entry').show();
-			$('#deposit-conference-date-entry').show();
-			$('#deposit-meeting-title-entry').hide();
-			$('#deposit-meeting-organization-entry').hide();
-			$('#deposit-meeting-location-entry').hide();
-			$('#deposit-meeting-date-entry').hide();
+			$('#deposit-conference-entries').show();
+			$('#deposit-institution-entries').hide();
+			$('#deposit-meeting-entries').hide();
 		} else if ( value == 'Presentation' ) {
-			$('#deposit-conference-title-entry').hide();
-		   	$('#deposit-organization-entry').hide();
-			$('#deposit-institution-entry').hide();
-			$('#deposit-conference-location-entry').hide();
-			$('#deposit-conference-date-entry').hide();
-			$('#deposit-meeting-title-entry').show();
-			$('#deposit-meeting-organization-entry').show();
-			$('#deposit-meeting-location-entry').show();
-			$('#deposit-meeting-date-entry').show();
+			$('#deposit-conference-entries').hide();
+			$('#deposit-institution-entries').hide();
+			$('#deposit-meeting-entries').show();
 		} else {
-			$('#deposit-conference-title-entry').hide();
-			$('#deposit-organization-entry').hide();
-			$('#deposit-institution-entry').hide();
-			$('#deposit-conference-location-entry').hide();
-			$('#deposit-conference-date-entry').hide();
-			$('#deposit-meeting-title-entry').hide();
-			$('#deposit-meeting-organization-entry').hide();
-			$('#deposit-meeting-location-entry').hide();
-			$('#deposit-meeting-date-entry').hide();
+			$('#deposit-conference-entries').hide();
+			$('#deposit-institution-entries').hide();
+			$('#deposit-meeting-entries').hide();
 		}
 	}
 
@@ -57,66 +46,50 @@ jQuery(document).ready( function($) {
 		}
 	}
 
- 	function maybe_show_publication_fields(event) {
+ 	function maybe_show_publication_type_fields(event) {
 		var value = $(this).val();
-		if ( value == 'book' ) {
+		if ( value == 'book-chapter' ) {
 		   	$('#deposit-book-entries').show();
 			$('#deposit-journal-entries').hide();
-			$('#deposit-conference-proceedings').hide();
+			$('#deposit-proceedings-entries').hide();
 			$('#deposit-non-published-entries').hide();
+			$('input[type=radio][name="deposit-published"][value="published"]').prop('checked', true);
+			$('input[type=radio][name="deposit-published"][value="published"]').click();
 		} else if ( value == 'journal-article' ) {
 			$('#deposit-book-entries').hide();
 		   	$('#deposit-journal-entries').show();
-			$('#deposit-conference-proceedings').hide();
+			$('#deposit-proceedings-entries').hide();
 			$('#deposit-non-published-entries').hide();
-		} else if ( value == 'conference-proceeding' ) {
+			$('input[type=radio][name="deposit-published"][value="published"]').prop('checked', true);
+			$('input[type=radio][name="deposit-published"][value="published"]').click();
+		} else if ( value == 'proceedings-article' ) {
 			$('#deposit-book-entries').hide();
 		   	$('#deposit-journal-entries').hide();
-			$('#deposit-conference-proceedings').show();
+			$('#deposit-proceedings-entries').show();
 			$('#deposit-non-published-entries').hide();
+			$('input[type=radio][name="deposit-published"][value="published"]').prop('checked', true);
+			$('input[type=radio][name="deposit-published"][value="published"]').click();
 		} else if ( value == 'none' ) {
 			$('#deposit-book-entries').hide();
 			$('#deposit-journal-entries').hide();
-			$('#deposit-conference-proceedings').hide();
+			$('#deposit-proceedings-entries').hide();
 			$('#deposit-non-published-entries').show();
+			$('input[type=radio][name="deposit-published"][value="not-published"]').prop('checked', true);
+			$('input[type=radio][name="deposit-published"][value="not-published"]').click();
 		}
 	}
 
+	// Setup a character counter for the abstract and notes fields.
 	function update_char_counter() {
 		var total_chars = $(this).val().length;
 		$(this).siblings('.character-count').text(total_chars + " chars");
 	}
-
 	$('#deposit-abstract-unchanged').keyup(update_char_counter);
 	$('#deposit-abstract-unchanged').keydown(update_char_counter);
 	$('#deposit-notes-unchanged').keyup(update_char_counter);
 	$('#deposit-notes-unchanged').keydown(update_char_counter);
 
-	//Hide the published forms by default, expand as needed
-	$('#deposit-conference-title-entry').hide();
-	$('#deposit-organization-entry').hide();
-	$('#deposit-institution-entry').hide();
-	$('#deposit-conference-location-entry').hide();
-	$('#deposit-conference-date-entry').hide();
-	$('#deposit-meeting-title-entry').hide();
-	$('#deposit-meeting-organization-entry').hide();
-	$('#deposit-meeting-location-entry').hide();
-	$('#deposit-meeting-date-entry').hide();
-	$('#deposit-committee-entry').hide();
-	$('#deposit-book-entries').hide();
-	$('#deposit-journal-entries').hide();
-	$('#deposit-conference-proceedings').hide();
-	$('select[name=deposit-genre]').on('change', maybe_show_extra_genre_fields);
-	$('select[name=deposit-genre]').on('genreload', maybe_show_extra_genre_fields);
-	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
-	$('input[type=radio][name=deposit-on-behalf-flag]').on('committeeload', maybe_show_committee_fields);
-	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_fields);
-	$('input[type=radio][name=deposit-publication-type]').on('pubload', maybe_show_publication_fields);
-
-	$('select[name=deposit-genre]').trigger('genreload');
-	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
-	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubload');
-
+	// Add other authors as needed.
 	$('#deposit-insert-other-author-button').on('click', function(e) {
 		e.preventDefault();
 		$('#deposit-other-authors-entry-table>tbody').append('		<tr><td class="borderTop"><input type="text" name="deposit-other-authors-first-name[]" class="text" value="" /></td>' +
@@ -124,38 +97,134 @@ jQuery(document).ready( function($) {
 				'<td class="borderTop"></td></tr>');
 	});
 
+	//Hide the conditional fields by default.
+	$('#lookup-doi-entry').hide();
+	$('#deposit-conference-entries').hide();
+	$('#deposit-institution-entries').hide();
+	$('#deposit-meeting-entries').hide();
+	$('#deposit-committee-entry').hide();
+	$('#deposit-book-entries').hide();
+	$('#deposit-journal-entries').hide();
+	$('#deposit-proceedings-entries').hide();
+
+	// Setup triggers for page load from server.
+	$('select[name=deposit-genre]').trigger('genreload');
+	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
+	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubtypeload');
+	$('input[type=radio][name=deposit-published]:checked').trigger('pubload');
+
+	// Show any selected conditional fields.
+	$('select[name=deposit-genre]').on('change', maybe_show_extra_genre_fields);
+	$('select[name=deposit-genre]').on('genreload', maybe_show_extra_genre_fields);
+	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
+	$('input[type=radio][name=deposit-on-behalf-flag]').on('committeeload', maybe_show_committee_fields);
+	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_type_fields);
+	$('input[type=radio][name=deposit-publication-type]').on('pubtypeload', maybe_show_publication_type_fields);
+	$('input[type=radio][name=deposit-published]').on('click', maybe_show_published_fields);
+	$('input[type=radio][name=deposit-published]').on('pubload', maybe_show_published_fields);
+
+	// Setup warning and error dialogs.
+	$( "#deposit-warning-dialog" ).dialog({
+		autoOpen: false,
+		buttons: [{
+			text: 'Edit',
+			class: 'button-primary',
+			click: function() {
+				$(this).dialog('close');
+				}
+			},
+			{
+			text: 'Deposit',
+			class: 'button-primary',
+			click: function() {
+				$(this).dialog('close');
+				$('#deposit-submit').prop('disabled', true);
+				$('#deposit-submit').attr('value', 'Please wait...');
+				$('#deposit-form')[0].submit();
+				}
+			}],
+		closeOnEscape: false,
+		dialogClass: 'no-close',
+		modal: true,
+		title: 'Please review your entries.',
+		width: 688
+		});
+	$( "#deposit-error-dialog" ).dialog({
+		autoOpen: false,
+		buttons: [{
+			text: 'Edit',
+			class: 'button-primary',
+			click: function() {
+				$(this).dialog('close');
+				return false;
+				}
+			}],
+		closeOnEscape: false,
+		dialogClass: 'no-close',
+		modal: true,
+		title: 'Just one more thing...',
+		width: 400
+		});
+
+	// Check required and suggested entries before submitting form.
  	$('#deposit-form').on('submit', function(e) {
-		var title = $.trim($('#deposit-title-unchanged').val());
-		var item_type = $.trim($('#deposit-genre').val());
-		var description = $.trim($('#deposit-abstract-unchanged').val());
+
 		var selected_file = $.trim($('input[type=hidden][name=selected_file_name]').val());
+		var title = $.trim($('#deposit-title-unchanged').val());
+		var item_type = $('#deposit-genre').val();
+		var description = $.trim($('#deposit-abstract-unchanged').val());
 		var description_length = $('#deposit-abstract-unchanged').val().length;
+		var groups = $('select[name="deposit-group[]"]').val();
+		var subjects = $('select[name="deposit-subject[]"]').val();
 		var notes_length = $('#deposit-notes-unchanged').val().length;
-		var message = "Please complete the following steps before pressing Deposit:\n\n";
+
+		var error_message = '<ul>';
+		var warning_message = '<p>Several important fields are empty.<ul>';
+
 		if ( selected_file === '' ) {
-			message += "Upload a file.\n";
+			error_message += '<li>Please select a file.</li>';
+			$('#pickfile').addClass('deposit-input-highlight');
 		}
 		if ( title === '' ) {
-			message += "Enter a Title.\n";
+			error_message += '<li>Please add a title.</li>';
+			$('#deposit-title-unchanged').addClass('deposit-input-highlight');
 		}
 		if ( item_type === '' ) {
-			message += "Select an Item Type.\n";
+			error_message += '<li>Please add an item type.</li>';
+			$('#deposit-genre-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
 		if ( description === '' ) {
-			message += "Enter a Description.\n";
+			error_message += '<li>Please add a description.</li>';
+			$('#deposit-abstract-unchanged').addClass('deposit-input-highlight');
 		}
 		if ( description_length > 2000 ) {
-			message += "Limit Description to 2000 characters.\n";
+			error_message += '<li>Please limit description to 2000 characters.</li>';
+			$('#deposit-abstract-unchanged').addClass('deposit-input-highlight');
 		}
 		if ( notes_length > 500 ) {
-			message += "Limit Notes to 500 characters.\n";
+			error_message += '<li>Please limit notes to 500 characters.</li>';
+			$('#deposit-notes-unchanged').addClass('deposit-input-highlight');
 		}
+		if ( groups === null ) {
+			warning_message += '<li>We noticed you haven’t shared your deposit with any <em>MLA Commons</em> forums, which means forum members won’t receive a notification about its inclusion in <em>CORE</em>.</li>';
+			$('#deposit-group-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
+		}
+		if ( subjects === null ) {
+			warning_message += '<li>We noticed you did not select a subject for your item, which could make it harder for others to find.</li>';
+			$('#deposit-subject-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
+		}
+
+		// Show a dialog if needed, otherwise submit the form.
 		if ( title === '' || item_type === '' || description === '' || selected_file === '' || description_length > 2000 || notes_length > 500 ) {
-			alert(message);
+			$('#deposit-error-dialog').html(error_message).dialog('open');
+			return false;
+		} else if ( groups === null || subjects === null ) {
+			warning_message += '</ul>Want to fix this? Press <b>Edit</b> to make changes. To upload your item as is, press <b>Deposit</b>.</p>';
+			$('#deposit-warning-dialog').html(warning_message).dialog('open');
 			return false;
 		} else {
-			$('#submit').attr('value', 'Please wait...');
-			$('#submit').prop('disabled', true);
+			$('#deposit-submit').attr('value', 'Please wait...');
+			$('#deposit-submit').prop('disabled', true);
 			return true;
 		}
 	});
@@ -200,8 +269,8 @@ var uploader = new plupload.Uploader( {
 		PostInit: function() {
 			if ( "" != $('#selected_file_name').val() ) {
         			$('#filelist').html(
-                			'<div>' + $('#selected_file_name').val() +
-					' (' + plupload.formatSize( $('#selected_file_size').val() ) + ') <b></b></div>');
+                			'<div><br />' + $('#selected_file_name').val() +
+					' (' + plupload.formatSize( $('#selected_file_size').val() ) + ')</div>');
         			$('#console').html(
                 			'The file has been uploaded. Use the fields below to enter information about the file and press Deposit.');
 			} else {
@@ -218,7 +287,7 @@ var uploader = new plupload.Uploader( {
 				up.splice( 0, 1 );
             }
 			plupload.each( files, function( file ) {
-				document.getElementById( 'filelist' ).innerHTML = '<div id="' + file.id + '">' + file.name + ' (' + plupload.formatSize( file.size ) + ') <b></b></div>';
+				document.getElementById( 'filelist' ).innerHTML = '<div id="' + file.id + '"><br />' + file.name + ' (' + plupload.formatSize( file.size ) + ')</div>';
 			});
 //			document.getElementById( 'uploadfile' ).focus();
 			document.getElementById( 'progressbar' ).style.display = 'block';
@@ -238,8 +307,8 @@ var uploader = new plupload.Uploader( {
 				document.getElementById( 'console' ).appendChild( document.createTextNode( "\nError #" + response.error.code + ": " + response.error.message ) );
 				document.getElementById( 'indicator' ).style.width = '0%';
 			} else {
-//		   		document.getElementById( 'deposit-metadata-entries' ).style.display = 'block';
-				document.getElementById( 'deposit-title-unchanged' ).focus();
+//				document.getElementById( 'lookup-doi' ).focus();
+				$('input[type=radio][name="deposit-published"]:checked').focus();
 				document.getElementById( 'console' ).innerHTML = 'The file has been uploaded. Use the fields below to enter information about the file and press Deposit.';
 				document.getElementById( 'selected_file_size' ).setAttribute( 'value', file.size );
 				document.getElementById( 'selected_temp_name' ).setAttribute( 'value', file.target_name );
