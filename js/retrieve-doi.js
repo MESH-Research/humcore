@@ -58,7 +58,7 @@
       // write our own server-side proxy.
       // Now using CORS.
 
-      message.text('Retrieving DOI metadata.');
+      message.text('Retrieving information.');
 
       $.ajax({
           type: "GET",
@@ -90,7 +90,7 @@
             var deposittype = returnJSON(data.message, "type");
             if (deposittype != 'journal-article' && deposittype != 'book-chapter' && deposittype != 'proceedings-article')
             {
-              message.text('We only support metadata retrieval from Journal articles, Book chapters and Conference proceedings at this time.');
+              message.text('Sorry, we only support information retrieval for a journal article, a book chapter or a conference proceeding at this time.');
               return false;
             }
 
@@ -177,8 +177,8 @@
               $('#deposit-genre').val("Article").trigger("change");
 
               // update published item type
-              $('input[value="journal-article"]').prop('checked', true);
-              $('input[value="journal-article"]').click();
+              $('input[type="radio"][name="deposit-publication-type"][value="journal-article"]').prop('checked', true);
+              $('input[type="radio"][name="deposit-publication-type"][value="journal-article"]').click();
                 
               // update journal fields
               $('#deposit-journal-doi').val(DOI);
@@ -193,7 +193,7 @@
               {
                 $('#deposit-journal-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
               }
-              message.text('Metadata retrieved for a Journal article.');
+              message.text('We found information for that journal article! You can review it before submitting your deposit.');
             }
             else if (deposittype == 'book-chapter')
             {
@@ -201,8 +201,8 @@
               $('#deposit-genre').val("Book chapter").trigger("change");
 
               // update published item type
-              $('input[value="book"]').prop('checked', true);
-              $('input[value="book"]').click();
+              $('input[type="radio"][name="deposit-publication-type"][value="book-chapter"]').prop('checked', true);
+              $('input[type="radio"][name="deposit-publication-type"][value="book-chapter"]').click();
                 
               // update book chapter fields
               $('#deposit-book-doi').val(DOI);
@@ -217,7 +217,7 @@
               {
                 $('#deposit-book-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
               }
-              message.text('Metadata retrieved for a Book chapter.');
+              message.text('We found information for that book chapter! You can review it before submitting your deposit.');
             }
             else if (deposittype == 'proceedings-article')
             {
@@ -225,8 +225,8 @@
               $('#deposit-genre').val("Conference proceeding").trigger("change");
 
               // update published item type
-              $('input[value="conference-proceeding"]').prop('checked', true);
-              $('input[value="conference-proceeding"]').click();
+              $('input[type="radio"][name="deposit-publication-type"][value="proceedings-article"]').prop('checked', true);
+              $('input[type="radio"][name="deposit-publication-type"][value="proceedings-article"]').click();
                 
               // update conference proceeding fields
               $('#deposit-proceeding-doi').val(DOI);
@@ -238,7 +238,7 @@
               {
                 $('#deposit-proceeding-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
               }
-              message.text('Metadata retrieved for a Conference proceeding.');
+              message.text('We found information for that conference proceeding! You can review it before submitting your deposit.');
             }
         }
       });
@@ -253,8 +253,9 @@
       $('#deposit-genre').val("").trigger("change");
 
       // update published item type
-      $('input[value="none"]').prop('checked', true);
-      $('input[value="none"]').click();
+      $('input[type="radio"][name="deposit-publication-type"]:checked').prop('checked', false);
+      $('input[type="radio"][name="deposit-publication-type"][value="none"]').prop('checked', true);
+//      $('input[type="radio"][name="deposit-publication-type"][value="none"]').click();
 
       // update journal fields
       $('#deposit-journal-doi').val("");

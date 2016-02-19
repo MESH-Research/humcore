@@ -60,6 +60,11 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 		<p>
+			<label>Published?<br>
+				<input type="text" name="aggregator_published" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['published'] ); ?>">
+			</label>
+		</p>
+		<p>
 			<label>Title<br>
 				<input type="text" name="aggregator_title_unchanged" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['title_unchanged'] ); ?>">
 			</label>
@@ -351,9 +356,9 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Publication Type<br>
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="book" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book' ); } ?>>Book &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="journal-article" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'journal-article' ); } ?>>Journal &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="conference-proceeding" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'conference-proceeding' ); } ?>>Conference proceeding &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="book-chapter" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="journal-article" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'journal-article' ); } ?>>Journal article &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="proceedings-article" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'proceedings-article' ); } ?>>Proceedings article &nbsp;
 			<input type="radio" name="aggregator_publication-type" class="widefat" value="none" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'none' ); } ?>>Not published &nbsp;
 			</label>
 		</p>
@@ -555,6 +560,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// $aggregator_metadata['creator'] = sanitize_text_field( $_POST['aggregator_creator'] );
 
 	// Sanitize user input.
+	$aggregator_metadata['published'] = sanitize_text_field( stripslashes( $_POST['aggregator_published'] ) );
 	$aggregator_metadata['title'] = sanitize_text_field( stripslashes( $_POST['aggregator_title_unchanged'] ) );
         $aggregator_metadata['title_unchanged'] = wp_kses( 
                         stripslashes( $_POST['aggregator_title_unchanged'] ),

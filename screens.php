@@ -72,25 +72,9 @@ function humcore_deposit_form() {
 	};
 </script>
 
-<h3>New CORE Deposit</h3>
-<div id="filelist">Your browser doesn't have Flash, Silverlight or HTML5 support.</div>
-<div id="progressbar">
-	<div id="indicator"></div>
-</div>
-<div id="console">Select the file you wish to upload and deposit. *</div>
+<h3>New <em>CORE</em> Deposit</h3>
 
-<div id="container">
-	<button id="pickfile">Select File</button> 
-<!--    <button id="uploadfile">Upload</button> -->
-	<?php $wp_referer = wp_get_referer();
-		printf(
-			'<a href="%1$s" class="button white" style="line-height: 1.2em;">Cancel</a>',
-			( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/'
-		);
-	?>
-</div>
-
-<form id="deposit-form" class="standard-form" method="post" action="" enctype="multipart/form-data">
+<form id="deposit-form" name="deposit-form" class="standard-form" method="post" action="" enctype="multipart/form-data">
 
 	<input type="hidden" name="action" id="action" value="deposit_file" />
 	<?php wp_nonce_field( 'new_core_deposit', 'new_core_deposit_nonce' ); ?>
@@ -100,14 +84,44 @@ function humcore_deposit_form() {
         <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_type'] ); } ?>" />
         <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_size'] ); } ?>" />
 
+        <div id="deposit-file-entry">
+                <label for="deposit-file">Select the file you wish to upload and deposit. *</label>
+		<div id="container">
+			<button id="pickfile">Select File</button> 
+	<?php $wp_referer = wp_get_referer();
+		printf(
+			'<a href="%1$s" class="button white" style="line-height: 1.2em;">Cancel</a>',
+			( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/'
+		);
+	?>
+		</div>
+	</div>
+	<div id="deposit-file-entries">
+		<div id="filelist">Your browser doesn't have Flash, Silverlight or HTML5 support.</div>
+		<div id="progressbar">
+			<div id="indicator"></div>
+		</div>
+		<div id="console"></div>
+	</div>
+
+        <p>
+        <div id="deposit-published-entry">
+                <label for="deposit-published">Has this item been previously published?</label>
+                        <input type="radio" name="deposit-published" value="published" <?php if ( ! empty( $_POST['deposit-published'] ) ) { checked( sanitize_text_field( $_POST['deposit-published'] ), 'published' ); } ?>>Published &nbsp;
+                        <input type="radio" name="deposit-published" value="not-published" <?php if ( ! empty( $_POST['deposit-published'] ) ) { checked( sanitize_text_field( $_POST['deposit-published'] ), 'not-published' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
+        </div>
+        </p>
+
 	<div id="deposit-metadata-entries">
 	<p>
 	<div id="lookup-doi-entry">
-		<label for="lookup-doi">Retrieve metadata for previously published items (optional)</label>
-		<span class="description">If this item has been previously published, you can enter the existing DOI and attempt to retrieve metadata from the CrossRef API.</span> <br /> <br />
-		<input type="text" id="lookup-doi" name="lookup-doi" class="long" value="" placeholder="Enter an existing DOI for this item." />
+		<label for="lookup-doi">Retrieve information</label>
+                <span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
+		<span class="description">Enter a publisher DOI to automatically retrieve information about your item.</span> <br />
+		<input type="text" id="lookup-doi" name="lookup-doi" class="long" value="" placeholder="Enter the publisher DOI for this item." />
 		<button onClick="javascript:retrieveDOI(); return false;">Retrieve</button>
 		<div id="lookup-doi-message"></div>
+	</div>
 	</div>
 	</p>
 	<div id="deposit-title-entry">
@@ -138,14 +152,15 @@ function humcore_deposit_form() {
 		<span class="description">*</span>
 	</div>
 	</p>
+	<div id="deposit-conference-entries">
 	<div id="deposit-conference-title-entry">
 		<label for="deposit-conference-title-entry-list">Conference Title</label>
 		<input type="text" name="deposit-conference-title" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-title'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-title'] ); } ?>" />
 	</div>
 
-	<div id="deposit-organization-entry">
-		<label for="deposit-organization-entry-list">Conference Host Organization</label>
-		<input type="text" name="deposit-organization" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-organization'] ) ) { echo sanitize_text_field( $_POST['deposit-organization'] ); } ?>" />
+	<div id="deposit-conference-organization-entry">
+		<label for="deposit-conference-organization-entry-list">Conference Host Organization</label>
+		<input type="text" name="deposit-conference-organization" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-organization'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-organization'] ); } ?>" />
 	</div>
 
 	<div id="deposit-conference-location-entry">
@@ -157,7 +172,9 @@ function humcore_deposit_form() {
 		<label for="deposit-conference-date-entry-list">Conference Date</label>
 		<input type="text" name="deposit-conference-date" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-date'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-date'] ); } ?>" />
 	</div>
+	</div>
 
+	<div id="deposit-meeting-entries">
 	<div id="deposit-meeting-title-entry">
 		<label for="deposit-meeting-title-entry-list">Meeting Title</label>
 		<input type="text" name="deposit-meeting-title" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-meeting-title'] ) ) { echo sanitize_text_field( $_POST['deposit-meeting-title'] ); } ?>" />
@@ -177,11 +194,15 @@ function humcore_deposit_form() {
 		<label for="deposit-meeting-date-entry-list">Meeting Date</label>
 		<input type="text" name="deposit-meeting-date" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-meeting-date'] ) ) { echo sanitize_text_field( $_POST['deposit-meeting-date'] ); } ?>" />
 	</div>
+	</div>
 
+	<div id="deposit-institution-entries">
 	<div id="deposit-institution-entry">
 		<label for="deposit-institution-entry-list">Name of Institution</label>
 		<input type="text" name="deposit-institution" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-institution'] ) ) { echo sanitize_text_field( $_POST['deposit-institution'] ); } ?>" />
 	</div>
+	</div>
+
 	<p>
 	<div id="deposit-abstract-entry">
 		<label for="deposit-abstract">Description or Abstract</label>
@@ -283,6 +304,26 @@ function humcore_deposit_form() {
 	</div>
 	</p>
 	<p>
+	<div id="deposit-group-entry">
+		<label for="deposit-group">Forums</label>
+		<span class="description">Share this item with up to five <em>MLA Commons</em> forums.<br />Selecting a forum will notify members of that forum about your deposit.</span><br />
+		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select forums">
+<?php
+	$group_list = humcore_deposits_group_list();
+	$posted_group_list = array();
+	if ( ! empty( $_POST['deposit-group'] ) ) { $posted_group_list = array_map( 'sanitize_text_field', $_POST['deposit-group'] ); }
+	foreach ( $group_list as $group_key => $group_value ) {
+		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $current_group_id == $group_key || in_array( $group_key, $posted_group_list ) ) ? 'selected="selected"' : '',
+			$group_key,
+			$group_value
+		);
+	}
+?>
+		</select>
+	</div>
+	</p>
+	<p>
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
 		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:commons@mla.org?subject=CORE" target="_blank">suggest additional subject
@@ -299,26 +340,6 @@ function humcore_deposit_form() {
 			( in_array( $subject_key, $posted_subject_list ) ) ? 'selected="selected"' : '',
 			$subject_key,
 			$subject_value
-		);
-	}
-?>
-		</select>
-	</div>
-	</p>
-	<p>
-	<div id="deposit-group-entry">
-		<label for="deposit-group">Forums</label>
-		<span class="description">Share this item with up to five <em>MLA Commons</em> forums.</span><br />
-		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select forums">
-<?php
-	$group_list = humcore_deposits_group_list();
-	$posted_group_list = array();
-	if ( ! empty( $_POST['deposit-group'] ) ) { $posted_group_list = array_map( 'sanitize_text_field', $_POST['deposit-group'] ); }
-	foreach ( $group_list as $group_key => $group_value ) {
-		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $current_group_id == $group_key || in_array( $group_key, $posted_group_list ) ) ? 'selected="selected"' : '',
-			$group_key,
-			$group_value
 		);
 	}
 ?>
@@ -402,11 +423,10 @@ function humcore_deposit_form() {
 	</p>
 	<p>
 	<div id="deposit-publication-type-entry">
-		<label for="deposit-publication-type">Published?</label>
-		<span class="description">Check journal or publisher open access policies at <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> for previously published work.</span><br /><br />
-			<input type="radio" name="deposit-publication-type" value="book" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'book' ); } ?>>Book &nbsp;
-			<input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal &nbsp;
-			<input type="radio" name="deposit-publication-type" value="conference-proceeding" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'conference-proceeding' ); } ?>>Conference proceeding &nbsp;
+		<label for="deposit-publication-type">Publication Type</label>
+			<input type="radio" name="deposit-publication-type" value="book-chapter" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;
+			<input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal article &nbsp;
+			<input type="radio" name="deposit-publication-type" value="proceedings-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'proceedings-article' ); } ?>>Conference proceeding &nbsp;
 			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'none' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
 	</div>
 	</p>
@@ -508,7 +528,7 @@ function humcore_deposit_form() {
 
 	</div>
 
-	<div id="deposit-conference-proceedings">
+	<div id="deposit-proceedings-entries">
 
 		<div id="deposit-proceeding-doi-entry">
 			<label for="deposit-proceeding-doi">Publisher DOI</label>
@@ -551,10 +571,10 @@ function humcore_deposit_form() {
 
 	</div>
 
-	<input id="submit" name="submit" type="submit" value="Deposit" />
+	<input id="deposit-submit" name="deposit-submit" type="submit" value="Deposit" />
 	<?php $wp_referer = wp_get_referer();
 		printf(
-			'<a href="%1$s" class="button white">Cancel</a>',
+			'<a id="deposit-cancel" href="%1$s" class="button white">Cancel</a>',
 			( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/'
 		);
 	?>
@@ -564,6 +584,11 @@ function humcore_deposit_form() {
 </form>
 	<br /><span class="description">Required fields are marked *.</span><br />
 <br />
+
+<div id="deposit-warning-dialog">
+</div>
+<div id="deposit-error-dialog">
+</div>
 
 <?php
 
@@ -720,8 +745,10 @@ function humcore_deposit_item_content() {
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
 	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
-	$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
-	$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
+	$content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+	$total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
+	$content_views_meta_key = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+	$total_content_views = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
 	$views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
 	$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
 	if ( $post_data->post_author != bp_loggedin_user_id() ) {
@@ -747,6 +774,13 @@ function humcore_deposit_item_content() {
 		plugins_url( 'assets/' . esc_attr( $file_type_data['ext'] ) . '-icon-48x48.png', __FILE__ ),
 		esc_attr( $file_type_data['ext'] )
 	);
+	if ( in_array( $file_type_data['type'], array( 'application/pdf', 'text/html', 'text/plain' ) ) ||
+		in_array( strstr( $file_type_data['type'], '/', true ), array( 'audio', 'image', 'video' ) ) ) {
+		$content_viewable = true;
+	} else {
+		$content_viewable = false;
+	}
+
 	if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
 		$thumb_url = sprintf( '<img class="deposit-thumb" src="/deposits/view/%s/%s/%s/" alt="%s" />',
 			$file_metadata['files'][0]['pid'],
@@ -784,58 +818,40 @@ function humcore_deposit_item_content() {
 <?php if ( ! empty( $post_metadata['conference_title'] ) ) : ?>
 <dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['conference_title']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['conference_organization'] ) ) : ?>
 <dt><?php _e( 'Conf. Org.:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['conference_organization']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['conference_location'] ) ) : ?>
 <dt><?php _e( 'Conf. Loc.:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['conference_location']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['conference_date'] ) ) : ?>
 <dt><?php _e( 'Conf. Date:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['conference_date']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php elseif ( 'Presentation' == $metadata['genre'] ) : ?>
 <?php if ( ! empty( $post_metadata['meeting_title'] ) ) : ?>
 <dt><?php _e( 'Meeting Title:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_title']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['meeting_organization'] ) ) : ?>
 <dt><?php _e( 'Meeting Org.:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_organization']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['meeting_location'] ) ) : ?>
 <dt><?php _e( 'Meeting Loc.:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_location']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['meeting_date'] ) ) : ?>
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_date']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical report' == $metadata['genre'] ) : ?>
 <?php if ( ! empty( $post_metadata['institution'] ) ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['institution']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php endif; ?>
 <?php if ( ! empty( $keywords ) ) : ?>
@@ -895,9 +911,9 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'ISSN:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['issn']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php elseif ( 'book' == $post_metadata['publication-type'] ) : ?>
+<?php elseif ( 'book-chapter' == $post_metadata['publication-type'] ) : ?>
 <dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Book'; // XSS OK. ?></span></dd>
+<dd><span><?php echo 'Book chapter'; // XSS OK. ?></span></dd>
 <?php if ( ! empty( $metadata['doi'] ) ) : ?>
 <dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
@@ -930,9 +946,9 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php elseif ( 'conference-proceeding' == $post_metadata['publication-type'] ) : ?>
+<?php elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) : ?>
 <dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Conference Proceeding'; // XSS OK. ?></span></dd>
+<dd><span><?php echo 'Proceedings article'; // XSS OK. ?></span></dd>
 <?php if ( ! empty( $metadata['doi'] ) ) : ?>
 <dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
@@ -954,18 +970,38 @@ function humcore_deposit_item_content() {
 <dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php endif; ?>
+<?php if ( ! empty( $thumb_url ) ) : ?>
+<dt><?php _e( 'Preview:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $thumb_url;// XSS OK. ?></span></dd>
+<?php endif; ?>
 </dl>
 <div><h4><?php _e( 'Downloads', 'humcore_domain' ); ?></h4>
 <div class="doc-attachments">
+	<table class="view_downloads">
+	<tr>
+		<td class="prompt"><?php _e( 'Item Name:', 'humcore_domain' ); ?></td>
+		<td class="value"><?php echo $file_type_icon . ' ' . esc_attr( $file_metadata['files'][0]['filename'] ); // XSS OK. ?></td>
+	</tr>
+	<tr>
+		<td class="prompt">&nbsp;</td>
+		<td class="value"><a class="bp-deposits-download button" title="Download" href="<?php echo esc_url( $download_url ); ?>"><?php _e( 'Download', 'humcore_domain' ); ?></a>
+<?php if ( $content_viewable ) : ?>
+	 	<a onclick="target='_blank'" class="bp-deposits-view button" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View in browser', 'humcore_domain' ); ?></a>
+<?php endif; ?>
+		</td>
+	</tr>
+	</table>
+</div>
+<div class="doc-statistics">
 	<table class="view_statistics">
-	<tr><td class="prompt"><a class="bp-deposits-download button" title="Download" href="<?php echo esc_url( $download_url ); ?>"><?php _e( 'Download', 'humcore_domain' ); ?></a></td>
-		<td class="value"><?php echo $file_type_icon . ' ' . esc_attr( $file_metadata['files'][0]['filename'] ); // XSS OK. ?></td></tr>
-		<tr><td class="prompt"><?php _e( 'Total Downloads:', 'humcore_domain' ); ?></td>
-			<td class="value"><?php echo esc_html( $total_downloads ); ?></td></tr>
-	<tr><td class="prompt"><a onclick="target='_blank'" class="bp-deposits-view button" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View this Item', 'humcore_domain' ); ?></a></td>
-		<td class="value"><?php echo $thumb_url;// XSS OK. ?></td></tr>
-		<tr><td class="prompt"><?php _e( 'Total Views:', 'humcore_domain' ); ?></td>
-			<td class="value"><?php echo esc_html( $total_views ); ?></td></tr>
+	<tr>
+		<td class="prompt">Activity:</td>
+		<td class="value"><?php _e( 'Page Visits:', 'humcore_domain' ); echo ' ' . esc_html( $total_views ); ?></td>
+	</tr>
+	<tr>
+		<td class="prompt">&nbsp;</td>
+		<td class="value"><?php _e( 'Downloads:', 'humcore_domain' ); echo ' ' . esc_html( $total_content_downloads + $total_content_views ); ?></td>
+	</tr>
 	</table>
 </div>
 </div>
@@ -1009,8 +1045,10 @@ function humcore_deposit_item_review_content() {
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
         $file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
-        $downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
-        $total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true );
+        $content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+        $total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
+        $content_views_meta_key = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+        $total_content_views = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
         $views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
         $total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
         if ( $post_data->post_author != bp_loggedin_user_id() ) {
@@ -1059,58 +1097,40 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $post_metadata['conference_title'] ) ) : ?>
 <dd><span><?php echo $post_metadata['conference_title']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <dt><?php _e( 'Conf. Org.:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $post_metadata['conference_organization'] ) ) : ?>
 <dd><span><?php echo $post_metadata['conference_organization']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <dt><?php _e( 'Conf. Loc.:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $post_metadata['conference_location'] ) ) : ?>
 <dd><span><?php echo $post_metadata['conference_location']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <dt><?php _e( 'Conf. Date:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $post_metadata['conference_date'] ) ) : ?>
 <dd><span><?php echo $post_metadata['conference_date']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php elseif ( 'Presentation' == $metadata['genre'] ) : ?>
 <?php if ( ! empty( $post_metadata['meeting_title'] ) ) : ?>
 <dt><?php _e( 'Meeting Title:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_title']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['meeting_organization'] ) ) : ?>
 <dt><?php _e( 'Meeting Org.:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_organization']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['meeting_location'] ) ) : ?>
 <dt><?php _e( 'Meeting Loc.:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_location']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['meeting_date'] ) ) : ?>
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $post_metadata['meeting_date']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical report' == $metadata['genre'] ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $post_metadata['institution'] ) ) : ?>
 <dd><span><?php echo $post_metadata['institution']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
 <?php endif; ?>
 <?php endif; ?>
 <dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
@@ -1208,9 +1228,9 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>
-<?php elseif ( 'book' == $post_metadata['publication-type'] ) : ?>
+<?php elseif ( 'book-chapter' == $post_metadata['publication-type'] ) : ?>
 <dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Book'; // XSS OK. ?></span></dd>
+<dd><span><?php echo 'Book chapter'; // XSS OK. ?></span></dd>
 <dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['doi'] ) ) : ?>
 <dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
@@ -1265,9 +1285,9 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>
-<?php elseif ( 'conference-proceeding' == $post_metadata['publication-type'] ) : ?>
+<?php elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) : ?>
 <dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Conference Proceeding'; // XSS OK. ?></span></dd>
+<dd><span><?php echo 'Proceedings article'; // XSS OK. ?></span></dd>
 <dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['doi'] ) ) : ?>
 <dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
@@ -1313,6 +1333,10 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>( None entered )</dd>
 <?php endif; ?>
+<?php endif; ?>
+<?php if ( ! empty( $thumb_url ) ) : ?>
+<dt><?php _e( 'Preview:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $thumb_url;// XSS OK. ?></span></dd>
 <?php endif; ?>
 <dt><?php _e( 'File Name:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $file_metadata['files'][0]['filename'] ); ?></dd>

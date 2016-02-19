@@ -165,6 +165,9 @@ ul.deposits-item .list-item-value {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+.no-close .ui-dialog-titlebar-close {
+    display: none !important;
+}
 .character-count {
   color: #999999;
   font-size: 80%;
@@ -178,8 +181,20 @@ ul.deposits-item .list-item-value {
   padding-top: 5px;
   padding-bottom: 5px;
 }
+.deposit-input-highlight {
+	border-color: red !important;
+}
 #deposit-title-unchanged {
 	width: 80%;
+}
+#deposit-file-entries, #deposit-metadata-entries {
+	padding-left: 10px;
+}
+#deposit-conference-entries, #deposit-meeting-entries, #deposit-institution-entries {
+	padding-left: 10px;
+}
+#deposit-book-entries, #deposit-journal-entries, #deposit-proceedings-entries {
+	padding-left: 10px;
 }
 #deposit-book-pages-entry label, #deposit-journal-volume-entry label, #deposit-journal-pages-entry label, #deposit-proceeding-pages-entry label {
 	float: left;
@@ -222,22 +237,26 @@ dl.defList dd {
 	padding: 2px 0;
 
 }
-table.view_statistics {
+table.view_statistics, table.view_downloads {
 	margin-left: 10px;
 	width: 100%;
 }
-table.view_statistics td {
+table.view_statistics td, table.view_downloads td {
 	border: 0;
 }
-table.view_statistics td.prompt {
+table.view_statistics td.prompt, table.view_downloads td.prompt {
 	width: 25%;
 }
-table.view_statistics td.value {
+table.view_statistics td.value, table.view_downloads td.value {
 	width: 75%;
 }
 .bp-deposits-download.button:before {
-    font-size: 130%;
-    content: "[";
+	font-size: 130%;
+	content: "[";
+}
+.bp-deposits-view.button{
+	line-height: 24px;
+	margin-left: 10px;
 }
 ul.deposit-list > li:first-child {
 	padding-top: 30px;
