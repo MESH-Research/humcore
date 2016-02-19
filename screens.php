@@ -40,6 +40,7 @@ function humcore_deposit_form() {
 		}
 	}
 
+	ob_end_flush(); // We've been capturing output.
 	if ( ! humcore_check_externals() ) {
 		echo '<h3>New <em>CORE</em> Deposit</h3>';
 		echo "<p>We're so sorry, but one of the components of <em>CORE</em> is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to share your work) so please come back and try again later.</p>";

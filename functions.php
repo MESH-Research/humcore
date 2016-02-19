@@ -692,11 +692,13 @@ function humcore_deposits_new_item_screen() {
 		$core_acceptance = get_the_author_meta( 'accepted_core_terms', $user_id );
 		if ( 'Yes' != $core_acceptance ) {
 			wp_redirect( '/core/terms/' );
+			exit();
 		}
 		bp_update_is_directory( false, 'humcore_deposits' );
 		add_filter( 'body_class', 'humcore_deposit_new_item_page_class_names' );
 		do_action( 'humcore_deposits_new_item_screen' );
 		add_action( 'bp_template_content', 'humcore_deposit_form' );
+		ob_start(); // we might redirect in the action so capture any output.
 		bp_core_load_template( apply_filters( 'humcore_deposits_new_item_screen', 'deposits/single/new' ) );
 	}
 }
