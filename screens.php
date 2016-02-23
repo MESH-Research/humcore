@@ -373,7 +373,8 @@ function humcore_deposit_form() {
 	<div id="deposit-resource-type-entry">
 		<label for="deposit-resource-type">File Type</label>
 		<select name="deposit-resource-type" id="deposit-resource-type" class="js-basic-single-optional" data-placeholder="Select a file type" data-allowClear="true">
-			<option class="level-0" selected value=""></option>
+			<option class="level-0" selected="selected" value=""></option>
+
 <?php
 	$resource_type_list = humcore_deposits_resource_type_list();
 	$posted_resource_type = '';
@@ -1041,6 +1042,8 @@ function humcore_deposit_item_review_content() {
         $author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
         $author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
         $authors_list = implode( ', ', array_map( 'esc_html', $authors ) );
+        $item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+
         $deposit_post_id = $metadata['record_identifier'];
         $post_data = get_post( $deposit_post_id );
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
@@ -1346,7 +1349,7 @@ function humcore_deposit_item_review_content() {
 </dl>
 </div>
 <br style='clear:both'>
-<a onclick="target='_blank'" class="bp-deposits-view button white" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View your Deposit', 'humcore_domain' ); ?></a>
+<a class="bp-deposits-view button white" title="View" href="<?php echo esc_url( $item_url ); ?>"><?php _e( 'View your Deposit', 'humcore_domain' ); ?></a>
 <?php
 
 }
