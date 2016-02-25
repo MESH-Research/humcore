@@ -753,7 +753,7 @@ function humcore_deposit_item_content() {
 	$total_content_views = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
 	$views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
 	$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
-	if ( $post_data->post_author != bp_loggedin_user_id() ) {
+	if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
 		$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 	}
 	$download_url = sprintf( '/deposits/download/%s/%s/%s/',
@@ -871,7 +871,7 @@ function humcore_deposit_item_content() {
 <dd><?php echo $metadata['notes_unchanged']; ?></dd>
 <?php endif; ?>
 <dt><?php _e( 'Metadata:', 'humcore_domain' ); ?></dt>
-<dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
+<dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" rel="nofollow" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
 <?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
@@ -986,9 +986,9 @@ function humcore_deposit_item_content() {
 	</tr>
 	<tr>
 		<td class="prompt">&nbsp;</td>
-		<td class="value"><a class="bp-deposits-download button" title="Download" href="<?php echo esc_url( $download_url ); ?>"><?php _e( 'Download', 'humcore_domain' ); ?></a>
+		<td class="value"><a class="bp-deposits-download button" title="Download" rel="nofollow" href="<?php echo esc_url( $download_url ); ?>"><?php _e( 'Download', 'humcore_domain' ); ?></a>
 <?php if ( $content_viewable ) : ?>
-	 	<a onclick="target='_blank'" class="bp-deposits-view button" title="View" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View in browser', 'humcore_domain' ); ?></a>
+	 	<a onclick="target='_blank'" class="bp-deposits-view button" title="View" rel="nofollow" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View in browser', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 		</td>
 	</tr>
@@ -1055,7 +1055,7 @@ function humcore_deposit_item_review_content() {
         $total_content_views = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
         $views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
         $total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
-        if ( $post_data->post_author != bp_loggedin_user_id() ) {
+        if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
                 $post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
         }
         $download_url = sprintf( '/deposits/download/%s/%s/%s/',

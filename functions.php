@@ -413,7 +413,7 @@ function humcore_is_deposit_download() {
 /**
  * Is this a view request?
  *
- * @return true If the current rerquest is a view request.
+ * @return true If the current request is a view request.
  */
 function humcore_is_deposit_view() {
 
@@ -423,6 +423,38 @@ function humcore_is_deposit_view() {
 	} else {
 		return false;
 	}
+}
+
+/**
+ * Is this a bot request?
+ *
+ * @return true If the current request from a bot.
+ */
+function humcore_is_bot_user_agent() {
+
+	if ( ! empty( $_SERVER['HTTP_USER_AGENT'] ) ) {
+		$ua = $_SERVER['HTTP_USER_AGENT'];
+	} else {
+		return false;
+	}
+
+	$bot_agents = array(
+		'alexa', 'altavista', 'ask jeeves', 'attentio', 'baiduspider', 'bingbot', 'chtml generic', 'crawler', 'fastmobilecrawl',
+		'feedfetcher-google', 'firefly', 'froogle', 'gigabot', 'googlebot', 'googlebot-mobile', 'heritrix', 'ia_archiver', 'irlbot',
+		'infoseek', 'jumpbot', 'lycos', 'mediapartners', 'mediobot', 'motionbot', 'msnbot', 'mshots', 'openbot',
+		'pss-webkit-request', 'pythumbnail', 'scooter', 'slurp', 'snapbot', 'spider', 'taptubot', 'technoratisnoop',
+		'teoma', 'twiceler', 'yahooseeker', 'yahooysmcm', 'yammybot', 'ahrefsbot', 'pingdom.com_bot', 'kraken', 'yandexbot',
+		'twitterbot', 'tweetmemebot', 'openhosebot', 'queryseekerspider', 'linkdexbot', 'grokkit-crawler',
+		'livelapbot', 'germcrawler', 'domaintunocrawler', 'grapeshotcrawler', 'cloudflare-alwaysonline',
+	);
+
+	foreach ( $bot_agents as $bot_agent ) {
+		if ( false !== stripos( $ua, $bot_agent ) ) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -725,7 +757,7 @@ function humcore_deposits_download() {
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
 		$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true ) + 1; // Downloads counted at file level.
-	        if ( $post_data->post_author != bp_loggedin_user_id() ) {
+	        if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
 			$post_meta_ID = update_post_meta( $deposit_post_id, $downloads_meta_key, $total_downloads );
 		}
 		$download_url = sprintf( '/deposits/objects/%1$s/datastreams/%2$s/content%3$s', $deposit_id, $deposit_datastream, $download_param );
@@ -756,7 +788,7 @@ function humcore_deposits_view() {
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
 		$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // views counted at file level
-	        if ( $post_data->post_author != bp_loggedin_user_id() ) {
+	        if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
 			$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 		}
 		$view_url = sprintf( '/deposits/objects/%1$s/datastreams/%2$s/content', $deposit_id, $deposit_datastream );
