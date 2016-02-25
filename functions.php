@@ -438,19 +438,19 @@ function humcore_check_externals() {
 
 	$sStatus = $solr_client->get_solr_status();
 	if ( is_wp_error( $sStatus ) ) {
-		error_log( sprintf( '*****HumCORE Status Error***** - solr server status : %1$s-%2$s', $sStatus->get_error_code(), $sStatus->get_error_message() ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Status Error***** - solr server status : %1$s-%2$s', $sStatus->get_error_code(), $sStatus->get_error_message() ) );
 		return false;
 	}
 
 	$fStatus = $fedora_api->describe();
 	if ( is_wp_error( $fStatus ) ) {
-		error_log( sprintf( '*****HumCORE Status Error***** - fedora server status :  %1$s-%2$s',  $fStatus->get_error_code(), $fStatus->get_error_message() ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Status Error***** - fedora server status :  %1$s-%2$s',  $fStatus->get_error_code(), $fStatus->get_error_message() ) );
 		return false;
 	}
 
 	$eStatus = $ezid_api->server_status();
 	if ( is_wp_error( $eStatus ) ) {
-		error_log( sprintf( '*****HumCORE Status Error***** - ezid server status :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
+		humcore_write_error_log( sprintf( 'error', '*****HumCORE Status Error***** - ezid server status :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
 		return false;
 	}
 
@@ -476,7 +476,7 @@ function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher
 
 	if ( is_wp_error( $eStatus ) ) {
 		echo 'Error - ezid mint doi : ' . esc_html( $eStatus->get_error_code() ) . '-' . esc_html( $eStatus->get_error_message() );
-		error_log( sprintf( '*****HumCORE Deposit Error***** - ezid mint doi :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - ezid mint doi :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
 		return false;
 	}
 
@@ -499,7 +499,7 @@ function humcore_publish_handle( $humcore_doi ) {
 
 	if ( is_wp_error( $eStatus ) ) {
 		echo 'Error - ezid publish : ' . esc_html( $eStatus->get_error_code() ) . '-' . esc_html( $eStatus->get_error_message() );
-		error_log( sprintf( '*****HumCORE Deposit Error***** - ezid publish :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - ezid publish :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
 		return false;
 	}
 
@@ -525,7 +525,7 @@ function humcore_modify_handle( $humcore_doi, $title, $creator, $type, $date, $p
 
 	if ( is_wp_error( $eStatus ) ) {
 		echo 'Error - ezid modify : ' . esc_html( $eStatus->get_error_code() ) . '-' . esc_html( $eStatus->get_error_message() );
-		error_log( sprintf( '*****HumCORE Deposit Error***** - ezid modify :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - ezid modify :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
 		return false;
 	}
 

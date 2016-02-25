@@ -820,7 +820,11 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response_code, $response_message, $response_body );
 		}
 
-		return $response_body;
+                $doc = new DOMDocument;
+                $doc->formatOutput = true;
+                $doc->loadXML( $response_body );
+
+                return $doc->saveXML();
 
 	}
 
@@ -1323,6 +1327,7 @@ class Humcore_Deposit_Fedora_Api {
 		$doc->formatOutput = true;
 		$doc->loadXML( $response_body );
 
+/*
 		$problems = array();
 		foreach ( $doc->getElementsByTagName( 'problems' ) as $eachProblem ) {
 			$problems[] = trim( $eachProblem->nodeValue );
@@ -1331,9 +1336,8 @@ class Humcore_Deposit_Fedora_Api {
 		foreach ( $doc->getElementsByTagName( 'datastreamProblems' ) as $eachProblem ) {
 			$problems[] = trim( $eachProblem->nodeValue );
 		}
-
-		error_log('*****VALIDATE*****'.$doc->saveXML());
-		return $problems;
+*/
+		return $doc->saveXML();
 
 	}
 

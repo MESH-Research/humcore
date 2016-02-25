@@ -20,14 +20,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// HumCORE: CLI Commands
+use MLA\Commons\Plugin\Logging\Logger;
 
-if ( defined('WP_CLI') && WP_CLI ) {
-    require_once dirname( __FILE__ ) . '/ezid-cli.php';
-    require_once dirname( __FILE__ ) . '/fedora-cli.php';
-/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
-    require_once dirname( __FILE__ ) . '/solr-cli.php';
-}
+global $humcore_logger;
+$humcore_logger = new Logger( 'humcore_error' );
+$humcore_logger->createLog( 'humcore_error' );
 
 /**
  * Register the humcore_deposit custom post type.
@@ -351,26 +348,20 @@ function humcore_deposit_component_include() {
 add_action( 'bp_include', 'humcore_deposit_component_include' );
 
 /**
- * Include the faceted search results widgets.
- */
-require( dirname( __FILE__ ) . '/widgets.php' );
-
-// Include the settings page and custom post admin screen.
-if ( is_admin() ) {
-	require( dirname( __FILE__ ) . '/settings.php' );
-	require( dirname( __FILE__ ) . '/admin-screens.php' );
-}
-
-/**
  * Write a formatted HumCORE error or informational message.
  */
-function humcore_write_error_log( $error_type = '', $info = null ) {
+function humcore_write_error_log( $error_type, $error_message, $info = null ) {
 
-	ini_set( 'log_errors_max_len', '0' );
-	if ( empty( $info ) ) {
-		error_log( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_type . '.' . "\n\r", 3, CORE_ERROR_LOG );
+	global $humcore_logger;
+
+	if ( 'info' === $error_type ) {
+		if ( empty( $info ) ) {
+			$humcore_logger->addInfo( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_message );
+		} else {
+			$humcore_logger->addInfo( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_message, $info );
+		}
 	} else {
-		error_log( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_type . ': ' . var_export( $info, true ) . "\n\r", 3, CORE_ERROR_LOG );
+			$humcore_logger->addError( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_message );
 	}
 
 }
@@ -392,7 +383,7 @@ function humcore_http_api_debug( $response = null, $state = null, $class = null,
 		'url'             => $url,
 		'response'        => $response,
 	);
-	humcore_write_error_log( 'http api debug', $info );
+	humcore_write_error_log( 'info', 'http api debug', $info );
 
 }
 
@@ -408,3 +399,25 @@ function humcore_http_api_debug_action() {
 }
 // Hook into the init action and call humcore_http_api_debug_action when init fires.
 add_action( 'init', 'humcore_http_api_debug_action' );
+
+/**
+ * Include the faceted search results widgets.
+ */
+require( dirname( __FILE__ ) . '/widgets.php' );
+
+// Include the settings page and custom post admin screen.
+if ( is_admin() ) {
+	require( dirname( __FILE__ ) . '/settings.php' );
+	require( dirname( __FILE__ ) . '/admin-screens.php' );
+}
+
+/**
+ * HumCORE: CLI Commands
+ */
+
+if ( defined('WP_CLI') && WP_CLI ) {
+    require_once dirname( __FILE__ ) . '/ezid-cli.php';
+    require_once dirname( __FILE__ ) . '/fedora-cli.php';
+/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
+    require_once dirname( __FILE__ ) . '/solr-cli.php';
+}

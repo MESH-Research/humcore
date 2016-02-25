@@ -84,13 +84,11 @@
 				$generated_thumb_mime = $generated_thumb['mime-type'];
 			} else {
 				echo 'Error - thumb_image : ' . esc_html( $thumb_image->get_error_code() ) . '-' . esc_html( $thumb_image->get_error_message() );
-				error_log( sprintf( '*****HumCORE Deposit Error***** - thumb_image : %1$s-%2$s',  $thumb_image->get_error_code(), $thumb_image->get_error_message() ) );
+				humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - thumb_image : %1$s-%2$s',  $thumb_image->get_error_code(), $thumb_image->get_error_message() ) );
 			}
 		}
 
-		if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-			humcore_write_error_log( 'HumCORE deposit started' );
-		}
+		humcore_write_error_log( 'info', 'HumCORE deposit started' );
 
 		/**
 		 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr.
@@ -99,11 +97,10 @@
 		$nextPids = $fedora_api->get_next_pid( array( 'numPIDs' => '2', 'namespace' => $fedora_api->namespace ) );
 		if ( is_wp_error( $nextPids ) ) {
 			echo 'Error - nextPids : ' . esc_html( $nextPids->get_error_code() ) . '-' . esc_html( $nextPids->get_error_message() );
-			error_log( sprintf( '*****HumCORE Deposit Error***** - nextPids : %1$s-%2$s',  $nextPids->get_error_code(), $nextPids->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - nextPids : %1$s-%2$s',  $nextPids->get_error_code(), $nextPids->get_error_message() ) );
 			return false;
 		}
 
-		/* echo "<br />DEBUG  0 ", date ( 'Y-m-d H:i:s' ), var_export( $nextPids, true ); */
 
 		$metadata = prepare_metadata( $nextPids );
 
@@ -124,7 +121,6 @@
 								'state' => 'Active',
 								'rdfContent' => $aggregatorRdf,
 						   ) );
-		/* echo "<br />DEBUG  1 ", date ( 'Y-m-d H:i:s' ), var_export( $aggregatorFoxml, true ); */
 
 		$metadataMODS = create_mods_xml( $metadata );
 
@@ -142,15 +138,9 @@
 							'state' => 'Active',
 							'rdfContent' => $resourceRdf,
 						 ) );
-		/* echo "<br />DEBUG  2 ", date ( 'Y-m-d H:i:s' ), var_export( $resourceFoxml, true ); */
 		// TODO handle file write error.
 		$file_write_status = file_put_contents( $MODS_file, $metadataMODS );
-		/* echo "<br />DEBUG  3 ", date ( 'Y-m-d H:i:s' ), var_export( $metadataMODS, true ); */
-                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-                        humcore_write_error_log( 'HumCORE deposit metadata complete' );
-                }
-
-		/* echo "<br />DEBUG 10 ", date ( 'Y-m-d H:i:s' ), var_export( $metadata, true ); */
+                humcore_write_error_log( 'info', 'HumCORE deposit metadata complete' );
 
 		/**
 		 * Create the aggregator post now so that we can reference the ID in the Solr document.
@@ -177,7 +167,7 @@
 				if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
-					error_log( '*****HumCORE Deposit Error - bad subject*****' . var_export( $term_key, true ) );
+					humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad subject*****' . var_export( $term_key, true ) );
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
@@ -199,7 +189,7 @@
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
-					error_log( '*****HumCORE Deposit Error - bad tag*****' . var_export( $term_key, true ) );
+					humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad tag*****' . var_export( $term_key, true ) );
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
@@ -210,14 +200,10 @@
 
 		$json_metadata = json_encode( $metadata, JSON_HEX_APOS );
 		if ( json_last_error() ) {
-			error_log( '*****HumCORE Deposit Error***** Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
+			humcore_write_error_log( 'error', '*****HumCORE Deposit Error***** Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
 		}
 		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_metadata', wp_slash( $json_metadata ) );
-                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-                        humcore_write_error_log( 'HumCORE deposit - postmeta (1)', $json_metadata );
-                }
-
-		/* echo "<br />DEBUG 12 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
+                humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (1)', array( 'json' => $json_metadata ) );
 
 		/**
 		 * Add to metadata and store in post meta.
@@ -235,14 +221,10 @@
 
 		$json_metadata = json_encode( $post_metadata, JSON_HEX_APOS );
 		if ( json_last_error() ) {
-			error_log( '*****HumCORE Deposit Error***** File Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
+			humcore_write_error_log( 'error', '*****HumCORE Deposit Error***** File Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
 		}
 		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_file_metadata', wp_slash( $json_metadata ) );
-                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-                        humcore_write_error_log( 'HumCORE deposit - postmeta (2)', $json_metadata );
-                }
-
-		/* echo "<br />DEBUG 13 ", date ( 'Y-m-d H:i:s' ), var_export( $json_metadata, true ); */
+                humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', array( 'json' => $json_metadata ) );
 
 		/**
 		 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
@@ -252,25 +234,23 @@
 		try {
 			if ( preg_match( '~^audio/|^image/|^video/~', $check_filetype['type'] ) ) {
 				$sResult = $solr_client->create_humcore_document( '', $metadata );
-				/* echo "<br />DEBUG 11.1 ", date ( 'Y-m-d H:i:s' ), var_export( $sResult, true ); */
 			} else {
 				$sResult = $solr_client->create_humcore_extract( $renamed_file, $metadata );
-				/* echo "<br />DEBUG 11.2 ", date ( 'Y-m-d H:i:s' ), var_export( $sResult, true ); */
 			}
 		} catch ( Exception $e ) {
 			if ( '500' == $e->getCode() && strpos( $e->getMessage(), 'TikaException' ) ) {
 				try {
 					$sResult = $solr_client->create_humcore_document( '', $metadata );
-					error_log( sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $nextPids[0] ) );
+					humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $nextPids[0] ) );
 				} catch ( Exception $e ) {
 					echo '<h3>', __( 'An error occurred while depositing your file!', 'humcore_domain' ), '</h3>';
-					error_log( sprintf( '*****HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
+					humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
 					wp_delete_post( $deposit_post_ID );
 					return false;
 				}
 			} else {
 				echo '<h3>', __( 'An error occurred while depositing your file!', 'humcore_domain' ), '</h3>';
-				error_log( sprintf( '*****HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
+				humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
 				wp_delete_post( $deposit_post_ID );
 				return false;
 			}
@@ -282,11 +262,9 @@
 		$aIngest = $fedora_api->ingest( array( 'xmlContent' => $aggregatorFoxml ) );
 		if ( is_wp_error( $aIngest ) ) {
 			echo 'Error - aIngest : ' . esc_html( $aIngest->get_error_message() );
-			error_log( sprintf( '*****HumCORE Deposit Error***** - aIngest : %1$s-%2$s',  $aIngest->get_error_code(), $aIngest->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - aIngest : %1$s-%2$s',  $aIngest->get_error_code(), $aIngest->get_error_message() ) );
 			return false;
 		}
-
-		/* echo "<br />DEBUG  4 ", date ( 'Y-m-d H:i:s' ), var_export( $aIngest, true ); */
 
 		/**
 		 * Upload the MODS file to the Fedora server temp file storage.
@@ -294,9 +272,8 @@
 		$uploadMODS = $fedora_api->upload( array( 'file' => $MODS_file ) );
 		if ( is_wp_error( $uploadMODS ) ) {
 			echo 'Error - uploadMODS : ' . esc_html( $uploadMODS->get_error_message() );
-			error_log( sprintf( '*****HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',  $uploadMODS->get_error_code(), $uploadMODS->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',  $uploadMODS->get_error_code(), $uploadMODS->get_error_message() ) );
 		}
-		/* echo "<br />DEBUG  5 ", date ( 'Y-m-d H:i:s' ), var_export( $uploadMODS, true ); */
 
 		/**
 		 * Create the descMetadata datastream for the aggregator object.
@@ -314,16 +291,14 @@
 					) );
 		if ( is_wp_error( $mContent ) ) {
 			echo esc_html( 'Error - mContent : ' . $mContent->get_error_message() );
-			error_log( sprintf( '*****HumCORE Deposit Error***** - mContent : %1$s-%2$s',  $mContent->get_error_code(), $mContent->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - mContent : %1$s-%2$s',  $mContent->get_error_code(), $mContent->get_error_message() ) );
 		}
-		/* echo "<br />DEBUG 5.1 ", date ( 'Y-m-d H:i:s' ), var_export( $mContent, true ); */
 
 		$rIngest = $fedora_api->ingest( array( 'xmlContent' => $resourceFoxml ) );
 		if ( is_wp_error( $rIngest ) ) {
 			echo esc_html( 'Error - rIngest : ' . $rIngest->get_error_message() );
-			error_log( sprintf( '*****HumCORE Deposit Error***** - rIngest : %1$s-%2$s',  $rIngest->get_error_code(), $rIngest->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - rIngest : %1$s-%2$s',  $rIngest->get_error_code(), $rIngest->get_error_message() ) );
 		}
-		/* echo "<br />DEBUG  6 ", date ( 'Y-m-d H:i:s' ), var_export( $rIngest, true ); */
 
 		/**
 		 * Upload the deposit to the Fedora server temp file storage.
@@ -331,9 +306,8 @@
 		$uploadUrl = $fedora_api->upload( array( 'file' => $renamed_file, 'filename' => $filename, 'filetype' => $filetype ) );
 		if ( is_wp_error( $uploadUrl ) ) {
 			echo 'Error - uploadUrl : ' . esc_html( $uploadUrl->get_error_message() );
-			error_log( sprintf( '*****HumCORE Deposit Error***** - uploadUrl (1) : %1$s-%2$s',  $uploadUrl->get_error_code(), $uploadUrl->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - uploadUrl (1) : %1$s-%2$s',  $uploadUrl->get_error_code(), $uploadUrl->get_error_message() ) );
 		}
-		/* echo "<br />DEBUG  7 ", date ( 'Y-m-d H:i:s' ), var_export( $uploadUrl, true ); */
 
 		/**
 		 * Create the CONTENT datastream for the resource object.
@@ -351,9 +325,8 @@
 					) );
 		if ( is_wp_error( $rContent ) ) {
 			echo 'Error - rContent : ' . esc_html( $rContent->get_error_message() );
-			error_log( sprintf( '*****HumCORE Deposit Error***** - rContent : %1$s-%2$s',  $rContent->get_error_code(), $rContent->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - rContent : %1$s-%2$s',  $rContent->get_error_code(), $rContent->get_error_message() ) );
 		}
-		/* echo "<br />DEBUG  8 ", date ( 'Y-m-d H:i:s' ), var_export( $rContent, true ); */
 
 		/**
 		 * Upload the thumb to the Fedora server temp file storage if necessary.
@@ -363,9 +336,8 @@
 			$uploadUrl = $fedora_api->upload( array( 'file' => $generated_thumb_path, 'filename' => $generated_thumb_name, 'filetype' => $generated_thumb_mime ) );
 			if ( is_wp_error( $uploadUrl ) ) {
 				echo 'Error - uploadUrl : ' . esc_html( $uploadUrl->get_error_message() );
-				error_log( sprintf( '*****HumCORE Deposit Error***** - uploadUrl (2) : %1$s-%2$s',  $uploadUrl->get_error_code(), $uploadUrl->get_error_message() ) );
+				humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - uploadUrl (2) : %1$s-%2$s',  $uploadUrl->get_error_code(), $uploadUrl->get_error_message() ) );
 			}
-			/* echo "<br />DEBUG  8.1 ", date ( 'Y-m-d H:i:s' ), var_export( $uploadUrl, true ); */
 
 			/**
 			 * Create the THUMB datastream for the resource object if necessary.
@@ -383,13 +355,10 @@
 						) );
 			if ( is_wp_error( $tContent ) ) {
 				echo 'Error - tContent : ' . esc_html( $tContent->get_error_message() );
-				error_log( sprintf( '*****HumCORE Deposit Error***** - tContent : %1$s-%2$s',  $tContent->get_error_code(), $tContent->get_error_message() ) );
+				humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - tContent : %1$s-%2$s',  $tContent->get_error_code(), $tContent->get_error_message() ) );
 			}
-			/* echo "<br />DEBUG  8.2 ", date ( 'Y-m-d H:i:s' ), var_export( $tContent, true ); */
 		}
-                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-                        humcore_write_error_log( 'HumCORE deposit fedora/solr writes complete' );
-                }
+                humcore_write_error_log( 'info', 'HumCORE deposit fedora/solr writes complete' );
 
 		/**
 		 * Prepare an array of post data for the resource post.
@@ -423,9 +392,7 @@
 			if ( false === $eStatus ) {
 				echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
 			}
-	                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-                        	humcore_write_error_log( 'HumCORE deposit DOI published' );
-                	}
+                        humcore_write_error_log( 'info', 'HumCORE deposit DOI published' );
 		}
 
 		/**
@@ -439,9 +406,7 @@
 			}
 		}
 
-                if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-                        humcore_write_error_log( 'HumCORE deposit transaction complete' );
-                }
+                humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
 		echo '<h3>', __( 'Deposit complete!', 'humcore_domain' ), '</h3><br />';
 		return $nextPids[0];
 
