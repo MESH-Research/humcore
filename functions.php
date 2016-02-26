@@ -1022,6 +1022,7 @@ function humcore_deposits_genre_list() {
 	$genre_list['Technical report'] = 'Technical report';
 	$genre_list['Thesis'] = 'Thesis';
 	$genre_list['Translation'] = 'Translation';
+	$genre_list['Video essay'] = 'Video essay';
 	$genre_list['Visual art'] = 'Visual art';
 	$genre_list['White paper'] = 'White paper';
 	$genre_list['Other'] = 'Other';
