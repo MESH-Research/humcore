@@ -998,10 +998,6 @@ function humcore_deposit_item_content() {
 	<table class="view_statistics">
 	<tr>
 		<td class="prompt">Activity:</td>
-		<td class="value"><?php _e( 'Page Visits:', 'humcore_domain' ); echo ' ' . esc_html( $total_views ); ?></td>
-	</tr>
-	<tr>
-		<td class="prompt">&nbsp;</td>
 		<td class="value"><?php _e( 'Downloads:', 'humcore_domain' ); echo ' ' . esc_html( $total_content_downloads + $total_content_views ); ?></td>
 	</tr>
 	</table>
