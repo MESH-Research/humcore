@@ -587,8 +587,7 @@
 			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-journal-publisher'] );
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-journal-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
-				$temp_date = preg_replace( '~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i', 'Jan $2', $metadata['date'] );
-				$metadata['date_issued'] = date( 'Y', strtotime( preg_replace( '/^(\d{4})$/', 'Jan $1', $temp_date ) ) );
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
@@ -603,8 +602,7 @@
 			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-publisher'] );
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
-				$temp_date = preg_replace( '~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i', 'Jan $2', $metadata['date'] );
-				$metadata['date_issued'] = date( 'Y', strtotime( preg_replace( '/^(\d{4})$/', 'Jan $1', $temp_date ) ) );
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
@@ -619,8 +617,7 @@
 			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-proceeding-publisher'] );
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-proceeding-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
-				$temp_date = preg_replace( '~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i', 'Jan $2', $metadata['date'] );
-				$metadata['date_issued'] = date( 'Y', strtotime( preg_replace( '/^(\d{4})$/', 'Jan $1', $temp_date ) ) );
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
@@ -631,8 +628,7 @@
 		} elseif ( 'none' == $metadata['publication-type'] ) {
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-non-published-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
-				$temp_date = preg_replace( '~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i', 'Jan $2', $metadata['date'] );
-				$metadata['date_issued'] = date( 'Y', strtotime( preg_replace( '/^(\d{4})$/', 'Jan $1', $temp_date ) ) );
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
@@ -666,6 +662,46 @@
 		}
 
 		return $metadata;
+
+	}
+
+	/**
+	 * Get the year from the date entered.
+	 *
+	 * @param string $date Date entered
+	 * @return string Date in YYYY format
+	 */
+	function get_year_issued( $date_entered ) {
+
+                $temp_date_entered = preg_replace(
+			'~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i',
+			'Jan $2',
+			$date_entered
+		); // Custom publication date format.
+
+                $temp_date_entered = preg_replace(
+			'/^(\d{4})$/',
+			'Jan $1',
+			$temp_date_entered
+		); // Workaround for when only YYYY is entered.
+
+                $ambiguous_date = preg_match( '~^(\d{2})-(\d{2})-(\d{2}(?:\d{2})?)(?:\s.*?|)$~', $temp_date_entered, $matches );
+                if ( 1 === $ambiguous_date ) { // Just deal with slashes.
+                        $temp_date_entered = sprintf( '%1$s/%2$s/%3$s', $matches[1], $matches[2], $matches[3] );
+                }
+
+		$ambiguous_date = preg_match( '~^(\d{2})/(\d{2})/(\d{2}(?:\d{2})?)(?:\s.*?|)$~', $temp_date_entered, $matches );
+		if ( 1 === $ambiguous_date && $matches[1] > 12 ) { // European date in d/m/y format will fail for dd > 12.
+			$temp_date_entered = sprintf( '%1$s/%2$s/%3$s', $matches[2], $matches[1], $matches[3] );
+		}
+
+                $date_value = strtotime( $temp_date_entered );
+
+                if ( false === $date_value ) {
+			return date( 'Y', strtotime( 'today' ) ); // Give them something.
+		}
+
+                return date( 'Y', $date_value );
 
 	}
 
