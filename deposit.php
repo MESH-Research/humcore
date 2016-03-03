@@ -203,7 +203,7 @@
 			humcore_write_error_log( 'error', '*****HumCORE Deposit Error***** Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
 		}
 		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_metadata', wp_slash( $json_metadata ) );
-                humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (1)', array( 'json' => $json_metadata ) );
+                humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (1)', json_decode( $json_metadata, true ) );
 
 		/**
 		 * Add to metadata and store in post meta.
@@ -224,7 +224,7 @@
 			humcore_write_error_log( 'error', '*****HumCORE Deposit Error***** File Post Meta Encoding Error - Post ID: ' . $deposit_post_ID . ' - ' . json_last_error_msg() );
 		}
 		$post_meta_ID = update_post_meta( $deposit_post_ID, '_deposit_file_metadata', wp_slash( $json_metadata ) );
-                humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', array( 'json' => $json_metadata ) );
+                humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', json_decode( $json_metadata, true ) );
 
 		/**
 		 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
@@ -965,7 +965,9 @@
 
 		$dom = new DOMDocument;
 		$dom->preserveWhiteSpace = false;
-		$dom->loadXML( $output );
+		if ( false === $dom->loadXML( $output ) ) {
+			humcore_write_error_log( 'error', '*****HumCORE Error - bad xml content*****' . var_export( $pid, true ) );
+		}
 		$dom->formatOutput = true;
 		return $dom->saveXML();
 

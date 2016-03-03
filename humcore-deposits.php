@@ -356,12 +356,12 @@ function humcore_write_error_log( $error_type, $error_message, $info = null ) {
 
 	if ( 'info' === $error_type ) {
 		if ( empty( $info ) ) {
-			$humcore_logger->addInfo( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_message );
+			$humcore_logger->addInfo( $error_message );
 		} else {
-			$humcore_logger->addInfo( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_message, $info );
+			$humcore_logger->addInfo( $error_message . ' : ', $info );
 		}
 	} else {
-			$humcore_logger->addError( '[' . date( 'd-M-Y H:i:s T' ) . ']****************** ' . $error_message );
+			$humcore_logger->addError( $error_message );
 	}
 
 }

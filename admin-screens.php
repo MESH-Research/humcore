@@ -713,7 +713,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// Update the meta field in the database.
 	$post_meta_ID = update_post_meta( $post_id, '_deposit_metadata', wp_slash( $json_aggregator_metadata ) );
 	if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-		humcore_write_error_log( 'info', 'WP Admin HumCORE Deposit Meta Update', array( 'json' => $json_aggregator_metadata ) );
+		humcore_write_error_log( 'info', 'WP Admin HumCORE Deposit Meta Update', json_decode( $json_aggregator_metadata, true ) );
 	}
 
 	// Reindex solr doc.

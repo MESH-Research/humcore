@@ -396,7 +396,7 @@ class Humcore_Deposit_Solr_Api {
 			throw $e;
 		}
 
-		humcore_write_error_log( 'info', '***Create Solr Document using Extract***' . var_export( $result->getData(), true ) );
+		humcore_write_error_log( 'info', 'Create Solr Document using Extract ', array( $result->getData() ) );
 
 		// Begin debug.
 		$query_info = $result->getQuery();
@@ -506,7 +506,7 @@ class Humcore_Deposit_Solr_Api {
 		// This executes the query and returns the result.
 		$result = $client->update( $query );
 
-		humcore_write_error_log( 'info', '***Create Solr Document***' . var_export( $result->getData(), true ) );
+		humcore_write_error_log( 'info', 'Create Solr Document ', array( $result->getData() ) );
 
 		// Begin debug.
 		$query_info = $result->getQuery();
@@ -539,7 +539,8 @@ class Humcore_Deposit_Solr_Api {
 		$result = $client->update( $deleteQuery );
 		$res = $result->getData();
 
-		humcore_write_error_log( 'info', '***Delete Solr Document***' . var_export( $result->getData(), true ) );
+		humcore_write_error_log( 'info', 'Delete Solr Document ', array( $result->getData() ) );
+
 		return isset( $res['status'] ) ? $res['status'] : '';
 
 	}

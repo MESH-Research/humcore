@@ -483,7 +483,7 @@ function humcore_check_externals() {
 
 	$eStatus = $ezid_api->server_status();
 	if ( is_wp_error( $eStatus ) ) {
-		humcore_write_error_log( sprintf( 'error', '*****HumCORE Status Error***** - ezid server status :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Status Error***** - ezid server status :  %1$s-%2$s',  $eStatus->get_error_code(), $eStatus->get_error_message() ) );
 		return false;
 	}
 

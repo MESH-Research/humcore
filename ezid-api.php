@@ -237,7 +237,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( $response_code, $response_message, $response_body );
 		}
 
-		humcore_write_error_log( 'info', '*****Create DOI***** ' . array( 'response' => $response_body ) );
+		humcore_write_error_log( 'info', 'Create DOI ', array( 'response' => $response_body ) );
 
 		$response_array = explode( ':', $response_body, 2 );
 		if ( 'success' == $response_array[0] ) {
@@ -322,7 +322,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( $response_code, $response_message, $response_body );
 		}
 
-		humcore_write_error_log( 'info', '*****Mint DOI***** ' . array( 'response' => $response_body ) );
+		humcore_write_error_log( 'info', 'Mint DOI ', array( 'response' => $response_body ) );
 
 		$response_array = explode( ':', $response_body, 2 );
 		if ( 'success' == $response_array[0] ) {
