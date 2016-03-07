@@ -673,6 +673,7 @@
 	 */
 	function get_year_issued( $date_entered ) {
 
+		// The strtotime function will handle a wide variety of entries. First address some cases it will not handle.
                 $temp_date_entered = preg_replace(
 			'~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i',
 			'Jan $2',
@@ -698,7 +699,7 @@
                 $date_value = strtotime( $temp_date_entered );
 
                 if ( false === $date_value ) {
-			return date( 'Y', strtotime( 'today' ) ); // Give them something.
+			return ''; // No year is better than the wrong year.
 		}
 
                 return date( 'Y', $date_value );
