@@ -81,7 +81,7 @@ class Humcore_Deposit_Ezid_Api {
 		}
 
 		$this->ezidPath = $this->ezidSettings['path'];
-		$this->ezidMintPath = $this->ezidSettings['mintpath'];
+//		$this->ezidMintPath = $this->ezidSettings['mintpath'];
 		$this->ezidPrefix = $this->ezidSettings['prefix'];
 		$this->options['api-auth']['headers']['Authorization'] = 'Basic ' . base64_encode( $this->ezidSettings['login'] . ':' . $this->ezidSettings['password'] );
 		$this->options['api-auth']['httpversion'] = '1.1';
@@ -237,7 +237,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( $response_code, $response_message, $response_body );
 		}
 
-		error_log( '*****Create DOI***** ' . var_export( $response_body, true ) );
+		humcore_write_error_log( 'info', 'Create DOI ', array( 'response' => $response_body ) );
 
 		$response_array = explode( ':', $response_body, 2 );
 		if ( 'success' == $response_array[0] ) {
@@ -322,7 +322,7 @@ class Humcore_Deposit_Ezid_Api {
 			return new WP_Error( $response_code, $response_message, $response_body );
 		}
 
-		error_log( '*****Mint DOI***** ' . var_export( $response_body, true ) );
+		humcore_write_error_log( 'info', 'Mint DOI ', array( 'response' => $response_body ) );
 
 		$response_array = explode( ':', $response_body, 2 );
 		if ( 'success' == $response_array[0] ) {

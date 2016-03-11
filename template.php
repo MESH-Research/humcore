@@ -548,7 +548,14 @@ class Humcore_Deposit_Search_Results {
 					$this->total_deposit_count = 0;
 					$this->facet_counts = '';
 					$this->deposits = '';
-					error_log( sprintf( '*****HumCORE Search***** - A Solr error occurred. %1$s - %2$s', $e->getCode(), $e->getMessage() ) );
+					humcore_write_error_log(
+						'error',
+						sprintf(
+							'*****HumCORE Search***** - A Solr error occurred. %1$s - %2$s',
+							$e->getCode(),
+							$e->getMessage()
+						)
+					);
 
 				}
 			}

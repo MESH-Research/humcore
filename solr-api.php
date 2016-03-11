@@ -110,7 +110,7 @@ class Humcore_Deposit_Solr_Api {
 				'response'        => $result->getData(),
 			);
 			if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-			        humcore_write_error_log( 'solr debug', $info );
+			        humcore_write_error_log( 'info', 'solr debug', $info );
 			}
 			// End of debug.
 			$res = $result->getData();
@@ -130,10 +130,10 @@ class Humcore_Deposit_Solr_Api {
 				'response'        => $e->getMessage(),
 			);
 			if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-			        humcore_write_error_log( 'solr debug', $info );
+			        humcore_write_error_log( 'info', 'solr debug', $info );
 			}
 			// End of debug.
-			return new WP_Error( $e->getCode(), $e->getStatusMessage(), $e->getMessage() );
+			return new WP_Error( 'solrServerError', $e->getStatusMessage(), $e->getMessage() );
 		}
 
 	}
@@ -375,7 +375,7 @@ class Humcore_Deposit_Solr_Api {
 		try {
 			$result = $client->extract( $query );
 		} catch ( Exception $e ) {
-			error_log( '***Error trying to create Solr Document using Extract***' . var_export( $e->getMessage(), true ) );
+			humcore_write_error_log( 'error', '***Error trying to create Solr Document using Extract***' . var_export( $e->getMessage(), true ) );
 
 			// Begin debug.
 			$query_info = $result->getQuery();
@@ -390,13 +390,13 @@ class Humcore_Deposit_Solr_Api {
 				'time'            => $result->getQueryTime(),
 			);
 			if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-			        humcore_write_error_log( 'solr debug', $info );
+			        humcore_write_error_log( 'info', 'solr debug', $info );
 			}
 			// End of debug.
 			throw $e;
 		}
 
-		error_log( '***Create Solr Document using Extract***' . var_export( $result->getData(), true ) );
+		humcore_write_error_log( 'info', 'Create Solr Document using Extract ', array( $result->getData() ) );
 
 		// Begin debug.
 		$query_info = $result->getQuery();
@@ -411,7 +411,7 @@ class Humcore_Deposit_Solr_Api {
 			'time'            => $result->getQueryTime(),
 		);
 		if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-			humcore_write_error_log( 'solr debug', $info );
+			humcore_write_error_log( 'info', 'solr debug', $info );
 		}
 		// End of debug.
 		return true;
@@ -506,7 +506,7 @@ class Humcore_Deposit_Solr_Api {
 		// This executes the query and returns the result.
 		$result = $client->update( $query );
 
-		error_log( '***Create Solr Document***' . var_export( $result->getData(), true ) );
+		humcore_write_error_log( 'info', 'Create Solr Document ', array( $result->getData() ) );
 
 		// Begin debug.
 		$query_info = $result->getQuery();
@@ -521,7 +521,7 @@ class Humcore_Deposit_Solr_Api {
 			'time'            => $result->getQueryTime(),
 		);
 		if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-			humcore_write_error_log( 'solr debug', $info );
+			humcore_write_error_log( 'info', 'solr debug', $info );
 		}
 		// End of debug.
 		return true;
@@ -539,7 +539,8 @@ class Humcore_Deposit_Solr_Api {
 		$result = $client->update( $deleteQuery );
 		$res = $result->getData();
 
-		error_log( '***Delete Solr Document***' . var_export( $result->getData(), true ) );
+		humcore_write_error_log( 'info', 'Delete Solr Document ', array( $result->getData() ) );
+
 		return isset( $res['status'] ) ? $res['status'] : '';
 
 	}

@@ -639,7 +639,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
-					error_log( '*****WP Admin HumCORE Deposit Meta Update Subject Error*****' . var_export( $term_key, true ) );
+					humcore_write_error_log( 'error', '*****WP Admin HumCORE Deposit Meta Update Subject Error*****' . var_export( $term_key, true ) );
 				}
 			}
 			// Support add and remove.
@@ -664,7 +664,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
-					error_log( '*****WP Admin HumCORE Deposit Meta Update Keyword Error*****' . var_export( $term_key, true ) );
+					humcore_write_error_log( 'error', '*****WP Admin HumCORE Deposit Meta Update Keyword Error*****' . var_export( $term_key, true ) );
 				}
 			}
 			// Support add and remove.
@@ -713,7 +713,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// Update the meta field in the database.
 	$post_meta_ID = update_post_meta( $post_id, '_deposit_metadata', wp_slash( $json_aggregator_metadata ) );
 	if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
-		humcore_write_error_log( 'WP Admin HumCORE Deposit Meta Update', $json_aggregator_metadata );
+		humcore_write_error_log( 'info', 'WP Admin HumCORE Deposit Meta Update', json_decode( $json_aggregator_metadata, true ) );
 	}
 
 	// Reindex solr doc.
@@ -735,7 +735,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 		$upload_MODS = $fedora_api->upload( array( 'file' => $resource_MODS_file ) );
 		if ( is_wp_error( $upload_MODS ) ) {
 			echo 'Error - uploadMODS : ' . esc_html( $upload_MODS->get_error_message() );
-			error_log( sprintf( '*****WP Admin HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',  $upload_MODS->get_error_code(), $upload_MODS->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',  $upload_MODS->get_error_code(), $upload_MODS->get_error_message() ) );
 		}
 
 		$mContent = $fedora_api->modify_datastream( array(
@@ -748,7 +748,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 					) );
 		if ( is_wp_error( $mContent ) ) {
 			echo esc_html( 'Error - mContent : ' . $mContent->get_error_message() );
-			error_log( sprintf( '*****WP Admin HumCORE Deposit Error***** - mContent : %1$s-%2$s',  $mContent->get_error_code(), $mContent->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - mContent : %1$s-%2$s',  $mContent->get_error_code(), $mContent->get_error_message() ) );
 		}
 
 		$resource_Xml = create_resource_xml( $aggregator_metadata, $resource_filetype );
@@ -761,7 +761,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 		) );
 		if ( is_wp_error( $rContent ) ) {
 			echo 'Error - rContent : ' . esc_html( $rContent->get_error_message() );
-			error_log( sprintf( '*****WP Admin HumCORE Deposit Error***** - rContent : %1$s-%2$s',  $rContent->get_error_code(), $rContent->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - rContent : %1$s-%2$s',  $rContent->get_error_code(), $rContent->get_error_message() ) );
 		}
 		try {
 			if ( preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) ) {
@@ -772,7 +772,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 		} catch ( Exception $e ) {
 
 			echo '<h3>', __( 'An error occurred while depositing your file!', 'humcore_domain' ), '</h3>';
-			error_log( sprintf( '*****WP Admin HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
 			return  $post_id;
 		}
 

@@ -71,6 +71,39 @@ class Fedora_Command extends WP_CLI_Command {
     }
 
     /**
+     * Get Object XML for a PID.
+     * 
+     * ## OPTIONS
+     * 
+     * <pid>
+     * : The PID to be retrieved.
+     * 
+     * ## EXAMPLES
+     * 
+     *     wp fedora get_object_xml --pid="pid"
+     *
+     * @synopsis --pid=<pid>
+     */
+    public function get_object_xml( $args, $assoc_args ) {
+
+        global $fedora_api;
+
+        $id = $assoc_args['pid'];
+
+        $fStatus = $fedora_api->get_object_xml( array(
+            'pid' => $id,
+        ) );
+
+        if ( is_wp_error( $fStatus ) ) {
+            WP_CLI::error( sprintf( 'Error retrieving object xml pid : %1$s, %2$s-%3$s', $id, $fStatus->get_error_code(), $fStatus->get_error_message() ) );
+        } else {
+            WP_CLI::line( var_export( $fStatus, true ) );
+            // Print a success message
+            WP_CLI::success( 'Done!' );
+        }
+    }
+
+    /**
      * Validate a PID.
      * 
      * ## OPTIONS
