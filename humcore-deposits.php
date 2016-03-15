@@ -412,6 +412,28 @@ if ( is_admin() ) {
 }
 
 /**
+ * Include conditional support for Better WordPress Google XML Sitemaps plugin
+ */
+function humcore_bwp_gxs_add_modules() {
+
+    global $bwp_gxs;
+    $bwp_gxs->add_module( 'humcore_deposit_links' );
+
+}
+function humcore_bwp_gxs_add_rewrite_rules() {
+
+    $humcore_rules = array(
+        'humcore_deposit_links\.xml' => 'index.php?gxs_module=humcore_deposit_links'
+    );
+    return $humcore_rules;
+
+}
+if ( class_exists( 'BWP_Sitemaps' ) ) {
+	add_filter( 'bwp_gxs_rewrite_rules', 'humcore_bwp_gxs_add_rewrite_rules' );
+	add_action( 'bwp_gxs_modules_built', 'humcore_bwp_gxs_add_modules' );
+}
+
+/**
  * HumCORE: CLI Commands
  */
 

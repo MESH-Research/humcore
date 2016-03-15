@@ -208,6 +208,8 @@ function humcore_deposit_item_search_meta() {
 	endwhile; // Should fetch one record.
 	$metadata = (array) humcore_get_current_deposit();
 
+        printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", bp_get_root_domain(), htmlentities( $metadata['pid'] ) );
+
 	printf( '<meta name="description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
 	printf( '<meta name="citation_title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
 	printf( '<meta name="citation_publication_date" content="%1$s">' ."\n\r", htmlentities( $metadata['date'] ) ); // Format date yyyy/mm/dd.
@@ -679,6 +681,7 @@ function humcore_deposits_item_screen() {
 		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
 		if ( $item_found) { 
 			do_action( 'humcore_deposits_item_screen' );
+			remove_action( 'wp_head', 'rel_canonical' );
 			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 			bp_core_load_template( apply_filters( 'humcore_deposits_item_screen', 'deposits/single/item' ) );
 		} else {
@@ -705,6 +708,7 @@ function humcore_deposits_item_review_screen() {
 		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
 		if ( $item_found) { 
 			do_action( 'humcore_deposits_item_review_screen' );
+			remove_action( 'wp_head', 'rel_canonical' );
 			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 			bp_core_load_template( apply_filters( 'humcore_deposits_item_review_screen', 'deposits/single/review' ) );
 		} else {
