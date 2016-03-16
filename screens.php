@@ -1385,7 +1385,7 @@ function humcore_search_sidebar_content() {
 						( $facet_list_item_selected ) ? '' : ' style="display: none !important;"',
 						'X'
 					);
-					echo sprintf( '<li class="facet-list-item"%1$s><a class="facet-search-link" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
+					echo sprintf( '<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
 						( $facet_list_count < 2 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
 						trim( $facet_key ),
 						urlencode( trim( $facet_value_counts[0] ) ),
@@ -1439,7 +1439,7 @@ function humcore_directory_sidebar_content() {
 					( $facet_list_item_selected ) ? ' style="display: none;"' : '',
 					$facet_value_counts[1]
 				);
-				echo sprintf( '<li class="facet-list-item"%1$s><a class="facet-search-link" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
+				echo sprintf( '<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
 					( $facet_list_count < 4 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
 					trim( $facet_key ),
 					urlencode( trim( $facet_value_counts[0] ) ),
