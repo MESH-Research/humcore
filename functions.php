@@ -1113,11 +1113,29 @@ function humcore_deposits_user_committee_list( $user_id ) {
 		'per_page' => '500',
 	);
 
+	/* Special case for now - remove committees.
 	$m_groups = groups_get_groups( $args );
 
 	foreach ( $m_groups['groups'] as $group ) {
 		$committees_list[ $group->id ] = strip_tags( stripslashes( $group->name ) );
 	}
+	*/
+
+	// Add special exceptions - certain groups where user is admin
+        $s_args = array(
+                'user_id' => $user_id,
+                'type' => 'alphabetical',
+		'include' => array( '444', ),
+                'per_page' => '500',
+        );
+
+        $s_groups = groups_get_groups( $s_args );
+
+        foreach ( $s_groups['groups'] as $s_group ) {
+		if ( groups_is_user_admin( $user_id, $s_group->id ) ) {
+                	$committees_list[ $s_group->id ] = strip_tags( stripslashes( $s_group->name ) );
+        	}
+        }
 
 	return apply_filters( 'humcore_deposits_user_committee_list', $committees_list );
 

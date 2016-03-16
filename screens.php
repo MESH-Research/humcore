@@ -216,13 +216,12 @@ function humcore_deposit_form() {
 	<div id="deposit-on-behalf-flag-entry">
 <?php
         $committee_list = humcore_deposits_user_committee_list( bp_loggedin_user_id() );
-	$committee_list = ''; //disable for now
         if ( empty( $committee_list ) ) {
 ?>
         <input type="hidden" name="deposit-on-behalf-flag" id="deposit-on-behalf-flag" value="" />
 <?php   } else { ?>
 		<label for="deposit-on-behalf-flag-list">Depositor</label>
-		<span class="description">Is this deposit being made on behalf of a committee?</span>
+		<span class="description">Is this deposit being made on behalf of a group?</span>
 			<input type="radio" name="deposit-on-behalf-flag" value="yes" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'yes' ); } ?>>Yes &nbsp;
 			<input type="radio" name="deposit-on-behalf-flag" value="no" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
 <?php
@@ -285,8 +284,8 @@ function humcore_deposit_form() {
 	<input type="hidden" name="deposit-committee" id="deposit-committee" value="" />
 <?php	} else { ?>
 
-		<label for="deposit-committee">Committee</label>
-		<select name="deposit-committee" id="deposit-committee" class="js-basic-single-optional" data-placeholder="Select committee">
+		<label for="deposit-committee">Deposit Group</label>
+		<select name="deposit-committee" id="deposit-committee" class="js-basic-single-optional" data-placeholder="Select group">
 			<option class="level-0" selected value=""></option>
 <?php
 	$posted_committee = '';

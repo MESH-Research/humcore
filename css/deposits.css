@@ -187,7 +187,7 @@ ul.deposits-item .list-item-value {
 #deposit-title-unchanged {
 	width: 80%;
 }
-#deposit-file-entries, #deposit-metadata-entries {
+#deposit-file-entries, #deposit-metadata-entries, #deposit-committee-entry {
 	padding-left: 10px;
 }
 #deposit-conference-entries, #deposit-meeting-entries, #deposit-institution-entries {
