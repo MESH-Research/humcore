@@ -229,54 +229,6 @@ function humcore_deposit_form() {
 	</div>
 	</p>
 	<p>
-	<div id="deposit-other-authors-entry">
-		<label for="deposit-other-authors-entry-list">Authors</label>
-		<span class="description">Add any authors in addition to yourself.</span>
-		<ul id="deposit-other-authors-entry-list">
-		<li>
-		<table id="deposit-other-authors-entry-table"><tbody>
-		<tr><td class="noBorderTop" style="width:205px;">
-		First Name
-		</td><td class="noBorderTop" style="width:205px;">
-		Last Name
-		</td><td class="noBorderTop">
-		</td><td class="noBorderTop">
-		</td></tr>
-		<tr><td class="borderTop" style="width:205px;">
-		<?php echo esc_html( $user_firstname ); ?>
-		</td><td class="borderTop" style="width:205px;">
-		<?php echo esc_html( $user_lastname ); ?>
-		</td><td class="borderTop">
-		<input type="button" id="deposit-insert-other-author-button" class="button add_author" value="Add Another">
-		</td></tr>
-
-<?php
-	if ( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) {
-		$other_authors = array_map(
-			function ( $first_name, $last_name ) { return array( 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ) ); },
-			$_POST['deposit-other-authors-first-name'],
-			$_POST['deposit-other-authors-last-name']
-		);
-		foreach ( $other_authors as $author_array ) {
-			if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
-?>
-		<tr><td class="borderTop" style="width:205px;">
-		<input type="text" name="deposit-other-authors-first-name[]" class="text" value="<?php echo $author_array['first_name']; ?>" />
-		</td><td class="borderTop" style="width:205px;">
-		<input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
-		</td><td class="borderTop">
-		</td></tr>
-<?php
-			}
-		}
-	}
-?>
-		</tbody></table>
-		</li>
-		</ul>
-	</div>
-	</p>
-	<p>
 	<div id="deposit-committee-entry">
 <?php
 	if ( empty( $committee_list ) ) {
@@ -301,6 +253,51 @@ function humcore_deposit_form() {
 		</select>
 <?php
 	} ?>
+	</div>
+	</p>
+	<p>
+	<div id="deposit-other-authors-entry">
+		<label for="deposit-other-authors-entry-list">Authors</label>
+		<span class="description">Add any authors in addition to yourself.</span>
+		<div id="deposit-other-authors-entry-list">
+		<table id="deposit-other-authors-entry-table"><tbody>
+		<tr><td class="noBorderTop" style="width:205px;">
+		First Name
+		</td><td class="noBorderTop" style="width:205px;">
+		Last Name
+		</td><td class="noBorderTop">
+		<input type="button" id="deposit-insert-other-author-button" class="button add_author" value="Add an Author">
+		</td></tr>
+		<tr id="deposit-author-display"><td class="borderTop" style="width:205px;">
+		<?php echo esc_html( $user_firstname ); ?>
+		</td><td class="borderTop" style="width:205px;">
+		<?php echo esc_html( $user_lastname ); ?>
+		</td><td class="borderTop">
+		</td></tr>
+
+<?php
+	if ( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) {
+		$other_authors = array_map(
+			function ( $first_name, $last_name ) { return array( 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ) ); },
+			$_POST['deposit-other-authors-first-name'],
+			$_POST['deposit-other-authors-last-name']
+		);
+		foreach ( $other_authors as $author_array ) {
+			if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
+?>
+		<tr><td class="borderTop" style="width:205px;">
+		<input type="text" name="deposit-other-authors-first-name[]" class="text" value="<?php echo $author_array['first_name']; ?>" />
+		</td><td class="borderTop" style="width:205px;">
+		<input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
+		</td><td class="borderTop">
+		</td></tr>
+<?php
+			}
+		}
+	}
+?>
+		</tbody></table>
+		</div>
 	</div>
 	</p>
 	<p>
