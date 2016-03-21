@@ -38,11 +38,13 @@ jQuery(document).ready( function($) {
  	function maybe_show_committee_fields(event) {
 		var value = $(this).val();
 		if ( value == 'yes' ) {
-		   	$('#deposit-other-authors-entry').hide();
-		   	$('#deposit-committee-entry').show();
+			$('#deposit-author-display').hide();
+			$('#deposit-committee-entry').show();
+			$('#deposit-other-authors-entry span.description').html('Add any authors in addition to the group.');
 		} else {
-			$('#deposit-other-authors-entry').show();
+			$('#deposit-author-display').show();
 			$('#deposit-committee-entry').hide();
+			$('#deposit-other-authors-entry span.description').html('Add any authors in addition to yourself.');
 		}
 	}
 
@@ -107,12 +109,6 @@ jQuery(document).ready( function($) {
 	$('#deposit-journal-entries').hide();
 	$('#deposit-proceedings-entries').hide();
 
-	// Setup triggers for page load from server.
-	$('select[name=deposit-genre]').trigger('genreload');
-	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
-	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubtypeload');
-	$('input[type=radio][name=deposit-published]:checked').trigger('pubload');
-
 	// Show any selected conditional fields.
 	$('select[name=deposit-genre]').on('change', maybe_show_extra_genre_fields);
 	$('select[name=deposit-genre]').on('genreload', maybe_show_extra_genre_fields);
@@ -122,6 +118,12 @@ jQuery(document).ready( function($) {
 	$('input[type=radio][name=deposit-publication-type]').on('pubtypeload', maybe_show_publication_type_fields);
 	$('input[type=radio][name=deposit-published]').on('click', maybe_show_published_fields);
 	$('input[type=radio][name=deposit-published]').on('pubload', maybe_show_published_fields);
+
+	// Setup triggers for page load from server.
+	$('select[name=deposit-genre]').trigger('genreload');
+	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
+	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubtypeload');
+	$('input[type=radio][name=deposit-published]:checked').trigger('pubload');
 
 	// Setup warning and error dialogs.
 	$( "#deposit-warning-dialog" ).dialog({
@@ -174,6 +176,8 @@ jQuery(document).ready( function($) {
 		var item_type = $('#deposit-genre').val();
 		var description = $.trim($('#deposit-abstract-unchanged').val());
 		var description_length = $('#deposit-abstract-unchanged').val().length;
+		var deposit_on_behalf_of = $('input[type=radio][name=deposit-on-behalf-flag]:checked').val();
+		var committee = $('#deposit-committee').val();
 		var groups = $('select[name="deposit-group[]"]').val();
 		var subjects = $('select[name="deposit-subject[]"]').val();
 		var notes_length = $('#deposit-notes-unchanged').val().length;
@@ -201,11 +205,15 @@ jQuery(document).ready( function($) {
 			error_message += '<li>Please limit description to 2000 characters.</li>';
 			$('#deposit-abstract-unchanged').addClass('deposit-input-highlight');
 		}
+		if ( committee === '' && deposit_on_behalf_of === 'yes' ) {
+			error_message += '<li>Please add the group you are depositing on behalf of.</li>';
+			$('#deposit-committee-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
+		}
 		if ( notes_length > 500 ) {
 			error_message += '<li>Please limit notes to 500 characters.</li>';
 			$('#deposit-notes-unchanged').addClass('deposit-input-highlight');
 		}
-		if ( groups === null ) {
+		if ( groups === null && deposit_on_behalf_of === 'no' ) {
 			warning_message += '<li>We noticed you haven’t shared your deposit with any <em>MLA Commons</em> forums, which means forum members won’t receive a notification about its inclusion in <em>CORE</em>.</li>';
 			$('#deposit-group-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
@@ -215,10 +223,11 @@ jQuery(document).ready( function($) {
 		}
 
 		// Show a dialog if needed, otherwise submit the form.
-		if ( title === '' || item_type === '' || description === '' || selected_file === '' || description_length > 2000 || notes_length > 500 ) {
+		if ( title === '' || item_type === '' || description === '' || selected_file === '' || description_length > 2000 || notes_length > 500 ||
+			( committee === '' && deposit_on_behalf_of === 'yes' ) ) {
 			$('#deposit-error-dialog').html(error_message).dialog('open');
 			return false;
-		} else if ( groups === null || subjects === null ) {
+		} else if ( ( groups === null && deposit_on_behalf_of === 'no' ) || subjects === null ) {
 			warning_message += '</ul>Want to fix this? Press <b>Edit</b> to make changes. To upload your item as is, press <b>Deposit</b>.</p>';
 			$('#deposit-warning-dialog').html(warning_message).dialog('open');
 			return false;

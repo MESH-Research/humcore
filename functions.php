@@ -461,6 +461,16 @@ function humcore_is_bot_user_agent() {
 }
 
 /**
+ * Array of member groups that can author deposits.
+ *
+ * @return array Group ids.
+ */
+function humcore_member_groups_with_authorship() {
+
+	return array( 444 );
+}
+
+/**
  * Check the status of the external systems.
  */
 function humcore_check_externals() {
@@ -681,6 +691,7 @@ function humcore_deposits_item_screen() {
 		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
 		if ( $item_found) { 
 			do_action( 'humcore_deposits_item_screen' );
+			remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 			remove_action( 'wp_head', 'rel_canonical' );
 			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 			bp_core_load_template( apply_filters( 'humcore_deposits_item_screen', 'deposits/single/item' ) );
@@ -708,6 +719,7 @@ function humcore_deposits_item_review_screen() {
 		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
 		if ( $item_found) { 
 			do_action( 'humcore_deposits_item_review_screen' );
+			remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 			remove_action( 'wp_head', 'rel_canonical' );
 			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 			bp_core_load_template( apply_filters( 'humcore_deposits_item_review_screen', 'deposits/single/review' ) );
@@ -868,14 +880,16 @@ function humcore_linkify_author( $author, $author_meta, $author_type ) {
 
 	if ( 'creator' === $author_type ) {
 		$page_type = 'groups';
+		$prompt_text = 'view group';
 	} else {
 		$page_type = 'members';
+		$prompt_text = 'see profile';
 	}
 
 	if ( ( ! empty( $author_meta ) && 'null' != $author_meta ) &&
 		( ( 'members' === $page_type && $displayed_username != $author_meta ) ||
 		( 'groups' === $page_type && ! bp_is_group() ) ) ) {
-		$profile = sprintf( ' <a href="/%s/%s/deposits/">(see profile)</a> ', $page_type, $author_meta );
+		$profile = sprintf( ' <a href="/%s/%s/deposits/">(%s)</a> ', $page_type, $author_meta, $prompt_text );
 	} else {
 		$profile = '';
 	}
@@ -1125,7 +1139,7 @@ function humcore_deposits_user_committee_list( $user_id ) {
         $s_args = array(
                 'user_id' => $user_id,
                 'type' => 'alphabetical',
-		'include' => array( '444', ),
+		'include' => humcore_member_groups_with_authorship(),
                 'per_page' => '500',
         );
 

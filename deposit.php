@@ -475,8 +475,7 @@
 			);
 		}
 
-		if ( ( empty( $metadata['committee_deposit'] ) || 'yes' !== $metadata['committee_deposit'] ) &&
-			( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) ) {
+		if ( ( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) ) {
 			$other_authors = array_map( function ( $first_name, $last_name ) { return array( 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ) ); },
 				$_POST['deposit-other-authors-first-name'], $_POST['deposit-other-authors-last-name']
 			);

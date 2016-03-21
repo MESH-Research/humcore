@@ -20,7 +20,7 @@
 // An easy way to get this list is to check out the html source
 // and get all the values of the <option>s.
 
-if ( mla_is_group_committee() ) {
+if ( mla_is_group_committee() || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) {
 	$my_querystring = sprintf( 'facets[author_facet][]=%s', urlencode( bp_get_current_group_name() ) );
 } else {
 	$my_querystring = sprintf( 'facets[group_facet][]=%s', urlencode( bp_get_current_group_name() ) );

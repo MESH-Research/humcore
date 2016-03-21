@@ -76,7 +76,7 @@ class Humcore_Deposit_Component extends BP_Component {
 			$count  = $this->humcore_get_user_deposit_count();
 		}
 		$class = ( 0 === $count ) ? 'no-count' : 'count';
-		$nav_name = sprintf( __( 'Deposits <span class="%s">%s</span>', 'humcore_domain' ), esc_attr( $class ), number_format_i18n( $count ) );
+		$nav_name = sprintf( __( 'CORE deposits <span class="%s">%s</span>', 'humcore_domain' ), esc_attr( $class ), number_format_i18n( $count ) );
 
 		$main_nav = array(
 			'name'                => $nav_name,
@@ -160,22 +160,21 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_setup_deposit_group_nav() {
 
-		// Only grab count if we're on a group page.
-		$count = 0;
-		if ( bp_is_group() ) {
+		// Only display if we're on a certain type of group page.
+		if ( bp_is_group() && ( humcore_is_group_forum() || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
 			$count = $this->humcore_get_group_deposit_count();
-		}
-		$class = ( 0 === $count ) ? 'no-count' : 'count';
-		$nav_name = sprintf( __( 'Deposits <span class="%s">%s</span>', 'humcore_domain' ), esc_attr( $class ), number_format_i18n( $count ) );
+			$class = ( 0 === $count ) ? 'no-count' : 'count';
+			$nav_name = sprintf( __( 'CORE collection <span class="%s">%s</span>', 'humcore_domain' ), esc_attr( $class ), number_format_i18n( $count ) );
 
-		bp_core_new_subnav_item( array(
-			'name' => $nav_name,
-			'slug' => 'deposits',
-			'parent_url' => bp_get_group_permalink( groups_get_current_group() ),
-			'parent_slug' => bp_get_current_group_slug(),
-			'screen_function' => array( $this, 'humcore_group_deposits_screen_function' ),
-			'position' => 35,
-		) );
+			bp_core_new_subnav_item( array(
+				'name' => $nav_name,
+				'slug' => 'deposits',
+				'parent_url' => bp_get_group_permalink( groups_get_current_group() ),
+				'parent_slug' => bp_get_current_group_slug(),
+				'screen_function' => array( $this, 'humcore_group_deposits_screen_function' ),
+				'position' => 35,
+			) );
+		}
 	}
 
 	/**
@@ -204,7 +203,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_get_group_deposit_count() {
 
-		if ( mla_is_group_committee() ) {
+		if ( mla_is_group_committee() || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) {
 			humcore_has_deposits( sprintf( 'facets[author_facet][]=%s', urlencode( bp_get_current_group_name() ) ) );
 		} else {
 			humcore_has_deposits( sprintf( 'facets[group_facet][]=%s', urlencode( bp_get_current_group_name() ) ) );
