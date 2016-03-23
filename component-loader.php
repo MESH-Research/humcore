@@ -27,7 +27,7 @@ class Humcore_Deposit_Component extends BP_Component {
 
 		$this->includes();
 		$this->setup_filters();
-		bp_register_template_stack( 'humcore_register_template_location', 14 );
+		bp_register_template_stack( 'humcore_register_template_location', 16 );
 		$bp->active_components[ $this->id ] = '1';
 
 	}
@@ -229,6 +229,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_group_deposits_screen_function() {
 
 		add_action( 'bp_template_content', array( $this, 'humcore_group_deposits_list' ) );
+		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
 		bp_core_load_template( 'deposits/single/group-deposits' );
 
 	}
@@ -239,8 +240,27 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function screen_function() {
 
 		add_action( 'bp_template_content', array( $this, 'humcore_user_deposits_list' ) );
+		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
 		bp_core_load_template( 'deposits/single/user-deposits' );
 
+	}
+
+	public function humcore_load_template_filter( $found_template, $templates ) {
+ 
+		$filtered_templates = array();
+		foreach ( (array) $templates as $template ) {
+			if ( file_exists( STYLESHEETPATH . '/' . $template ) ) {
+				$filtered_templates[] = STYLESHEETPATH . '/' . $template;
+			} else if ( file_exists( TEMPLATEPATH . '/' . $template ) ) {
+				$filtered_templates[] = TEMPLATEPATH . '/' . $template;
+			} else if ( file_exists( humcore_register_template_location() . $template ) ) {
+				$filtered_templates[] = humcore_register_template_location() . $template;
+			}
+		}
+ 
+		$found_template = $filtered_templates[0];
+ 
+		return apply_filters( 'humcore_load_template_filter', $found_template );
 	}
 
 	/**
@@ -248,7 +268,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_user_deposits_list() {
 
-		locate_template( array( 'deposits/user-deposits-loop.php' ), true );
+		bp_locate_template( array( 'deposits/user-deposits-loop.php' ), true );
 
 	}
 
@@ -257,7 +277,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_group_deposits_list() {
 
-		locate_template( array( 'deposits/group-deposits-loop.php' ), true );
+		bp_locate_template( array( 'deposits/group-deposits-loop.php' ), true );
 
 	}
 

@@ -27,7 +27,7 @@
 
 			<div id="item-header">
 
-				<?php locate_template( array( 'groups/single/group-header.php' ), true ); ?>
+				<?php bp_locate_template( array( 'groups/single/group-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
 
