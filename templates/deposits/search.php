@@ -46,7 +46,7 @@ get_header( 'buddypress' ); ?>
 
 			<div id="deposits-dir-list" class="deposits dir-list">
 
-			<?php locate_template( array( 'deposits/deposits-loop.php' ), true ); ?>
+			<?php bp_locate_template( array( 'deposits/deposits-loop.php' ), true ); ?>
 
 			</div><!-- #deposits-dir-list -->
 

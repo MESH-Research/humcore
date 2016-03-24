@@ -27,7 +27,7 @@ class Humcore_Deposit_Component extends BP_Component {
 
 		$this->includes();
 		$this->setup_filters();
-		bp_register_template_stack( 'humcore_register_template_location', 14 );
+		bp_register_template_stack( 'humcore_register_template_location', 16 );
 		$bp->active_components[ $this->id ] = '1';
 
 	}
@@ -58,10 +58,10 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function setup_globals( $args = array() ) {
 
 		parent::setup_globals( array(
-			'slug'				=> 'deposits', // Used for building URLs.
+			'slug'			=> 'deposits', // Used for building URLs.
 			'has_directory'		=> true,
 			'search_string'		=> 'Search Deposits...',
-			'root_slug'			=> 'deposits',
+			'root_slug'		=> 'deposits',
 		) );
 
 	}
@@ -126,6 +126,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function setup_filters() {
 
 		add_filter( 'wp_title', array( $this, 'humcore_filter_item_wp_title' ), 11, 2 );
+		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
 		/* add_filter( 'bp_dtheme_ajax_querystring', array( $this, 'humcore_override_ajax_querystring' ), 10, 7 ); */
 	}
 
@@ -229,7 +230,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_group_deposits_screen_function() {
 
 		add_action( 'bp_template_content', array( $this, 'humcore_group_deposits_list' ) );
-		bp_core_load_template( 'deposits/single/group-deposits' );
+		bp_core_load_template( 'deposits/single/group-deposits' ); // Must use this here instead of bp_get_template_part.
 
 	}
 
@@ -239,8 +240,33 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function screen_function() {
 
 		add_action( 'bp_template_content', array( $this, 'humcore_user_deposits_list' ) );
-		bp_core_load_template( 'deposits/single/user-deposits' );
+		bp_core_load_template( 'deposits/single/user-deposits' ); // Must use this here instead of bp_get_template_part.
 
+	}
+
+	/**
+	 * Find templates in plugin when using bp_core_load_template.
+	 */
+	public function humcore_load_template_filter( $found_template, $templates ) {
+ 
+		if ( !bp_is_current_action( 'my-deposits' ) ) {
+			return $found_template;
+		}
+
+		$filtered_templates = array();
+		foreach ( (array) $templates as $template ) {
+			if ( file_exists( STYLESHEETPATH . '/' . $template ) ) {
+				$filtered_templates[] = STYLESHEETPATH . '/' . $template;
+			} else if ( file_exists( TEMPLATEPATH . '/' . $template ) ) {
+				$filtered_templates[] = TEMPLATEPATH . '/' . $template;
+			} else if ( file_exists( humcore_register_template_location() . $template ) ) {
+				$filtered_templates[] = humcore_register_template_location() . $template;
+			}
+		}
+ 
+		$found_template = $filtered_templates[0];
+ 
+		return apply_filters( 'humcore_load_template_filter', $found_template );
 	}
 
 	/**
@@ -248,7 +274,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_user_deposits_list() {
 
-		locate_template( array( 'deposits/user-deposits-loop.php' ), true );
+		bp_locate_template( array( 'deposits/user-deposits-loop.php' ), true );
 
 	}
 
@@ -257,7 +283,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_group_deposits_list() {
 
-		locate_template( array( 'deposits/group-deposits-loop.php' ), true );
+		bp_locate_template( array( 'deposits/group-deposits-loop.php' ), true );
 
 	}
 

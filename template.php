@@ -45,11 +45,11 @@ function humcore_ajax_return_solr_results() {
 
 	ob_start();
 	if ( bp_is_user() ) {
-		locate_template( array( 'deposits/user-deposits-loop.php' ), true );
+		bp_locate_template( array( 'deposits/user-deposits-loop.php' ), true );
 	} else if ( bp_is_group() ) {
-		locate_template( array( 'deposits/group-deposits-loop.php' ), true );
+		bp_locate_template( array( 'deposits/group-deposits-loop.php' ), true );
 	} else {
-		locate_template( array( 'deposits/deposits-loop.php' ), true );
+		bp_locate_template( array( 'deposits/deposits-loop.php' ), true );
 	}
 
 	$results = ob_get_contents();

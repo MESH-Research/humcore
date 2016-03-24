@@ -21,7 +21,7 @@
 
 			<div id="item-header">
 
-				<?php locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
+				<?php bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
 

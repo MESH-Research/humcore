@@ -15,7 +15,7 @@
 
 <?php get_header( 'buddypress' ); ?>
 
-<?php get_sidebar( 'buddypress' ); ?>
+<?php get_sidebar( 'member' ); ?>
 
 	<div id="content">
 		<div class="padder">
@@ -27,7 +27,7 @@
 
 			<div id="item-header">
 
-				<?php locate_template( array( 'members/single/member-header.php' ), true ); ?>
+				<?php bp_locate_template( array( 'members/single/member-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
 

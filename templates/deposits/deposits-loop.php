@@ -46,7 +46,7 @@ if ( 'page' == substr( $querystring, 0, 4 ) && strlen( $querystring ) < 8 ) {
 
 	<?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
 
-		<?php locate_template( array( 'deposits/entry.php' ), true, false ); ?>
+		<?php bp_locate_template( array( 'deposits/entry.php' ), true, false ); ?>
 
 	<?php endwhile; ?>
 
