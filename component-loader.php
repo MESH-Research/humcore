@@ -248,8 +248,8 @@ class Humcore_Deposit_Component extends BP_Component {
 	 * Find templates in plugin when using bp_core_load_template.
 	 */
 	public function humcore_load_template_filter( $found_template, $templates ) {
- 
-		if ( !bp_is_current_action( 'my-deposits' ) ) {
+
+		if ( ! bp_is_current_action( 'my-deposits' ) && ! bp_is_current_action( 'deposits' ) ) {
 			return $found_template;
 		}
 
