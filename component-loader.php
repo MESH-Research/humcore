@@ -76,8 +76,8 @@ class Humcore_Deposit_Component extends BP_Component {
 			$count  = $this->humcore_get_user_deposit_count();
 		}
 		$class = ( 0 === $count ) ? 'no-count' : 'count';
-		$nav_name = sprintf( __( 'CORE deposits <span class="%s">%s</span>', 'humcore_domain' ), esc_attr( $class ), number_format_i18n( $count ) );
-
+		$nav_name = sprintf( __( '%1$sCORE%2$s deposits <span class="%3$s">%4$s</span>', 'humcore_domain' ),
+                                                         '<em>', '</em>', esc_attr( $class ), number_format_i18n( $count ) );
 		$main_nav = array(
 			'name'                => $nav_name,
 			'slug'                => $this->slug,
@@ -165,7 +165,13 @@ class Humcore_Deposit_Component extends BP_Component {
 		if ( bp_is_group() && ( humcore_is_group_forum() || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
 			$count = $this->humcore_get_group_deposit_count();
 			$class = ( 0 === $count ) ? 'no-count' : 'count';
-			$nav_name = sprintf( __( 'CORE collection <span class="%s">%s</span>', 'humcore_domain' ), esc_attr( $class ), number_format_i18n( $count ) );
+			if ( humcore_is_group_forum() ) {
+				$nav_name = sprintf( __( 'From %1$sCORE%2$s <span class="%3$s">%4$s</span>', 'humcore_domain' ),
+							 '<em>', '</em>', esc_attr( $class ), number_format_i18n( $count ) );
+			} else {
+				$nav_name = sprintf( __( '%1$sCORE%2$s collection <span class="%3$s">%4$s</span>', 'humcore_domain' ),
+							 '<em>', '</em>', esc_attr( $class ), number_format_i18n( $count ) );
+			}
 
 			bp_core_new_subnav_item( array(
 				'name' => $nav_name,
