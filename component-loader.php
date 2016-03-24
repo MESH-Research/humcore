@@ -58,10 +58,10 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function setup_globals( $args = array() ) {
 
 		parent::setup_globals( array(
-			'slug'				=> 'deposits', // Used for building URLs.
+			'slug'			=> 'deposits', // Used for building URLs.
 			'has_directory'		=> true,
 			'search_string'		=> 'Search Deposits...',
-			'root_slug'			=> 'deposits',
+			'root_slug'		=> 'deposits',
 		) );
 
 	}
@@ -126,6 +126,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function setup_filters() {
 
 		add_filter( 'wp_title', array( $this, 'humcore_filter_item_wp_title' ), 11, 2 );
+		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
 		/* add_filter( 'bp_dtheme_ajax_querystring', array( $this, 'humcore_override_ajax_querystring' ), 10, 7 ); */
 	}
 
@@ -229,8 +230,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_group_deposits_screen_function() {
 
 		add_action( 'bp_template_content', array( $this, 'humcore_group_deposits_list' ) );
-		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
-		bp_core_load_template( 'deposits/single/group-deposits' );
+		bp_core_load_template( 'deposits/single/group-deposits' ); // Must use this here instead of bp_get_template_part.
 
 	}
 
@@ -240,13 +240,19 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function screen_function() {
 
 		add_action( 'bp_template_content', array( $this, 'humcore_user_deposits_list' ) );
-		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
-		bp_core_load_template( 'deposits/single/user-deposits' );
+		bp_core_load_template( 'deposits/single/user-deposits' ); // Must use this here instead of bp_get_template_part.
 
 	}
 
+	/**
+	 * Find templates in plugin when using bp_core_load_template.
+	 */
 	public function humcore_load_template_filter( $found_template, $templates ) {
  
+		if ( !bp_is_current_action( 'my-deposits' ) ) {
+			return $found_template;
+		}
+
 		$filtered_templates = array();
 		foreach ( (array) $templates as $template ) {
 			if ( file_exists( STYLESHEETPATH . '/' . $template ) ) {

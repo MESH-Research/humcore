@@ -645,6 +645,7 @@ function humcore_deposits_screen_index() {
 		add_filter( 'body_class', 'humcore_deposit_directory_page_class_names' );
 		setcookie( 'bp-deposits-extras', false, 0, '/' );
 		do_action( 'humcore_deposits_screen_index' );
+		add_action( 'wp_head', 'humcore_noindex' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_screen_index', 'deposits/deposits-index' ) );
 	}
 }
@@ -669,6 +670,7 @@ function humcore_deposits_list_screen() {
 	if ( humcore_is_deposit_list() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		do_action( 'humcore_deposits_list_screen' );
+		add_action( 'wp_head', 'humcore_noindex' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_list_screen', 'deposits/deposits-list' ) );
 	}
 }
@@ -722,6 +724,7 @@ function humcore_deposits_item_review_screen() {
 			remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 			remove_action( 'wp_head', 'rel_canonical' );
 			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
+			add_action( 'wp_head', 'humcore_noindex' );
 			bp_get_template_part( apply_filters( 'humcore_deposits_item_review_screen', 'deposits/single/review' ) );
 		} else {
 			bp_do_404();
@@ -1306,7 +1309,6 @@ function humcore_check_test_handle( $deposit_record ) {
 }
 add_action( 'humcore_get_current_deposit', 'humcore_check_test_handle' );
 
-
 /**
  * Return the author name and username.
  *
@@ -1325,5 +1327,16 @@ function humcore_deposit_parse_author_info( $author_info, $element = 1 ) {
 	}
 
 	return $author_meta;
+
+}
+
+/**
+ * Return noindex robot tag.
+ *
+ * @return string meta tag
+ */
+function humcore_noindex() {
+
+    echo "<meta name='robots' content='noindex' />\n";
 
 }
