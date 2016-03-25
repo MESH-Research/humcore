@@ -3,6 +3,7 @@
  * Template Name: HumCORE Terms Acceptance
  */
 if ( ! empty( $_POST ) ) {
+
 	if ( ! is_user_logged_in() ) { auth_redirect(); }
 	$wp_nonce = $_POST['accept_core_terms_nonce'];
 	if ( wp_verify_nonce( $wp_nonce, 'accept_core_terms' ) ) {
@@ -14,15 +15,15 @@ if ( ! empty( $_POST ) ) {
 		}
 	}
 }
-	infinity_get_header();
+	get_header( 'buddypress' );
 ?>
 	<div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
 		<?php
-			do_action( 'open_content' );
-			do_action( 'open_page' );
+			do_action( 'bp_before_deposits_page_content' );
+			do_action( 'bp_before_deposits_page' );
 		?>	
 		<?php
-			infinity_get_template_part( 'templates/loops/loop', 'page' );
+			bp_get_template_part( 'deposits/page', 'content' );
 		?>	
 <div id="core-terms-entry-form">
 <form id="core-terms-acceptance-form" class="standard-form" method="post" action="">
@@ -36,10 +37,10 @@ if ( ! empty( $_POST ) ) {
 </form>
 </div>
 		<?php
-			do_action( 'close_page' );
-			do_action( 'close_content' );
+			do_action( 'bp_after_deposits_page' );
+			do_action( 'bp_after_deposits_page_content' );
 		?>
 	</div>
 <?php
-	infinity_get_footer();
+	get_footer( 'buddypress' );
 ?>
