@@ -7,7 +7,7 @@
 
 ?>
 
-<?php get_header( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_header(); ?>
 
 	<div id="content">
 		<div class="padder">
@@ -60,4 +60,4 @@
 	</div><!-- #content -->
 
 <?php //get_sidebar( 'buddypress' ); ?>
-<?php get_footer( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_footer(); ?>

@@ -342,7 +342,8 @@ add_action( 'edit_user_profile', 'humcore_deposit_show_user_fields' );
 function humcore_deposit_component_include() {
 
 	require( dirname( __FILE__ ) . '/component-loader.php' );
-	require_once dirname( __FILE__ ) . '/pagetemplater.php';
+	require_once dirname( __FILE__ ) . '/class-page-templater.php';
+	require_once dirname( __FILE__ ) . '/class-theme-compatibility.php';
 
 }
 // Hook into the bp_include action and call humcore_deposit_component_include when bp_include fires.

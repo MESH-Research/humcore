@@ -3,7 +3,7 @@
  * Template Name: HumCORE Deposits Directory
  */
 
-get_header( 'buddypress' ); ?>
+Humcore_Theme_Compatibility::get_header(); ?>
 
 <?php do_action( 'bp_before_directory_deposits_page' ); ?>
 
@@ -76,4 +76,4 @@ get_header( 'buddypress' ); ?>
 	</aside>
 	<?php do_action( 'bp_after_directory_deposits_page' ); ?>
 
-<?php get_footer( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_footer(); ?>

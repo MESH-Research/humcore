@@ -695,6 +695,7 @@ function humcore_deposits_search_screen() {
 		}
 		do_action( 'humcore_deposits_search_screen' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_search_screen', 'deposits/search' ) );
+		exit();
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_search_screen' );
@@ -716,6 +717,7 @@ function humcore_deposits_screen_index() {
 		do_action( 'humcore_deposits_screen_index' );
 		add_action( 'wp_head', 'humcore_noindex' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_screen_index', 'deposits/deposits-index' ) );
+		exit();
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_screen_index' );
@@ -728,6 +730,7 @@ function humcore_deposits_feed() {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		do_action( 'humcore_deposits_feed' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_feed', 'deposits/deposits-feed' ) );
+		exit();
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_feed' );
@@ -741,6 +744,7 @@ function humcore_deposits_list_screen() {
 		do_action( 'humcore_deposits_list_screen' );
 		add_action( 'wp_head', 'humcore_noindex' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_list_screen', 'deposits/deposits-list' ) );
+		exit();
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_list_screen' );
@@ -766,6 +770,7 @@ function humcore_deposits_item_screen() {
 			remove_action( 'wp_head', 'rel_canonical' );
 			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 			bp_get_template_part( apply_filters( 'humcore_deposits_item_screen', 'deposits/single/item' ) );
+			exit();
 		} else {
 			//bp_get_template_part( apply_filters( 'humcore_deposits_item_screen', 'deposits/404' ) );
 			bp_do_404();
@@ -795,6 +800,7 @@ function humcore_deposits_item_review_screen() {
 			add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 			add_action( 'wp_head', 'humcore_noindex' );
 			bp_get_template_part( apply_filters( 'humcore_deposits_item_review_screen', 'deposits/single/review' ) );
+			exit();
 		} else {
 			bp_do_404();
 		}
@@ -821,6 +827,7 @@ function humcore_deposits_new_item_screen() {
 		add_action( 'bp_template_content', 'humcore_deposit_form' );
 		ob_start(); // we might redirect in the action so capture any output.
 		bp_get_template_part( apply_filters( 'humcore_deposits_new_item_screen', 'deposits/single/new' ) );
+		exit();
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_new_item_screen' );

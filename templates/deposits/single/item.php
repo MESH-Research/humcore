@@ -12,7 +12,7 @@
 
 ?>
 
-<?php get_header( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_header(); ?>
 
 	<div id="content">
 		<div class="padder">
@@ -108,4 +108,4 @@
 <?php dynamic_sidebar( 'deposits-directory-sidebar' ); ?>
 </aside>
 
-<?php get_footer( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_footer(); ?>

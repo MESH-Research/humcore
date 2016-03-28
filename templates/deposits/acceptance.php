@@ -3,7 +3,7 @@
  * Template Name: HumCORE Terms Acceptance
  */
 
-	get_header( 'buddypress' );
+	Humcore_Theme_Compatibility::get_header();
 ?>
 	<div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
 		<?php
@@ -30,5 +30,6 @@
 		?>
 	</div>
 <?php
-	get_footer( 'buddypress' );
+	Humcore_Theme_Compatibility::get_footer(); 
+
 ?>

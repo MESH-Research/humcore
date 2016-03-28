@@ -6,7 +6,7 @@
  * @subpackage bp-default
  */
 
-get_header( 'buddypress' ); ?>
+Humcore_Theme_Compatibility::get_header(); ?>
 
 <?php do_action( 'bp_before_deposits_list_page' ); ?>
 
@@ -58,4 +58,4 @@ get_header( 'buddypress' ); ?>
 
 <?php do_action( 'bp_after_deposits_list_page' ); ?>
 
-<?php get_footer( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_footer(); ?>

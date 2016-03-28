@@ -13,7 +13,7 @@
 
 ?>
 
-<?php get_header( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_header(); ?>
 
 <?php get_sidebar( 'member' ); ?>
 
@@ -92,4 +92,4 @@
 		</div><!-- .padder -->
 	</div><!-- #content -->
 
-<?php get_footer( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_footer(); ?>
