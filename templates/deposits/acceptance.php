@@ -2,19 +2,7 @@
 /**
  * Template Name: HumCORE Terms Acceptance
  */
-if ( ! empty( $_POST ) ) {
 
-	if ( ! is_user_logged_in() ) { auth_redirect(); }
-	$wp_nonce = $_POST['accept_core_terms_nonce'];
-	if ( wp_verify_nonce( $wp_nonce, 'accept_core_terms' ) ) {
-		$core_accept_terms = $_POST['core_accept_terms'];
-		if ( ! empty( $core_accept_terms ) ) {
-			$user_id = bp_loggedin_user_id();
-			update_user_meta( $user_id, 'accepted_core_terms', $core_accept_terms);
-			wp_redirect( '/deposits/item/new/' );
-		}
-	}
-}
 	get_header( 'buddypress' );
 ?>
 	<div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
