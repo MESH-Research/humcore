@@ -15,7 +15,7 @@
 
 <?php Humcore_Theme_Compatibility::get_header(); ?>
 
-<?php get_sidebar( 'member' ); ?>
+<?php Humcore_Theme_Compatibility::get_sidebar( 'member' ); ?>
 
 	<div id="content">
 		<div class="padder">

@@ -15,7 +15,7 @@
 
 <?php Humcore_Theme_Compatibility::get_header(); ?>
 
-<?php get_sidebar( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_sidebar( 'buddypress' ); ?>
 
 	<div id="content">
 		<div class="padder">

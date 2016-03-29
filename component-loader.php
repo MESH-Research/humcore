@@ -259,20 +259,21 @@ class Humcore_Deposit_Component extends BP_Component {
 			return $found_template;
 		}
 
-		$filtered_templates = array();
+		$filtered_template = '';
 		foreach ( (array) $templates as $template ) {
-			if ( file_exists( STYLESHEETPATH . '/' . $template ) ) {
-				$filtered_templates[] = STYLESHEETPATH . '/' . $template;
-			} else if ( file_exists( TEMPLATEPATH . '/' . $template ) ) {
-				$filtered_templates[] = TEMPLATEPATH . '/' . $template;
+			if ( file_exists( get_stylesheet_directory() . '/' . $template ) ) {
+				$filtered_template = get_stylesheet_directory() . '/' . $template;
+				break;
+			} else if ( file_exists( get_template_directory() . '/' . $template ) ) {
+				$filtered_template = get_template_directory() . '/' . $template;
+				break;
 			} else if ( file_exists( humcore_register_template_location() . $template ) ) {
-				$filtered_templates[] = humcore_register_template_location() . $template;
+				$filtered_template = humcore_register_template_location() . $template;
+				break;
 			}
 		}
  
-		$found_template = $filtered_templates[0];
- 
-		return apply_filters( 'humcore_load_template_filter', $found_template );
+		return apply_filters( 'humcore_load_template_filter', $filtered_template );
 	}
 
 	/**
