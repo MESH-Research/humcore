@@ -695,6 +695,7 @@ function humcore_deposits_search_screen() {
 		}
 		do_action( 'humcore_deposits_search_screen' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_search_screen', 'deposits/search' ) );
+		exit(); // Suppress extra page display.
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_search_screen' );
