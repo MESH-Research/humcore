@@ -74,6 +74,7 @@ class PageTemplater {
                 // Add your templates to this array.
                 $this->templates = array(
                         'acceptance.php'     => 'HumCORE Terms Acceptance',
+                        'deposit.php'        => 'HumCORE Deposit',
                         'faq.php'            => 'HumCORE FAQ',
                         'welcome.php'        => 'HumCORE Welcome',
                 );

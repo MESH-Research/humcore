@@ -281,6 +281,36 @@ function humcore_deposit_item_search_meta() {
 }
 
 /**
+ * Is this the CORE page?
+ *
+ * @return true If the current request is the CORE page.
+ */
+function humcore_is_deposit_welcome() {
+
+	global $wp;
+	if ( 'core' == $wp->query_vars['pagename'] ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
+ * Is this the CORE terms page?
+ *
+ * @return true If the current request is the CORE Terms page.
+ */
+function humcore_is_deposit_terms_acceptance() {
+
+	global $wp;
+	if ( 'core/terms' == $wp->query_vars['pagename'] ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
  * Is this a search request?
  *
  * @return true If the current request is a search request.
@@ -614,6 +644,45 @@ function humcore_deposit_new_item_page_class_names( $classes ) {
 }
 
 /**
+ * Load the CORE screen or bypass if terms accepted.
+ */
+function humcore_deposits_welcome() {
+
+	if ( humcore_is_deposit_welcome() ) {
+		if ( is_user_logged_in() ) {
+			$user_id = bp_loggedin_user_id();
+			$core_acceptance = get_the_author_meta( 'accepted_core_terms', $user_id );
+			if ( 'Yes' === $core_acceptance ) {
+				wp_redirect( '/deposits/' );
+				exit();
+			}
+		}
+	}
+}
+add_action( 'bp_screens', 'humcore_deposits_welcome' );
+
+/**
+ * Load the Deposits new item screen after accepting the CORE Terms.
+ */
+function humcore_deposits_terms_acceptance() {
+
+	if ( humcore_is_deposit_terms_acceptance() ) {
+		if ( ! is_user_logged_in() ) { auth_redirect(); }
+		$wp_nonce = $_POST['accept_core_terms_nonce'];
+		if ( ! empty( $_POST ) && wp_verify_nonce( $wp_nonce, 'accept_core_terms' ) ) {
+			$core_accept_terms = $_POST['core_accept_terms'];
+			if ( ! empty( $core_accept_terms ) ) {
+				$user_id = bp_loggedin_user_id();
+				update_user_meta( $user_id, 'accepted_core_terms', $core_accept_terms);
+				wp_redirect( '/deposits/item/new/' );
+				exit();
+			}
+		}
+	}
+}
+add_action( 'bp_screens', 'humcore_deposits_terms_acceptance' );
+
+/**
  * Load the Search Results template.
  */
 function humcore_deposits_search_screen() {
@@ -626,6 +695,7 @@ function humcore_deposits_search_screen() {
 		}
 		do_action( 'humcore_deposits_search_screen' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_search_screen', 'deposits/search' ) );
+		exit(); // Suppress extra page display.
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_search_screen' );

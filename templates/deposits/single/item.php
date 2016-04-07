@@ -12,7 +12,7 @@
 
 ?>
 
-<?php get_header( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_header(); ?>
 
 	<div id="content">
 		<div class="padder">
@@ -24,14 +24,14 @@
 				<?php bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
-
+<!--
 			<div id="item-nav">
 				<div class="item-list-tabs no-ajax" id="object-nav" role="navigation">
 					<ul>
-
-						<?php bp_get_displayed_user_nav(); ?>
-
-						<?php do_action( 'humcore_deposit_options_nav' ); ?>
+-->
+						<?php //bp_get_displayed_user_nav(); ?>
+						<?php //do_action( 'humcore_deposit_options_nav' ); ?>
+<!--
 
 					</ul>
 				</div>
@@ -108,4 +108,4 @@
 <?php dynamic_sidebar( 'deposits-directory-sidebar' ); ?>
 </aside>
 
-<?php get_footer( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_footer(); ?>

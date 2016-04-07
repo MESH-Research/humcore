@@ -3,7 +3,7 @@
  * Template Name: HumCORE Search Results
  */
 
-get_header( 'buddypress' ); ?>
+Humcore_Theme_Compatibility::get_header(); ?>
 
 <?php do_action( 'bp_before_deposits_results_page' ); ?>
 
@@ -68,4 +68,4 @@ get_header( 'buddypress' ); ?>
 </aside>
 <?php do_action( 'bp_after_deposits_results_page' ); ?>
 
-<?php get_footer( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_footer(); ?>

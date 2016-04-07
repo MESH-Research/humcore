@@ -3,21 +3,21 @@
  * Template Name: HumCORE FAQ
  */
 
-        infinity_get_header();
+	Humcore_Theme_Compatibility::get_header();
 ?>
-        <div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
-                <?php
-                        do_action( 'open_content' );
-                        do_action( 'open_page' );
-                ?>
-                <?php
-                        infinity_get_template_part( 'templates/loops/loop', 'page' );
-                ?>
-                <?php
-                        do_action( 'close_page' );
-                        do_action( 'close_content' );
-                ?>
-        </div>
+	<div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
+		<?php
+			do_action( 'bp_before_deposits_page_content' );
+			do_action( 'bp_before_deposits_page' );
+		?>	
+		<?php
+			bp_get_template_part( 'deposits/page', 'content' );
+		?>	
+		<?php
+			do_action( 'bp_after_deposits_page' );
+			do_action( 'bp_after_deposits_page_content' );
+		?>
+	</div>
 <?php
-        infinity_get_footer();
+	Humcore_Theme_Compatibility::get_footer();
 ?>
