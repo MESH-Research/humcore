@@ -9,7 +9,7 @@ li#deposits-personal-li a:before,
 #user-deposits:before {
     content: "M"
 }
-.column.twelve.sidebar-left {
+.page-template-deposit div.column.twelve.sidebar-left {
     width: 75% !important;
 }
 /* deposit search styles */
