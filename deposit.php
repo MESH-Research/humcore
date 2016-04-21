@@ -400,9 +400,11 @@
 		 */
 		$group_activity_ids = array();
 		// Moving here due to possible timeout issues.
-		if ( ! empty( $_POST['deposit-group'] ) ) {
-			foreach ( $_POST['deposit-group'] as $group_id ) {
-				$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $local_link );
+                if ( 'no' === $metadata['embargoed'] ) {
+			if ( ! empty( $_POST['deposit-group'] ) ) {
+				foreach ( $_POST['deposit-group'] as $group_id ) {
+					$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $local_link );
+				}
 			}
 		}
 
@@ -631,6 +633,12 @@
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
+		}
+
+                $metadata['embargoed'] = sanitize_text_field( $_POST['deposit-embargoed-flag'] );
+
+                if ( 'yes' === $metadata['embargoed'] ) {
+                        $metadata['embargo_end_date'] = date( 'm/d/Y', strtotime( '+' . sanitize_text_field( $_POST['deposit-embargo-length'] ) ) );
 		}
 
 		/**

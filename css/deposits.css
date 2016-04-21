@@ -199,6 +199,9 @@ ul.deposits-item .list-item-value {
 #deposit-book-entries, #deposit-journal-entries, #deposit-proceedings-entries {
 	padding-left: 10px;
 }
+#deposit-embargoed-entries {
+	padding-left: 10px;
+}
 #deposit-book-pages-entry label, #deposit-journal-volume-entry label, #deposit-journal-pages-entry label, #deposit-proceeding-pages-entry label {
 	float: left;
 	margin: 5px 10px 5px 0;

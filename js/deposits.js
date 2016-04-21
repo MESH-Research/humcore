@@ -81,6 +81,17 @@ jQuery(document).ready( function($) {
 		}
 	}
 
+ 	function maybe_show_embargoed_fields(event) {
+		var value = $(this).val();
+		if ( value == 'yes' ) {
+		   	$('#deposit-embargoed-entries').show();
+		} else if ( value == 'no' ) {
+			$('#deposit-embargoed-entries').hide();
+		} else {
+			$('#deposit-embargoed-entries').hide();
+		}
+	}
+
 	// Setup a character counter for the abstract and notes fields.
 	function update_char_counter() {
 		var total_chars = $(this).val().length;
@@ -108,6 +119,7 @@ jQuery(document).ready( function($) {
 	$('#deposit-book-entries').hide();
 	$('#deposit-journal-entries').hide();
 	$('#deposit-proceedings-entries').hide();
+	$('#deposit-embargoed-entries').hide();
 
 	// Show any selected conditional fields.
 	$('select[name=deposit-genre]').on('change', maybe_show_extra_genre_fields);
@@ -118,12 +130,15 @@ jQuery(document).ready( function($) {
 	$('input[type=radio][name=deposit-publication-type]').on('pubtypeload', maybe_show_publication_type_fields);
 	$('input[type=radio][name=deposit-published]').on('click', maybe_show_published_fields);
 	$('input[type=radio][name=deposit-published]').on('pubload', maybe_show_published_fields);
+	$('input[type=radio][name=deposit-embargoed-flag]').on('click', maybe_show_embargoed_fields);
+	$('input[type=radio][name=deposit-embargoed-flag]').on('embargoedbload', maybe_show_embargoed_fields);
 
 	// Setup triggers for page load from server.
 	$('select[name=deposit-genre]').trigger('genreload');
 	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
 	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubtypeload');
 	$('input[type=radio][name=deposit-published]:checked').trigger('pubload');
+	$('input[type=radio][name=deposit-embargoed-flag]:checked').trigger('embargoedload');
 
 	// Setup warning and error dialogs.
 	$( "#deposit-warning-dialog" ).dialog({
@@ -181,6 +196,8 @@ jQuery(document).ready( function($) {
 		var groups = $('select[name="deposit-group[]"]').val();
 		var subjects = $('select[name="deposit-subject[]"]').val();
 		var notes_length = $('#deposit-notes-unchanged').val().length;
+		var embargoed = $('input[type=radio][name=deposit-embargoed-flag]:checked').val();
+		var embargo_length = $('#deposit-embargo-length').val();
 
 		var error_message = '<ul>';
 		var warning_message = '<p>Several important fields are empty.<ul>';
@@ -212,6 +229,10 @@ jQuery(document).ready( function($) {
 		if ( notes_length > 500 ) {
 			error_message += '<li>Please limit notes to 500 characters.</li>';
 			$('#deposit-notes-unchanged').addClass('deposit-input-highlight');
+		}
+		if ( embargo_length === '' && embargoed === 'yes' ) {
+			error_message += '<li>Please add an embargo length.</li>';
+			$('#deposit-embargo-length-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
 		if ( groups === null && deposit_on_behalf_of === 'no' ) {
 			warning_message += '<li>We noticed you haven’t shared your deposit with any <em>MLA Commons</em> forums, which means forum members won’t receive a notification about its inclusion in <em>CORE</em>.</li>';

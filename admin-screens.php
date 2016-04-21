@@ -317,26 +317,6 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 		<p>
-			<label>Creative Commons License<br>
-			<select name="aggregator_type_of_license">
-<?php
-	$license_type_list = humcore_deposits_license_type_list();
-	$posted_license_type = '';
-	if ( ! empty( $aggregator_metadata['type_of_license'] ) ) {
-		$posted_license_type = esc_attr( $aggregator_metadata['type_of_license'] );
-	}
-	foreach ( $license_type_list as $license_key => $license_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
-			$license_key,
-			$license_value
-		);
-	}
-?>
-			</select>
-			</label>
-		</p>
-		<p>
 			<label>Record Content Source<br>
 				<input type="hidden" name="aggregator_record_content_source" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['record_content_source'] ); ?>">
 				<input type="text" name="aggregator_record_content_source_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['record_content_source'] ); ?>">
@@ -441,6 +421,36 @@ function humcore_deposit_metabox( $post ) {
 			<label>Record Identifier<br>
 				<input type="hidden" name="aggregator_record_identifier" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['record_identifier'] ); ?>">
 				<input type="text" name="aggregator_record_identifier_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['record_identifier'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Creative Commons License<br>
+			<select name="aggregator_type_of_license">
+<?php
+	$license_type_list = humcore_deposits_license_type_list();
+	$posted_license_type = '';
+	if ( ! empty( $aggregator_metadata['type_of_license'] ) ) {
+		$posted_license_type = esc_attr( $aggregator_metadata['type_of_license'] );
+	}
+	foreach ( $license_type_list as $license_key => $license_value ) {
+		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
+			$license_key,
+			$license_value
+		);
+	}
+?>
+			</select>
+			</label>
+		</p>
+		<p>
+			<label>Embargoed?<br>
+				<input type="text" name="aggregator_embargoed" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['embargoed'] ); ?>">
+			</label>
+		</p>
+		<p>
+			<label>Embargo End Date<br>
+				<input type="text" name="aggregator_embargo_end_date" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['embargo_end_date'] ); ?>">
 			</label>
 		</p>
 
@@ -681,7 +691,6 @@ function humcore_deposit_metabox_save( $post_id ) {
                         stripslashes( $_POST['aggregator_notes_unchanged'] ),
                         array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
                 );
-	$aggregator_metadata['type_of_license'] = sanitize_text_field( $_POST['aggregator_type_of_license'] );
 
 	// No changes allowed.
 	// $aggregator_metadata['record_content_source'] = sanitize_text_field( $_POST['aggregator_record_content_source'] );
@@ -707,6 +716,10 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	// No changes allowed.
 	// $aggregator_metadata['record_identifier'] = sanitize_text_field( $_POST['aggregator_record_identifier'] );
+
+	$aggregator_metadata['type_of_license'] = sanitize_text_field( $_POST['aggregator_type_of_license'] );
+	$aggregator_metadata['embargoed'] = sanitize_text_field( stripslashes( $_POST['aggregator_embargoed'] ) );
+	$aggregator_metadata['embargo_end_date'] = sanitize_text_field( stripslashes( $_POST['aggregator_embargo_end_date'] ) );
 
 	$json_aggregator_metadata = json_encode( $aggregator_metadata, JSON_HEX_APOS );
 

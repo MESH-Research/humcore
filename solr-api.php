@@ -272,6 +272,7 @@ class Humcore_Deposit_Solr_Api {
 				$record['record_creation_date'] = $document->record_creation_date;
 				$record['record_identifier'] = $document->record_identifier;
 				$record['member_of'] = $document->member_of;
+				$record['embargo_end_date'] = $document->free_to_read_start_date;
 				$search_result['documents'][] = $record ;
 				$search_result['total'] = 1;
 //echo "debugsolr",var_export($record['abstract_unchanged'],true);
@@ -368,6 +369,9 @@ class Humcore_Deposit_Solr_Api {
 		$doc->record_creation_date = $metadata['record_creation_date'];
 		$doc->record_identifier = $metadata['record_identifier'];
 		$doc->member_of = $metadata['member_of'];
+                if ( ! empty( $metadata['embargo_end_date'] ) ) {
+                        $doc->free_to_read_start_date = $metadata['embargo_end_date'];
+                }
 
 		$query->setDocument( $doc );
 
@@ -499,7 +503,9 @@ class Humcore_Deposit_Solr_Api {
 		$doc->record_creation_date = $metadata['record_creation_date'];
 		$doc->record_identifier = $metadata['record_identifier'];
 		$doc->member_of = $metadata['member_of'];
-
+		if ( ! empty( $metadata['embargo_end_date'] ) ) {
+			$doc->free_to_read_start_date = $metadata['embargo_end_date'];
+		}
 		$query->addDocuments( array( $doc ) );
 		$query->addCommit();
 
@@ -581,7 +587,7 @@ class Humcore_Deposit_Solr_Api {
 			'issue', 'book_chapter', 'start_page', 'end_page', 'language', 'institution', 'conference_title', 'conference_organization',
 			'conference_location', 'conference_date', 'meeting_title', 'meeting_organization', 'meeting_location', 'meeting_date',
 			'date_issued', 'type_of_resource_facet', 'record_content_source', 'record_creation_date', 'record_identifier', 'member_of',
-			'score',
+			'free_to_read_start_date', 'score',
 		) );
 
 		if ( null != $sort ) {
@@ -772,6 +778,7 @@ class Humcore_Deposit_Solr_Api {
 			$record['record_creation_date'] = $document->record_creation_date;
 			$record['record_identifier'] = $document->record_identifier;
 			$record['member_of'] = $document->member_of;
+			$record['embargo_end_date'] = $document->free_to_read_start_date;
 			array_push( $results, $record );
 			$i = $i + 1;
 		}

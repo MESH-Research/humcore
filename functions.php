@@ -270,14 +270,18 @@ function humcore_deposit_item_search_meta() {
 
 	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n\r", bp_get_root_domain(), htmlentities( $metadata['pid'] ) );
 
-	$post_metadata = json_decode( get_post_meta( $metadata['record_identifier'], '_deposit_file_metadata', true ), true );
-	printf( '<meta name="citation_pdf_url" content="%1$s/deposits/download/%2$s/%3$s/%4$s/">' . "\n\r",
-		bp_get_root_domain(),
-		htmlentities( $post_metadata['files'][0]['pid'] ),
-		htmlentities( $post_metadata['files'][0]['datastream_id'] ),
-		htmlentities( $post_metadata['files'][0]['filename'] )
-	);
-
+	$post_metadata = json_decode( get_post_meta( $metadata['record_identifier'], '_deposit_metadata', true ), true );
+	if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
+		return;
+	} else {
+		$file_metadata = json_decode( get_post_meta( $metadata['record_identifier'], '_deposit_file_metadata', true ), true );
+		printf( '<meta name="citation_pdf_url" content="%1$s/deposits/download/%2$s/%3$s/%4$s/">' . "\n\r",
+			bp_get_root_domain(),
+			htmlentities( $file_metadata['files'][0]['pid'] ),
+			htmlentities( $file_metadata['files'][0]['datastream_id'] ),
+			htmlentities( $file_metadata['files'][0]['filename'] )
+		);
+	}
 }
 
 /**
@@ -846,6 +850,11 @@ function humcore_deposits_download() {
 		$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $deposit_datastream, $deposit_id );
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
+                $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
+                if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
+                        bp_do_404();
+                        return;
+                }
 		$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true ) + 1; // Downloads counted at file level.
 	        if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
 			$post_meta_ID = update_post_meta( $deposit_post_id, $downloads_meta_key, $total_downloads );
@@ -877,6 +886,11 @@ function humcore_deposits_view() {
 		$views_meta_key = sprintf( '_total_views_%s_%s', $deposit_datastream, $deposit_id );
 		$deposit_post_id = humcore_get_deposit_post_id( $deposit_id );
         	$post_data = get_post( $deposit_post_id );
+		$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
+		if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
+                        bp_do_404();
+			return;
+		}
 		$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // views counted at file level
 	        if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
 			$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
@@ -1321,6 +1335,24 @@ function humcore_deposits_resource_type_list() {
 	$resource_type_list['Video'] = 'Video';
 
 	return apply_filters( 'bp_humcore_deposits_resource_type_list', $resource_type_list );
+
+}
+
+/**
+ * Return the embargo length options
+ *
+ * @return array
+ */
+function humcore_deposits_embargo_length_list() {
+
+	$embargo_length_list = array();
+
+	$embargo_length_list['6 months'] = '6 months';
+	$embargo_length_list['12 months'] = '12 months';
+	$embargo_length_list['18 months'] = '18 months';
+	$embargo_length_list['24 months'] = '24 months';
+
+	return apply_filters( 'bp_humcore_deposits_embargo_length_list', $embargo_length_list );
 
 }
 
