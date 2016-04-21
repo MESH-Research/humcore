@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function humcore_deposits_front_cssjs() {
 
-	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '040716' );
+	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '041816' );
 	wp_enqueue_style( 'humcore_deposits_css' );
 
 	if ( humcore_is_deposit_new_page() ) {
@@ -24,7 +24,7 @@ function humcore_deposits_front_cssjs() {
 		wp_register_script( 'humcore_retrieve_doi_js', plugins_url( 'js/retrieve-doi.js', __FILE__ ), array( 'jquery' ), '021816', true );
 		wp_enqueue_script( 'humcore_retrieve_doi_js' );
 
-		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '031716', true );
+		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '041816', true );
 		wp_enqueue_script( 'humcore_deposits_js' );
 
 /*
@@ -39,8 +39,9 @@ function humcore_deposits_front_cssjs() {
                 wp_register_style( 'select2_css', '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css', '', '022416' );
                 wp_enqueue_style( 'select2_css' );
 
-		wp_enqueue_script('jquery-ui-dialog');
-		wp_enqueue_style("wp-jquery-ui-dialog");
+		wp_enqueue_script( 'jquery-ui-dialog', array( 'jquery' ) );
+		wp_enqueue_style( 'wp-jquery-ui-dialog' );
+
 	} else {
 		wp_register_script( 'humcore_search_js', plugins_url( 'js/search.js', __FILE__ ), array( 'jquery' ), '043015', true );
 		wp_enqueue_script( 'humcore_search_js' );

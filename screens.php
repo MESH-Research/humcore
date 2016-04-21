@@ -397,29 +397,6 @@ function humcore_deposit_form() {
 	</div>
 	</p>
 	<p>
-	<div id="deposit-license-type-entry">
-		<label for="deposit-license-type">Creative Commons License</label>
-		<span class="description">By default, and in accordance with section 2 of the <em>MLA Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
-		<select name="deposit-license-type" id="deposit-license-type" class="js-basic-single-required">
-<?php
-	$license_type_list = humcore_deposits_license_type_list();
-	$posted_license_type = '';
-	if ( ! empty( $_POST['deposit-license-type'] ) ) {
-		$posted_license_type = sanitize_text_field( $_POST['deposit-license-type'] );
-	}
-	foreach ( $license_type_list as $license_key => $license_value ) {
-		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
-			$license_key,
-			$license_value
-		);
-	}
-?>
-		</select>
-		<span class="description">*</span>
-	</div>
-	</p>
-	<p>
 	<div id="deposit-publication-type-entry">
 		<label for="deposit-publication-type">Publication Type</label>
 			<input type="radio" name="deposit-publication-type" value="book-chapter" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;
@@ -568,6 +545,63 @@ function humcore_deposit_form() {
 		</div>
 
 	</div>
+	<p>
+	<div id="deposit-license-type-entry">
+		<label for="deposit-license-type">Creative Commons License</label>
+		<span class="description">By default, and in accordance with section 2 of the <em>MLA Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
+		<select name="deposit-license-type" id="deposit-license-type" class="js-basic-single-required">
+<?php
+	$license_type_list = humcore_deposits_license_type_list();
+	$posted_license_type = '';
+	if ( ! empty( $_POST['deposit-license-type'] ) ) {
+		$posted_license_type = sanitize_text_field( $_POST['deposit-license-type'] );
+	}
+	foreach ( $license_type_list as $license_key => $license_value ) {
+		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
+			$license_key,
+			$license_value
+		);
+	}
+?>
+		</select>
+		<span class="description">*</span>
+	</div>
+	</p>
+        <p>
+        <div id="deposit-embargoed-entry">
+                <label for="deposit-embargoed-flag">Embargo this deposit?</label>
+                        <input type="radio" name="deposit-embargoed-flag" value="yes" <?php if ( ! empty( $_POST['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-embargoed-flag'] ), 'yes' ); } ?>>Yes &nbsp;
+                        <input type="radio" name="deposit-embargoed-flag" value="no" <?php if ( ! empty( $_POST['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-embargoed-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
+        </div>
+
+	<div id="deposit-embargoed-entries">
+        <div id="deposit-embargo-length-entry">
+                <label for="deposit-embargo-length">Embargo Length</label>
+                <span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
+		<span class="description">Enter the length of time (up to two years from now) after which this item should become available.</span> <br />
+                <select name="deposit-embargo-length" id="deposit-embargo-length" class="js-basic-single-required" data-placeholder="Select the embargo length." data-allowClear="true">
+                        <option class="level-0" selected="selected" value=""></option>
+
+<?php
+        $embargo_length_list = humcore_deposits_embargo_length_list();
+        $posted_embargo_length = '';
+        if ( ! empty( $_POST['deposit-embargo-length'] ) ) {
+                $posted_embargo_length = sanitize_text_field( $_POST['deposit-embargo-length'] );
+        }
+        foreach ( $embargo_length_list as $embargo_key => $embargo_value ) {
+                printf('                        <option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+                        ( $embargo_key == $posted_embargo_length ) ? 'selected="selected"' : '',
+                        $embargo_key,
+                        $embargo_value
+                );
+        }
+?>
+                </select>
+		<span class="description">*</span>
+        </div>
+	</div>
+        </p>
 
 	<input id="deposit-submit" name="deposit-submit" type="submit" value="Deposit" />
 	<?php $wp_referer = wp_get_referer();
@@ -813,43 +847,43 @@ function humcore_deposit_item_content() {
 <dd><a href="/deposits/?facets[genre_facet][]=<?php echo urlencode( $metadata['genre'] ); ?>"><?php echo esc_html( $metadata['genre'] ); ?></a></dd>
 <?php endif; ?>
 <?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] ) : ?>
-<?php if ( ! empty( $post_metadata['conference_title'] ) ) : ?>
+<?php if ( ! empty( $metadata['conference_title'] ) ) : ?>
 <dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['conference_title']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['conference_title']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['conference_organization'] ) ) : ?>
+<?php if ( ! empty( $metadata['conference_organization'] ) ) : ?>
 <dt><?php _e( 'Conf. Org.:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['conference_organization']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['conference_organization']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['conference_location'] ) ) : ?>
+<?php if ( ! empty( $metadata['conference_location'] ) ) : ?>
 <dt><?php _e( 'Conf. Loc.:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['conference_location']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['conference_location']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['conference_date'] ) ) : ?>
+<?php if ( ! empty( $metadata['conference_date'] ) ) : ?>
 <dt><?php _e( 'Conf. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['conference_date']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['conference_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php elseif ( 'Presentation' == $metadata['genre'] ) : ?>
-<?php if ( ! empty( $post_metadata['meeting_title'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_title'] ) ) : ?>
 <dt><?php _e( 'Meeting Title:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_title']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_title']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['meeting_organization'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_organization'] ) ) : ?>
 <dt><?php _e( 'Meeting Org.:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_organization']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_organization']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['meeting_location'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_location'] ) ) : ?>
 <dt><?php _e( 'Meeting Loc.:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_location']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_location']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['meeting_date'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_date'] ) ) : ?>
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_date']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical report' == $metadata['genre'] ) : ?>
-<?php if ( ! empty( $post_metadata['institution'] ) ) : ?>
+<?php if ( ! empty( $metadata['institution'] ) ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['institution']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php endif; ?>
 <?php if ( ! empty( $keywords ) ) : ?>
@@ -868,10 +902,6 @@ function humcore_deposit_item_content() {
 <?php endif; ?>
 <dt><?php _e( 'Metadata:', 'humcore_domain' ); ?></dt>
 <dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" rel="nofollow" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
-<?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
-<dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
-<dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
-<?php endif; ?>
 <?php if ( 'journal-article' == $post_metadata['publication-type'] ) : ?>
 <dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo 'Journal Article'; // XSS OK. ?></span></dd>
@@ -972,7 +1002,14 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'Preview:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $thumb_url;// XSS OK. ?></span></dd>
 <?php endif; ?>
+<?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
+<dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
+<dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
+<?php endif; ?>
 </dl>
+<?php if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) { ?>
+<div><h4>This item will be available for download beginning <?php echo $post_metadata['embargo_end_date']; ?></h4></div> 
+<?php } else { ?>
 <div><h4><?php _e( 'Downloads', 'humcore_domain' ); ?></h4>
 <div class="doc-attachments">
 	<table class="view_downloads">
@@ -999,6 +1036,7 @@ function humcore_deposit_item_content() {
 	</table>
 </div>
 </div>
+<?php } ?>
 </div>
 <br style='clear:both'>
 <?php
@@ -1091,42 +1129,42 @@ function humcore_deposit_item_review_content() {
 <!-- //new stuff -->
 <?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] ) : ?>
 <dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $post_metadata['conference_title'] ) ) : ?>
-<dd><span><?php echo $post_metadata['conference_title']; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['conference_title'] ) ) : ?>
+<dd><span><?php echo $metadata['conference_title']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <dt><?php _e( 'Conf. Org.:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $post_metadata['conference_organization'] ) ) : ?>
-<dd><span><?php echo $post_metadata['conference_organization']; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['conference_organization'] ) ) : ?>
+<dd><span><?php echo $metadata['conference_organization']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <dt><?php _e( 'Conf. Loc.:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $post_metadata['conference_location'] ) ) : ?>
-<dd><span><?php echo $post_metadata['conference_location']; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['conference_location'] ) ) : ?>
+<dd><span><?php echo $metadata['conference_location']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <dt><?php _e( 'Conf. Date:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $post_metadata['conference_date'] ) ) : ?>
-<dd><span><?php echo $post_metadata['conference_date']; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['conference_date'] ) ) : ?>
+<dd><span><?php echo $metadata['conference_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php elseif ( 'Presentation' == $metadata['genre'] ) : ?>
-<?php if ( ! empty( $post_metadata['meeting_title'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_title'] ) ) : ?>
 <dt><?php _e( 'Meeting Title:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_title']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_title']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['meeting_organization'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_organization'] ) ) : ?>
 <dt><?php _e( 'Meeting Org.:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_organization']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_organization']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['meeting_location'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_location'] ) ) : ?>
 <dt><?php _e( 'Meeting Loc.:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_location']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_location']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php if ( ! empty( $post_metadata['meeting_date'] ) ) : ?>
+<?php if ( ! empty( $metadata['meeting_date'] ) ) : ?>
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $post_metadata['meeting_date']; // XSS OK. ?></span></dd>
+<dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical report' == $metadata['genre'] ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $post_metadata['institution'] ) ) : ?>
-<dd><span><?php echo $post_metadata['institution']; // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['institution'] ) ) : ?>
+<dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php endif; ?>
 <dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
@@ -1162,10 +1200,6 @@ function humcore_deposit_item_review_content() {
 <dd><?php echo $metadata['notes_unchanged']; ?></dd>
 <?php else : ?>
 <dd>( None )</dd>
-<?php endif; ?>
-<?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
-<dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
-<dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
 <?php endif; ?>
 <?php if ( 'journal-article' == $post_metadata['publication-type'] ) : ?>
 <dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
@@ -1329,6 +1363,18 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>( None entered )</dd>
 <?php endif; ?>
+<?php endif; ?>
+<?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
+<dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
+<dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $post_metadata['embargoed'] ) ) : ?>
+<dt><?php _e( 'Embargoed?:', 'humcore_domain' ); ?></dt>
+<dd><?php echo $post_metadata['embargoed']; ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $post_metadata['embargo_end_date'] ) ) : ?>
+<dt><?php _e( 'Embargo End Date:', 'humcore_domain' ); ?></dt>
+<dd><?php echo $post_metadata['embargo_end_date']; ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $thumb_url ) ) : ?>
 <dt><?php _e( 'Preview:', 'humcore_domain' ); ?></dt>
