@@ -505,15 +505,58 @@ function humcore_member_groups_with_authorship() {
 }
 
 /**
+ * Get the content for the Offline page.
+ */
+function humcore_get_offline_content() {
+
+	$args = array(
+		'name'             => 'deposits',
+		'posts_per_page'   => 1,
+		'offset'           => 0,
+		'post_type'        => 'page',
+		'post_status'      => 'publish',
+		'suppress_filters' => true 
+	);
+	$post_parent = get_posts( $args );
+	$parent_id = $posts_parent[0]->ID;
+
+        $args = array(
+                'name'             => 'offline',
+                'posts_per_page'   => 1,
+                'offset'           => 0,
+                'post_type'        => 'page',
+                'post_status'      => 'publish',
+		'post_parent'      => $post_parent,
+                'suppress_filters' => true 
+        );
+        $offline_page = get_posts( $args ); 
+	$offline_content = apply_filters( 'the_content', $offline_page[0]->post_content );
+
+	echo '<p />',$offline_content;
+
+}
+
+/**
+ * Check the manually entered system status in settings.
+ */
+function humcore_check_internal_status() {
+
+	global $ezid_api, $fedora_api, $solr_client;
+
+	if ( 'down' === $solr_client->service_status ) {
+		return false;
+	}
+
+	return true;
+
+}
+
+/**
  * Check the status of the external systems.
  */
 function humcore_check_externals() {
 
 	global $ezid_api, $fedora_api, $solr_client;
-
-	if ( 'down' == $ezid_api->service_status ) {
-		return false;
-	}
 
 	$sStatus = $solr_client->get_solr_status();
 	if ( is_wp_error( $sStatus ) ) {
@@ -692,6 +735,10 @@ add_action( 'bp_screens', 'humcore_deposits_terms_acceptance' );
 function humcore_deposits_search_screen() {
 	if ( humcore_is_deposit_search() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
+                if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+                }
 		add_filter( 'body_class', 'humcore_search_page_class_names' );
 		$extended_query_string = humcore_get_search_request_querystring( 'facets' );
 		if ( ! empty( $extended_query_string ) ) {
@@ -716,6 +763,10 @@ add_action( 'bp_screens', 'humcore_deposits_search_screen' );
 function humcore_deposits_screen_index() {
 	if ( humcore_is_deposit_directory() ) {
 		bp_update_is_directory( true, 'humcore_deposits' );
+                if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+                }
 		add_filter( 'body_class', 'humcore_deposit_directory_page_class_names' );
 		setcookie( 'bp-deposits-extras', false, 0, '/' );
 		do_action( 'humcore_deposits_screen_index' );
@@ -743,6 +794,10 @@ add_action( 'bp_screens', 'humcore_deposits_feed' );
 function humcore_deposits_list_screen() {
 	if ( humcore_is_deposit_list() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
+                if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+                }
 		do_action( 'humcore_deposits_list_screen' );
 		add_action( 'wp_head', 'humcore_noindex' );
 		bp_get_template_part( apply_filters( 'humcore_deposits_list_screen', 'deposits/deposits-list' ) );
@@ -758,6 +813,10 @@ function humcore_deposits_item_screen() {
 	global $wp;
 	if ( humcore_is_deposit_item() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
+                if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+                }
 		$deposit_id = $wp->query_vars['deposits_item'];
 		if ( empty( $deposit_id ) ) {
 			bp_do_404();
@@ -787,6 +846,11 @@ function humcore_deposits_item_review_screen() {
 	global $wp;
 	if ( humcore_is_deposit_item_review() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
+		if ( ! is_user_logged_in() ) { auth_redirect(); }
+                if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+                }
 		$deposit_id = $wp->query_vars['deposits_item'];
 		if ( empty( $deposit_id ) ) {
 			bp_do_404();
@@ -814,6 +878,10 @@ function humcore_deposits_new_item_screen() {
 
 	if ( humcore_is_deposit_new_page() ) {
 		if ( ! is_user_logged_in() ) { auth_redirect(); }
+        	if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+		}
 		$user_id = bp_loggedin_user_id();
 		$core_acceptance = get_the_author_meta( 'accepted_core_terms', $user_id );
 		if ( 'Yes' != $core_acceptance ) {
@@ -838,6 +906,10 @@ function humcore_deposits_download() {
 	global $wp;
 	if ( humcore_is_deposit_download() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
+                if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+                }
 		do_action( 'humcore_deposits_download' );
 		$deposit_id = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];
@@ -875,6 +947,10 @@ function humcore_deposits_view() {
 	global $wp;
 	if ( humcore_is_deposit_view() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
+                if ( ! humcore_check_internal_status() ) {
+                        wp_redirect( '/deposits/offline/' );
+                        exit();
+                }
 		do_action( 'humcore_deposits_view' );
 		$deposit_id = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];

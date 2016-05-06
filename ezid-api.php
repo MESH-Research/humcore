@@ -516,8 +516,8 @@ class Humcore_Deposit_Ezid_Api {
 			}
 		}
 		if ( 'EZID is up' !== $ezid_metadata['success'] ||
-			'up' !== $ezid_metadata['datacite'] ||
-			'up' !== $ezid_metadata['ldap'] ) {
+			/* 'up' !== $ezid_metadata['ldap'] || // What happened to this service? */
+			'up' !== $ezid_metadata['datacite'] ) {
 			return new WP_Error( 'ezidServerError', 'EZID server is not okay.', var_export( $ezid_metadata, true ) );
 		}
 
