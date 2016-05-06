@@ -235,7 +235,11 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_group_deposits_screen_function() {
 
-		add_action( 'bp_template_content', array( $this, 'humcore_group_deposits_list' ) );
+                if ( ! humcore_check_internal_status() ) {
+			add_action( 'bp_template_content', 'humcore_get_offline_content' );
+                } else {
+			add_action( 'bp_template_content', array( $this, 'humcore_group_deposits_list' ) );
+		}
 		bp_core_load_template( 'deposits/single/group-deposits' ); // Must use this here instead of bp_get_template_part.
 
 	}
@@ -245,7 +249,11 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function screen_function() {
 
-		add_action( 'bp_template_content', array( $this, 'humcore_user_deposits_list' ) );
+                if ( ! humcore_check_internal_status() ) {
+			add_action( 'bp_template_content', 'humcore_get_offline_content' );
+                } else {
+			add_action( 'bp_template_content', array( $this, 'humcore_user_deposits_list' ) );
+                }
 		bp_core_load_template( 'deposits/single/user-deposits' ); // Must use this here instead of bp_get_template_part.
 
 	}
