@@ -81,6 +81,7 @@ function humcore_has_deposits( $args = '' ) {
 		'include'           => false,        // Specify pid to get.
 		'search_tag'        => false,        // Specify tag to search for (keyword_search field).
 		'search_terms'      => false,        // Specify terms to search on.
+		'search_title'      => false,        // Specify title to search for an exact match (title_display field).
 		'search_facets'     => false,        // Specify facets to filter search on.
 	);
 
@@ -104,6 +105,14 @@ function humcore_has_deposits( $args = '' ) {
 
 	// TODO figure out how to remove this hack (copy date_issued to text in solr?).
 	$params['search_terms'] = preg_replace( '/^(\d{4})$/', 'date_issued:$1', $params['search_terms'] );
+
+	if ( empty( $params['search_title'] ) && ! empty( $params['title'] ) ) {
+		$params['search_title'] = $params['title'];
+	}
+
+	if ( empty( $params['search_title'] ) && ! empty( $_REQUEST['title'] ) ) {
+		$params['search_title'] = $_REQUEST['title'];
+	}
 
 	if ( empty( $params['search_facets'] ) && ! empty( $params['facets'] ) ) {
 		$params['search_facets'] = $params['facets'];
@@ -131,6 +140,7 @@ function humcore_has_deposits( $args = '' ) {
 		'include'           => $params['include'],
 		'search_tag'        => $params['search_tag'],
 		'search_terms'      => $params['search_terms'],
+		'search_title'      => $params['search_title'],
 		'search_facets'     => $params['search_facets'],
 	);
 
@@ -477,6 +487,7 @@ class Humcore_Deposit_Search_Results {
 			'include'           => false,
 			'search_tag'        => '',
 			'search_terms'      => '',
+			'search_title'      => '',
 			'search_facets'     => '',
 		);
 		$r = wp_parse_args( $args, $defaults );
@@ -518,6 +529,23 @@ class Humcore_Deposit_Search_Results {
 			$search_terms = '"' . $search_terms . '"';
 		}
 
+		$search_title = preg_replace_callback(
+			'/([' . $lucene_reserved_characters . '])/',
+			function($matches) {
+				return '\\' . $matches[0];
+			},
+			trim( $r['search_title'], '"' )
+		);
+
+		$search_title = str_replace( ' ', '\ ', $search_title );
+		if ( false !== strpos( $search_title, ' ' ) ) {
+			$search_title = '"' . $search_title . '"';
+		}
+
+		if ( ! empty( $search_title ) ) {
+			$search_title = 'title_display:' . $search_title;
+		}
+
 		$search_facets = $r['search_facets'];
 
 		$this->pag_page = isset( $_REQUEST[ $page_arg ] ) ? intval( $_REQUEST[ $page_arg ] ) : $page;
@@ -531,6 +559,8 @@ class Humcore_Deposit_Search_Results {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_tag ) );
 		} else if ( ! empty( $search_terms ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_terms ) );
+		} else if ( ! empty( $search_title ) ) {
+			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_title ) );
 		} else {
 			$restricted_search_terms = $query_collection;
 		}

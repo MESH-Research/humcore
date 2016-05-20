@@ -501,7 +501,7 @@ function humcore_is_bot_user_agent() {
  */
 function humcore_member_groups_with_authorship() {
 
-	return array( 444 );
+	return array( 378,444 );
 }
 
 /**
@@ -1303,6 +1303,7 @@ function humcore_deposits_user_committee_list( $user_id ) {
                 'user_id' => $user_id,
                 'type' => 'alphabetical',
 		'include' => humcore_member_groups_with_authorship(),
+		'show_hidden' => true,
                 'per_page' => '500',
         );
 
@@ -1516,5 +1517,36 @@ function humcore_deposit_parse_author_info( $author_info, $element = 1 ) {
 function humcore_noindex() {
 
     echo "<meta name='robots' content='noindex' />\n";
+
+}
+
+/**
+ * Retrieve a deposit by title for an author or group
+ *
+ * @param string $title Title.
+ * @param string $genre Item Type.
+ * @param string $group_id Group ID, if group deposit.
+ * @return object matching deposit or null.
+ */
+function humcore_get_deposit_by_title_genre_and_author( $title, $genre, $group_id = '' ) {
+
+	if ( ! empty( $group_id ) ) {
+		$group = groups_get_group( array( 'group_id' => $group_id ) );
+		$author_name = $group->name;
+	} else {
+		$author_name = bp_get_loggedin_user_fullname();
+	}
+
+	humcore_has_deposits( sprintf( 'facets[author_facet][]=%s&facets[genre_facet][]=%s&search_title=%s',
+			urlencode( $author_name ),
+			urlencode( $genre ),
+			urlencode( $title ) ) );
+
+	if ( 0 !== (int) humcore_get_deposit_count() ) {
+		humcore_the_deposit();
+		return humcore_get_current_deposit();
+	} else {
+		return;
+	}
 
 }

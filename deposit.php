@@ -53,6 +53,35 @@
 			return false;
 		}
 
+		// Check for dups!
+		$title_check = wp_strip_all_tags( stripslashes( $_POST['deposit-title-unchanged'] ) );
+		$genre = sanitize_text_field( $_POST['deposit-genre'] );
+		if ( 'yes' === $_POST['deposit-on-behalf-flag'] ) {
+			$group_id = intval( $_POST['deposit-committee'] );
+		} else {
+			$group_id = '';
+		}
+		$title_match = humcore_get_deposit_by_title_genre_and_author( $title_check, $genre, $group_id );
+		if ( ! empty( $title_match ) ) {
+			echo '<div id="message" class="info">';
+			if ( ! empty( $group_id ) ) {
+				$group = groups_get_group( array( 'group_id' => $group_id ) );
+				$sentence_subject = sprintf( '[ %s ]', $group->name );
+			} else {
+				$sentence_subject = 'You';
+			}
+			echo sprintf('Wait a minute! %1$s deposited another %2$s entitled <a onclick="target=%3$s" href="%4$s/deposits/item/%5$s">%6$s</a> %7$s ago.<br />Perhaps this is a duplicate deposit? If not, please change the title and click <b>Deposit</b> again.',
+				$sentence_subject,
+				strtolower( $genre ),
+				"'blank'",
+				bp_get_root_domain(),
+				$title_match->id,
+				$title_match->title_unchanged,
+				human_time_diff( strtotime( $title_match->record_creation_date ) ));
+			echo '</div>';
+			return false;
+		}
+
 		// Single file uploads at this point.
 		$tempname = sanitize_file_name( $_POST['selected_temp_name'] );
 		$fileloc = $fedora_api->tempDir . '/' . $tempname;
