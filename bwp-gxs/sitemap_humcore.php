@@ -4,7 +4,7 @@
  * Add support for HumCORE to the Better WordPress Google XML Sitemaps plugin
  */
 
-class BWP_GXS_MODULE_HUMCORE_DEPOSIT_LINKS extends BWP_GXS_MODULE {
+class BWP_GXS_MODULE_SITEMAP_HUMCORE extends BWP_GXS_MODULE {
 
 	public function __construct() {
                 $this->type = 'url';

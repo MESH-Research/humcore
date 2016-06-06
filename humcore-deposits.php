@@ -419,13 +419,13 @@ if ( is_admin() ) {
 function humcore_bwp_gxs_add_modules() {
 
     global $bwp_gxs;
-    $bwp_gxs->add_module( 'humcore_deposit_links' );
+    $bwp_gxs->add_module( 'sitemap_humcore' );
 
 }
 function humcore_bwp_gxs_add_rewrite_rules() {
 
     $humcore_rules = array(
-        'humcore_deposit_links\.xml' => 'index.php?gxs_module=humcore_deposit_links'
+        'sitemap_humcore\.xml' => 'index.php?gxs_module=sitemap_humcore'
     );
     return $humcore_rules;
 
