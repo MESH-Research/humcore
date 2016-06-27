@@ -1044,15 +1044,17 @@ function humcore_linkify_author( $author, $author_meta, $author_type ) {
 	if ( 'creator' === $author_type ) {
 		$page_type = 'groups';
 		$prompt_text = 'view group';
+		$url_suffix = 'deposits/';
 	} else {
 		$page_type = 'members';
 		$prompt_text = 'see profile';
+		$url_suffix = '';
 	}
 
 	if ( ( ! empty( $author_meta ) && 'null' != $author_meta ) &&
 		( ( 'members' === $page_type && $displayed_username != $author_meta ) ||
 		( 'groups' === $page_type && ! bp_is_group() ) ) ) {
-		$profile = sprintf( ' <a href="/%s/%s/deposits/">(%s)</a> ', $page_type, $author_meta, $prompt_text );
+		$profile = sprintf( ' <a href="/%s/%s/%s">(%s)</a> ', $page_type, $author_meta, $url_suffix, $prompt_text );
 	} else {
 		$profile = '';
 	}
