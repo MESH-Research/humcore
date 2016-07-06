@@ -78,7 +78,15 @@ add_action( 'init', 'humcore_register_post_type' );
 /**
  * Create two taxonomies, humcore_deposit_subjects and humcore_deposit_tags for the post type "humcore_deposit".
  */
-function humcore_create_taxonomies() {
+function humcore_register_taxonomies() {
+
+        $current_network = get_current_site();
+        if ( 1 === (int) $current_network->id ) {
+		$taxonomy_ui_setting = true;
+	} else {
+		$taxonomy_ui_setting = false;
+	}
+
 	// Add new taxonomy, make it hierarchical (like categories).
 	$labels = array(
 		'name'              => _x( 'Subjects', 'taxonomy general name', 'humcore_domain' ),
@@ -98,7 +106,7 @@ function humcore_create_taxonomies() {
 		'public'            => false,
 		'hierarchical'      => true,
 		'labels'            => $labels,
-		'show_ui'           => true,
+		'show_ui'           => $taxonomy_ui_setting,
 		'show_admin_column' => false,
 		'query_var'         => false,
 		'rewrite'           => false,
@@ -131,7 +139,7 @@ function humcore_create_taxonomies() {
 		'public'                => false,
 		'hierarchical'          => false,
 		'labels'                => $labels,
-		'show_ui'               => true,
+		'show_ui'               => $taxonomy_ui_setting,
 		'show_admin_column'     => false,
 		'update_count_callback' => '_update_post_term_count',
 		'query_var'             => false,
@@ -143,7 +151,8 @@ function humcore_create_taxonomies() {
 
 }
 // Hook into the init action and call humcore_create_taxonomies when init fires.
-add_action( 'init', 'humcore_create_taxonomies' );
+add_action( 'init', 'humcore_register_taxonomies' );
+add_action( 'wpmn_register_taxonomies', 'humcore_register_taxonomies' );
 
 /**
  * Remove the custom taxonomy meta boxes.

@@ -772,7 +772,16 @@ function humcore_deposit_item_content() {
 	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
 	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
 	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
-	$deposit_post_id = $metadata['record_identifier'];
+
+        $wpmn_record_identifier = array();
+        $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+        $switched = false;
+        if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
+                switch_to_blog( $wpmn_record_identifier[0] );
+                $switched = true;
+        }
+
+	$deposit_post_id = $record_identifier[1];
 	$post_data = get_post( $deposit_post_id );
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
@@ -823,6 +832,9 @@ function humcore_deposit_item_content() {
 	} else {
 		$thumb_url = '';
 	}
+        if ( $switched ) {
+                restore_current_blog();
+        }
 ?>
 
 <h3 class="bp-group-documents-title"><?php echo $metadata['title_unchanged']; ?></h3>
@@ -1074,7 +1086,15 @@ function humcore_deposit_item_review_content() {
         $authors_list = implode( ', ', array_map( 'esc_html', $authors ) );
         $item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 
-        $deposit_post_id = $metadata['record_identifier'];
+        $wpmn_record_identifier = array();
+        $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+        $switched = false;
+        if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
+                switch_to_blog( $wpmn_record_identifier[0] );
+                $switched = true;
+        }
+
+        $deposit_post_id = $record_identifier[1];
         $post_data = get_post( $deposit_post_id );
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
@@ -1117,6 +1137,9 @@ function humcore_deposit_item_review_content() {
                 );
         } else {
                 $thumb_url = '';
+        }
+        if ( $switched ) {
+                restore_current_blog();
         }
 ?>
 

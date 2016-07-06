@@ -270,17 +270,31 @@ function humcore_deposit_item_search_meta() {
 
 	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n\r", bp_get_root_domain(), htmlentities( $metadata['pid'] ) );
 
-	$post_metadata = json_decode( get_post_meta( $metadata['record_identifier'], '_deposit_metadata', true ), true );
+	$wpmn_record_identifier = array();
+	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+	$switched = false;
+	if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
+                switch_to_blog( $wpmn_record_identifier[0] );
+                $switched = true;
+        }
+
+	$post_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_metadata', true ), true );
 	if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
+	        if ( $switched ) {
+                	restore_current_blog();
+        	}
 		return;
 	} else {
-		$file_metadata = json_decode( get_post_meta( $metadata['record_identifier'], '_deposit_file_metadata', true ), true );
+		$file_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_file_metadata', true ), true );
 		printf( '<meta name="citation_pdf_url" content="%1$s/deposits/download/%2$s/%3$s/%4$s/">' . "\n\r",
 			bp_get_root_domain(),
 			htmlentities( $file_metadata['files'][0]['pid'] ),
 			htmlentities( $file_metadata['files'][0]['datastream_id'] ),
 			htmlentities( $file_metadata['files'][0]['filename'] )
 		);
+	        if ( $switched ) {
+                	restore_current_blog();
+        	}
 	}
 }
 
@@ -1226,9 +1240,11 @@ function humcore_deposits_group_list() {
 	 * Groups meta_query with relation OR is very slow, merge two sets results until this gets fixed.
 	 */
 	$groups_list = array();
+        $society_id = get_network_option( '', 'society_id' );
 
 	$args = array(
 		'type' => 'alphabetical',
+		'group_type' => $society_id,
 		'meta_query' => array(
 			array(
 				'key' => 'mla_oid',
@@ -1247,6 +1263,7 @@ function humcore_deposits_group_list() {
 
 	$args = array(
 		'type' => 'alphabetical',
+		'group_type' => $society_id,
 		'meta_query' => array(
 			array(
 				'key' => 'mla_oid',
@@ -1278,10 +1295,12 @@ function humcore_deposits_group_list() {
 function humcore_deposits_user_committee_list( $user_id ) {
 
 	$committees_list = array();
+        $society_id = get_network_option( '', 'society_id' );
 
 	$args = array(
 		'user_id' => $user_id,
 		'type' => 'alphabetical',
+		'group_type' => $society_id,
 		'meta_query' => array(
 			array(
 				'key' => 'mla_oid',
@@ -1330,7 +1349,7 @@ function humcore_deposits_subject_list() {
 
 	$subjects_list = array();
 
-	$subject_terms = get_terms(
+	$subject_terms = wpmn_get_terms(
 		'humcore_deposit_subject',
 		array(
 			'orderby' => 'name',
@@ -1357,7 +1376,7 @@ function humcore_deposits_keyword_list() {
 
 	$keywords_list = array();
 
-	$keyword_terms = get_terms(
+	$keyword_terms = wpmn_get_terms(
 		'humcore_deposit_tag',
 		array(
 			'orderby' => 'name',

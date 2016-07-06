@@ -184,7 +184,7 @@
 		);
 
 		$deposit_post_ID = wp_insert_post( $deposit_post_data );
-		$metadata['record_identifier'] = $deposit_post_ID;
+		$metadata['record_identifier'] = get_current_blog_id() . '-' . $deposit_post_ID;
 
 		/**
 		 * Set object terms for subjects.
@@ -192,7 +192,7 @@
 		if ( ! empty( $_POST['deposit-subject'] ) ) {
 			$term_ids = array();
 			foreach ( $_POST['deposit-subject'] as $subject ) {
-				$term_key = term_exists( $subject, 'humcore_deposit_subject' );
+				$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 				if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
@@ -200,7 +200,7 @@
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_subject' );
+				$term_taxonomy_ids = wpmn_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_subject' );
 				$metadata['subject_ids'] = $term_taxonomy_ids;
 			}
 		}
@@ -211,9 +211,9 @@
 		if ( ! empty( $_POST['deposit-keyword'] ) ) {
 			$term_ids = array();
 			foreach ( $_POST['deposit-keyword'] as $keyword ) {
-				$term_key = term_exists( $keyword, 'humcore_deposit_tag' );
+				$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
 				if ( empty( $term_key ) ) {
-					$term_key = wp_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
+					$term_key = wpmn_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
 				}
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
@@ -222,7 +222,7 @@
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_tag' );
+				$term_taxonomy_ids = wpmn_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_tag' );
 				$metadata['keyword_ids'] = $term_taxonomy_ids;
 			}
 		}

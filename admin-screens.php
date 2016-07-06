@@ -245,7 +245,7 @@ function humcore_deposit_metabox( $post ) {
 	$posted_subject_list = array();
 	if ( ! empty( $aggregator_metadata['subject'] ) ) {
                 foreach ( $aggregator_metadata['subject_ids'] as $subject_id ) {
-                        $term = get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
+                        $term = wpmn_get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
                         $posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
                 }
 	}
@@ -269,7 +269,7 @@ function humcore_deposit_metabox( $post ) {
 	$posted_keyword_list = array();
 	if ( ! empty( $aggregator_metadata['keyword'] ) ) {
                 foreach ( $aggregator_metadata['keyword_ids'] as $keyword_id ) {
-			$term = get_term_by( 'term_taxonomy_id', $keyword_id, 'humcore_deposit_tag' );
+			$term = wpmn_get_term_by( 'term_taxonomy_id', $keyword_id, 'humcore_deposit_tag' );
                         $posted_keyword_list[] = sanitize_text_field( stripslashes( $term->name ) );
                 }
 	}
@@ -645,7 +645,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 			$term_ids = array();
 			$aggregator_metadata['subject_ids'] = array();
 			foreach ( $_POST['aggregator_subject'] as $subject ) {
-				$term_key = term_exists( $subject, 'humcore_deposit_subject' );
+				$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
@@ -653,7 +653,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 				}
 			}
 			// Support add and remove.
-			$term_taxonomy_ids = wp_set_object_terms( $post_id, $term_ids, 'humcore_deposit_subject' );
+			$term_taxonomy_ids = wpmn_set_object_terms( $post_id, $term_ids, 'humcore_deposit_subject' );
 			$aggregator_metadata['subject_ids'] = $term_taxonomy_ids;
 		}
 	}
@@ -667,9 +667,9 @@ function humcore_deposit_metabox_save( $post_id ) {
 			$term_ids = array();
 			$aggregator_metadata['keyword_ids'] = array();
 			foreach ( $_POST['aggregator_keyword'] as $keyword ) {
-				$term_key = term_exists( $keyword, 'humcore_deposit_tag' );
+				$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
 				if ( empty( $term_key ) ) {
-					$term_key = wp_insert_term( strtolower( sanitize_text_field( $keyword ) ), 'humcore_deposit_tag' );
+					$term_key = wpmn_insert_term( strtolower( sanitize_text_field( $keyword ) ), 'humcore_deposit_tag' );
 				}
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
@@ -678,7 +678,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 				}
 			}
 			// Support add and remove.
-			$term_taxonomy_ids = wp_set_object_terms( $post_id, $term_ids, 'humcore_deposit_tag' );
+			$term_taxonomy_ids = wpmn_set_object_terms( $post_id, $term_ids, 'humcore_deposit_tag' );
 			$aggregator_metadata['keyword_ids'] = $term_taxonomy_ids;
 		}
 	}
