@@ -51,11 +51,11 @@ function humcore_format_activity_action_new_deposit( $action, $activity ) {
 			$committee = groups_get_group( array( 'group_id' => $post_metadata['committee_id'] ) );
 			$initiator_url = trailingslashit( bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $committee->slug . '/' );
 			$initiator_name = $committee->name;
-			$initiator_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
+			$initiator_link = sprintf( '<a href="%1$s/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 		} else {
 			$initiator_url = bp_core_get_userlink( $activity->user_id, false, true );
 			$initiator_name = bp_core_get_userlink( $activity->user_id, true, false );
-			$initiator_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
+			$initiator_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 		}
 		$action = sprintf( __( '%1$s deposited %2$s', 'humcore_domain' ), $initiator_link, $item_link );
 		return apply_filters( 'humcore_format_activity_action_new_deposit', $action, $activity );
@@ -76,11 +76,11 @@ function humcore_format_activity_action_new_group_deposit( $action, $activity ) 
 			$committee = groups_get_group( array( 'group_id' => $post_metadata['committee_id'] ) );
 			$initiator_url = trailingslashit( bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $committee->slug . '/' );
 			$initiator_name = $committee->name;
-			$initiator_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
+			$initiator_link = sprintf( '<a href="%1$s/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 		} else {
 			$initiator_url = bp_core_get_userlink( $activity->user_id, false, true );
 			$initiator_name = bp_core_get_userlink( $activity->user_id, true, false );
-			$initiator_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
+			$initiator_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 		}
 		$group = groups_get_group( array( 'group_id' => $activity->item_id ) );
 		$group_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( bp_get_group_permalink( $group ) ), esc_html( $group->name ) );
@@ -208,7 +208,7 @@ function humcore_deposit_item_search_meta() {
 	endwhile; // Should fetch one record.
 	$metadata = (array) humcore_get_current_deposit();
 
-        printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", bp_get_root_domain(), htmlentities( $metadata['pid'] ) );
+        printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", wpmn_get_primary_network_root_domain(), htmlentities( $metadata['pid'] ) );
 
 	printf( '<meta name="description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
 	printf( '<meta name="citation_title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
@@ -268,7 +268,7 @@ function humcore_deposit_item_search_meta() {
 		}
 	}
 
-	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n\r", bp_get_root_domain(), htmlentities( $metadata['pid'] ) );
+	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n\r", wpmn_get_primary_network_root_domain(), htmlentities( $metadata['pid'] ) );
 
 	$wpmn_record_identifier = array();
 	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
@@ -287,7 +287,7 @@ function humcore_deposit_item_search_meta() {
 	} else {
 		$file_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_file_metadata', true ), true );
 		printf( '<meta name="citation_pdf_url" content="%1$s/deposits/download/%2$s/%3$s/%4$s/">' . "\n\r",
-			bp_get_root_domain(),
+			wpmn_get_primary_network_root_domain(),
 			htmlentities( $file_metadata['files'][0]['pid'] ),
 			htmlentities( $file_metadata['files'][0]['datastream_id'] ),
 			htmlentities( $file_metadata['files'][0]['filename'] )
@@ -603,7 +603,7 @@ function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher
 
 	$eStatus = $ezid_api->mint_identifier( array(
 		'dc.title' => $title,
-		'_target' => sprintf( bp_get_root_domain() . '/deposits/item/%s/', $pid ),
+		'_target' => sprintf( wpmn_get_primary_network_root_domain() . '/deposits/item/%s/', $pid ),
 		'dc.creator' => $creator,
 		'dc.type' => $type,
 		'dc.date' => $date,
@@ -1245,13 +1245,13 @@ function humcore_deposits_group_list() {
 	$args = array(
 		'type' => 'alphabetical',
 		'group_type' => $society_id,
-		'meta_query' => array(
+/*		'meta_query' => array(
 			array(
 				'key' => 'mla_oid',
 				'value' => 'D',
 				'compare' => 'LIKE',
 			),
-		),
+		), */
 		'per_page' => '500',
 	);
 
@@ -1260,7 +1260,7 @@ function humcore_deposits_group_list() {
 	foreach ( $d_groups['groups'] as $group ) {
 		$groups_list[ $group->id ] = htmlspecialchars( stripslashes( $group->name ) );
 	}
-
+/*
 	$args = array(
 		'type' => 'alphabetical',
 		'group_type' => $society_id,
@@ -1279,7 +1279,7 @@ function humcore_deposits_group_list() {
 	foreach ( $g_groups['groups'] as $group ) {
 		$groups_list[ $group->id ] = htmlspecialchars( stripslashes( $group->name ) );
 	}
-
+*/
 	natcasesort( $groups_list );
 
 	return apply_filters( 'humcore_deposits_group_list', $groups_list );
@@ -1502,7 +1502,7 @@ function humcore_check_test_handle( $deposit_record ) {
 
 	if ( ! is_array( $deposit_record ) && false !== strpos( $deposit_record->handle, '10.5072/FK2' ) &&
 			date_create( '14 days ago' ) > date_create( $deposit_record->record_creation_date ) ) {
-		$deposit_record->handle = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $deposit_record->pid );
+		$deposit_record->handle = sprintf( '%1$s/deposits/item/%2$s', wpmn_get_primary_network_root_domain(), $deposit_record->pid );
 	}
 	return $deposit_record;
 

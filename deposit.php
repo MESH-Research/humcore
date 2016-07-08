@@ -74,7 +74,7 @@
 				$sentence_subject,
 				strtolower( $genre ),
 				"'blank'",
-				bp_get_root_domain(),
+				wpmn_get_primary_network_root_domain(),
 				$title_match->id,
 				$title_match->title_unchanged,
 				human_time_diff( strtotime( $title_match->record_creation_date ) ));
@@ -200,7 +200,8 @@
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wpmn_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_subject' );
+				$term_object_id = str_replace( $fedora_api->namespace . ':', '', $nextPids[0] );
+				$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_subject' );
 				$metadata['subject_ids'] = $term_taxonomy_ids;
 			}
 		}
@@ -222,7 +223,8 @@
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wpmn_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_tag' );
+				$term_object_id = str_replace( $fedora_api->namespace . ':', '', $nextPids[0] );
+				$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
 				$metadata['keyword_ids'] = $term_taxonomy_ids;
 			}
 		}
@@ -406,12 +408,10 @@
 		 */
 		$resource_id = wp_insert_post( $resource_post_data );
 
-		$local_link = sprintf( bp_get_root_domain() . '/deposits/item/%s/', $nextPids[0] );
-
 		/**
 		 * Add the activity entry for the author.
 		 */
-		$activity_ID = humcore_new_deposit_activity( $deposit_post_ID, $metadata['abstract'], $local_link );
+		$activity_ID = humcore_new_deposit_activity( $deposit_post_ID, $metadata['abstract'], $metadata['handle'] );
 
 		/**
 		 * Publish the reserved DOI.
@@ -432,7 +432,7 @@
                 if ( 'no' === $metadata['embargoed'] ) {
 			if ( ! empty( $_POST['deposit-group'] ) ) {
 				foreach ( $_POST['deposit-group'] as $group_id ) {
-					$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $local_link );
+					$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $metadata['handle'] );
 				}
 			}
 		}
@@ -690,7 +690,7 @@
 				$metadata['publisher']
 			);
 		if ( ! $deposit_doi ) {
-			$metadata['handle'] = sprintf( bp_get_root_domain() . '/deposits/item/%s/', $nextPids[0] );
+			$metadata['handle'] = sprintf( wpmn_get_primary_network_root_domain() . '/deposits/item/%s/', $nextPids[0] );
 			$metadata['deposit_doi'] = ''; // Not stored in solr.
 		} else {
 			$metadata['handle'] = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );

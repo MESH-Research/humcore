@@ -303,7 +303,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-group-entry">
 		<label for="deposit-group">Forums</label>
-		<span class="description">Share this item with up to five <em>MLA Commons</em> forums.<br />Selecting a forum will notify members of that forum about your deposit.</span><br />
+		<span class="description">Share this item with up to five <em>Commons</em> forums.<br />Selecting a forum will notify members of that forum about your deposit.</span><br />
 		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select forums">
 <?php
 	$group_list = humcore_deposits_group_list();
@@ -548,7 +548,7 @@ function humcore_deposit_form() {
 	<p>
 	<div id="deposit-license-type-entry">
 		<label for="deposit-license-type">Creative Commons License</label>
-		<span class="description">By default, and in accordance with section 2 of the <em>MLA Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
+		<span class="description">By default, and in accordance with section 2 of the <em>Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
 		<select name="deposit-license-type" id="deposit-license-type" class="js-basic-single-required">
 <?php
 	$license_type_list = humcore_deposits_license_type_list();
@@ -734,7 +734,7 @@ function humcore_deposits_entry_content() {
 <?php endif; ?>
 
 <dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt>
-<dd><a href="<?php echo esc_attr( $metadata['handle'] ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
+<dd><a href="<?php echo esc_attr( $item_url ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
 </dl>
 </div>
 <br style='clear:both'>
@@ -781,7 +781,7 @@ function humcore_deposit_item_content() {
                 $switched = true;
         }
 
-	$deposit_post_id = $record_identifier[1];
+	$deposit_post_id = $wpmn_record_identifier[1];
 	$post_data = get_post( $deposit_post_id );
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
@@ -835,6 +835,7 @@ function humcore_deposit_item_content() {
         if ( $switched ) {
                 restore_current_blog();
         }
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 ?>
 
 <h3 class="bp-group-documents-title"><?php echo $metadata['title_unchanged']; ?></h3>
@@ -903,7 +904,7 @@ function humcore_deposit_item_content() {
 <dd><?php echo $keyword_list; // XSS OK. ?></dd>
 <?php endif; ?>
 <dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt>
-<dd><a href="<?php echo esc_attr( $metadata['handle'] ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
+<dd><a href="<?php echo esc_attr( $item_url ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
 <dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
 <?php if ( ! empty( $metadata['abstract_unchanged'] ) ) : ?>
 <dd><?php echo $metadata['abstract_unchanged']; ?></dd>
@@ -1094,7 +1095,7 @@ function humcore_deposit_item_review_content() {
                 $switched = true;
         }
 
-        $deposit_post_id = $record_identifier[1];
+        $deposit_post_id = $wpmn_record_identifier[1];
         $post_data = get_post( $deposit_post_id );
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 

@@ -653,7 +653,8 @@ function humcore_deposit_metabox_save( $post_id ) {
 				}
 			}
 			// Support add and remove.
-			$term_taxonomy_ids = wpmn_set_object_terms( $post_id, $term_ids, 'humcore_deposit_subject' );
+                        $term_object_id = str_replace( $fedora_api->namespace . ':', '', $aggregator_metadata['pid'] );
+			$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_subject' );
 			$aggregator_metadata['subject_ids'] = $term_taxonomy_ids;
 		}
 	}
@@ -678,7 +679,8 @@ function humcore_deposit_metabox_save( $post_id ) {
 				}
 			}
 			// Support add and remove.
-			$term_taxonomy_ids = wpmn_set_object_terms( $post_id, $term_ids, 'humcore_deposit_tag' );
+                        $term_object_id = str_replace( $fedora_api->namespace . ':', '', $aggregator_metadata['pid'] );
+			$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
 			$aggregator_metadata['keyword_ids'] = $term_taxonomy_ids;
 		}
 	}
