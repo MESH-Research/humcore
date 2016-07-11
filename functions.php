@@ -55,7 +55,7 @@ function humcore_format_activity_action_new_deposit( $action, $activity ) {
 		} else {
 			$initiator_url = bp_core_get_userlink( $activity->user_id, false, true );
 			$initiator_name = bp_core_get_userlink( $activity->user_id, true, false );
-			$initiator_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
+			$initiator_link = sprintf( '<a href="%1$s/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 		}
 		$action = sprintf( __( '%1$s deposited %2$s', 'humcore_domain' ), $initiator_link, $item_link );
 		return apply_filters( 'humcore_format_activity_action_new_deposit', $action, $activity );
@@ -80,7 +80,7 @@ function humcore_format_activity_action_new_group_deposit( $action, $activity ) 
 		} else {
 			$initiator_url = bp_core_get_userlink( $activity->user_id, false, true );
 			$initiator_name = bp_core_get_userlink( $activity->user_id, true, false );
-			$initiator_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
+			$initiator_link = sprintf( '<a href="%1$s/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 		}
 		$group = groups_get_group( array( 'group_id' => $activity->item_id ) );
 		$group_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( bp_get_group_permalink( $group ) ), esc_html( $group->name ) );
