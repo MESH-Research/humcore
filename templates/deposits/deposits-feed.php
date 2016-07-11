@@ -30,3 +30,4 @@ echo '<?xml version="1.0" encoding="'.get_option('blog_charset').'"?'.'>';
         <?php endif; ?>
 </channel>
 </rss>
+<?php exit();
