@@ -673,7 +673,7 @@ function humcore_deposits_feed_item_content() {
 	}
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
-	$pub_date = DateTime::createFromFormat( 'Y-m-d\TH:i:s\Z', '2016-01-06T17:14:03Z' );
+	$pub_date = DateTime::createFromFormat( 'Y-m-d\TH:i:s\Z', $metadata['record_creation_date'] );
 ?>
 		<title><?php echo htmlspecialchars( $metadata['title'], ENT_QUOTES ); ?></title>
 		<link><?php echo esc_url( $item_url ); ?></link>
