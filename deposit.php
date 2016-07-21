@@ -408,10 +408,13 @@
 		 */
 		$resource_id = wp_insert_post( $resource_post_data );
 
+		//DOI's are takeing too long to resolve, put the permalink in the activity records.
+		$local_link = sprintf( wpmn_get_primary_network_root_domain() . '/deposits/item/%s/', $nextPids[0] );
+
 		/**
 		 * Add the activity entry for the author.
 		 */
-		$activity_ID = humcore_new_deposit_activity( $deposit_post_ID, $metadata['abstract'], $metadata['handle'] );
+		$activity_ID = humcore_new_deposit_activity( $deposit_post_ID, $metadata['abstract'], $local_link );
 
 		/**
 		 * Publish the reserved DOI.
@@ -432,7 +435,7 @@
                 if ( 'no' === $metadata['embargoed'] ) {
 			if ( ! empty( $_POST['deposit-group'] ) ) {
 				foreach ( $_POST['deposit-group'] as $group_id ) {
-					$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $metadata['handle'] );
+					$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $local_link );
 				}
 			}
 		}
