@@ -43,7 +43,7 @@ class Humcore_Deposits_Search_Facets_Widget extends WP_Widget {
 		echo $args['before_title'] .
 			$title .
 			$args['after_title']; ?>
-		<div id="object-nav" class="sidebar-activity-tabs facet-set" role="navigation"><label for="object-nav"><?php _e( 'Filter results (select all that apply)', 'humcore_domain' ); ?></label>
+		<div class="search-facets facet-set" role="navigation"><h5><label for="search-facets"><?php _e( 'Filter results (select all that apply)', 'humcore_domain' ); ?></label></h5>
 		<?php humcore_search_sidebar_content() ?>
 		</div>
 
@@ -119,7 +119,7 @@ class Humcore_Deposits_Directory_Sidebar_Widget extends WP_Widget {
 		echo $args['before_title'] .
 			$title .
 			$args['after_title']; ?>
-		<div id="object-nav" class="sidebar-activity-tabs facet-set" role="navigation">
+		<div class="directory-facets facet-set" role="navigation">
 		<?php humcore_directory_sidebar_content() ?>
 		</div>
 

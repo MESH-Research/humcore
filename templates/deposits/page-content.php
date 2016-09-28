@@ -5,9 +5,9 @@
 			the_post();
 			do_action( 'bp_before_deposits_core_page' );
 ?>
-	<article id="page" class="page-<?php the_ID(); ?> post" <?php post_class(); ?>>
+	<article id="page" <?php post_class( 'humcore' ); ?>>
 		<header>
-		<h1 class="page-title">
+		<h1 class="page-header">
 			<?php
 				the_title();
 				edit_post_link(' ✍','',' ');

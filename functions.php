@@ -682,6 +682,9 @@ function humcore_register_template_location() {
  */
 function humcore_search_page_class_names( $classes ) {
 
+	if ( ( $key = array_search('error404', $classes ) ) !== false ) {
+		unset( $classes[$key] );
+	}
 	$classes[] = 'search-page';
 	return $classes;
 }
@@ -692,6 +695,15 @@ function humcore_search_page_class_names( $classes ) {
 function humcore_deposit_directory_page_class_names( $classes ) {
 
 	$classes[] = 'deposits-directory-page';
+	return $classes;
+}
+
+/**
+ * Add specific CSS class by filter (filter added in humcore_deposits_item_screen).
+ */
+function humcore_deposit_item_page_class_names( $classes ) {
+
+	$classes[] = 'deposits-item-page';
 	return $classes;
 }
 
@@ -839,6 +851,7 @@ function humcore_deposits_item_screen() {
 		}
 		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
 		if ( $item_found) { 
+			add_filter( 'body_class', 'humcore_deposit_item_page_class_names' );
 			do_action( 'humcore_deposits_item_screen' );
 			remove_action('wp_head', 'wp_shortlink_wp_head', 10, 0);
 			remove_action( 'wp_head', 'rel_canonical' );

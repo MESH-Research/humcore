@@ -14,16 +14,18 @@
 
 <?php Humcore_Theme_Compatibility::get_header(); ?>
 
+        <div class="page-right-sidebar">
+	<div id="primary" class="site-content">
 	<div id="content">
-		<div class="padder">
+		<div id="buddypress">
 
 			<?php do_action( 'bp_before_deposit_item_template' ); ?>
 
-			<div id="item-header">
+<!--			<div id="item-header">
 
-				<?php bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
+				<?php //bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
 
-			</div><!-- #item-header -->
+			</div> --><!-- #item-header -->
 <!--
 			<div id="item-nav">
 				<div class="item-list-tabs no-ajax" id="object-nav" role="navigation">
@@ -101,11 +103,15 @@
 
 <?php do_action( 'bp_after_deposit_item_template' ); ?>
 
-</div><!-- .padder -->
+</div><!-- #buddypress -->
 </div><!-- #content -->
+</div><!-- #primary -->
 
-<aside id="sidebar" class="widget_deposits_directory_sidebar_widget column four sidebar-left" role="complementary">
+<div id="secondary" class="widget-area" role="complementary">
+<aside id="deposits-sidebar" role="complementary">
 <?php dynamic_sidebar( 'deposits-directory-sidebar' ); ?>
 </aside>
+</div><!-- #secondary -->
+</div><!-- .page-right-sidebar -->
 
 <?php Humcore_Theme_Compatibility::get_footer(); ?>

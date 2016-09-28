@@ -14,14 +14,16 @@
 
 <?php Humcore_Theme_Compatibility::get_header(); ?>
 
+        <div class="page-right-sidebar">
+        <div id="primary" class="site-content">
 	<div id="content">
-		<div class="padder">
+		<div id="buddypress">
 
 			<?php do_action( 'bp_before_deposit_item_template' ); ?>
 
 			<div id="item-header">
 
-				<?php bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
+				<?php //bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
 <!--
@@ -35,10 +37,10 @@
 
                                         </ul>
                                 </div>
-                        </div><!-- #item-nav -->
+                        </div>--!><!-- #item-nav -->
 
 <div id="item-body" role="main">
-<h2>Deposit Complete!</h2>
+<h3>Deposit Complete!</h3>
 Thank you for your submission! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:commons@mla.org?subject=CORE">contact us</a> and we’ll be happy to assist you.
 <?php do_action( 'bp_before_deposit_item' ); ?>
 <ul class="deposit-list item-list">
@@ -109,11 +111,15 @@ Thank you for your submission! We strive to make the <em>CORE</em> deposit proce
 
 <?php do_action( 'bp_after_deposit_item_template' ); ?>
 
-</div><!-- .padder -->
+</div><!-- #buddypress -->
 </div><!-- #content -->
+</div><!-- #primary -->
 
-<aside id="sidebar" class="widget_deposits_directory_sidebar_widget column four sidebar-left" role="complementary">
+<div id="secondary" class="widget-area" role="complementary">
+<aside id="deposits-sidebar" role="complementary">
 <?php dynamic_sidebar( 'deposits-directory-sidebar' ); ?>
 </aside>
+</div><!-- #secondary -->
+</div><!-- .page-right-sidebar -->
 
 <?php Humcore_Theme_Compatibility::get_footer(); ?>

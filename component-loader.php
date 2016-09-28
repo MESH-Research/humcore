@@ -162,10 +162,10 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_setup_deposit_group_nav() {
 
 		// Only display if we're on a certain type of group page.
-		if ( bp_is_group() && ( humcore_is_group_forum() || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
+		if ( bp_is_group() && ( 'public' === bp_get_group_status( groups_get_group( array( 'group_id' => bp_get_current_group_id() ) ) ) || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
 			$count = $this->humcore_get_group_deposit_count();
 			$class = ( 0 === $count ) ? 'no-count' : 'count';
-			if ( humcore_is_group_forum() ) {
+			if ( 'public' === bp_get_group_status( groups_get_group( array( 'group_id' => bp_get_current_group_id() ) ) ) ) {
 				$nav_name = sprintf( __( 'From %1$sCORE%2$s <span class="%3$s">%4$s</span>', 'humcore_domain' ),
 							 '<em>', '</em>', esc_attr( $class ), number_format_i18n( $count ) );
 			} else {

@@ -1,56 +1,51 @@
+/* temp - should go in boss custom.css */
+/* .society-aseees .site-header .left-col .icon#left-menu-toggle { display: none; } */
 
-/* deposit sidebar styles */
+/* core pages */
+#page p {
+    margin: 1em 0 1em 0;
+}
+.humcore ul {
+    list-style: disc !important;
+    list-style-position: outside !important;
+    margin-left: 20px;
+}
+/* orphan */
+/*
 ul#deposit-other-authors-entry-list {
 	list-style-type: none;
 	margin-left: 0px;
 }
+*/
+/* goodbye
 li#deposits-groups-li a:before,
 li#deposits-personal-li a:before,
 #user-deposits:before {
     content: "M"
 }
+*/
 .page-template-deposit div.column.twelve.sidebar-left {
     width: 75% !important;
 }
 /* deposit search styles */
-.search-page #content, {
+/*
+.search-page #content {
     width: 75% !important;
 }
+*/
 .search-page div.item-list-tabs ul li {
 	float: none;
-}
-#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul {
-	margin-top: 0px;
-}
-#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item ul {
-	height:auto;
-	overflow:hidden;
-	overflow-y:hidden;
-}
-#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item {
-	background-color: #ebebeb;
-	border-top: 1px solid #ddd;
-	border-left: 1px solid #ddd;
-}
-#sidebar.widget_deposits_search_facets_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item:before {
-	font-weight: normal;
-	font-family: "iconsweetsRegular";
-	color: inherit;
-	padding-right: 2px;
-	font-size: 130%;
-	position: relative;
-	top: 2px;
-	text-transform: none;
-    content: "?";
 }
 /* deposit directory styles */
 .deposits-directory-page .dir-form h3 .button {
 	top: -2px;
 	left: 45px;
 }
+/*
 .deposits-directory-page #content {
     width: 75% !important;
 }
+*/
 .deposits-directory-page div.item-list-tabs ul li {
 	float: none;
 }
@@ -67,54 +62,53 @@ div.item-list-tabs ul#search-results-header li span {
 	text-decoration: none;
 	color: #777;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul {
+#deposits-sidebar .directory-facets ul
+#deposits-sidebar h4 {
+	clear: none;
+}
+#deposits-sidebar .directory-facets ul,
+#deposits-sidebar .search-facets ul {
 	margin-top: 0px;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.descriptive-item {
+#deposits-sidebar .directory-facets ul li.descriptive-item {
 	background-color: #ebebeb;
 	border-top: 1px solid #ddd;
 	border-left: 1px solid #ddd;
 	font-weight: normal;
 	padding-left: 10px;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.descriptive-item ul {
+#deposits-sidebar .directory-facets ul li.descriptive-item ul {
 	color: #999999;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item {
-	background-color: #ebebeb;
-	border-top: 1px solid #ddd;
-	border-left: 1px solid #ddd;
-	padding-left: 5px;
+#deposits-sidebar .directory-facets ul li.facet-set-item,
+#deposits-sidebar .search-facets ul li.facet-set-item {
+      border-bottom: 1px solid #ddd;
+      padding-left: 5px;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul li.facet-set-item:before {
-	font-weight: normal;
-	font-family: "iconsweetsRegular";
-	color: inherit;
-	padding-right: 2px;
-	font-size: 130%;
-	position: relative;
-	top: 2px;
-	text-transform: none;
-    content: "?";
-}
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li {
+#deposits-sidebar .directory-facets ul.facet-list li,
+#deposits-sidebar .search-facets ul.facet-list li {
 	margin: 0;
 	border: 0;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li a {
+#deposits-sidebar .directory-facets ul.facet-list li a,
+#deposits-sidebar .search-facets ul.facet-list li a {
 	padding: 0 !important;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li:hover{
+#deposits-sidebar .directory-facets ul.facet-list li:hover,
+#deposits-sidebar .search-facets ul.facet-list li:hover {
 	border: 1px solid #cccccc;
 	background-color: #eeeeee;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list {
+#deposits-sidebar .directory-facets ul.facet-list,
+#deposits-sidebar .search-facets ul.facet-list {
 	padding: 5px 0 5px 0;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list div {
+#deposits-sidebar .directory-facets ul.facet-list div,
+#deposits-sidebar .search-facets ul.facet-list div {
 	margin: 5px 0 0 0;
 }
-#sidebar.widget_deposits_directory_sidebar_widget #object-nav.sidebar-activity-tabs ul.facet-list li span.count {
+#deposits-sidebar .directory-facets ul.facet-list li span.count,
+#deposits-sidebar .search-facets ul.facet-list li span.count {
     font-size: 75%;
     font-weight: bolder;
     margin: 0 0 0 2px;
@@ -125,6 +119,23 @@ div.item-list-tabs ul#search-results-header li span {
 	border-radius: 4px;
 	-moz-border-radius: 4px;
 	-webkit-border-radius: 4px;
+}
+#deposits-sidebar .directory-facets ul li.facet-set-item ul,
+#deposits-sidebar .search-facets ul li.facet-set-item ul {
+	height:auto;
+	overflow:hidden;
+	overflow-y:hidden;
+}
+#about-core ul {
+    list-style: none;
+}
+#about-core ul li {
+    margin: 4px 0 4px 4px;
+}
+/* deposit item styles */
+.deposits-item-page #content {
+/*   width: 75% !important; */
+/*    float: right; */
 }
 /* deposit list styles */
 ul.deposits-item {
@@ -190,6 +201,10 @@ ul.deposits-item .list-item-value {
 #deposit-title-unchanged {
 	width: 80%;
 }
+#deposit-genre-entry .buddyboss-select, #deposit-resource-type-entry .buddyboss-select,
+	#deposit-license-type-entry .buddyboss-select, #deposit-embargo-length-entry .buddyboss-select {
+    display: none !important;
+}
 #deposit-file-entries, #deposit-metadata-entries, #deposit-committee-entry {
 	padding-left: 10px;
 }
@@ -221,13 +236,13 @@ ul.deposits-item .list-item-value {
 }
 /* deposit entry styles */
 dl.defList {
-	float: right;
+/*	float: right; */
 	width: 100%;
 }
 dl.defList dt {
 	float: left;
 	text-align: right;
-	width: 25%;
+	width: 20%;
 	clear: both;
 	color: #888;
 	margin: 2px 0;
@@ -256,10 +271,12 @@ table.view_statistics td.prompt, table.view_downloads td.prompt {
 table.view_statistics td.value, table.view_downloads td.value {
 	width: 75%;
 }
+/* goodbye
 .bp-deposits-download.button:before {
 	font-size: 130%;
 	content: "[";
 }
+*/
 .bp-deposits-view.button{
 	line-height: 24px;
 	margin-left: 10px;
@@ -307,6 +324,7 @@ div.search-term input[type=submit] {
 }
  */
 /* other */
+/* goodbye
 .iconify {
 	border: none !important;
 	display: inline !important;
@@ -322,6 +340,7 @@ div.search-term input[type=submit] {
         font-size: 130%;
         content: "<";
 }
+*/
 /* media queries */
 @media only screen and (max-width: 640px) {
 	dl.defList {
@@ -372,4 +391,8 @@ input[type="search"].select2-search__field {
 	box-shadow: inset 0 0px 2px rgba( 0, 0, 0, 0 );
 	padding: 5px 0 0 0;
 	width: auto !important;
+}
+.select2-container {
+	margin-top: 5px;
+	margin-bottom: 14px;
 }

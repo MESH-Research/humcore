@@ -15,10 +15,10 @@
 
 <?php Humcore_Theme_Compatibility::get_header(); ?>
 
-<?php Humcore_Theme_Compatibility::get_sidebar( 'member' ); ?>
-
+	<div class="page-full-width network-profile">
+	<div id="primary" class="site-content">
 	<div id="content">
-		<div class="padder">
+		<div id="buddypress">
 
         <?php if ( bp_has_members( 'max=1' ) ) : while ( bp_members() ) : bp_the_member(); ?>
 
@@ -30,14 +30,16 @@
 				<?php bp_locate_template( array( 'members/single/member-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
-<!--
+
+                        <div class="full-width">
+                        <div id="item-main-content">
                         <div id="item-nav">
                                 <div class="item-list-tabs no-ajax" id="object-nav" role="navigation">
-                                        <ul>
--->
-                                                <?php //bp_get_displayed_user_nav(); ?>
-                                                <?php //do_action( 'bp_user_deposits_options_nav' ); ?>
-<!--
+                                        <ul id="nav-bar-filter" class="horizontal-responsive-menu">
+
+                                                <?php bp_get_displayed_user_nav(); ?>
+                                                <?php do_action( 'bp_user_deposits_options_nav' ); ?>
+
 
                                         </ul>
                                 </div>
@@ -52,12 +54,12 @@
 				$displayed_user_fullname = bp_get_displayed_user_fullname();
 
 				if ( ( ! empty( $displayed_user_fullname ) && $displayed_user_fullname == bp_get_loggedin_user_fullname() ) && is_user_logged_in() ) {
-					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item">Deposit an Item</a><p />';
+					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item" style="float: right;">Deposit an Item</a><p />';
 				} ?>
 
 				<div class="item-list-tabs" id="subnav">
 					<ul>
-					<li class="current selected" id="deposits-personal"><a href="#"></a></li>
+					<li class="current selected" id="deposits-personal"><a href="#">My Deposits</a></li>
 
 					<li id="deposits-order-select" class="last filter">
 
@@ -85,11 +87,16 @@
 				<?php do_action( 'bp_after_user_deposits_body' ); ?>
 
 			</div><!-- #item-body -->
+			</div><!-- .item-main-content -->
+			</div><!-- #full-width -->
 
 		<?php do_action( 'bp_after_user_deposits_content' ); ?>
         <?php endwhile; endif; ?>
 
-		</div><!-- .padder -->
+		</div><!-- #buddypress -->
 	</div><!-- #content -->
+	</div><!-- #primary -->
+
+	</div><!-- .page-full-width -->
 
 <?php Humcore_Theme_Compatibility::get_footer(); ?>

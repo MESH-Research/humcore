@@ -131,8 +131,8 @@ function humcore_deposit_form() {
 		<span class="description">*</span>
 	</div>
 	<p>
+	<label for="deposit-genre">Item Type</label>
 	<div id="deposit-genre-entry">
-		<label for="deposit-genre">Item Type</label>
 		<select name="deposit-genre" id="deposit-genre" class="js-basic-single-required" data-placeholder="Select an item type">
 			<option class="level-0" value=""></option>
 <?php
@@ -366,8 +366,8 @@ function humcore_deposit_form() {
 	</div>
 	</p>
 	<p>
+	<label for="deposit-resource-type">File Type</label>
 	<div id="deposit-resource-type-entry">
-		<label for="deposit-resource-type">File Type</label>
 		<select name="deposit-resource-type" id="deposit-resource-type" class="js-basic-single-optional" data-placeholder="Select a file type" data-allowClear="true">
 			<option class="level-0" selected="selected" value=""></option>
 
@@ -576,8 +576,8 @@ function humcore_deposit_form() {
         </div>
 
 	<div id="deposit-embargoed-entries">
+        <label for="deposit-embargo-length">Embargo Length</label>
         <div id="deposit-embargo-length-entry">
-                <label for="deposit-embargo-length">Embargo Length</label>
                 <span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
 		<span class="description">Enter the length of time (up to two years from now) after which this item should become available.</span> <br />
                 <select name="deposit-embargo-length" id="deposit-embargo-length" class="js-basic-single-required" data-placeholder="Select the embargo length." data-allowClear="true">
@@ -1429,7 +1429,7 @@ function humcore_search_sidebar_content() {
 	foreach ( $facet_display_counts as $facet_key => $facet_values ) {
 		$facet_list_count = 0;
 		if ( ! empty( $facet_display_titles[ $facet_key ] ) ) : ?>
-		<li class="facet-set-item"><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
+		<li class="facet-set-item"><h5><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
 			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
 			$sorted_counts = $facet_values['counts'];
 			if ( "pub_date_facet" === $facet_key ) {
@@ -1488,7 +1488,7 @@ function humcore_directory_sidebar_content() {
 	foreach ( $facet_display_counts as $facet_key => $facet_values ) {
 		if ( ! in_array( $facet_key, array( 'genre_facet', 'subject_facet', 'pub_date_facet' ) ) ) { continue; }
 		$facet_list_count = 0; ?>
-		<li class="facet-set-item">Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
+		<li class="facet-set-item"><h5>Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
 		<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
 		$sorted_counts = $facet_values['counts'];
 		if ( "pub_date_facet" === $facet_key ) {
