@@ -167,9 +167,19 @@ function humcore_remove_meta_boxes() {
 add_action( 'admin_menu', 'humcore_remove_meta_boxes' );
 
 /**
- * Register two sidebars for the deposits index and search results pages.
+ * Register sidebars for the welcome, deposits index and search results pages.
  */
 function humcore_register_sidebars() {
+
+	register_sidebar( array(
+		'name' => 'CORE Welcome Right',
+		'id' => 'core-welcome-right',
+		'description' => __( 'The Welcome page widget area', 'humcore_domain' ),
+		'before_widget' => '',
+		'after_widget' => '',
+		'before_title' => '',
+		'after_title' => '',
+	) );
 
 	register_sidebar( array(
 		'name' => 'Deposits Directory Sidebar',

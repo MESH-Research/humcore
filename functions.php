@@ -717,6 +717,15 @@ function humcore_deposit_new_item_page_class_names( $classes ) {
 }
 
 /**
+ * Add specific CSS class by filter (filter added in humcore_deposits_new_item_screen).
+ */
+function humcore_core_welcome_page_class_names( $classes ) {
+
+	$classes[] = 'core-welcome-page';
+	return $classes;
+}
+
+/**
  * Load the CORE screen or bypass if terms accepted.
  */
 function humcore_deposits_welcome() {
@@ -725,11 +734,12 @@ function humcore_deposits_welcome() {
 		if ( is_user_logged_in() ) {
 			$user_id = bp_loggedin_user_id();
 			$core_acceptance = get_the_author_meta( 'accepted_core_terms', $user_id );
-			if ( 'Yes' === $core_acceptance ) {
+			if ( 1===2 && 'Yes' === $core_acceptance ) {
 				wp_redirect( '/deposits/' );
 				exit();
 			}
 		}
+	add_filter( 'body_class', 'humcore_core_welcome_page_class_names' );
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_welcome' );
