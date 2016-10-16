@@ -553,7 +553,10 @@ class Humcore_Deposit_Search_Results {
 
 		global $fedora_api, $solr_client;
 
-		$query_collection = 'member_of:' . str_replace( ':', '\:', $fedora_api->collectionPid );
+		// Hardcode two collections during HC beta period.
+		//$query_collection = 'member_of:' . str_replace( ':', '\:', $fedora_api->collectionPid );
+		$query_collection = '( member_of:' . str_replace( ':', '\:', 'hccollection:1' ) .
+				' OR member_of:' . str_replace( ':', '\:', 'mlacollection:1' ) . ' )';
 
 		if ( ! empty( $search_tag ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_tag ) );

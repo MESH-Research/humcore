@@ -272,6 +272,11 @@ function humcore_deposit_item_search_meta() {
 
 	$wpmn_record_identifier = array();
 	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+        // handle legacy MLA value
+        if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
+                $wpmn_record_identifier[0] = '1';
+                $wpmn_record_identifier[1] = $metadata['record_identifier'];
+        }
 	$switched = false;
 	if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
                 switch_to_blog( $wpmn_record_identifier[0] );

@@ -209,9 +209,9 @@
 		/**
 		 * Add any new keywords and set object terms for tags.
 		 */
-		if ( ! empty( $_POST['deposit-keyword'] ) ) {
+		if ( ! empty( $metadata['keyword'] ) ) {
 			$term_ids = array();
-			foreach ( $_POST['deposit-keyword'] as $keyword ) {
+			foreach ( $metadata['keyword'] as $keyword ) {
 				$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
 				if ( empty( $term_key ) ) {
 					$term_key = wpmn_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
@@ -591,11 +591,14 @@
 		}
 
 		$metadata['keyword'] = array();
-		if ( ! empty( $_POST['deposit-keyword'] ) ) {
-			foreach ( $_POST['deposit-keyword'] as $keyword ) {
-				$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
-				// Keyword ids will be set later.
-			}
+                // Add society as a tag.
+                $society_id = Humanities_Commons::$society_id;
+                $deposit_keywords = $_POST['deposit-keyword'];
+                $deposit_keywords[] = strtoupper( $society_id ) . ' Member Deposit';
+                $deposit_keywords = array_unique( $deposit_keywords );
+		foreach ( $deposit_keywords as $keyword ) {
+			$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
+			// Keyword ids will be set later.
 		}
 
 		$metadata['type_of_resource'] = sanitize_text_field( $_POST['deposit-resource-type'] );
