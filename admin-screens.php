@@ -329,6 +329,12 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 		<p>
+			<label>Record Change Date<br>
+				<input type="hidden" name="aggregator_record_change_date" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['record_change_date'] ); ?>">
+				<input type="text" name="aggregator_record_change_date_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['record_change_date'] ); ?>">
+			</label>
+		</p>
+		<p>
 			<label>Member Of<br>
 				<input type="hidden" name="aggregator_member_of" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['member_of'] ); ?>">
 				<input type="text" name="aggregator_member_of_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['member_of'] ); ?>">
@@ -699,6 +705,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// $aggregator_metadata['record_creation_date'] = sanitize_text_field( $_POST['aggregator_record_creation_date'] );
 	// $aggregator_metadata['member_of'] = sanitize_text_field( $_POST['aggregator_member_of'] );
 
+	$aggregator_metadata['record_change_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
 	$aggregator_metadata['publication-type'] = sanitize_text_field( $_POST['aggregator_publication-type'] );
 	$aggregator_metadata['publisher'] = sanitize_text_field( stripslashes( $_POST['aggregator_publisher'] ) );
 	$aggregator_metadata['date'] = sanitize_text_field( $_POST['aggregator_date'] );

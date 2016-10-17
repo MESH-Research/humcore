@@ -177,7 +177,7 @@
 		$deposit_post_data = array(
 			'post_title'   => $metadata['title'],
 			'post_excerpt' => $metadata['abstract'],
-			'post_status'  => 'publish',
+			'post_status'  => 'draft',
 			'post_type'    => 'humcore_deposit',
 			'post_name'    => $nextPids[0],
 			'post_author'  => bp_loggedin_user_id()
@@ -189,9 +189,9 @@
 		/**
 		 * Set object terms for subjects.
 		 */
-		if ( ! empty( $_POST['deposit-subject'] ) ) {
+		if ( ! empty( $metadata['subject'] ) ) {
 			$term_ids = array();
-			foreach ( $_POST['deposit-subject'] as $subject ) {
+			foreach ( $metadata['subject'] as $subject ) {
 				$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 				if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
@@ -396,7 +396,7 @@
 		 */
 		$resource_post_data = array(
 			'post_title'     => $filename,
-			'post_status'    => 'publish',
+			'post_status'    => 'draft',
 			'post_type'      => 'humcore_deposit',
 			'post_name'      => $nextPids[1],
 			'post_author'    => bp_loggedin_user_id(),
@@ -426,6 +426,13 @@
 			}
                         humcore_write_error_log( 'info', 'HumCORE deposit DOI published' );
 		}
+
+		/**
+		 * Notify provisional deposit review group for HC member deposits
+		 */
+                $society_id = Humanities_Commons::$society_id;
+		//if in HC lookup user
+		//if HC only user send to provisional deposit review group
 
 		/**
 		 * Add any group activity entries.
@@ -574,8 +581,9 @@
 		}
 
 		$metadata['group'] = array();
-		if ( ! empty( $_POST['deposit-group'] ) ) {
-			foreach ( $_POST['deposit-group'] as $group_id ) {
+                $deposit_groups = $_POST['deposit-group'];
+		if ( ! empty( $deposit_groups ) ) {
+			foreach ( $deposit_groups as $group_id ) {
 				$group = groups_get_group( array( 'group_id' => sanitize_text_field( $group_id ) ) );
 				$metadata['group'][] = $group->name;
 				$metadata['group_ids'][] = $group_id;
@@ -583,22 +591,21 @@
 		}
 
 		$metadata['subject'] = array();
-		if ( ! empty( $_POST['deposit-subject'] ) ) {
-			foreach ( $_POST['deposit-subject'] as $subject ) {
+                $deposit_subjects = $_POST['deposit-subject'];
+		if ( ! empty( $deposit_subjects ) ) {
+			foreach ( $deposit_subjects as $subject ) {
 				$metadata['subject'][] = sanitize_text_field( stripslashes( $subject ) );
 				// Subject ids will be set later.
 			}
 		}
 
 		$metadata['keyword'] = array();
-                // Add society as a tag.
-                $society_id = Humanities_Commons::$society_id;
                 $deposit_keywords = $_POST['deposit-keyword'];
-                $deposit_keywords[] = strtoupper( $society_id ) . ' Member Deposit';
-                $deposit_keywords = array_unique( $deposit_keywords );
-		foreach ( $deposit_keywords as $keyword ) {
-			$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
-			// Keyword ids will be set later.
+		if ( ! empty( $deposit_keywords ) ) {
+			foreach ( $deposit_keywords as $keyword ) {
+				$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
+				// Keyword ids will be set later.
+			}
 		}
 
 		$metadata['type_of_resource'] = sanitize_text_field( $_POST['deposit-resource-type'] );
@@ -611,6 +618,7 @@
 		$metadata['type_of_license'] = sanitize_text_field( $_POST['deposit-license-type'] );
 		$metadata['record_content_source'] = 'HumCORE';
 		$metadata['record_creation_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
+		$metadata['record_change_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
 		$metadata['member_of'] = $fedora_api->collectionPid;
 		$metadata['published'] = sanitize_text_field( $_POST['deposit-published'] ); // Not stored in solr.
 		if ( ! empty( $_POST['deposit-publication-type'] ) ) {

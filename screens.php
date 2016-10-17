@@ -790,6 +790,10 @@ function humcore_deposit_item_content() {
 	$post_data = get_post( $deposit_post_id );
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
+	$update_time = '';
+	if ( ! empty( $metadata['record_change_date'] ) ) {
+		$update_time = human_time_diff( strtotime( $metadata['record_change_date'] ) );
+	}
 	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
 	$content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
 	$total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
@@ -1016,6 +1020,17 @@ function humcore_deposit_item_content() {
 <dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php endif; ?>
+<?php if ( 'draft' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
+<dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<?php elseif ( 'publish' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
+<dd><?php echo 'Published'; ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $update_time ) ) : ?>
+<dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $update_time . ' ago'; // XSS OK. ?></span></dd>
+<?php endif; ?>
 <?php if ( ! empty( $thumb_url ) ) : ?>
 <dt><?php _e( 'Preview:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $thumb_url;// XSS OK. ?></span></dd>
@@ -1109,7 +1124,11 @@ function humcore_deposit_item_review_content() {
         $post_data = get_post( $deposit_post_id );
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
-        $file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
+	$update_time = '';
+	if ( ! empty( $metadata['record_change_date'] ) ) { 
+		$update_time = human_time_diff( strtotime( $metadata['record_change_date'] ) );
+	}
+	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
         $content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
         $total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
         $content_views_meta_key = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
@@ -1401,6 +1420,17 @@ function humcore_deposit_item_review_content() {
 <?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
+<?php endif; ?>
+<?php if ( 'draft' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
+<dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<?php elseif ( 'publish' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
+<dd><?php echo 'Published'; ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $update_time ) ) : ?>
+<dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $update_time . ' ago'; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['embargoed'] ) ) : ?>
 <dt><?php _e( 'Embargoed?:', 'humcore_domain' ); ?></dt>

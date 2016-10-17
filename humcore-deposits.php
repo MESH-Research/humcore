@@ -217,6 +217,31 @@ function humcore_check_dependencies() {
 }
 
 /**
+ * This functions are hooked in via the cron
+ */
+function humcore_release_provisional_fire() {
+        //do it
+}
+add_action( 'humcore_release_provisional', 'humcore_release_provisional_fire' );
+
+/**
+ * Register HumCORE cron job(s) upon activation.
+ */
+function humcore_activate_cron_jobs() {
+        $the_time = date( 'Y-m-d' ) . ' ' . '01' . ':' . '00';
+        $the_timestamp = strtotime( $the_time );
+
+        /* If the time has already passed today, the next run will be tomorrow */
+        $the_timestamp = ( $the_timestamp > time() ) ? $the_timestamp : (int) $the_timestamp + 86400;
+
+        /* Clear any existing recurring event and set up a new one */
+        wp_clear_scheduled_hook( 'humcore_release_provisional' );
+        wp_schedule_event( $the_timestamp, 'daily', 'humcore_release_provisional' );
+
+}
+register_activation_hook( __FILE__, 'humcore_activate_cron_jobs' );
+
+/**
  * Register post type and flush rewrite rules upon activation.
  */
 function humcore_activate() {
@@ -229,6 +254,16 @@ function humcore_activate() {
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'humcore_activate' );
+
+/**
+ * Cleanup cron job(s) upon deactivation.
+ */
+function humcore_deactivate_cron_jobs() {
+
+        /* Clear any existing recurring event */
+        wp_clear_scheduled_hook( 'humcore_release_provisional' );
+}
+register_deactivation_hook( __FILE__, 'humcore_deactivate_cron_jobs' );
 
 /**
  * Cleanup upon deactivation.
