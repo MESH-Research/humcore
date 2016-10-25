@@ -54,7 +54,7 @@
 				$displayed_user_fullname = bp_get_displayed_user_fullname();
 
 				if ( ( ! empty( $displayed_user_fullname ) && $displayed_user_fullname == bp_get_loggedin_user_fullname() ) && is_user_logged_in() ) {
-					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item" style="float: right;">Deposit an Item</a><p />';
+					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work" style="float: right;">Upload Your Work</a><p />';
 				} ?>
 
 				<div class="item-list-tabs" id="subnav">

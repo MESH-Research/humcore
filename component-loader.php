@@ -162,7 +162,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_setup_deposit_group_nav() {
 
 		// Only display if we're on a certain type of group page.
-		if ( bp_is_group() && ( 'public' === bp_get_group_status( groups_get_group( array( 'group_id' => bp_get_current_group_id() ) ) ) || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
+		if ( bp_is_group() && ( 'hidden' !== bp_get_group_status( groups_get_group( array( 'group_id' => bp_get_current_group_id() ) ) ) || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
 			$count = $this->humcore_get_group_deposit_count();
 			$class = ( 0 === $count ) ? 'no-count' : 'count';
 			if ( 'public' === bp_get_group_status( groups_get_group( array( 'group_id' => bp_get_current_group_id() ) ) ) ) {
@@ -346,7 +346,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_before_directory_deposits_content() {
 
 		if ( is_user_logged_in() && humcore_is_deposit_directory() ) {
-			echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item">Deposit an Item</a>';
+			echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work">Upload Your Work</a>';
 		}
 
 		humcore_has_deposits( bp_ajax_querystring( 'deposits' ) );

@@ -221,6 +221,47 @@ function humcore_check_dependencies() {
  */
 function humcore_release_provisional_fire() {
         //do it
+                /**
+                 * Add any group activity entries.
+                 */
+                $group_activity_ids = array();
+                // can't use $_POST
+/*
+*/
+
+        $query_args = array(
+                'post_parent'    => 0,
+                'post_type'      => 'humcore_deposit',
+                'post_status'    => 'draft',
+                'posts_per_page' => -1,
+		'order'          => 'ASC',
+                'order_by'       => 'ID',
+        );
+
+	echo "\n";
+	$deposit_posts = get_posts( $query_args );
+	foreach( $deposit_posts as $deposit_post ) {
+		$now = time();
+		$metadata = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
+		$local_link = sprintf( wpmn_get_primary_network_root_domain() . '/deposits/item/%s/', $metadata['pid'] );
+		$local_link = $metadata['handle']; // Let's try doi.
+		$diff = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
+		$hours_since = round( $diff / HOUR_IN_SECONDS );
+		echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
+		if ( $hours_since > 8 ) {
+			if ( 'no' === $metadata['embargoed'] ) {
+				if ( ! empty( $metadata['group_ids'] ) ) {
+				 	foreach ( $metadata['group_ids'] as $group_id ) {
+						$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $group_id, $metadata['title'], $metadata['abstract'], $local_link, $metadata['submitter'] );
+					}
+			 	}
+			}
+		wp_publish_post( $deposit_post->ID );
+		echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", "Published!", "\n";
+		}
+
+	}
+
 }
 add_action( 'humcore_release_provisional', 'humcore_release_provisional_fire' );
 

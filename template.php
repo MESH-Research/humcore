@@ -253,7 +253,7 @@ function humcore_get_facet_counts() {
 function humcore_get_facet_titles() {
 	$facet_titles = array(
 			'author_facet' => __( 'Author', 'humcore_domain' ),
-			'group_facet' => __( 'Forum', 'humcore_domain' ),
+			'group_facet' => __( 'Group', 'humcore_domain' ),
 			'subject_facet' => __( 'Subject', 'humcore_domain' ),
 			'genre_facet' => __( 'Item Type', 'humcore_domain' ),
 			'pub_date_facet' => __( 'Date', 'humcore_domain' ),

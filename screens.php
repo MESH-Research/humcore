@@ -302,11 +302,11 @@ function humcore_deposit_form() {
 	</p>
 	<p>
 	<div id="deposit-group-entry">
-		<label for="deposit-group">Forums</label>
-		<span class="description">Share this item with up to five <em>Commons</em> forums.<br />Selecting a forum will notify members of that forum about your deposit.</span><br />
-		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select forums">
+		<label for="deposit-group">Groups</label>
+		<span class="description">Share this item with up to five groups that you are a member of.<br />Selecting a group will notify members of that group about your deposit.</span><br />
+		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select groups">
 <?php
-	$group_list = humcore_deposits_group_list();
+	$group_list = humcore_deposits_group_list( bp_loggedin_user_id() );
 	$posted_group_list = array();
 	if ( ! empty( $_POST['deposit-group'] ) ) { $posted_group_list = array_map( 'sanitize_text_field', $_POST['deposit-group'] ); }
 	foreach ( $group_list as $group_key => $group_value ) {
@@ -720,7 +720,7 @@ function humcore_deposits_entry_content() {
 <dd><a href="/deposits/?facets[pub_date_facet][]=<?php echo urlencode( $metadata['date'] ); ?>"><?php echo esc_html( $metadata['date'] ); ?></a></dd>
 <?php endif; ?>
 <?php if ( ! empty( $groups ) ) : ?>
-<dt><?php _e( 'Forum(s):', 'humcore_domain' ); ?></dt>
+<dt><?php _e( 'Group(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo $group_list; // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $subjects ) ) : ?>
@@ -857,7 +857,7 @@ function humcore_deposit_item_content() {
 <dd><a href="/deposits/?facets[pub_date_facet][]=<?php echo urlencode( $metadata['date'] ); ?>"><?php echo esc_html( $metadata['date'] ); ?></a></dd>
 <?php endif; ?>
 <?php if ( ! empty( $groups ) ) : ?>
-<dt><?php _e( 'Forum(s):', 'humcore_domain' ); ?></dt>
+<dt><?php _e( 'Group(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo $group_list; // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $subjects ) ) : ?>
@@ -1023,6 +1023,9 @@ function humcore_deposit_item_content() {
 <?php if ( 'draft' === $post_data->post_status ) : ?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
 <dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<?php elseif ( 'pending' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
+<dd><?php echo 'Pending Review'; ?></dd>
 <?php elseif ( 'publish' === $post_data->post_status ) : ?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
 <dd><?php echo 'Published'; ?></dd>
@@ -1234,7 +1237,7 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>
-<dt><?php _e( 'Forum(s):', 'humcore_domain' ); ?></dt>
+<dt><?php _e( 'Group(s):', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $groups ) ) : ?>
 <dd><?php echo $group_list; // XSS OK. ?></dd>
 <?php else : ?>
@@ -1424,6 +1427,9 @@ function humcore_deposit_item_review_content() {
 <?php if ( 'draft' === $post_data->post_status ) : ?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
 <dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<?php elseif ( 'pending' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
+<dd><?php echo 'Pending Review'; ?></dd>
 <?php elseif ( 'publish' === $post_data->post_status ) : ?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
 <dd><?php echo 'Published'; ?></dd>

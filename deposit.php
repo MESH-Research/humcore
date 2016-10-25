@@ -133,6 +133,22 @@
 
 		$metadata = prepare_metadata( $nextPids );
 
+		$deposit_review_needed = false;
+		$deposit_post_status = 'draft';
+                //if in HC lookup user
+                //if HC only user send to provisional deposit review group
+                if ( 'hc' === Humanities_Commons::$society_id ) {
+                        $member_types = bp_get_member_type( bp_loggedin_user_id(), false );
+                        if ( 1 === count( $member_types ) && 'hc' === $member_types[0] ) {
+                                $review_group_id = BP_Groups_Group::get_id_from_slug( 'provisional-deposit-review' );
+                                $review_group = groups_get_group( array( 'group_id' => $review_group_id ) );
+				$metadata['group'][] = $review_group->name;
+				$metadata['group_ids'][] = $review_group_id;
+				$deposit_review_needed = true;
+				$deposit_post_status = 'pending';
+                        }
+                }
+
 		$aggregatorXml = create_aggregator_xml( array(
 								'pid' => $nextPids[0],
 								'creator' => $metadata['creator'],
@@ -177,7 +193,7 @@
 		$deposit_post_data = array(
 			'post_title'   => $metadata['title'],
 			'post_excerpt' => $metadata['abstract'],
-			'post_status'  => 'draft',
+			'post_status'  => $deposit_post_status,
 			'post_type'    => 'humcore_deposit',
 			'post_name'    => $nextPids[0],
 			'post_author'  => bp_loggedin_user_id()
@@ -396,7 +412,7 @@
 		 */
 		$resource_post_data = array(
 			'post_title'     => $filename,
-			'post_status'    => 'draft',
+			'post_status'    => 'publish',
 			'post_type'      => 'humcore_deposit',
 			'post_name'      => $nextPids[1],
 			'post_author'    => bp_loggedin_user_id(),
@@ -430,21 +446,8 @@
 		/**
 		 * Notify provisional deposit review group for HC member deposits
 		 */
-                $society_id = Humanities_Commons::$society_id;
-		//if in HC lookup user
-		//if HC only user send to provisional deposit review group
-
-		/**
-		 * Add any group activity entries.
-		 */
-		$group_activity_ids = array();
-		// Moving here due to possible timeout issues.
-                if ( 'no' === $metadata['embargoed'] ) {
-			if ( ! empty( $_POST['deposit-group'] ) ) {
-				foreach ( $_POST['deposit-group'] as $group_id ) {
-					$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $local_link );
-				}
-			}
+		if ( $deposit_review_needed ) {
+			$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, $review_group_id, $metadata['title'], $metadata['abstract'], $local_link );
 		}
 
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
