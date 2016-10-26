@@ -252,7 +252,7 @@ function humcore_release_provisional_fire() {
 			if ( 'no' === $metadata['embargoed'] ) {
 				if ( ! empty( $metadata['group_ids'] ) ) {
 				 	foreach ( $metadata['group_ids'] as $group_id ) {
-						$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $group_id, $metadata['title'], $metadata['abstract'], $local_link, $metadata['submitter'] );
+						$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $group_id, $metadata['abstract'], $local_link, $metadata['submitter'] );
 					}
 			 	}
 			}

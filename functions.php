@@ -178,8 +178,10 @@ function humcore_new_group_deposit_activity( $deposit_id, $group_id, $deposit_co
                 switch_to_blog( $wpmn_record_identifier[0] );
                 $switched = true;
         }
+	$switched_blog = get_blog_details( (int) $wpmn_record_identifier[0], false );
+	global $current_site;
 
-echo "BLOG",get_current_blog_id(),"-",$wpmn_record_identifier[0];
+echo "\nBLOG",get_current_blog_id(),"-",$wpmn_record_identifier[0],"\n",var_export($switched_blog,true),"\n",var_export($current_site,true),"\n";
 
 	if ( ! bp_is_active( 'activity' ) ) {
 		return false;

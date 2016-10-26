@@ -781,7 +781,7 @@ function humcore_deposit_item_content() {
 		$wpmn_record_identifier[1] = $metadata['record_identifier'];
 	}
         $switched = false;
-        if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
+        if ( $wpmn_record_identifier[0] != get_current_blog_id() ) {
                 switch_to_blog( $wpmn_record_identifier[0] );
                 $switched = true;
         }
@@ -1045,6 +1045,10 @@ function humcore_deposit_item_content() {
 </dl>
 <?php if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) { ?>
 <div><h4>This item will be available for download beginning <?php echo $post_metadata['embargo_end_date']; ?></h4></div> 
+<?php } elseif ( ! $post_data ) { ?>
+<div><h3>Note</h3>
+Items uploaded during the beta test period cannot be downloaded from <em>Humanities Commons</em>. To download this item, please visit <a href="<?php echo esc_attr( $metadata['handle'] ); ?>">the original deposit.</a>
+</div>
 <?php } else { ?>
 <div><h4><?php _e( 'Downloads', 'humcore_domain' ); ?></h4>
 <div class="doc-attachments">
