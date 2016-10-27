@@ -217,18 +217,12 @@ function humcore_check_dependencies() {
 }
 
 /**
- * This functions are hooked in via the cron
+ * This function is hooked in via the cron
  */
 function humcore_release_provisional_fire() {
-        //do it
-                /**
-                 * Add any group activity entries.
-                 */
-                $group_activity_ids = array();
-                // can't use $_POST
-/*
-*/
 
+	// TODO move the activity creation to an action - https://codex.wordpress.org/Post_Status_Transitions#transition_post_status_Hook
+	$group_activity_ids = array();
         $query_args = array(
                 'post_parent'    => 0,
                 'post_type'      => 'humcore_deposit',
@@ -238,7 +232,7 @@ function humcore_release_provisional_fire() {
                 'order_by'       => 'ID',
         );
 
-	echo "\n";
+	// echo "\n";
 	$deposit_posts = get_posts( $query_args );
 	foreach( $deposit_posts as $deposit_post ) {
 		$now = time();
@@ -247,17 +241,23 @@ function humcore_release_provisional_fire() {
 		$local_link = $metadata['handle']; // Let's try doi.
 		$diff = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
 		$hours_since = round( $diff / HOUR_IN_SECONDS );
-		echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
+		// echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
 		if ( $hours_since > 8 ) {
 			if ( 'no' === $metadata['embargoed'] ) {
 				if ( ! empty( $metadata['group_ids'] ) ) {
 				 	foreach ( $metadata['group_ids'] as $group_id ) {
-						$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $group_id, $metadata['abstract'], $local_link, $metadata['submitter'] );
+						$group_activity_id = humcore_new_group_deposit_activity( $metadata['record_identifier'], $group_id, $metadata['abstract'], $local_link, $metadata['submitter'] );
+						$group_society_id = bp_groups_get_group_type( $group_id );
+						if ( $group_society_id !== Humanities_Commons::$society_id ) {
+							bp_activity_update_meta( $group_activity_id, 'society_id', $group_society_id, Humanities_Commons::$society_id );
+						}
+						$group_activity_ids[] = $group_activity_id;
+
 					}
 			 	}
 			}
-		wp_publish_post( $deposit_post->ID );
-		echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", "Published!", "\n";
+			$status = wp_publish_post( $deposit_post->ID );
+			// echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", "Published!", "\n";
 		}
 
 	}

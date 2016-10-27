@@ -165,6 +165,12 @@ function humcore_new_deposit_activity( $deposit_id, $deposit_content = '', $depo
  */
 function humcore_new_group_deposit_activity( $deposit_id, $group_id, $deposit_content = '', $deposit_link = '', $user_id = '' ) {
 
+	global $current_site;
+
+	if ( ! bp_is_active( 'activity' ) ) {
+		return false;
+	}
+
         $wpmn_record_identifier = array();
         $wpmn_record_identifier = explode( '-', $deposit_id );
         // handle legacy MLA value
@@ -172,21 +178,26 @@ function humcore_new_group_deposit_activity( $deposit_id, $group_id, $deposit_co
                 $wpmn_record_identifier[0] = '1';
                 $wpmn_record_identifier[1] = $deposit_id;
         }
-
-        $switched = false;
-        if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
-                switch_to_blog( $wpmn_record_identifier[0] );
-                $switched = true;
-        }
-	$switched_blog = get_blog_details( (int) $wpmn_record_identifier[0], false );
-	global $current_site;
-
-echo "\nBLOG",get_current_blog_id(),"-",$wpmn_record_identifier[0],"\n",var_export($switched_blog,true),"\n",var_export($current_site,true),"\n";
-
-	if ( ! bp_is_active( 'activity' ) ) {
-		return false;
+/*
+	$group_root_blog_id = '';
+	$group_society_id = strtoupper( bp_groups_get_group_type( $group_id ) );
+	if ( defined( $group_society_id . '_ROOT_BLOG_ID' ) ) {
+		$group_root_blog_id = constant( $group_society_id . '_ROOT_BLOG_ID' );
 	}
 
+	$current_network = $current_site->id;
+	$switched_network = false;
+	$switched_blog = false;
+	if ( ! empty( $group_root_blog_id ) && $group_root_blog_id != $current_site->blog_id ) {
+		$switched_blog = get_blog_details( (int) $group_root_blog_id, false );
+		if ( $current_network != $switched_blog->site_id ) {
+			switch_to_network( $switched_blog->site_id );
+			$switched_network = true;
+		}
+		switch_to_blog( $group_root_blog_id );
+		$switched_blog = true;
+	}
+*/
 	$bp = buddypress();
 	if ( empty( $user_id ) ) {
 		$user_id = bp_loggedin_user_id();
@@ -218,11 +229,14 @@ echo "\nBLOG",get_current_blog_id(),"-",$wpmn_record_identifier[0],"\n",var_expo
 
 	// Update the group's last activity
 	groups_update_last_activity( $group_id );
-
-        if ( $switched ) {
+/*
+        if ( $switched_network ) {
+                restore_current_network();
+        }
+        if ( $switched_blog ) {
                 restore_current_blog();
         }
-
+*/
 	return $activity_ID;
 
 }
