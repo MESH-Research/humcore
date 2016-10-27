@@ -55,7 +55,7 @@
 
 			<div class="deposit-meta">
 <!--TODO check if activity component is active -->
-				<?php if ( 1 == 1 ) : ?>
+				<?php if ( 1 == 2 ) : ?>
 					<?php $activity_id = humcore_get_deposit_activity_id(); ?>
 
 					<?php if ( ! humcore_deposit_activity_is_favorite( $activity_id ) ) : ?>
@@ -77,6 +77,13 @@
 					?>
 
 					<?php endif; ?>
+
+				<?php else : ?>
+
+                                        <?php $wp_referer = wp_get_referer();
+                                        printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',
+                                                ( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/' );
+                                        ?>
 
 				<?php endif; ?>
 
