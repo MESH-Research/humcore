@@ -104,12 +104,12 @@ function humcore_format_activity_action_new_group_deposit( $action, $activity ) 
 	$group = groups_get_group( array( 'group_id' => $activity->item_id ) );
 	$group_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( bp_get_group_permalink( $group ) ), esc_html( $group->name ) );
 	$action = sprintf( __( '%1$s deposited %2$s in the group %3$s', 'humcore_domain' ), $initiator_link, $item_link, $group_link );
-	return apply_filters( 'humcore_format_activity_action_new_group_deposit', $action, $activity );
 
         if ( $switched ) {
                 restore_current_blog();
         }
 
+	return apply_filters( 'humcore_format_activity_action_new_group_deposit', $action, $activity );
 }
 
 /**
