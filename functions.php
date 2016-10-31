@@ -65,12 +65,12 @@ function humcore_format_activity_action_new_deposit( $action, $activity ) {
 		$initiator_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 	}
 	$action = sprintf( __( '%1$s deposited %2$s', 'humcore_domain' ), $initiator_link, $item_link );
-	return apply_filters( 'humcore_format_activity_action_new_deposit', $action, $activity );
 
         if ( $switched ) {
                 restore_current_blog();
         }
 
+	return apply_filters( 'humcore_format_activity_action_new_deposit', $action, $activity );
 }
 
 /**
