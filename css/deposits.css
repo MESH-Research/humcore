@@ -282,11 +282,11 @@ table.view_statistics td.value, table.view_downloads td.value {
 	font-size: 130%;
 	content: "[";
 }
-*/
 .bp-deposits-view.button{
 	line-height: 24px;
 	margin-left: 10px;
 }
+*/
 ul.deposit-list > li:first-child {
 	padding-top: 30px;
 }

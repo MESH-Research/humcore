@@ -95,14 +95,14 @@ function humcore_format_activity_action_new_group_deposit( $action, $activity ) 
 		$committee = groups_get_group( array( 'group_id' => $post_metadata['committee_id'] ) );
 		$initiator_url = trailingslashit( bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $committee->slug . '/' );
 		$initiator_name = $committee->name;
-		$initiator_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
+		$initiator_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 	} else {
 		$initiator_url = bp_core_get_userlink( $activity->user_id, false, true );
 		$initiator_name = bp_core_get_userlink( $activity->user_id, true, false );
 		$initiator_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $initiator_url ), esc_html( $initiator_name ) );
 	}
 	$group = groups_get_group( array( 'group_id' => $activity->item_id ) );
-	$group_link = sprintf( '<a href="%1$sdeposits/">%2$s</a>', esc_url( bp_get_group_permalink( $group ) ), esc_html( $group->name ) );
+	$group_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( bp_get_group_permalink( $group ) ), esc_html( $group->name ) );
 	$action = sprintf( __( '%1$s deposited %2$s in the group %3$s', 'humcore_domain' ), $initiator_link, $item_link, $group_link );
 
         if ( $switched ) {
