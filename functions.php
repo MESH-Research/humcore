@@ -155,7 +155,7 @@ function humcore_new_deposit_activity( $deposit_id, $deposit_content = '', $depo
 	} else {
 		bp_update_user_last_activity( $user_id );
 	}
-	bp_activity_add_meta( $activity_ID, 'source_blog_id', $get_current_blog_id(), true );
+	bp_activity_add_meta( $activity_ID, 'source_blog_id', get_current_blog_id(), true );
 
 	return $activity_ID;
 }
