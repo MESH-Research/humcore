@@ -74,7 +74,7 @@
 				$sentence_subject,
 				strtolower( $genre ),
 				"'blank'",
-				wpmn_get_primary_network_root_domain(),
+				HC_SITE_URL,
 				$title_match->id,
 				$title_match->title_unchanged,
 				human_time_diff( strtotime( $title_match->record_creation_date ) ));
@@ -425,7 +425,7 @@
 		$resource_id = wp_insert_post( $resource_post_data );
 
 		//DOI's are taking too long to resolve, put the permalink in the activity records.
-		$local_link = sprintf( wpmn_get_primary_network_root_domain() . '/deposits/item/%s/', $nextPids[0] );
+		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
 
 		/**
 		 * Add the activity entry for the author.
@@ -447,7 +447,7 @@
 		 * Notify provisional deposit review group for HC member deposits
 		 */
 		if ( $deposit_review_needed ) {
-			$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, $review_group_id, $metadata['abstract'], $local_link );
+			$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $review_group_id, $metadata['abstract'], $local_link );
 		}
 
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
@@ -707,7 +707,7 @@
 				$metadata['publisher']
 			);
 		if ( ! $deposit_doi ) {
-			$metadata['handle'] = sprintf( wpmn_get_primary_network_root_domain() . '/deposits/item/%s/', $nextPids[0] );
+			$metadata['handle'] = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
 			$metadata['deposit_doi'] = ''; // Not stored in solr.
 		} else {
 			$metadata['handle'] = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );

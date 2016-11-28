@@ -273,7 +273,7 @@ function humcore_deposit_item_search_meta() {
 	endwhile; // Should fetch one record.
 	$metadata = (array) humcore_get_current_deposit();
 
-        printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", wpmn_get_primary_network_root_domain(), htmlentities( $metadata['pid'] ) );
+        printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
 
 	printf( '<meta name="description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
 	printf( '<meta name="citation_title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
@@ -333,7 +333,7 @@ function humcore_deposit_item_search_meta() {
 		}
 	}
 
-	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n\r", wpmn_get_primary_network_root_domain(), htmlentities( $metadata['pid'] ) );
+	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
 
 	$wpmn_record_identifier = array();
 	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
@@ -357,7 +357,7 @@ function humcore_deposit_item_search_meta() {
 	} else {
 		$file_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_file_metadata', true ), true );
 		printf( '<meta name="citation_pdf_url" content="%1$s/deposits/download/%2$s/%3$s/%4$s/">' . "\n\r",
-			wpmn_get_primary_network_root_domain(),
+			HC_SITE_URL,
 			htmlentities( $file_metadata['files'][0]['pid'] ),
 			htmlentities( $file_metadata['files'][0]['datastream_id'] ),
 			htmlentities( $file_metadata['files'][0]['filename'] )
@@ -673,7 +673,7 @@ function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher
 
 	$eStatus = $ezid_api->mint_identifier( array(
 		'dc.title' => $title,
-		'_target' => sprintf( wpmn_get_primary_network_root_domain() . '/deposits/item/%s/', $pid ),
+		'_target' => sprintf( HC_SITE_URL . '/deposits/item/%s/', $pid ),
 		'dc.creator' => $creator,
 		'dc.type' => $type,
 		'dc.date' => $date,
@@ -1570,7 +1570,7 @@ function humcore_check_test_handle( $deposit_record ) {
 
 	if ( ! is_array( $deposit_record ) && false !== strpos( $deposit_record->handle, '10.5072/FK2' ) &&
 			date_create( '14 days ago' ) > date_create( $deposit_record->record_creation_date ) ) {
-		$deposit_record->handle = sprintf( '%1$s/deposits/item/%2$s', wpmn_get_primary_network_root_domain(), $deposit_record->pid );
+		$deposit_record->handle = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $deposit_record->pid );
 	}
 	return $deposit_record;
 
