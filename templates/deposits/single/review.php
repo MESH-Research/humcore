@@ -41,7 +41,7 @@
 
 <div id="item-body" role="main">
 <h3>Deposit Complete!</h3>
-Thank you for your submission! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:commons@mla.org?subject=CORE">contact us</a> and we’ll be happy to assist you.
+Thank you for your submission! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:core@hcommons.org?subject=Fix my deposit!">contact us</a> and we’ll be happy to assist you.
 <?php do_action( 'bp_before_deposit_item' ); ?>
 <ul class="deposit-list item-list">
 <?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
@@ -65,7 +65,7 @@ Thank you for your submission! We strive to make the <em>CORE</em> deposit proce
 						<a href="<?php humcore_deposit_activity_favorite_link( $activity_id ); ?>" class="button fav bp-secondary-action" title="<?php esc_attr_e( 'Mark as Favorite', 'humcore_domain' ); ?>"><?php _e( 'Favorite', 'humcore_domain' ); ?></a>
 
 					<?php $wp_referer = wp_get_referer();
-					printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',
+					printf( '<a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a>',
 						( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/' );
 					?>
 
@@ -74,7 +74,7 @@ Thank you for your submission! We strive to make the <em>CORE</em> deposit proce
 						<a href="<?php humcore_deposit_activity_unfavorite_link( $activity_id ); ?>" class="button unfav bp-secondary-action" title="<?php esc_attr_e( 'Remove Favorite', 'humcore_domain' ); ?>"><?php _e( 'Remove Favorite', 'humcore_domain' ); ?></a>
 
 					<?php $wp_referer = wp_get_referer();
-					printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',
+					printf( '<a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a>',
 						( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/' );
 					?>
 
@@ -87,14 +87,14 @@ Thank you for your submission! We strive to make the <em>CORE</em> deposit proce
 			</div>
 			<?php else : ?>
 				<?php $wp_referer = wp_get_referer();
-				printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',
+				printf( '<a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a>',
 					( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/' );
 				?>
 			<?php endif; ?>
 
 		<?php else : ?>
 		<?php $wp_referer = wp_get_referer();
-		printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',
+		printf( '<a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a>',
 			( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/' );
 		?>
 

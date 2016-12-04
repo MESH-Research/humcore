@@ -127,6 +127,7 @@ class Humcore_Deposit_Component extends BP_Component {
 
 		add_filter( 'wp_title', array( $this, 'humcore_filter_item_wp_title' ), 11, 2 );
 		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
+		add_filter( 'bp_notifications_get_registered_components', array( $this, 'humcore_filter_notifications_get_registered_components' ) );
 		/* add_filter( 'bp_dtheme_ajax_querystring', array( $this, 'humcore_override_ajax_querystring' ), 10, 7 ); */
 	}
 
@@ -402,6 +403,16 @@ class Humcore_Deposit_Component extends BP_Component {
 		}
 
 		return $title;
+	}
+
+	public function humcore_filter_notifications_get_registered_components( $component_names = array() ) {
+
+		if ( ! is_array( $component_names ) ) {
+			$component_names = array();
+		}
+		$bp = buddypress();
+		array_push( $component_names, $bp->humcore_deposits->id );
+		return $component_names;
 	}
 
 }

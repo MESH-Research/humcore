@@ -44,16 +44,16 @@ add_action( 'bp_register_activity_actions', 'humcore_deposits_register_activity_
  */
 function humcore_format_activity_action_new_deposit( $action, $activity ) {
 
-        $deposit_blog_id = bp_activity_get_meta( $activity->id, 'source_blog_id', true  );
-        $switched = false;
-        if ( $deposit_blog_id !== get_current_blog_id() ) {
-                switch_to_blog( $deposit_blog_id );
-                $switched = true;
-        }
+	$deposit_blog_id = bp_activity_get_meta( $activity->id, 'source_blog_id', true  );
+	$switched = false;
+	if ( $deposit_blog_id !== get_current_blog_id() ) {
+		switch_to_blog( $deposit_blog_id );
+		$switched = true;
+	}
 
 	$item_post = get_post( $activity->secondary_item_id );
 	$item_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $activity->primary_link ), esc_html( $item_post->post_title ) );
-        $post_metadata = json_decode( get_post_meta( $activity->secondary_item_id, '_deposit_metadata', true ), true );
+	$post_metadata = json_decode( get_post_meta( $activity->secondary_item_id, '_deposit_metadata', true ), true );
 	if ( ! empty( $post_metadata['committee_id'] ) ) {
 		$committee = groups_get_group( array( 'group_id' => $post_metadata['committee_id'] ) );
 		$initiator_url = trailingslashit( bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $committee->slug . '/' );
@@ -66,9 +66,9 @@ function humcore_format_activity_action_new_deposit( $action, $activity ) {
 	}
 	$action = sprintf( __( '%1$s deposited %2$s', 'humcore_domain' ), $initiator_link, $item_link );
 
-        if ( $switched ) {
-                restore_current_blog();
-        }
+	if ( $switched ) {
+		restore_current_blog();
+	}
 
 	return apply_filters( 'humcore_format_activity_action_new_deposit', $action, $activity );
 }
@@ -82,15 +82,15 @@ function humcore_format_activity_action_new_deposit( $action, $activity ) {
 function humcore_format_activity_action_new_group_deposit( $action, $activity ) {
 
 	$deposit_blog_id = bp_activity_get_meta( $activity->id, 'source_blog_id', true  );
-        $switched = false;
-        if ( $deposit_blog_id !== get_current_blog_id() ) {
-                switch_to_blog( $deposit_blog_id );
-                $switched = true;
-        }
+	$switched = false;
+	if ( $deposit_blog_id !== get_current_blog_id() ) {
+		switch_to_blog( $deposit_blog_id );
+		$switched = true;
+	}
 
 	$item_post = get_post( $activity->secondary_item_id );
 	$item_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( $activity->primary_link ), esc_html( $item_post->post_title ) );
-       	$post_metadata = json_decode( get_post_meta( $activity->secondary_item_id, '_deposit_metadata', true ), true );
+	$post_metadata = json_decode( get_post_meta( $activity->secondary_item_id, '_deposit_metadata', true ), true );
 	if ( ! empty( $post_metadata['committee_id'] ) && $wpmn_record_identifier[0] == get_current_blog_id() ) {
 		$committee = groups_get_group( array( 'group_id' => $post_metadata['committee_id'] ) );
 		$initiator_url = trailingslashit( bp_get_root_domain() . '/' . bp_get_groups_root_slug() . '/' . $committee->slug . '/' );
@@ -105,12 +105,64 @@ function humcore_format_activity_action_new_group_deposit( $action, $activity ) 
 	$group_link = sprintf( '<a href="%1$s">%2$s</a>', esc_url( bp_get_group_permalink( $group ) ), esc_html( $group->name ) );
 	$action = sprintf( __( '%1$s deposited %2$s in the group %3$s', 'humcore_domain' ), $initiator_link, $item_link, $group_link );
 
-        if ( $switched ) {
-                restore_current_blog();
-        }
+	if ( $switched ) {
+		restore_current_blog();
+	}
 
 	return apply_filters( 'humcore_format_activity_action_new_group_deposit', $action, $activity );
 }
+
+/**
+ * Format 'deposit_review' notification type.
+ *
+ * @param object $notification Notification data.
+ * @return string $return Formatted notification display.
+ */
+function humcore_format_deposit_review_notification( $action, $item_id, $secondary_item_id, $total_items, $format = 'string',
+		 $component_action_name, $component_name, $notification_id ) {
+
+	if ( 'deposit_review' !== $component_action_name ) {
+		return $action;
+	} else {
+		$society_id = bp_notifications_get_meta( $notification_id, 'society_id', true );
+		$notification_blog_id = constant( strtoupper( $society_id ) . '_ROOT_BLOG_ID' );
+		$switched = false;
+		if ( $notification_blog_id !== get_current_blog_id() ) {
+			switch_to_blog( $notification_blog_id );
+			$switched = true;
+		}
+
+		$deposit_post = get_post( $item_id );
+		$post_metadata = json_decode( get_post_meta( $item_id, '_deposit_metadata', true ), true );
+		$author_data = get_user_by( 'id', $deposit_post->post_author );
+		$pid = $post_metadata['pid'];
+
+		$custom_title = 'Review required: ' . $author_data->display_name . ' deposited a new '  . $post_metadata['genre'];
+		$custom_link  = esc_url( sprintf(  HC_SITE_URL . '/deposits/item/%s/', $post_metadata['pid'] ) );
+		$custom_text = 'Review required: ' . $author_data->display_name . ' deposited a new ' . $post_metadata['genre'] . ' titled: ' . $deposit_post->post_title;
+		// WordPress Toolbar
+		if ( 'string' === $format ) {
+			$return = apply_filters( 'humcore_format_deposit_review_notification',
+				'<a href="' . esc_url( $custom_link ) . '" title="' . esc_attr( $custom_title ) . '">' . esc_html( $custom_text ) . '</a>',
+				$custom_text, $custom_link );
+		// Deprecated BuddyBar
+		} else {
+			$return = apply_filters( 'humcore_format_deposit_review_notification', array(
+				'text' => $custom_text,
+				'link' => $custom_link
+			), $custom_link, (int) $total_items, $custom_text, $custom_title );
+		}
+
+		if ( $switched ) {
+			restore_current_blog();
+		}
+
+		return $return;
+
+	}
+
+}
+add_filter( 'bp_notifications_get_notifications_for_user', 'humcore_format_deposit_review_notification', 10, 8 );
 
 /**
  * Add a filter option to the filter select box on group activity pages.

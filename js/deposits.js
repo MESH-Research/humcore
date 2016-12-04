@@ -235,7 +235,7 @@ jQuery(document).ready( function($) {
 			$('#deposit-embargo-length-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
 		if ( groups === null && deposit_on_behalf_of === 'no' ) {
-			warning_message += '<li>We noticed you haven’t shared your deposit with any <em>MLA Commons</em> forums, which means forum members won’t receive a notification about its inclusion in <em>CORE</em>.</li>';
+			warning_message += '<li>We noticed you haven’t shared your deposit with any groups, members of groups you share your deposit with receive a notification about its inclusion in <em>CORE</em>.</li>';
 			$('#deposit-group-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
 		if ( subjects === null ) {

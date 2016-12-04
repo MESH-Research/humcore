@@ -134,16 +134,26 @@
 		$metadata = prepare_metadata( $nextPids );
 
 		$deposit_review_needed = false;
+		$deposit_post_date = (new DateTime())->format('Y-m-d H:i:s');
 		$deposit_post_status = 'draft';
+                if ( 'yes' === $metadata['embargoed'] ) {
+			$deposit_post_status = 'future';
+			$deposit_post_date = date( 'Y-m-d H:i:s', strtotime( '+' . sanitize_text_field( $_POST['deposit-embargo-length'] ) ) );
+                }
+
                 //if in HC lookup user
                 //if HC only user send to provisional deposit review group
                 if ( 'hc' === Humanities_Commons::$society_id ) {
+			$query_args = array(
+				'post_parent'    => 0,
+				'post_type'      => 'humcore_deposit',
+				'post_status'    => array( 'draft', 'publish' ),
+				'author'         => bp_loggedin_user_id(),
+			);
+
+			$deposit_posts = get_posts( $query_args );
                         $member_types = bp_get_member_type( bp_loggedin_user_id(), false );
-                        if ( 1 === count( $member_types ) && 'hc' === $member_types[0] ) {
-                                $review_group_id = BP_Groups_Group::get_id_from_slug( 'provisional-deposit-review' );
-                                $review_group = groups_get_group( array( 'group_id' => $review_group_id ) );
-				$metadata['group'][] = $review_group->name;
-				$metadata['group_ids'][] = $review_group_id;
+                        if ( empty( $deposit_posts ) && 1 === count( $member_types ) && 'hc' === $member_types[0] ) {
 				$deposit_review_needed = true;
 				$deposit_post_status = 'pending';
                         }
@@ -194,6 +204,7 @@
 			'post_title'   => $metadata['title'],
 			'post_excerpt' => $metadata['abstract'],
 			'post_status'  => $deposit_post_status,
+			'post_date'    => $deposit_post_date,
 			'post_type'    => 'humcore_deposit',
 			'post_name'    => $nextPids[0],
 			'post_author'  => bp_loggedin_user_id()
@@ -447,7 +458,29 @@
 		 * Notify provisional deposit review group for HC member deposits
 		 */
 		if ( $deposit_review_needed ) {
-			$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $review_group_id, $metadata['abstract'], $local_link );
+			$bp = buddypress();
+                        $review_group_id = BP_Groups_Group::get_id_from_slug( 'provisional-deposit-review' );
+			$group_args = array(
+				'group_id' => $review_group_id,
+				'exclude_admins_mods' => false,
+			);
+			$provisional_reviewers = groups_get_group_members( $group_args );
+			humcore_write_error_log( 'info', 'Provisional Review Required ' . var_export( $provisional_reviewers, true ) );
+			foreach( $provisional_reviewers['members'] as $group_member ) {
+				bp_notifications_add_notification( array(
+					'user_id'           => $group_member->ID,
+					'item_id'           => $deposit_post_ID,
+					'secondary_item_id' => bp_loggedin_user_id(),
+					'component_name'    => $bp->humcore_deposits->id,
+					'component_action'  => 'deposit_review',
+					'date_notified'     => bp_core_current_time(),
+					'is_new'            => 1,
+				) );
+			}
+                        //$review_group = groups_get_group( array( 'group_id' => $review_group_id ) );
+			//$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $review_group_id, $metadata['abstract'], $local_link );
+			//$metadata['group'][] = $review_group->name;
+			//$metadata['group_ids'][] = $review_group_id;
 		}
 
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
