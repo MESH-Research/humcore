@@ -439,8 +439,6 @@ function humcore_deposit_item_search_meta() {
 		}
 	}
 
-	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
-
 	$wpmn_record_identifier = array();
 	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
         // handle legacy MLA value
@@ -454,6 +452,9 @@ function humcore_deposit_item_search_meta() {
                 $switched = true;
         }
 
+	$site_url = get_option( 'siteurl' ); 
+	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n", $site_url, htmlentities( $metadata['pid'] ) );
+
 	$post_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_metadata', true ), true );
 	if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
 	        if ( $switched ) {
@@ -463,7 +464,7 @@ function humcore_deposit_item_search_meta() {
 	} else {
 		$file_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_file_metadata', true ), true );
 		printf( '<meta name="citation_pdf_url" content="%1$s/deposits/download/%2$s/%3$s/%4$s/">' . "\n\r",
-			HC_SITE_URL,
+			$site_url,
 			htmlentities( $file_metadata['files'][0]['pid'] ),
 			htmlentities( $file_metadata['files'][0]['datastream_id'] ),
 			htmlentities( $file_metadata['files'][0]['filename'] )

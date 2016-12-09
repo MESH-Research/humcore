@@ -125,7 +125,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function setup_filters() {
 
-		add_filter( 'wp_title', array( $this, 'humcore_filter_item_wp_title' ), 11, 2 );
+		add_filter( 'pre_get_document_title', array( $this, 'humcore_filter_item_wp_title' ) );
 		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
 		add_filter( 'bp_notifications_get_registered_components', array( $this, 'humcore_filter_notifications_get_registered_components' ) );
 		/* add_filter( 'bp_dtheme_ajax_querystring', array( $this, 'humcore_override_ajax_querystring' ), 10, 7 ); */
@@ -384,12 +384,13 @@ class Humcore_Deposit_Component extends BP_Component {
 	 * Create a unique title for a deposit item.
 	 *
 	 * @param string $title Default title text for current view.
-	 * @param string $sep Optional separator.
 	 * @return string Filtered title.
 	 */
-	public function humcore_filter_item_wp_title( $title, $sep ) {
+	public function humcore_filter_item_wp_title( $title ) {
 
 		global $wp, $paged, $page;
+
+		$sep = ' | ';
  
 		if ( is_feed() ) {
 			return $title;

@@ -786,6 +786,7 @@ function humcore_deposit_item_content() {
                 $switched = true;
         }
 
+	$site_url = get_option( 'siteurl' );
 	$deposit_post_id = $wpmn_record_identifier[1];
 	$post_data = get_post( $deposit_post_id );
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
@@ -804,17 +805,20 @@ function humcore_deposit_item_content() {
 	if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
 		$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 	}
-	$download_url = sprintf( '/deposits/download/%s/%s/%s/',
+	$download_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],
 		$file_metadata['files'][0]['filename']
 	);
-	$view_url = sprintf( '/deposits/view/%s/%s/%s/',
+	$view_url = sprintf( '%s/deposits/view/%s/%s/%s/',
+		$site_url,
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],
 		$file_metadata['files'][0]['filename']
 	);
-	$metadata_url = sprintf( '/deposits/download/%s/%s/%s/',
+	$metadata_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
 		$metadata['pid'],
 		'descMetadata',
 		'xml'
@@ -832,7 +836,8 @@ function humcore_deposit_item_content() {
 	}
 
 	if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
-		$thumb_url = sprintf( '<img class="deposit-thumb" src="/deposits/view/%s/%s/%s/" alt="%s" />',
+		$thumb_url = sprintf( '<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
+			$site_url,
 			$file_metadata['files'][0]['pid'],
 			$file_metadata['files'][0]['thumb_datastream_id'],
 			$file_metadata['files'][0]['thumb_filename'],
@@ -1047,8 +1052,9 @@ function humcore_deposit_item_content() {
 <div><h4>This item will be available for download beginning <?php echo $post_metadata['embargo_end_date']; ?></h4></div> 
 <?php } elseif ( ! $post_data ) { ?>
 <div><h3>Note</h3>
-Items uploaded during the beta test period cannot be downloaded from <em>Humanities Commons</em>. To download this item, please visit <a href="<?php echo esc_attr( $metadata['handle'] ); ?>">the original deposit.</a>
+There is a problem retrieving some of the data for this item. This error has been logged.
 </div>
+<?php humcore_write_error_log( 'error', '*****HumCORE Data Error*****', $wpmn_record_identifier ); ?>
 <?php } else { ?>
 <div><h4><?php _e( 'Downloads', 'humcore_domain' ); ?></h4>
 <div class="doc-attachments">
@@ -1127,6 +1133,7 @@ function humcore_deposit_item_review_content() {
                 $switched = true;
         }
 
+	$site_url = get_option( 'siteurl' );
         $deposit_post_id = $wpmn_record_identifier[1];
         $post_data = get_post( $deposit_post_id );
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
@@ -1145,17 +1152,20 @@ function humcore_deposit_item_review_content() {
         if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
                 $post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
         }
-        $download_url = sprintf( '/deposits/download/%s/%s/%s/',
+        $download_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
                 $file_metadata['files'][0]['pid'],
                 $file_metadata['files'][0]['datastream_id'],
                 $file_metadata['files'][0]['filename']
         );
-        $view_url = sprintf( '/deposits/view/%s/%s/%s/',
+        $view_url = sprintf( '%s/deposits/view/%s/%s/%s/',
+		$site_url,
                 $file_metadata['files'][0]['pid'],
                 $file_metadata['files'][0]['datastream_id'],
                 $file_metadata['files'][0]['filename']
         );
-        $metadata_url = sprintf( '/deposits/download/%s/%s/%s/',
+        $metadata_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
                 $metadata['pid'],
                 'descMetadata',
                 'xml'
@@ -1166,7 +1176,8 @@ function humcore_deposit_item_review_content() {
                 esc_attr( $file_type_data['ext'] )
         );
         if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
-                $thumb_url = sprintf( '<img class="deposit-thumb" src="/deposits/view/%s/%s/%s/" alt="%s" />',
+                $thumb_url = sprintf( '<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
+			$site_url,
                         $file_metadata['files'][0]['pid'],
                         $file_metadata['files'][0]['thumb_datastream_id'],
                         $file_metadata['files'][0]['thumb_filename'],
