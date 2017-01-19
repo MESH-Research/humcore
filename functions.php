@@ -71,6 +71,7 @@ function humcore_format_activity_action_new_deposit( $action, $activity ) {
 	}
 
 	return apply_filters( 'humcore_format_activity_action_new_deposit', $action, $activity );
+
 }
 
 /**
@@ -147,6 +148,7 @@ function humcore_format_deposit_review_notification( $action, $item_id, $seconda
 				$custom_text, $custom_link );
 		// Deprecated BuddyBar
 		} else {
+
 			$return = apply_filters( 'humcore_format_deposit_review_notification', array(
 				'text' => $custom_text,
 				'link' => $custom_link
@@ -155,6 +157,7 @@ function humcore_format_deposit_review_notification( $action, $item_id, $seconda
 
 		if ( $switched ) {
 			restore_current_blog();
+
 		}
 
 		return $return;
