@@ -74,7 +74,7 @@
 				$sentence_subject,
 				strtolower( $genre ),
 				"'blank'",
-				bp_get_root_domain(),
+				HC_SITE_URL,
 				$title_match->id,
 				$title_match->title_unchanged,
 				human_time_diff( strtotime( $title_match->record_creation_date ) ));
@@ -133,6 +133,32 @@
 
 		$metadata = prepare_metadata( $nextPids );
 
+		$deposit_review_needed = false;
+		$deposit_post_date = (new DateTime())->format('Y-m-d H:i:s');
+		$deposit_post_status = 'draft';
+                if ( 'yes' === $metadata['embargoed'] ) {
+			$deposit_post_status = 'future';
+			$deposit_post_date = date( 'Y-m-d H:i:s', strtotime( '+' . sanitize_text_field( $_POST['deposit-embargo-length'] ) ) );
+                }
+
+                //if in HC lookup user
+                //if HC only user send to provisional deposit review group
+                if ( 'hc' === Humanities_Commons::$society_id ) {
+			$query_args = array(
+				'post_parent'    => 0,
+				'post_type'      => 'humcore_deposit',
+				'post_status'    => array( 'draft', 'publish' ),
+				'author'         => bp_loggedin_user_id(),
+			);
+
+			$deposit_posts = get_posts( $query_args );
+                        $member_types = bp_get_member_type( bp_loggedin_user_id(), false );
+                        if ( empty( $deposit_posts ) && 1 === count( $member_types ) && 'hc' === $member_types[0] ) {
+				$deposit_review_needed = true;
+				$deposit_post_status = 'pending';
+                        }
+                }
+
 		$aggregatorXml = create_aggregator_xml( array(
 								'pid' => $nextPids[0],
 								'creator' => $metadata['creator'],
@@ -177,22 +203,23 @@
 		$deposit_post_data = array(
 			'post_title'   => $metadata['title'],
 			'post_excerpt' => $metadata['abstract'],
-			'post_status'  => 'publish',
+			'post_status'  => $deposit_post_status,
+			'post_date'    => $deposit_post_date,
 			'post_type'    => 'humcore_deposit',
 			'post_name'    => $nextPids[0],
 			'post_author'  => bp_loggedin_user_id()
 		);
 
 		$deposit_post_ID = wp_insert_post( $deposit_post_data );
-		$metadata['record_identifier'] = $deposit_post_ID;
+		$metadata['record_identifier'] = get_current_blog_id() . '-' . $deposit_post_ID;
 
 		/**
 		 * Set object terms for subjects.
 		 */
-		if ( ! empty( $_POST['deposit-subject'] ) ) {
+		if ( ! empty( $metadata['subject'] ) ) {
 			$term_ids = array();
-			foreach ( $_POST['deposit-subject'] as $subject ) {
-				$term_key = term_exists( $subject, 'humcore_deposit_subject' );
+			foreach ( $metadata['subject'] as $subject ) {
+				$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 				if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
@@ -200,7 +227,8 @@
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_subject' );
+				$term_object_id = str_replace( $fedora_api->namespace . ':', '', $nextPids[0] );
+				$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_subject' );
 				$metadata['subject_ids'] = $term_taxonomy_ids;
 			}
 		}
@@ -208,12 +236,12 @@
 		/**
 		 * Add any new keywords and set object terms for tags.
 		 */
-		if ( ! empty( $_POST['deposit-keyword'] ) ) {
+		if ( ! empty( $metadata['keyword'] ) ) {
 			$term_ids = array();
-			foreach ( $_POST['deposit-keyword'] as $keyword ) {
-				$term_key = term_exists( $keyword, 'humcore_deposit_tag' );
+			foreach ( $metadata['keyword'] as $keyword ) {
+				$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
 				if ( empty( $term_key ) ) {
-					$term_key = wp_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
+					$term_key = wpmn_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
 				}
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
@@ -222,7 +250,8 @@
 				}
 			}
 			if ( ! empty( $term_ids ) ) {
-				$term_taxonomy_ids = wp_set_object_terms( $deposit_post_ID, $term_ids, 'humcore_deposit_tag' );
+				$term_object_id = str_replace( $fedora_api->namespace . ':', '', $nextPids[0] );
+				$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
 				$metadata['keyword_ids'] = $term_taxonomy_ids;
 			}
 		}
@@ -406,7 +435,8 @@
 		 */
 		$resource_id = wp_insert_post( $resource_post_data );
 
-		$local_link = sprintf( bp_get_root_domain() . '/deposits/item/%s/', $nextPids[0] );
+		//DOI's are taking too long to resolve, put the permalink in the activity records.
+		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
 
 		/**
 		 * Add the activity entry for the author.
@@ -425,16 +455,32 @@
 		}
 
 		/**
-		 * Add any group activity entries.
+		 * Notify provisional deposit review group for HC member deposits
 		 */
-		$group_activity_ids = array();
-		// Moving here due to possible timeout issues.
-                if ( 'no' === $metadata['embargoed'] ) {
-			if ( ! empty( $_POST['deposit-group'] ) ) {
-				foreach ( $_POST['deposit-group'] as $group_id ) {
-					$group_activity_ids[] = humcore_new_group_deposit_activity( $deposit_post_ID, sanitize_text_field( $group_id ), $metadata['abstract'], $local_link );
-				}
+		if ( $deposit_review_needed ) {
+			$bp = buddypress();
+                        $review_group_id = BP_Groups_Group::get_id_from_slug( 'provisional-deposit-review' );
+			$group_args = array(
+				'group_id' => $review_group_id,
+				'exclude_admins_mods' => false,
+			);
+			$provisional_reviewers = groups_get_group_members( $group_args );
+			humcore_write_error_log( 'info', 'Provisional Review Required ' . var_export( $provisional_reviewers, true ) );
+			foreach( $provisional_reviewers['members'] as $group_member ) {
+				bp_notifications_add_notification( array(
+					'user_id'           => $group_member->ID,
+					'item_id'           => $deposit_post_ID,
+					'secondary_item_id' => bp_loggedin_user_id(),
+					'component_name'    => $bp->humcore_deposits->id,
+					'component_action'  => 'deposit_review',
+					'date_notified'     => bp_core_current_time(),
+					'is_new'            => 1,
+				) );
 			}
+                        //$review_group = groups_get_group( array( 'group_id' => $review_group_id ) );
+			//$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $review_group_id, $metadata['abstract'], $local_link );
+			//$metadata['group'][] = $review_group->name;
+			//$metadata['group_ids'][] = $review_group_id;
 		}
 
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
@@ -571,8 +617,9 @@
 		}
 
 		$metadata['group'] = array();
-		if ( ! empty( $_POST['deposit-group'] ) ) {
-			foreach ( $_POST['deposit-group'] as $group_id ) {
+                $deposit_groups = $_POST['deposit-group'];
+		if ( ! empty( $deposit_groups ) ) {
+			foreach ( $deposit_groups as $group_id ) {
 				$group = groups_get_group( array( 'group_id' => sanitize_text_field( $group_id ) ) );
 				$metadata['group'][] = $group->name;
 				$metadata['group_ids'][] = $group_id;
@@ -580,16 +627,18 @@
 		}
 
 		$metadata['subject'] = array();
-		if ( ! empty( $_POST['deposit-subject'] ) ) {
-			foreach ( $_POST['deposit-subject'] as $subject ) {
+                $deposit_subjects = $_POST['deposit-subject'];
+		if ( ! empty( $deposit_subjects ) ) {
+			foreach ( $deposit_subjects as $subject ) {
 				$metadata['subject'][] = sanitize_text_field( stripslashes( $subject ) );
 				// Subject ids will be set later.
 			}
 		}
 
 		$metadata['keyword'] = array();
-		if ( ! empty( $_POST['deposit-keyword'] ) ) {
-			foreach ( $_POST['deposit-keyword'] as $keyword ) {
+                $deposit_keywords = $_POST['deposit-keyword'];
+		if ( ! empty( $deposit_keywords ) ) {
+			foreach ( $deposit_keywords as $keyword ) {
 				$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
 				// Keyword ids will be set later.
 			}
@@ -605,6 +654,7 @@
 		$metadata['type_of_license'] = sanitize_text_field( $_POST['deposit-license-type'] );
 		$metadata['record_content_source'] = 'HumCORE';
 		$metadata['record_creation_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
+		$metadata['record_change_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
 		$metadata['member_of'] = $fedora_api->collectionPid;
 		$metadata['published'] = sanitize_text_field( $_POST['deposit-published'] ); // Not stored in solr.
 		if ( ! empty( $_POST['deposit-publication-type'] ) ) {
@@ -690,7 +740,7 @@
 				$metadata['publisher']
 			);
 		if ( ! $deposit_doi ) {
-			$metadata['handle'] = sprintf( bp_get_root_domain() . '/deposits/item/%s/', $nextPids[0] );
+			$metadata['handle'] = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
 			$metadata['deposit_doi'] = ''; // Not stored in solr.
 		} else {
 			$metadata['handle'] = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );

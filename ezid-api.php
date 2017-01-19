@@ -474,15 +474,9 @@ class Humcore_Deposit_Ezid_Api {
 	 */
 	public function server_status( array $args = array() ) {
 
-		$defaults = array(
-			'subsystems'    => '*',
-		);
-
 		$params = wp_parse_args( $args, $defaults );
 
-		$subsystems = $params['subsystems'];
-
-		$url = sprintf( '%1$s/%2$s%3$s', $this->baseUrl, 'status?subsystems=', $subsystems );
+		$url = sprintf( '%1$s/%2$s', $this->baseUrl, 'status' );
 
 		$request_args = $this->options['api'];
 		$request_args['method'] = 'GET';
@@ -515,9 +509,7 @@ class Humcore_Deposit_Ezid_Api {
 				$ezid_metadata[ $row_values[0] ] = $decoded_value;
 			}
 		}
-		if ( 'EZID is up' !== $ezid_metadata['success'] ||
-			/* 'up' !== $ezid_metadata['ldap'] || // What happened to this service? */
-			'up' !== $ezid_metadata['datacite'] ) {
+		if ( 'EZID is up' !== $ezid_metadata['success'] ) {
 			return new WP_Error( 'ezidServerError', 'EZID server is not okay.', var_export( $ezid_metadata, true ) );
 		}
 

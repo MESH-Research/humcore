@@ -78,7 +78,15 @@ add_action( 'init', 'humcore_register_post_type' );
 /**
  * Create two taxonomies, humcore_deposit_subjects and humcore_deposit_tags for the post type "humcore_deposit".
  */
-function humcore_create_taxonomies() {
+function humcore_register_taxonomies() {
+
+        $current_network = get_current_site();
+        if ( 1 === (int) $current_network->id ) {
+		$taxonomy_ui_setting = true;
+	} else {
+		$taxonomy_ui_setting = false;
+	}
+
 	// Add new taxonomy, make it hierarchical (like categories).
 	$labels = array(
 		'name'              => _x( 'Subjects', 'taxonomy general name', 'humcore_domain' ),
@@ -98,7 +106,7 @@ function humcore_create_taxonomies() {
 		'public'            => false,
 		'hierarchical'      => true,
 		'labels'            => $labels,
-		'show_ui'           => true,
+		'show_ui'           => $taxonomy_ui_setting,
 		'show_admin_column' => false,
 		'query_var'         => false,
 		'rewrite'           => false,
@@ -131,7 +139,7 @@ function humcore_create_taxonomies() {
 		'public'                => false,
 		'hierarchical'          => false,
 		'labels'                => $labels,
-		'show_ui'               => true,
+		'show_ui'               => $taxonomy_ui_setting,
 		'show_admin_column'     => false,
 		'update_count_callback' => '_update_post_term_count',
 		'query_var'             => false,
@@ -143,7 +151,8 @@ function humcore_create_taxonomies() {
 
 }
 // Hook into the init action and call humcore_create_taxonomies when init fires.
-add_action( 'init', 'humcore_create_taxonomies' );
+add_action( 'init', 'humcore_register_taxonomies' );
+add_action( 'wpmn_register_taxonomies', 'humcore_register_taxonomies' );
 
 /**
  * Remove the custom taxonomy meta boxes.
@@ -158,9 +167,19 @@ function humcore_remove_meta_boxes() {
 add_action( 'admin_menu', 'humcore_remove_meta_boxes' );
 
 /**
- * Register two sidebars for the deposits index and search results pages.
+ * Register sidebars for the welcome, deposits index and search results pages.
  */
 function humcore_register_sidebars() {
+
+	register_sidebar( array(
+		'name' => 'CORE Welcome Right',
+		'id' => 'core-welcome-right',
+		'description' => __( 'The Welcome page widget area', 'humcore_domain' ),
+		'before_widget' => '',
+		'after_widget' => '',
+		'before_title' => '',
+		'after_title' => '',
+	) );
 
 	register_sidebar( array(
 		'name' => 'Deposits Directory Sidebar',
@@ -198,6 +217,102 @@ function humcore_check_dependencies() {
 }
 
 /**
+ * This function is hooked in via the cron
+ */
+function humcore_release_provisional_fire() {
+
+	// TODO move the activity creation to an action - https://codex.wordpress.org/Post_Status_Transitions#transition_post_status_Hook
+	$group_activity_ids = array();
+        $query_args = array(
+                'post_parent'    => 0,
+                'post_type'      => 'humcore_deposit',
+                'post_status'    => 'draft',
+                'posts_per_page' => -1,
+		'order'          => 'ASC',
+                'order_by'       => 'ID',
+        );
+
+	// echo "\n";
+	$deposit_posts = get_posts( $query_args );
+	foreach( $deposit_posts as $deposit_post ) {
+		$now = time();
+		$metadata = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
+		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
+		$local_link = $metadata['handle']; // Let's try doi.
+		$diff = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
+		$hours_since = round( $diff / HOUR_IN_SECONDS );
+		 //echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
+		if ( $hours_since > 6 ) {
+			if ( 'no' === $metadata['embargoed'] ) {
+				$post_args = array(
+					'ID'          => $deposit_post->ID,
+					'post_status' => 'publish',
+				);
+				$update_status = wp_update_post( $post_args, true );
+				//echo $deposit_post->ID, ", ", var_export( $update_status, true ), ", ", $deposit_post->post_name, ", ", "Published!", "\n";
+				if ( is_wp_error( $update_status ) ) {
+					humcore_write_error_log( 'error', '*****HumCORE Error - CRON provisional release error*****' .
+						 $deposit_post->ID . ', ' . $deposit_post->post_name . ' ' . var_export( $update_status, true ) );
+				} else {
+					humcore_write_error_log( 'info', '*****HumCORE CRON *****' . $deposit_post->ID . ', ' .
+						$deposit_post->post_name . ' Published!' );
+					$bp = buddypress();
+					$notification_id = bp_notifications_add_notification( array(
+						'user_id'           => $deposit_post->post_author,
+						'item_id'           => $deposit_post->ID,
+						'component_name'    => $bp->humcore_deposits->id,
+						'component_action'  => 'deposit_published',
+						'date_notified'     => bp_core_current_time(),
+						'is_new'            => 1,
+					) );
+					//echo "Notification ID ", $notification_id,"\n";
+					if ( ! empty( $metadata['group_ids'] ) ) {
+				 		foreach ( $metadata['group_ids'] as $group_id ) {
+							//echo "Group ID ", $group_id,"\n";
+							$group_activity_id = humcore_new_group_deposit_activity( $metadata['record_identifier'],
+								$group_id, $metadata['abstract'], $local_link, $metadata['submitter'] );
+							//echo "Group Activity ID ", $Group_activity_id,"\n";
+							$group_society_id = bp_groups_get_group_type( $group_id );
+							if ( $group_society_id !== Humanities_Commons::$society_id ) {
+								bp_activity_update_meta( $group_activity_id, 'society_id', $group_society_id,
+									Humanities_Commons::$society_id );
+							}
+							$group_activity_ids[] = $group_activity_id;
+						}
+						if ( ! empty( $group_activity_ids ) ) {
+							humcore_write_error_log( 'info', '*****HumCORE CRON GROUP ACTIVITIES*****' . $deposit_post->ID . ', ' .
+								$deposit_post->post_name . implode( ',', $group_activity_ids ) );
+						}
+						//echo "After ", implode( ',', $group_activity_ids ),"\n";
+			 		}
+				}
+			}
+
+		}
+
+	}
+
+}
+add_action( 'humcore_release_provisional', 'humcore_release_provisional_fire' );
+
+/**
+ * Register HumCORE cron job(s) upon activation.
+ */
+function humcore_activate_cron_jobs() {
+        $the_time = date( 'Y-m-d' ) . ' ' . '04' . ':' . '00';
+        $the_timestamp = strtotime( $the_time );
+
+        /* If the time has already passed today, the next run will be tomorrow */
+        $the_timestamp = ( $the_timestamp > time() ) ? $the_timestamp : (int) $the_timestamp + 86400;
+
+        /* Clear any existing recurring event and set up a new one */
+        wp_clear_scheduled_hook( 'humcore_release_provisional' );
+        wp_schedule_event( $the_timestamp, 'daily', 'humcore_release_provisional' );
+
+}
+register_activation_hook( __FILE__, 'humcore_activate_cron_jobs' );
+
+/**
  * Register post type and flush rewrite rules upon activation.
  */
 function humcore_activate() {
@@ -210,6 +325,16 @@ function humcore_activate() {
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'humcore_activate' );
+
+/**
+ * Cleanup cron job(s) upon deactivation.
+ */
+function humcore_deactivate_cron_jobs() {
+
+        /* Clear any existing recurring event */
+        wp_clear_scheduled_hook( 'humcore_release_provisional' );
+}
+register_deactivation_hook( __FILE__, 'humcore_deactivate_cron_jobs' );
 
 /**
  * Cleanup upon deactivation.

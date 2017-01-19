@@ -253,7 +253,7 @@ function humcore_get_facet_counts() {
 function humcore_get_facet_titles() {
 	$facet_titles = array(
 			'author_facet' => __( 'Author', 'humcore_domain' ),
-			'group_facet' => __( 'Forum', 'humcore_domain' ),
+			'group_facet' => __( 'Group', 'humcore_domain' ),
 			'subject_facet' => __( 'Subject', 'humcore_domain' ),
 			'genre_facet' => __( 'Item Type', 'humcore_domain' ),
 			'pub_date_facet' => __( 'Date', 'humcore_domain' ),
@@ -553,7 +553,10 @@ class Humcore_Deposit_Search_Results {
 
 		global $fedora_api, $solr_client;
 
-		$query_collection = 'member_of:' . str_replace( ':', '\:', $fedora_api->collectionPid );
+		// Hardcode two collections during HC beta period.
+		//$query_collection = 'member_of:' . str_replace( ':', '\:', $fedora_api->collectionPid );
+		$query_collection = '( member_of:' . str_replace( ':', '\:', 'hccollection:1' ) .
+				' OR member_of:' . str_replace( ':', '\:', 'mlacollection:1' ) . ' )';
 
 		if ( ! empty( $search_tag ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_tag ) );

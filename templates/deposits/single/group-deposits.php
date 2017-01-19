@@ -15,30 +15,30 @@
 
 <?php Humcore_Theme_Compatibility::get_header(); ?>
 
-<?php Humcore_Theme_Compatibility::get_sidebar( 'buddypress' ); ?>
-
-	<div id="content">
-		<div class="padder">
+	<div class="page-right-sidebar group-single">
+	<div id="buddypress">
 
 		<?php if ( bp_has_groups( 'max=1' ) ) : while ( bp_groups() ) : bp_the_group(); ?>
-
-		<?php do_action( 'bp_before_group_deposits_content' ); ?>
-
 
 			<div id="item-header">
 
 				<?php bp_locate_template( array( 'groups/single/group-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
-<!--
-                        <div id="item-nav">
-                                <div class="item-list-tabs no-ajax" id="object-nav" role="navigation">
-                                        <ul>
--->
-                                                <?php //bp_get_displayed_user_nav(); ?>
-                                                <?php //do_action( 'bp_group_deposits_options_nav' ); ?>
-<!--
 
+	<div id="primary" class="site-content">
+	<div id="content">
+
+		<?php do_action( 'bp_before_group_deposits_content' ); ?>
+
+                        <div class="full-width">
+                        <div id="item-main-content">
+                        <div id="item-nav">
+                                <div id="object-nav" class="item-list-tabs no-ajax" role="navigation">
+                                        <ul>
+                                                <?php //bp_get_displayed_user_nav(); ?>
+                                                <?php bp_get_options_nav(); ?>
+                                                <?php //do_action( 'bp_group_deposits_options_nav' ); ?>
                                         </ul>
                                 </div>
                         </div><!-- #item-nav -->
@@ -51,13 +51,13 @@
 
 				$displayed_user_fullname = bp_get_displayed_user_fullname();
 
-				if ( is_user_logged_in() && humcore_is_group_forum() ) {
-					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item">Deposit an Item</a><p />';
+				if ( is_user_logged_in() && 'public' === bp_get_group_status() ) {
+					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work" style="float: right;">Upload Your Work</a><p />';
 				} ?>
 
 				<div class="item-list-tabs no-ajax" id="subnav">
 					<ul>
-					<li class="current selected" id="deposits-groups"><a href="#"></a></li>
+					<li class="current selected" id="deposits-groups"><h3>Group Deposits</h3></li>
 
 					<li id="deposits-order-select" class="last filter">
 
@@ -85,12 +85,18 @@
 				<?php do_action( 'bp_after_group_deposits_body' ); ?>
 
 			</div><!-- #item-body -->
+			</div><!-- .item-main-content -->
+			</div><!-- #full-width -->
 
 		<?php do_action( 'bp_after_group_deposits_content' ); ?>
 		<?php endwhile; endif; ?>
 
-		</div><!-- .padder -->
 	</div><!-- #content -->
+	</div><!-- #primary -->
 
-<?php //get_sidebar( 'buddypress' ); ?>
+<?php Humcore_Theme_Compatibility::get_sidebar( 'buddypress' ); ?>
+
+	</div><!-- #buddypress -->
+	</div><!-- .page-right-sidebar -->
+
 <?php Humcore_Theme_Compatibility::get_footer(); ?>

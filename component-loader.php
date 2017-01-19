@@ -125,8 +125,9 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function setup_filters() {
 
-		add_filter( 'wp_title', array( $this, 'humcore_filter_item_wp_title' ), 11, 2 );
+		add_filter( 'pre_get_document_title', array( $this, 'humcore_filter_item_wp_title' ) );
 		add_filter( 'bp_located_template', array( $this, 'humcore_load_template_filter' ), 10, 2 ); 
+		add_filter( 'bp_notifications_get_registered_components', array( $this, 'humcore_filter_notifications_get_registered_components' ) );
 		/* add_filter( 'bp_dtheme_ajax_querystring', array( $this, 'humcore_override_ajax_querystring' ), 10, 7 ); */
 	}
 
@@ -162,10 +163,10 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_setup_deposit_group_nav() {
 
 		// Only display if we're on a certain type of group page.
-		if ( bp_is_group() && ( humcore_is_group_forum() || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
+		if ( bp_is_group() && ( 'hidden' !== bp_get_group_status( groups_get_group( array( 'group_id' => bp_get_current_group_id() ) ) ) || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) ) {
 			$count = $this->humcore_get_group_deposit_count();
 			$class = ( 0 === $count ) ? 'no-count' : 'count';
-			if ( humcore_is_group_forum() ) {
+			if ( 'public' === bp_get_group_status( groups_get_group( array( 'group_id' => bp_get_current_group_id() ) ) ) ) {
 				$nav_name = sprintf( __( 'From %1$sCORE%2$s <span class="%3$s">%4$s</span>', 'humcore_domain' ),
 							 '<em>', '</em>', esc_attr( $class ), number_format_i18n( $count ) );
 			} else {
@@ -346,7 +347,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	public function humcore_before_directory_deposits_content() {
 
 		if ( is_user_logged_in() && humcore_is_deposit_directory() ) {
-			echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Deposit an Item">Deposit an Item</a>';
+			echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work">Upload Your Work</a>';
 		}
 
 		humcore_has_deposits( bp_ajax_querystring( 'deposits' ) );
@@ -383,12 +384,13 @@ class Humcore_Deposit_Component extends BP_Component {
 	 * Create a unique title for a deposit item.
 	 *
 	 * @param string $title Default title text for current view.
-	 * @param string $sep Optional separator.
 	 * @return string Filtered title.
 	 */
-	public function humcore_filter_item_wp_title( $title, $sep ) {
+	public function humcore_filter_item_wp_title( $title ) {
 
 		global $wp, $paged, $page;
+
+		$sep = ' | ';
  
 		if ( is_feed() ) {
 			return $title;
@@ -402,6 +404,16 @@ class Humcore_Deposit_Component extends BP_Component {
 		}
 
 		return $title;
+	}
+
+	public function humcore_filter_notifications_get_registered_components( $component_names = array() ) {
+
+		if ( ! is_array( $component_names ) ) {
+			$component_names = array();
+		}
+		$bp = buddypress();
+		array_push( $component_names, $bp->humcore_deposits->id );
+		return $component_names;
 	}
 
 }

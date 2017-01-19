@@ -29,7 +29,7 @@ function humcore_deposits_search_form() {
 /**
  * Render the content for deposits/item/new.
  */
-function humcore_deposit_form() {
+function humcore_new_deposit_form() {
 
 	if ( ! empty( $_POST ) ) {
 		$deposit_id = humcore_deposit_file();
@@ -61,6 +61,15 @@ function humcore_deposit_form() {
 	$user_id = bp_loggedin_user_id();
 	$user_firstname = get_the_author_meta( 'first_name', $user_id );
 	$user_lastname = get_the_author_meta( 'last_name', $user_id );
+	$prev_val = array();
+	if ( ! empty( $_POST ) ) {
+		$prev_val = $_POST;
+	}
+	humcore_display_deposit_form( $current_group_id, $user_id, $user_firstname, $user_lastname, $prev_val );
+
+}
+
+function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstname, $user_lastname, $prev_val ) {
 
 ?>
 
@@ -80,10 +89,10 @@ function humcore_deposit_form() {
 	<input type="hidden" name="action" id="action" value="deposit_file" />
 	<?php wp_nonce_field( 'new_core_deposit', 'new_core_deposit_nonce' ); ?>
 
-        <input type="hidden" name="selected_temp_name" id="selected_temp_name" value="<?php if ( ! empty( $_POST['selected_temp_name'] ) ) { echo sanitize_text_field( $_POST['selected_temp_name'] ); } ?>" />
-        <input type="hidden" name="selected_file_name" id="selected_file_name" value="<?php if ( ! empty( $_POST['selected_file_name'] ) ) { echo sanitize_text_field( $_POST['selected_file_name'] ); } ?>" />
-        <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_type'] ); } ?>" />
-        <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $_POST['selected_file_type'] ) ) { echo sanitize_text_field( $_POST['selected_file_size'] ); } ?>" />
+        <input type="hidden" name="selected_temp_name" id="selected_temp_name" value="<?php if ( ! empty( $prev_val['selected_temp_name'] ) ) { echo sanitize_text_field( $prev_val['selected_temp_name'] ); } ?>" />
+        <input type="hidden" name="selected_file_name" id="selected_file_name" value="<?php if ( ! empty( $prev_val['selected_file_name'] ) ) { echo sanitize_text_field( $prev_val['selected_file_name'] ); } ?>" />
+        <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_type'] ); } ?>" />
+        <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_size'] ); } ?>" />
 
         <div id="deposit-file-entry">
                 <label for="deposit-file">Select the file you wish to upload and deposit. *</label>
@@ -108,8 +117,8 @@ function humcore_deposit_form() {
         <p>
         <div id="deposit-published-entry">
                 <label for="deposit-published">Has this item been previously published?</label>
-                        <input type="radio" name="deposit-published" value="published" <?php if ( ! empty( $_POST['deposit-published'] ) ) { checked( sanitize_text_field( $_POST['deposit-published'] ), 'published' ); } ?>>Published &nbsp;
-                        <input type="radio" name="deposit-published" value="not-published" <?php if ( ! empty( $_POST['deposit-published'] ) ) { checked( sanitize_text_field( $_POST['deposit-published'] ), 'not-published' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
+                        <input type="radio" name="deposit-published" value="published" <?php if ( ! empty( $prev_val['deposit-published'] ) ) { checked( sanitize_text_field( $prev_val['deposit-published'] ), 'published' ); } ?>>Published &nbsp;
+                        <input type="radio" name="deposit-published" value="not-published" <?php if ( ! empty( $prev_val['deposit-published'] ) ) { checked( sanitize_text_field( $prev_val['deposit-published'] ), 'not-published' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
         </div>
         </p>
 
@@ -127,19 +136,19 @@ function humcore_deposit_form() {
 	</p>
 	<div id="deposit-title-entry">
 		<label for="deposit-title">Title</label>
-		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" class="long" value="<?php if ( ! empty( $_POST['deposit-title-unchanged'] ) ) {  echo wp_kses( stripslashes( $_POST['deposit-title-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?>" />
+		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-title-unchanged'] ) ) {  echo wp_kses( stripslashes( $prev_val['deposit-title-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?>" />
 		<span class="description">*</span>
 	</div>
 	<p>
+	<label for="deposit-genre">Item Type</label>
 	<div id="deposit-genre-entry">
-		<label for="deposit-genre">Item Type</label>
 		<select name="deposit-genre" id="deposit-genre" class="js-basic-single-required" data-placeholder="Select an item type">
 			<option class="level-0" value=""></option>
 <?php
 	$genre_list = humcore_deposits_genre_list();
 	$posted_genre = '';
-	if ( ! empty( $_POST['deposit-genre'] ) ) {
-		$posted_genre = sanitize_text_field( $_POST['deposit-genre'] );
+	if ( ! empty( $prev_val['deposit-genre'] ) ) {
+		$posted_genre = sanitize_text_field( $prev_val['deposit-genre'] );
 	}
 	foreach ( $genre_list as $genre_key => $genre_value ) {
 		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
@@ -156,58 +165,58 @@ function humcore_deposit_form() {
 	<div id="deposit-conference-entries">
 	<div id="deposit-conference-title-entry">
 		<label for="deposit-conference-title-entry-list">Conference Title</label>
-		<input type="text" name="deposit-conference-title" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-title'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-title'] ); } ?>" />
+		<input type="text" name="deposit-conference-title" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-title'] ); } ?>" />
 	</div>
 
 	<div id="deposit-conference-organization-entry">
 		<label for="deposit-conference-organization-entry-list">Conference Host Organization</label>
-		<input type="text" name="deposit-conference-organization" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-organization'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-organization'] ); } ?>" />
+		<input type="text" name="deposit-conference-organization" size="60" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-organization'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-organization'] ); } ?>" />
 	</div>
 
 	<div id="deposit-conference-location-entry">
 		<label for="deposit-conference-location-entry-list">Conference Location</label>
-		<input type="text" name="deposit-conference-location" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-location'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-location'] ); } ?>" />
+		<input type="text" name="deposit-conference-location" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-location'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-location'] ); } ?>" />
 	</div>
 
 	<div id="deposit-conference-date-entry">
 		<label for="deposit-conference-date-entry-list">Conference Date</label>
-		<input type="text" name="deposit-conference-date" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-conference-date'] ) ) { echo sanitize_text_field( $_POST['deposit-conference-date'] ); } ?>" />
+		<input type="text" name="deposit-conference-date" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-date'] ); } ?>" />
 	</div>
 	</div>
 
 	<div id="deposit-meeting-entries">
 	<div id="deposit-meeting-title-entry">
 		<label for="deposit-meeting-title-entry-list">Meeting Title</label>
-		<input type="text" name="deposit-meeting-title" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-meeting-title'] ) ) { echo sanitize_text_field( $_POST['deposit-meeting-title'] ); } ?>" />
+		<input type="text" name="deposit-meeting-title" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-title'] ); } ?>" />
 	</div>
 
 	<div id="deposit-meeting-organization-entry">
 		<label for="deposit-meeting-organization-entry-list">Meeting Host Organization</label>
-		<input type="text" name="deposit-meeting-organization" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-meeting-organization'] ) ) { echo sanitize_text_field( $_POST['deposit-meeting-organization'] ); } ?>" />
+		<input type="text" name="deposit-meeting-organization" size="60" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-organization'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-organization'] ); } ?>" />
 	</div>
 
 	<div id="deposit-meeting-location-entry">
 		<label for="deposit-meeting-location-entry-list">Meeting Location</label>
-		<input type="text" name="deposit-meeting-location" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-meeting-location'] ) ) { echo sanitize_text_field( $_POST['deposit-meeting-location'] ); } ?>" />
+		<input type="text" name="deposit-meeting-location" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-location'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-location'] ); } ?>" />
 	</div>
 
 	<div id="deposit-meeting-date-entry">
 		<label for="deposit-meeting-date-entry-list">Meeting Date</label>
-		<input type="text" name="deposit-meeting-date" size="75" class="text" value="<?php if ( ! empty( $_POST['deposit-meeting-date'] ) ) { echo sanitize_text_field( $_POST['deposit-meeting-date'] ); } ?>" />
+		<input type="text" name="deposit-meeting-date" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-date'] ); } ?>" />
 	</div>
 	</div>
 
 	<div id="deposit-institution-entries">
 	<div id="deposit-institution-entry">
 		<label for="deposit-institution-entry-list">Name of Institution</label>
-		<input type="text" name="deposit-institution" size="60" class="text" value="<?php if ( ! empty( $_POST['deposit-institution'] ) ) { echo sanitize_text_field( $_POST['deposit-institution'] ); } ?>" />
+		<input type="text" name="deposit-institution" size="60" class="text" value="<?php if ( ! empty( $prev_val['deposit-institution'] ) ) { echo sanitize_text_field( $prev_val['deposit-institution'] ); } ?>" />
 	</div>
 	</div>
 
 	<p>
 	<div id="deposit-abstract-entry">
 		<label for="deposit-abstract">Description or Abstract</label>
-		<textarea class="abstract_area" rows="12" autocomplete="off" cols="80" name="deposit-abstract-unchanged" id="deposit-abstract-unchanged"><?php if ( ! empty( $_POST['deposit-abstract-unchanged'] ) ) { echo wp_kses( stripslashes( $_POST['deposit-abstract-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
+		<textarea class="abstract_area" rows="12" autocomplete="off" cols="80" name="deposit-abstract-unchanged" id="deposit-abstract-unchanged"><?php if ( ! empty( $prev_val['deposit-abstract-unchanged'] ) ) { echo wp_kses( stripslashes( $prev_val['deposit-abstract-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
 		<span class="description">*</span>
 	<div class="character-count"></div>
 	</div>
@@ -222,8 +231,8 @@ function humcore_deposit_form() {
 <?php   } else { ?>
 		<label for="deposit-on-behalf-flag-list">Depositor</label>
 		<span class="description">Is this deposit being made on behalf of a group?</span>
-			<input type="radio" name="deposit-on-behalf-flag" value="yes" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'yes' ); } ?>>Yes &nbsp;
-			<input type="radio" name="deposit-on-behalf-flag" value="no" <?php if ( ! empty( $_POST['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-on-behalf-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
+			<input type="radio" name="deposit-on-behalf-flag" value="yes" <?php if ( ! empty( $prev_val['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-on-behalf-flag'] ), 'yes' ); } ?>>Yes &nbsp;
+			<input type="radio" name="deposit-on-behalf-flag" value="no" <?php if ( ! empty( $prev_val['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-on-behalf-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
 <?php
 	} ?>
 	</div>
@@ -241,7 +250,7 @@ function humcore_deposit_form() {
 			<option class="level-0" selected value=""></option>
 <?php
 	$posted_committee = '';
-	if ( ! empty( $_POST['deposit-committee'] ) ) { $posted_committee = sanitize_text_field( $_POST['deposit-committee'] ); }
+	if ( ! empty( $prev_val['deposit-committee'] ) ) { $posted_committee = sanitize_text_field( $prev_val['deposit-committee'] ); }
 	foreach ( $committee_list as $committee_key => $committee_value ) {
 		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
 			( $committee_key == $posted_committee ) ? 'selected="selected"' : '',
@@ -276,11 +285,11 @@ function humcore_deposit_form() {
 		</td></tr>
 
 <?php
-	if ( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) {
+	if ( ! empty( $prev_val['deposit-other-authors-first-name'] ) && ! empty( $prev_val['deposit-other-authors-last-name'] ) ) {
 		$other_authors = array_map(
 			function ( $first_name, $last_name ) { return array( 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ) ); },
-			$_POST['deposit-other-authors-first-name'],
-			$_POST['deposit-other-authors-last-name']
+			$prev_val['deposit-other-authors-first-name'],
+			$prev_val['deposit-other-authors-last-name']
 		);
 		foreach ( $other_authors as $author_array ) {
 			if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
@@ -302,13 +311,13 @@ function humcore_deposit_form() {
 	</p>
 	<p>
 	<div id="deposit-group-entry">
-		<label for="deposit-group">Forums</label>
-		<span class="description">Share this item with up to five <em>MLA Commons</em> forums.<br />Selecting a forum will notify members of that forum about your deposit.</span><br />
-		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select forums">
+		<label for="deposit-group">Groups</label>
+		<span class="description">Share this item with up to five groups that you are a member of.<br />Selecting a group will notify members of that group about your deposit.</span><br />
+		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select groups">
 <?php
-	$group_list = humcore_deposits_group_list();
+	$group_list = humcore_deposits_group_list( bp_loggedin_user_id() );
 	$posted_group_list = array();
-	if ( ! empty( $_POST['deposit-group'] ) ) { $posted_group_list = array_map( 'sanitize_text_field', $_POST['deposit-group'] ); }
+	if ( ! empty( $prev_val['deposit-group'] ) ) { $posted_group_list = array_map( 'sanitize_text_field', $prev_val['deposit-group'] ); }
 	foreach ( $group_list as $group_key => $group_value ) {
 		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
 			( $current_group_id == $group_key || in_array( $group_key, $posted_group_list ) ) ? 'selected="selected"' : '',
@@ -329,8 +338,8 @@ function humcore_deposit_form() {
 <?php
 	$subject_list = humcore_deposits_subject_list();
 	$posted_subject_list = array();
-	if ( ! empty( $_POST['deposit-subject'] ) ) {
-		$posted_subject_list = array_map( 'sanitize_text_field', $_POST['deposit-subject'] );
+	if ( ! empty( $prev_val['deposit-subject'] ) ) {
+		$posted_subject_list = array_map( 'sanitize_text_field', $prev_val['deposit-subject'] );
 	}
 	foreach ( $subject_list as $subject_key => $subject_value ) {
 		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
@@ -351,8 +360,8 @@ function humcore_deposit_form() {
 <?php
 	$keyword_list = humcore_deposits_keyword_list();
 	$posted_keyword_list = array();
-	if ( ! empty( $_POST['deposit-keyword'] ) ) {
-		$posted_keyword_list = array_map( 'sanitize_text_field', $_POST['deposit-keyword'] );
+	if ( ! empty( $prev_val['deposit-keyword'] ) ) {
+		$posted_keyword_list = array_map( 'sanitize_text_field', $prev_val['deposit-keyword'] );
 	}
 	foreach ( $keyword_list as $keyword_key => $keyword_value ) {
 		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
@@ -366,16 +375,16 @@ function humcore_deposit_form() {
 	</div>
 	</p>
 	<p>
+	<label for="deposit-resource-type">File Type</label>
 	<div id="deposit-resource-type-entry">
-		<label for="deposit-resource-type">File Type</label>
 		<select name="deposit-resource-type" id="deposit-resource-type" class="js-basic-single-optional" data-placeholder="Select a file type" data-allowClear="true">
 			<option class="level-0" selected="selected" value=""></option>
 
 <?php
 	$resource_type_list = humcore_deposits_resource_type_list();
 	$posted_resource_type = '';
-	if ( ! empty( $_POST['deposit-resource-type'] ) ) {
-		$posted_resource_type = sanitize_text_field( $_POST['deposit-resource-type'] );
+	if ( ! empty( $prev_val['deposit-resource-type'] ) ) {
+		$posted_resource_type = sanitize_text_field( $prev_val['deposit-resource-type'] );
 	}
 	foreach ( $resource_type_list as $resource_key => $resource_value ) {
 		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
@@ -392,64 +401,64 @@ function humcore_deposit_form() {
 	<div id="deposit-notes-entry">
 		<label for="deposit-notes">Notes or Background</label>
 		<span class="description">Any additional information about your item?</span><br />
-		<textarea name="deposit-notes-unchanged" class="the-notes" id="deposit-notes-unchanged"><?php if ( ! empty( $_POST['deposit-notes-unchanged'] ) ) { echo wp_kses( stripslashes( $_POST['deposit-notes-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
+		<textarea name="deposit-notes-unchanged" class="the-notes" id="deposit-notes-unchanged"><?php if ( ! empty( $prev_val['deposit-notes-unchanged'] ) ) { echo wp_kses( stripslashes( $prev_val['deposit-notes-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
 	<div class="character-count"></div>
 	</div>
 	</p>
 	<p>
 	<div id="deposit-publication-type-entry">
 		<label for="deposit-publication-type">Publication Type</label>
-			<input type="radio" name="deposit-publication-type" value="book-chapter" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;
-			<input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal article &nbsp;
-			<input type="radio" name="deposit-publication-type" value="proceedings-article" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'proceedings-article' ); } ?>>Conference proceeding &nbsp;
-			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $_POST['deposit-publication-type'] ) ) { checked( sanitize_text_field( $_POST['deposit-publication-type'] ), 'none' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
+			<input type="radio" name="deposit-publication-type" value="book-chapter" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;
+			<input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal article &nbsp;
+			<input type="radio" name="deposit-publication-type" value="proceedings-article" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'proceedings-article' ); } ?>>Conference proceeding &nbsp;
+			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'none' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
 	</div>
 	</p>
 	<div id="deposit-book-entries">
 
 		<div id="deposit-book-doi-entry">
 			<label for="deposit-book-doi">Publisher DOI</label>
-			<input type="text" id="deposit-book-doi" name="deposit-book-doi" class="long" value="<?php if ( ! empty( $_POST['deposit-book-doi'] ) ) { echo sanitize_text_field( $_POST['deposit-book-doi'] ); } ?>" />
+			<input type="text" id="deposit-book-doi" name="deposit-book-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-doi'] ); } ?>" />
 		</div>
 
 		<div id="deposit-book-publisher-entry">
 			<label for="deposit-book-publisher">Publisher</label>
-			<input type="text" id="deposit-book-publisher" name="deposit-book-publisher" size="40" class="long" value="<?php if ( ! empty( $_POST['deposit-book-publisher'] ) ) { echo sanitize_text_field( $_POST['deposit-book-publisher'] ); } ?>" />
+			<input type="text" id="deposit-book-publisher" name="deposit-book-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publisher'] ); } ?>" />
 		</div>
 
 		<div id="deposit-book-publish-date-entry">
 			<label for="deposit-book-publish-date">Pub Date</label>
-			<input type="text" id="deposit-book-publish-date" name="deposit-book-publish-date" class="text" value="<?php if ( ! empty( $_POST['deposit-book-publish-date'] ) ) { echo sanitize_text_field( $_POST['deposit-book-publish-date'] ); } ?>" />
+			<input type="text" id="deposit-book-publish-date" name="deposit-book-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publish-date'] ); } ?>" />
 		</div>
 
 		<div id="deposit-book-title-entry">
 			<label for="deposit-book-title">Book Title</label>
-			<input type="text" id="deposit-book-title" name="deposit-book-title" size="60" class="long" value="<?php if ( ! empty( $_POST['deposit-book-title'] ) ) { echo sanitize_text_field( $_POST['deposit-book-title'] ); } ?>" />
+			<input type="text" id="deposit-book-title" name="deposit-book-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-title'] ); } ?>" />
 		</div>
 
 		<div id="deposit-book-author-entry">
 			<label for="deposit-book-author">Book Author or Editor</label>
-			<input type="text" id="deposit-book-author" name="deposit-book-author" class="long" value="<?php if ( ! empty( $_POST['deposit-book-author'] ) ) { echo sanitize_text_field( $_POST['deposit-book-author'] ); } ?>" />
+			<input type="text" id="deposit-book-author" name="deposit-book-author" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-author'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-author'] ); } ?>" />
 		</div>
 
 		<div id="deposit-book-chapter-entry">
 			<label for="deposit-book-chapter">Chapter</label>
-			<input type="text" id="deposit-book-chapter" name="deposit-book-chapter" class="text" value="<?php if ( ! empty( $_POST['deposit-book-chapter'] ) ) { echo sanitize_text_field( $_POST['deposit-book-chapter'] ); } ?>" />
+			<input type="text" id="deposit-book-chapter" name="deposit-book-chapter" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter'] ); } ?>" />
 		</div>
 
 		<div id="deposit-book-pages-entry">
 			<label for="deposit-book-start-page"><span>Start Page</span>
-			<input type="text" id="deposit-book-start-page" name="deposit-book-start-page" size="5" class="text" value="<?php if ( ! empty( $_POST['deposit-book-start-page'] ) ) { echo sanitize_text_field( $_POST['deposit-book-start-page'] ); } ?>" />
+			<input type="text" id="deposit-book-start-page" name="deposit-book-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-start-page'] ); } ?>" />
 			</label>
 			<label for="deposit-book-end-page"><span>End Page</span>
-			<input type="text" id="deposit-book-end-page" name="deposit-book-end-page" size="5" class="text" value="<?php if ( ! empty( $_POST['deposit-book-end-page'] ) ) { echo sanitize_text_field( $_POST['deposit-book-end-page'] ); } ?>" />
+			<input type="text" id="deposit-book-end-page" name="deposit-book-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-end-page'] ); } ?>" />
 			</label>
 			<br style='clear:both'>
 		</div>
 
 		<div id="deposit-book-isbn-entry">
 			<label for="deposit-book-isbn">ISBN</label>
-			<input type="text" id="deposit-book-isbn" name="deposit-book-isbn" class="text" value="<?php if ( ! empty( $_POST['deposit-book-isbn'] ) ) { echo sanitize_text_field( $_POST['deposit-book-isbn'] ); } ?>" />
+			<input type="text" id="deposit-book-isbn" name="deposit-book-isbn" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-isbn'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-isbn'] ); } ?>" />
 		</div>
 
 	</div>
@@ -458,47 +467,47 @@ function humcore_deposit_form() {
 
 		<div id="deposit-journal-doi-entry">
 			<label for="deposit-journal-doi">Publisher DOI</label>
-			<input type="text" id="deposit-journal-doi" name="deposit-journal-doi" class="long" value="<?php if ( ! empty( $_POST['deposit-journal-doi'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-doi'] ); } ?>" />
+			<input type="text" id="deposit-journal-doi" name="deposit-journal-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-doi'] ); } ?>" />
 		</div>
 
 		<div id="deposit-journal-publisher-entry">
 			<label for="deposit-journal-publisher">Publisher</label>
-			<input type="text" id="deposit-journal-publisher" name="deposit-journal-publisher" size="40" class="long" value="<?php if ( ! empty( $_POST['deposit-journal-publisher'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-publisher'] ); } ?>" />
+			<input type="text" id="deposit-journal-publisher" name="deposit-journal-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publisher'] ); } ?>" />
 		</div>
 
 		<div id="deposit-journal-publish-date-entry">
 			<label for="deposit-journal-publish-date">Pub Date</label>
-			<input type="text" id="deposit-journal-publish-date" name="deposit-journal-publish-date" class="text" value="<?php if ( ! empty( $_POST['deposit-journal-publish-date'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-publish-date'] ); } ?>" />
+			<input type="text" id="deposit-journal-publish-date" name="deposit-journal-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publish-date'] ); } ?>" />
 		</div>
 
 		<div id="deposit-journal-title-entry">
 			<label for="deposit-journal-title">Journal Title</label>
-			<input type="text" id="deposit-journal-title" name="deposit-journal-title" size="75" class="long" value="<?php if ( ! empty( $_POST['deposit-journal-title'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-title'] ); } ?>" />
+			<input type="text" id="deposit-journal-title" name="deposit-journal-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-title'] ); } ?>" />
 		</div>
 
 		<div id="deposit-journal-volume-entry">
 			<label for="deposit-journal-volume"><span>Volume</span>
-			<input type="text" id="deposit-journal-volume" name="deposit-journal-volume" class="text" value="<?php if ( ! empty( $_POST['deposit-journal-volume'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-volume'] ); } ?>" />
+			<input type="text" id="deposit-journal-volume" name="deposit-journal-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-volume'] ); } ?>" />
 			</label>
 			<label for="deposit-journal-issue"><span>Issue</span>
-			<input type="text" id="deposit-journal-issue" name="deposit-journal-issue" class="text" value="<?php if ( ! empty( $_POST['deposit-journal-volume'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-volume'] ); } ?>" />
+			<input type="text" id="deposit-journal-issue" name="deposit-journal-issue" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-volume'] ); } ?>" />
 			</label>
 			<br style='clear:both'>
 		</div>
 
 		<div id="deposit-journal-pages-entry">
 			<label for="deposit-journal-start-page"><span>Start Page</span>
-			<input type="text" id="deposit-journal-start-page" name="deposit-journal-start-page" size="5" class="text" value="<?php if ( ! empty( $_POST['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-start-page'] ); } ?>" />
+			<input type="text" id="deposit-journal-start-page" name="deposit-journal-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-start-page'] ); } ?>" />
 			</label>
 			<label for="deposit-journal-end-page"><span>End Page</span>
-			<input type="text" id="deposit-journal-end-page" name="deposit-journal-end-page" size="5" class="text" value="<?php if ( ! empty( $_POST['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-start-page'] ); } ?>" />
+			<input type="text" id="deposit-journal-end-page" name="deposit-journal-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-start-page'] ); } ?>" />
 			</label>
 			<br style='clear:both'>
 		</div>
 
 		<div id="deposit-journal-issn-entry">
 			<label for="deposit-journal-issn">ISSN</label>
-			<input type="text" id="deposit-journal-issn" name="deposit-journal-issn" class="text" value="<?php if ( ! empty( $_POST['deposit-journal-issn'] ) ) { echo sanitize_text_field( $_POST['deposit-journal-issn'] ); } ?>" />
+			<input type="text" id="deposit-journal-issn" name="deposit-journal-issn" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-issn'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-issn'] ); } ?>" />
 		</div>
 
 	</div>
@@ -507,30 +516,30 @@ function humcore_deposit_form() {
 
 		<div id="deposit-proceeding-doi-entry">
 			<label for="deposit-proceeding-doi">Publisher DOI</label>
-			<input type="text" id="deposit-proceeding-doi" name="deposit-proceeding-doi" class="long" value="<?php if ( ! empty( $_POST['deposit-proceeding-doi'] ) ) { echo sanitize_text_field( $_POST['deposit-proceeding-doi'] ); } ?>" />
+			<input type="text" id="deposit-proceeding-doi" name="deposit-proceeding-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-doi'] ); } ?>" />
 		</div>
 
 		<div id="deposit-proceeding-publisher-entry">
 			<label for="deposit-proceeding-publisher">Publisher</label>
-			<input type="text" id="deposit-proceeding-publisher" name="deposit-proceeding-publisher" size="40" class="long" value="<?php if ( ! empty( $_POST['deposit-proceeding-publisher'] ) ) { echo sanitize_text_field( $_POST['deposit-proceeding-publisher'] ); } ?>" />
+			<input type="text" id="deposit-proceeding-publisher" name="deposit-proceeding-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publisher'] ); } ?>" />
 		</div>
 
 		<div id="deposit-proceeding-publish-date-entry">
 			<label for="deposit-proceeding-publish-date">Pub Date</label>
-			<input type="text" id="deposit-proceeding-publish-date" name="deposit-proceeding-publish-date" class="text" value="<?php if ( ! empty( $_POST['deposit-proceeding-publish-date'] ) ) { echo sanitize_text_field( $_POST['deposit-proceeding-publish-date'] ); } ?>" />
+			<input type="text" id="deposit-proceeding-publish-date" name="deposit-proceeding-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publish-date'] ); } ?>" />
 		</div>
 
 		<div id="deposit-proceeding-title-entry">
 			<label for="deposit-proceeding-title">Proceeding Title</label>
-			<input type="text" id="deposit-proceeding-title" name="deposit-proceeding-title" size="75" class="long" value="<?php if ( ! empty( $_POST['deposit-proceeding-title'] ) ) { echo sanitize_text_field( $_POST['deposit-proceeding-title'] ); } ?>" />
+			<input type="text" id="deposit-proceeding-title" name="deposit-proceeding-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-title'] ); } ?>" />
 		</div>
 
 		<div id="deposit-proceeding-pages-entry">
 			<label for="deposit-proceeding-start-page"><span>Start Page</span>
-			<input type="text" id="deposit-proceeding-start-page" name="deposit-proceeding-start-page" size="5" class="text" value="<?php if ( ! empty( $_POST['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $_POST['deposit-proceeding-start-page'] ); } ?>" />
+			<input type="text" id="deposit-proceeding-start-page" name="deposit-proceeding-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-start-page'] ); } ?>" />
 			</label>
 			<label for="deposit-proceeding-end-page"><span>End Page</span>
-			<input type="text" id="deposit-proceeding-end-page" name="deposit-proceeding-end-page" size="5" class="text" value="<?php if ( ! empty( $_POST['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $_POST['deposit-proceeding-start-page'] ); } ?>" />
+			<input type="text" id="deposit-proceeding-end-page" name="deposit-proceeding-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-start-page'] ); } ?>" />
 			</label>
 			<br style='clear:both'>
 		</div>
@@ -541,20 +550,20 @@ function humcore_deposit_form() {
 
 		<div id="deposit-non-published-date-entry">
 			<label for="deposit-non-published-date">Date of Creation</label>
-			<input type="text" id="deposit-non-published-date" name="deposit-non-published-date" class="text" value="<?php if ( ! empty( $_POST['deposit-non-published-date'] ) ) { echo sanitize_text_field( $_POST['deposit-non-published-date'] ); } ?>" />
+			<input type="text" id="deposit-non-published-date" name="deposit-non-published-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-non-published-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-non-published-date'] ); } ?>" />
 		</div>
 
 	</div>
 	<p>
 	<div id="deposit-license-type-entry">
 		<label for="deposit-license-type">Creative Commons License</label>
-		<span class="description">By default, and in accordance with section 2 of the <em>MLA Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
+		<span class="description">By default, and in accordance with section 2 of the <em>Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
 		<select name="deposit-license-type" id="deposit-license-type" class="js-basic-single-required">
 <?php
 	$license_type_list = humcore_deposits_license_type_list();
 	$posted_license_type = '';
-	if ( ! empty( $_POST['deposit-license-type'] ) ) {
-		$posted_license_type = sanitize_text_field( $_POST['deposit-license-type'] );
+	if ( ! empty( $prev_val['deposit-license-type'] ) ) {
+		$posted_license_type = sanitize_text_field( $prev_val['deposit-license-type'] );
 	}
 	foreach ( $license_type_list as $license_key => $license_value ) {
 		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
@@ -571,13 +580,13 @@ function humcore_deposit_form() {
         <p>
         <div id="deposit-embargoed-entry">
                 <label for="deposit-embargoed-flag">Embargo this deposit?</label>
-                        <input type="radio" name="deposit-embargoed-flag" value="yes" <?php if ( ! empty( $_POST['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-embargoed-flag'] ), 'yes' ); } ?>>Yes &nbsp;
-                        <input type="radio" name="deposit-embargoed-flag" value="no" <?php if ( ! empty( $_POST['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $_POST['deposit-embargoed-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
+                        <input type="radio" name="deposit-embargoed-flag" value="yes" <?php if ( ! empty( $prev_val['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-embargoed-flag'] ), 'yes' ); } ?>>Yes &nbsp;
+                        <input type="radio" name="deposit-embargoed-flag" value="no" <?php if ( ! empty( $prev_val['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-embargoed-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
         </div>
 
 	<div id="deposit-embargoed-entries">
+        <label for="deposit-embargo-length">Embargo Length</label>
         <div id="deposit-embargo-length-entry">
-                <label for="deposit-embargo-length">Embargo Length</label>
                 <span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
 		<span class="description">Enter the length of time (up to two years from now) after which this item should become available.</span> <br />
                 <select name="deposit-embargo-length" id="deposit-embargo-length" class="js-basic-single-required" data-placeholder="Select the embargo length." data-allowClear="true">
@@ -586,8 +595,8 @@ function humcore_deposit_form() {
 <?php
         $embargo_length_list = humcore_deposits_embargo_length_list();
         $posted_embargo_length = '';
-        if ( ! empty( $_POST['deposit-embargo-length'] ) ) {
-                $posted_embargo_length = sanitize_text_field( $_POST['deposit-embargo-length'] );
+        if ( ! empty( $prev_val['deposit-embargo-length'] ) ) {
+                $posted_embargo_length = sanitize_text_field( $prev_val['deposit-embargo-length'] );
         }
         foreach ( $embargo_length_list as $embargo_key => $embargo_value ) {
                 printf('                        <option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
@@ -704,6 +713,12 @@ function humcore_deposits_entry_content() {
 	if ( ! empty( $subjects ) ) {
 		$subject_list = implode( ', ', array_map( 'humcore_linkify_subject', $subjects ) );
 	}
+        if ( ! empty( $metadata['keyword'] ) ) {
+                $keywords = array_filter( $metadata['keyword'] );
+        }
+        if ( ! empty( $keywords ) ) {
+                $keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords ) );
+        }
 	$authors = array_filter( $metadata['authors'] );
 	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
 	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
@@ -720,7 +735,7 @@ function humcore_deposits_entry_content() {
 <dd><a href="/deposits/?facets[pub_date_facet][]=<?php echo urlencode( $metadata['date'] ); ?>"><?php echo esc_html( $metadata['date'] ); ?></a></dd>
 <?php endif; ?>
 <?php if ( ! empty( $groups ) ) : ?>
-<dt><?php _e( 'Forum(s):', 'humcore_domain' ); ?></dt>
+<dt><?php _e( 'Group(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo $group_list; // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $subjects ) ) : ?>
@@ -732,9 +747,12 @@ function humcore_deposits_entry_content() {
 <dt><?php _e( 'Item Type:', 'humcore_domain' ); ?></dt>
 <dd><a href="/deposits/?facets[genre_facet][]=<?php echo urlencode( $metadata['genre'] ); ?>"><?php echo esc_html( $metadata['genre'] ); ?></a></dd>
 <?php endif; ?>
-
+<?php if ( ! empty( $keywords ) ) : ?>
+<dt><?php _e( 'Tag(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo $keyword_list; // XSS OK. ?></dd>
+<?php endif; ?>
 <dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt>
-<dd><a href="<?php echo esc_attr( $metadata['handle'] ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
+<dd><a href="<?php echo esc_attr( $item_url ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
 </dl>
 </div>
 <br style='clear:both'>
@@ -772,10 +790,29 @@ function humcore_deposit_item_content() {
 	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
 	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
 	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
-	$deposit_post_id = $metadata['record_identifier'];
+
+        $wpmn_record_identifier = array();
+        $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+	// handle legacy MLA value
+	if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
+		$wpmn_record_identifier[0] = '1';
+		$wpmn_record_identifier[1] = $metadata['record_identifier'];
+	}
+        $switched = false;
+        if ( $wpmn_record_identifier[0] != get_current_blog_id() ) {
+                switch_to_blog( $wpmn_record_identifier[0] );
+                $switched = true;
+        }
+
+	$site_url = get_option( 'siteurl' );
+	$deposit_post_id = $wpmn_record_identifier[1];
 	$post_data = get_post( $deposit_post_id );
 	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
+	$update_time = '';
+	if ( ! empty( $metadata['record_change_date'] ) ) {
+		$update_time = human_time_diff( strtotime( $metadata['record_change_date'] ) );
+	}
 	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
 	$content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
 	$total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
@@ -786,17 +823,20 @@ function humcore_deposit_item_content() {
 	if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
 		$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 	}
-	$download_url = sprintf( '/deposits/download/%s/%s/%s/',
+	$download_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],
 		$file_metadata['files'][0]['filename']
 	);
-	$view_url = sprintf( '/deposits/view/%s/%s/%s/',
+	$view_url = sprintf( '%s/deposits/view/%s/%s/%s/',
+		$site_url,
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],
 		$file_metadata['files'][0]['filename']
 	);
-	$metadata_url = sprintf( '/deposits/download/%s/%s/%s/',
+	$metadata_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
 		$metadata['pid'],
 		'descMetadata',
 		'xml'
@@ -814,7 +854,8 @@ function humcore_deposit_item_content() {
 	}
 
 	if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
-		$thumb_url = sprintf( '<img class="deposit-thumb" src="/deposits/view/%s/%s/%s/" alt="%s" />',
+		$thumb_url = sprintf( '<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
+			$site_url,
 			$file_metadata['files'][0]['pid'],
 			$file_metadata['files'][0]['thumb_datastream_id'],
 			$file_metadata['files'][0]['thumb_filename'],
@@ -823,6 +864,10 @@ function humcore_deposit_item_content() {
 	} else {
 		$thumb_url = '';
 	}
+        if ( $switched ) {
+                restore_current_blog();
+        }
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 ?>
 
 <h3 class="bp-group-documents-title"><?php echo $metadata['title_unchanged']; ?></h3>
@@ -835,7 +880,7 @@ function humcore_deposit_item_content() {
 <dd><a href="/deposits/?facets[pub_date_facet][]=<?php echo urlencode( $metadata['date'] ); ?>"><?php echo esc_html( $metadata['date'] ); ?></a></dd>
 <?php endif; ?>
 <?php if ( ! empty( $groups ) ) : ?>
-<dt><?php _e( 'Forum(s):', 'humcore_domain' ); ?></dt>
+<dt><?php _e( 'Group(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo $group_list; // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $subjects ) ) : ?>
@@ -891,7 +936,7 @@ function humcore_deposit_item_content() {
 <dd><?php echo $keyword_list; // XSS OK. ?></dd>
 <?php endif; ?>
 <dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt>
-<dd><a href="<?php echo esc_attr( $metadata['handle'] ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
+<dd><a href="<?php echo esc_attr( $item_url ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
 <dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
 <?php if ( ! empty( $metadata['abstract_unchanged'] ) ) : ?>
 <dd><?php echo $metadata['abstract_unchanged']; ?></dd>
@@ -998,6 +1043,20 @@ function humcore_deposit_item_content() {
 <dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php endif; ?>
+<?php if ( 'draft' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
+<dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<?php elseif ( 'pending' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
+<dd><?php echo 'Pending Review'; ?></dd>
+<?php elseif ( 'publish' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
+<dd><?php echo 'Published'; ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $update_time ) ) : ?>
+<dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $update_time . ' ago'; // XSS OK. ?></span></dd>
+<?php endif; ?>
 <?php if ( ! empty( $thumb_url ) ) : ?>
 <dt><?php _e( 'Preview:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $thumb_url;// XSS OK. ?></span></dd>
@@ -1009,6 +1068,11 @@ function humcore_deposit_item_content() {
 </dl>
 <?php if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) { ?>
 <div><h4>This item will be available for download beginning <?php echo $post_metadata['embargo_end_date']; ?></h4></div> 
+<?php } elseif ( ! $post_data ) { ?>
+<div><h3>Note</h3>
+There is a problem retrieving some of the data for this item. This error has been logged.
+</div>
+<?php humcore_write_error_log( 'error', '*****HumCORE Data Error*****', $wpmn_record_identifier ); ?>
 <?php } else { ?>
 <div><h4><?php _e( 'Downloads', 'humcore_domain' ); ?></h4>
 <div class="doc-attachments">
@@ -1074,11 +1138,29 @@ function humcore_deposit_item_review_content() {
         $authors_list = implode( ', ', array_map( 'esc_html', $authors ) );
         $item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 
-        $deposit_post_id = $metadata['record_identifier'];
+        $wpmn_record_identifier = array();
+        $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+        // handle legacy MLA value
+        if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
+                $wpmn_record_identifier[0] = '1';
+                $wpmn_record_identifier[1] = $metadata['record_identifier'];
+        }
+        $switched = false;
+        if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
+                switch_to_blog( $wpmn_record_identifier[0] );
+                $switched = true;
+        }
+
+	$site_url = get_option( 'siteurl' );
+        $deposit_post_id = $wpmn_record_identifier[1];
         $post_data = get_post( $deposit_post_id );
         $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
-        $file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
+	$update_time = '';
+	if ( ! empty( $metadata['record_change_date'] ) ) { 
+		$update_time = human_time_diff( strtotime( $metadata['record_change_date'] ) );
+	}
+	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
         $content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
         $total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
         $content_views_meta_key = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
@@ -1088,17 +1170,20 @@ function humcore_deposit_item_review_content() {
         if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
                 $post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
         }
-        $download_url = sprintf( '/deposits/download/%s/%s/%s/',
+        $download_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
                 $file_metadata['files'][0]['pid'],
                 $file_metadata['files'][0]['datastream_id'],
                 $file_metadata['files'][0]['filename']
         );
-        $view_url = sprintf( '/deposits/view/%s/%s/%s/',
+        $view_url = sprintf( '%s/deposits/view/%s/%s/%s/',
+		$site_url,
                 $file_metadata['files'][0]['pid'],
                 $file_metadata['files'][0]['datastream_id'],
                 $file_metadata['files'][0]['filename']
         );
-        $metadata_url = sprintf( '/deposits/download/%s/%s/%s/',
+        $metadata_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+		$site_url,
                 $metadata['pid'],
                 'descMetadata',
                 'xml'
@@ -1109,7 +1194,8 @@ function humcore_deposit_item_review_content() {
                 esc_attr( $file_type_data['ext'] )
         );
         if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
-                $thumb_url = sprintf( '<img class="deposit-thumb" src="/deposits/view/%s/%s/%s/" alt="%s" />',
+                $thumb_url = sprintf( '<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
+			$site_url,
                         $file_metadata['files'][0]['pid'],
                         $file_metadata['files'][0]['thumb_datastream_id'],
                         $file_metadata['files'][0]['thumb_filename'],
@@ -1117,6 +1203,9 @@ function humcore_deposit_item_review_content() {
                 );
         } else {
                 $thumb_url = '';
+        }
+        if ( $switched ) {
+                restore_current_blog();
         }
 ?>
 
@@ -1181,7 +1270,7 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>&nbsp;</dd>
 <?php endif; ?>
-<dt><?php _e( 'Forum(s):', 'humcore_domain' ); ?></dt>
+<dt><?php _e( 'Group(s):', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $groups ) ) : ?>
 <dd><?php echo $group_list; // XSS OK. ?></dd>
 <?php else : ?>
@@ -1368,6 +1457,20 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
 <?php endif; ?>
+<?php if ( 'draft' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
+<dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<?php elseif ( 'pending' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
+<dd><?php echo 'Pending Review'; ?></dd>
+<?php elseif ( 'publish' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
+<dd><?php echo 'Published'; ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $update_time ) ) : ?>
+<dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $update_time . ' ago'; // XSS OK. ?></span></dd>
+<?php endif; ?>
 <?php if ( ! empty( $post_metadata['embargoed'] ) ) : ?>
 <dt><?php _e( 'Embargoed?:', 'humcore_domain' ); ?></dt>
 <dd><?php echo $post_metadata['embargoed']; ?></dd>
@@ -1405,7 +1508,7 @@ function humcore_search_sidebar_content() {
 	foreach ( $facet_display_counts as $facet_key => $facet_values ) {
 		$facet_list_count = 0;
 		if ( ! empty( $facet_display_titles[ $facet_key ] ) ) : ?>
-		<li class="facet-set-item"><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
+		<li class="facet-set-item"><h5><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
 			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
 			$sorted_counts = $facet_values['counts'];
 			if ( "pub_date_facet" === $facet_key ) {
@@ -1464,7 +1567,7 @@ function humcore_directory_sidebar_content() {
 	foreach ( $facet_display_counts as $facet_key => $facet_values ) {
 		if ( ! in_array( $facet_key, array( 'genre_facet', 'subject_facet', 'pub_date_facet' ) ) ) { continue; }
 		$facet_list_count = 0; ?>
-		<li class="facet-set-item">Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?>
+		<li class="facet-set-item"><h5>Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
 		<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
 		$sorted_counts = $facet_values['counts'];
 		if ( "pub_date_facet" === $facet_key ) {

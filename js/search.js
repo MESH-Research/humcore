@@ -1,7 +1,7 @@
 // Facet widget button control
 jQuery( document ).ready( function( $ ) {
 
-	$( '.widget_deposits_search_facets_widget .facet-display-button' ).on('click', function() {
+	$( '.search-facets .facet-display-button' ).on('click', function() {
 
 		if ( $( this ).find( '.show-more' ).length ) {
 			if ( $( this ).siblings( 'li:hidden' ).length > 10 ) {
@@ -21,7 +21,7 @@ jQuery( document ).ready( function( $ ) {
 
 	} );
 
-	$( '.widget_deposits_directory_sidebar_widget .facet-display-button' ).on('click', function() {
+	$( '.directory-facets .facet-display-button' ).on('click', function() {
 
 		if ( $( this ).find( '.show-more' ).length ) {
 			if ( $( this ).siblings( 'li:hidden' ).length > 10 ) {

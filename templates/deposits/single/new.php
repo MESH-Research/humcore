@@ -10,13 +10,13 @@
 <?php Humcore_Theme_Compatibility::get_header(); ?>
 
 	<div id="content">
-		<div class="padder">
+		<div id="buddypress">
 
 			<?php do_action( 'bp_before_deposit_plugin_template' ); ?>
 
 			<div id="item-header">
 
-				<?php bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
+				<?php //bp_locate_template( array( 'deposits/single/deposit-header.php' ), true ); ?>
 
 			</div><!-- #item-header -->
 <!--
@@ -30,7 +30,7 @@
 
                                         </ul>
                                 </div>
-                        </div><!-- #item-nav -->
+                        </div>--><!-- #item-nav -->
 
 			<div id="item-body" role="main">
 
@@ -56,7 +56,7 @@
 
 			<?php do_action( 'bp_after_deposit_plugin_template' ); ?>
 
-		</div><!-- .padder -->
+		</div><!-- #buddypress -->
 	</div><!-- #content -->
 
 <?php //get_sidebar( 'buddypress' ); ?>
