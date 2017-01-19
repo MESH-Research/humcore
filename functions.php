@@ -1100,7 +1100,7 @@ function humcore_deposits_new_item_screen() {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		add_filter( 'body_class', 'humcore_deposit_new_item_page_class_names' );
 		do_action( 'humcore_deposits_new_item_screen' );
-		add_action( 'bp_template_content', 'humcore_deposit_form' );
+		add_action( 'bp_template_content', 'humcore_new_deposit_form' );
 		ob_start(); // we might redirect in the action so capture any output.
 		bp_get_template_part( apply_filters( 'humcore_deposits_new_item_screen', 'deposits/single/new' ) );
 	}

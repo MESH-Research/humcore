@@ -24,7 +24,7 @@
                                         <?php if ( is_home() ): ?>
                                                 <?php get_template_part( 'content' ); ?>
                                         <?php else: ?>
-                                                <?php get_template_part( 'content', 'page' ); ?>
+                                                <?php get_template_part( 'content', 'only' ); ?>
                                         <?php endif; ?>
 
                                         <?php comments_template( '', true ); ?>

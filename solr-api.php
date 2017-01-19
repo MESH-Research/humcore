@@ -398,6 +398,7 @@ class Humcore_Deposit_Solr_Api {
 			if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
 			        humcore_write_error_log( 'info', 'solr debug', $info );
 			}
+			        humcore_write_error_log( 'info', 'solr debug', $info );
 			// End of debug.
 			throw $e;
 		}
