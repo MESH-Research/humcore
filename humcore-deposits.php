@@ -149,6 +149,40 @@ function humcore_register_taxonomies() {
 	register_taxonomy( 'humcore_deposit_tag', array( 'humcore_deposit' ), $args );
 	register_taxonomy_for_object_type( 'humcore_deposit_tag', 'humcore_deposit' );
 
+	// Add new taxonomy, NOT hierarchical (like tags).
+	$labels = array(
+		'name'                       => _x( 'Languages', 'taxonomy general name', 'humcore_domain' ),
+		'singular_name'              => _x( 'Language', 'taxonomy singular name', 'humcore_domain' ),
+		'search_items'               => __( 'Search Languages', 'humcore_domain' ),
+		'popular_items'              => __( 'Popular Languages', 'humcore_domain' ),
+		'all_items'                  => __( 'All Languages', 'humcore_domain' ),
+		'parent_item'                => null,
+		'parent_item_colon'          => null,
+		'edit_item'                  => __( 'Edit Language', 'humcore_domain' ),
+		'update_item'                => __( 'Update Language', 'humcore_domain' ),
+		'add_new_item'               => __( 'Add New Language', 'humcore_domain' ),
+		'new_item_name'              => __( 'New Language Name', 'humcore_domain' ),
+		'separate_items_with_commas' => __( 'Separate languages with commas', 'humcore_domain' ),
+		'add_or_remove_items'        => __( 'Add or remove languages', 'humcore_domain' ),
+		'choose_from_most_used'      => __( 'Choose from the most used languages', 'humcore_domain' ),
+		'not_found'                  => __( 'No languages found.', 'humcore_domain' ),
+		'menu_name'                  => __( 'Languages', 'humcore_domain' ),
+	);
+
+	$args = array(
+		'public'                => false,
+		'hierarchical'          => false,
+		'labels'                => $labels,
+		'show_ui'               => $taxonomy_ui_setting,
+		'show_admin_column'     => false,
+		'update_count_callback' => '_update_post_term_count',
+		'query_var'             => false,
+		'rewrite'               => false,
+	);
+
+	register_taxonomy( 'humcore_deposit_language', array( 'humcore_deposit' ), $args );
+	register_taxonomy_for_object_type( 'humcore_deposit_language', 'humcore_deposit' );
+
 }
 // Hook into the init action and call humcore_create_taxonomies when init fires.
 add_action( 'init', 'humcore_register_taxonomies' );
