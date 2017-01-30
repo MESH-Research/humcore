@@ -398,6 +398,29 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	</div>
 	</p>
 	<p>
+	<label for="deposit-language">Language</label>
+	<div id="deposit-language-entry">
+		<select name="deposit-language" id="deposit-language" class="js-basic-single-optional" data-placeholder="Select a language" data-allowClear="true">
+			<option class="level-0" selected="selected" value=""></option>
+
+<?php
+	$language_list = humcore_deposits_language_list();
+	$posted_language = '';
+	if ( ! empty( $prev_val['deposit-language'] ) ) {
+		$posted_language( $prev_val['deposit-language'] );
+	}
+	foreach ( $language_list as $language_key => $language_value ) {
+		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $language_key == $posted_language ) ? 'selected="selected"' : '',
+			$language_key,
+			$language_value
+		);
+	}
+?>
+		</select>
+	</div>
+	</p>
+	<p>
 	<div id="deposit-notes-entry">
 		<label for="deposit-notes">Notes or Background</label>
 		<span class="description">Any additional information about your item?</span><br />
@@ -1284,6 +1307,8 @@ function humcore_deposit_item_review_content() {
 <?php endif; ?>
 <dt><?php _e( 'File Type:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $metadata['type_of_resource'] ); ?></dd>
+<dt><?php _e( 'Language:', 'humcore_domain' ); ?></dt>
+<dd><?php echo esc_html( $metadata['language'] ); ?></dd>
 <dt><?php _e( 'Notes:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['notes_unchanged'] ) ) : ?>
 <dd><?php echo $metadata['notes_unchanged']; ?></dd>

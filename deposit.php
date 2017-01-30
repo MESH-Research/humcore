@@ -645,7 +645,7 @@
 		}
 
 		$metadata['type_of_resource'] = sanitize_text_field( $_POST['deposit-resource-type'] );
-		$metadata['language'] = 'English';
+		$metadata['language'] = sanitize_text_field( $_POST['deposit-language'] );
 		$metadata['notes'] = sanitize_text_field( stripslashes( $_POST['deposit-notes-unchanged'] ) ); // Where do they go in MODS?
 		$metadata['notes_unchanged'] = wp_kses(
 				stripslashes( $_POST['deposit-notes-unchanged'] ),
@@ -1155,6 +1155,18 @@
 		}
 
 		/**
+		 * Format MODS xml fragment for language.
+		 */
+		$languageMODS = '';
+		if ( ! empty( $metadata['language'] ) ) {
+			$term = wpmn_get_term_by( 'name', $metadata['language'], 'humcore_deposit_language' );
+			$languageMODS = '
+			<language>
+                                <languageTerm authority="iso639-3" >' . $term->slug . '</languageTerm>
+                        </language>';
+		}
+
+		/**
 		 * Format MODS xml fragment for genre.
 		 */
 		$genreMODS = '';
@@ -1345,16 +1357,14 @@
 			' . $resourceTypeMODS . '
 			' . $genreMODS . '
 			' . $dateIssuedMODS . '
-			<language>
-				<languageTerm type="text">' . $metadata['language'] . '</languageTerm>
-			</language>
+			' . $languageMODS . '
 			<abstract>' . htmlspecialchars( $metadata['abstract'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) . '</abstract>
 			' . $subjectMODS . '
 			' . $relatedItemMODS . '
 			<recordInfo>
 				<recordCreationDate encoding="w3cdtf">' . date( 'Y-m-d H:i:s O' ) . '</recordCreationDate>
 				<languageOfCataloging>
-					<languageTerm authority="iso639-2b">eng</languageTerm>
+					<languageTerm authority="iso639-3">eng</languageTerm>
 				</languageOfCataloging>
 			</recordInfo>
 		</mods>';

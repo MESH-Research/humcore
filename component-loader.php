@@ -396,10 +396,12 @@ class Humcore_Deposit_Component extends BP_Component {
 			return $title;
 		}
  
-        	if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
-			$title = 'Deposit Item' . " $sep " . $wp->query_vars['deposits_item'] . " $sep ";
-                	if ( 'review' === $wp->query_vars['deposits_command'] ) {
-				$title .= $wp->query_vars['deposits_command'] . " $sep ";
+		if ( ! empty( $wp->query_vars['pagename'] ) ) {
+        		if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
+				$title = 'Deposit Item' . " $sep " . $wp->query_vars['deposits_item'] . " $sep ";
+                		if ( 'review' === $wp->query_vars['deposits_command'] ) {
+					$title .= $wp->query_vars['deposits_command'] . " $sep ";
+				}
 			}
 		}
 

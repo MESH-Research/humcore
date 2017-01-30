@@ -307,8 +307,23 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Language<br>
-				<input type="text" name="aggregator_language" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['language'] ); ?>">
-
+			<select name="aggregator_language">
+			<option class="level-0" selected value=""></option>
+<?php
+	$language_list = humcore_deposits_language_list();
+	$posted_language = '';
+	if ( ! empty( $aggregator_metadata['language'] ) ) {
+		$posted_language = esc_attr( $aggregator_metadata['language'] );
+	}
+	foreach ( $language_list as $language_key => $language_value ) {
+		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $language_key == $posted_language ) ? 'selected="selected"' : '',
+			$language_key,
+			$language_value
+		);
+	}
+?>
+			</select>
 			</label>
 		</p>
 		<p>

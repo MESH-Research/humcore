@@ -212,7 +212,7 @@ ul.deposits-item .list-item-value {
 	margin-bottom: 0 !important;
 	padding-bottom: 30 !important;
 }
-#deposit-genre-entry .buddyboss-select, #deposit-resource-type-entry .buddyboss-select,
+#deposit-genre-entry .buddyboss-select, #deposit-resource-type-entry .buddyboss-select, #deposit-language-entry .buddyboss-select,
 	#deposit-license-type-entry .buddyboss-select, #deposit-embargo-length-entry .buddyboss-select {
     display: none !important;
 }

@@ -486,11 +486,12 @@ function humcore_deposit_item_search_meta() {
 function humcore_is_deposit_welcome() {
 
 	global $wp;
-	if ( 'core' == $wp->query_vars['pagename'] ) {
-		return true;
-	} else {
-		return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'core' == $wp->query_vars['pagename'] ) {
+			return true;
+		}
 	}
+	return false;
 }
 
 /**
@@ -501,11 +502,12 @@ function humcore_is_deposit_welcome() {
 function humcore_is_deposit_terms_acceptance() {
 
 	global $wp;
-	if ( 'core/terms' == $wp->query_vars['pagename'] ) {
-		return true;
-	} else {
-		return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'core/terms' == $wp->query_vars['pagename'] ) {
+			return true;
+		}
 	}
+	return false;
 }
 
 /**
@@ -516,11 +518,12 @@ function humcore_is_deposit_terms_acceptance() {
 function humcore_is_deposit_search() {
 
 	global $wp;
-	if ( 'deposits' == $wp->query_vars['pagename'] && ! empty( $wp->query_vars['s'] ) || ! empty( $wp->query_vars['facets'] ) ) {
-		return true;
-	} else {
-		return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits' == $wp->query_vars['pagename'] && ! empty( $wp->query_vars['s'] ) || ! empty( $wp->query_vars['facets'] ) ) {
+			return true;
+		}
 	}
+	return false;
 }
 
 /**
@@ -531,11 +534,12 @@ function humcore_is_deposit_search() {
 function humcore_is_deposit_directory() {
 
 	global $wp;
-	if ( 'deposits' == $wp->query_vars['pagename'] && ! is_feed() ) {
-		return true;
-	} else {
-		return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits' == $wp->query_vars['pagename'] && ! is_feed() ) {
+			return true;
+		}
 	}
+	return false;
 }
 
 /**
@@ -545,12 +549,13 @@ function humcore_is_deposit_directory() {
  */
 function humcore_is_deposit_feed() {
 
-        global $wp;
-        if ( 'deposits' === $wp->query_vars['pagename'] && is_feed() ) {
-                return true;
-        } else {
-                return false;
-        }
+	global $wp;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits' === $wp->query_vars['pagename'] && is_feed() ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -560,12 +565,13 @@ function humcore_is_deposit_feed() {
  */
 function humcore_is_deposit_list() {
 
-        global $wp;
-        if ( 'deposits/list' === $wp->query_vars['pagename'] ) {
-                return true;
-        } else {
-                return false;
-        }
+	global $wp;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits/list' === $wp->query_vars['pagename'] ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -576,15 +582,14 @@ function humcore_is_deposit_list() {
 function humcore_is_deposit_item() {
 
 	global $wp;
-	if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
-		if ( 'new' != $wp->query_vars['deposits_item']  && 'review' !== $wp->query_vars['deposits_command'] ) {
-			return true;
-		} else {
-			return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
+			if ( 'new' != $wp->query_vars['deposits_item']  && 'review' !== $wp->query_vars['deposits_command'] ) {
+				return true;
+			}
 		}
-	} else {
-		return false;
 	}
+	return false;
 }
 
 /**
@@ -595,15 +600,14 @@ function humcore_is_deposit_item() {
 function humcore_is_deposit_item_review() {
 
 	global $wp;
-	if ( 'deposits/item' === $wp->query_vars['pagename'] ) {
-		if ( 'new' !== $wp->query_vars['deposits_item']  && 'review' === $wp->query_vars['deposits_command'] ) {
-			return true;
-		} else {
-			return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits/item' === $wp->query_vars['pagename'] ) {
+			if ( 'new' !== $wp->query_vars['deposits_item']  && 'review' === $wp->query_vars['deposits_command'] ) {
+				return true;
+			}
 		}
-	} else {
-		return false;
 	}
+	return false;
 }
 
 /**
@@ -614,15 +618,14 @@ function humcore_is_deposit_item_review() {
 function humcore_is_deposit_new_page() {
 
 	global $wp;
-	if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
-		if ( 'new' == $wp->query_vars['deposits_item'] ) {
-			return true;
-		} else {
-			return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
+			if ( 'new' == $wp->query_vars['deposits_item'] ) {
+				return true;
+			}
 		}
-	} else {
-		return false;
 	}
+	return false;
 }
 
 /**
@@ -633,11 +636,12 @@ function humcore_is_deposit_new_page() {
 function humcore_is_deposit_download() {
 
 	global $wp;
-	if ( 'deposits/download' == $wp->query_vars['pagename'] ) {
-		return true;
-	} else {
-		return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits/download' == $wp->query_vars['pagename'] ) {
+			return true;
+		}
 	}
+	return false;
 }
 
 /**
@@ -648,11 +652,12 @@ function humcore_is_deposit_download() {
 function humcore_is_deposit_view() {
 
 	global $wp;
-	if ( 'deposits/view' == $wp->query_vars['pagename'] ) {
-		return true;
-	} else {
-		return false;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits/view' == $wp->query_vars['pagename'] ) {
+			return true;
+		}
 	}
+	return false;
 }
 
 /**
@@ -1392,6 +1397,7 @@ function humcore_deposits_genre_list() {
 	$genre_list['Blog Post'] = 'Blog post';
 	$genre_list['Book'] = 'Book';
 	$genre_list['Book chapter'] = 'Book chapter';
+	$genre_list['Book review'] = 'Book review';
 	$genre_list['Book section'] = 'Book section';
 	$genre_list['Catalog'] = 'Catalog';
 	$genre_list['Chart'] = 'Chart';
@@ -1446,7 +1452,7 @@ function humcore_deposits_group_list( $user_id ) {
 	$args = array(
 		'user_id' => $user_id,
 		'type' => 'alphabetical',
-		'per_page' => '500',
+		'per_page' => '1000',
 	);
 
 	$d_groups = groups_get_groups( $args );
@@ -1569,6 +1575,33 @@ function humcore_deposits_keyword_list() {
 	natcasesort( $keywords_list );
 
 	return apply_filters( 'bp_humcore_deposits_keyword_list', $keywords_list );
+
+}
+
+/**
+ * Return the language list.
+ *
+ * @return array
+ */
+function humcore_deposits_language_list() {
+
+	$keywords_list = array();
+
+	$language_terms = wpmn_get_terms(
+		'humcore_deposit_language',
+		array(
+			'orderby' => 'name',
+			'fields' => 'names',
+			'hide_empty' => 0,
+		)
+	);
+	foreach ( $language_terms as $term ) {
+		$languages_list[ $term ] = $term;
+	}
+
+	natcasesort( $languages_list );
+
+	return apply_filters( 'bp_humcore_deposits_language_list', $languages_list );
 
 }
 
