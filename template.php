@@ -290,7 +290,7 @@ function humcore_get_deposit_pagination_count() {
 	);
 	$total = bp_core_number_format( $deposits_results->total_deposit_count );
 
-	return sprintf( _n( 'Viewing item %1$s to %2$s (of %3$s item)', 'Viewing item %1$s to %2$s (of %3$s items)', $total, 'humcore_domain' ), $from_num, $to_num, $total );
+	return sprintf( _n( 'Viewing item %1$s to %2$s (of %3$s items)', 'Viewing item %1$s to %2$s (of %3$s items)', $total, 'humcore_domain' ), $from_num, $to_num, $total );
 }
 
 /**
