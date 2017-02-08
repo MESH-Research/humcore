@@ -240,9 +240,13 @@ class Humcore_Deposit_Solr_Api {
 				$record['keyword'] = $document->keyword_search;
 				$record['handle'] = $document->handle;
 				$record['genre'] = $document->genre_facet[0];
-				$record['notes'] = implode( ' ', $document->notes );
-				$record['notes_unchanged'] = implode( ' ', $document->notes_unchanged );
-				if ( '' == $document->notes_unchanged ) {
+				if ( ! empty( $document->notes ) ) {
+					$record['notes'] = implode( ' ', $document->notes );
+				}
+				if ( ! empty( $document->notes_unchanged ) ) {
+					$record['notes_unchanged'] = implode( ' ', $document->notes_unchanged );
+				}
+				if ( '' == $document->notes_unchanged && ! empty( $document->notes ) ) {
 					$record['notes_unchanged'] = implode( ' ', $document->notes );
 				}
 				$record['book_journal_title'] = $document->book_journal_title;
@@ -750,10 +754,14 @@ class Humcore_Deposit_Solr_Api {
 			$record['keyword'] = $document->keyword_search;
 			$record['handle'] = $document->handle;
 			$record['genre'] = $document->genre_facet[0];
-			$record['notes'] = implode( ' ', $document->notes );
-			$record['notes_unchanged'] = implode( ' ', $document->notes_unchanged );
-			if ( '' == $document->notes_unchanged ) {
-				$record['notes_unchanged'] = $document->notes;
+			if ( ! empty( $document->notes ) ) {
+				$record['notes'] = implode( ' ', $document->notes );
+			}
+			if ( ! empty( $document->notes_unchanged ) ) {
+				$record['notes_unchanged'] = implode( ' ', $document->notes_unchanged );
+			}
+			if ( '' == $document->notes_unchanged && ! empty( $document->notes ) ) {
+				$record['notes_unchanged'] = implode( ' ', $document->notes );
 			}
 			$record['book_journal_title'] = $document->book_journal_title;
 			$record['book_author'] = $document->book_author[0];
