@@ -407,7 +407,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	$language_list = humcore_deposits_language_list();
 	$posted_language = '';
 	if ( ! empty( $prev_val['deposit-language'] ) ) {
-		$posted_language( $prev_val['deposit-language'] );
+		$posted_language = sanitize_text_field( $prev_val['deposit-language'] );
 	}
 	foreach ( $language_list as $language_key => $language_value ) {
 		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",

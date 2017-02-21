@@ -101,11 +101,12 @@
 		$check_filetype = wp_check_filetype( $filename, wp_get_mime_types() );
 		$filetype = $check_filetype['type'];
 
-		if ( preg_match( '~^image/~', $check_filetype['type'] ) ) {
+		if ( preg_match( '~^image/|/pdf$~', $check_filetype['type'] ) ) {
 			$thumb_image = wp_get_image_editor( $renamed_file );
 			if ( ! is_wp_error( $thumb_image ) ) {
 				$current_size = $thumb_image->get_size();
 				$thumb_image->resize( 150, 150, false );
+				$thumb_image->set_quality( 95 );
 				$thumb_filename = $thumb_image->generate_filename( 'thumb', $fedora_api->tempDir . '/', 'jpg' );
 				$generated_thumb = $thumb_image->save( $thumb_filename, 'image/jpeg' );
 				$generated_thumb_path = $generated_thumb['path'];
@@ -118,6 +119,8 @@
 		}
 
 		humcore_write_error_log( 'info', 'HumCORE deposit started' );
+		humcore_write_error_log( 'info', 'HumCORE deposit - check_filetype ' . var_export( $check_filetype, true ) );
+		humcore_write_error_log( 'info', 'HumCORE deposit - thumb_image ' . var_export( $thumb_image, true ) );
 
 		/**
 		 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr.
@@ -129,7 +132,6 @@
 			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - nextPids : %1$s-%2$s',  $nextPids->get_error_code(), $nextPids->get_error_message() ) );
 			return false;
 		}
-
 
 		$metadata = prepare_metadata( $nextPids );
 
@@ -389,7 +391,7 @@
 		/**
 		 * Upload the thumb to the Fedora server temp file storage if necessary.
 		 */
-		if ( preg_match( '~^image/~', $check_filetype['type'] ) ) {
+		if ( preg_match( '~^image/|/pdf$~', $check_filetype['type'] ) && ! empty( $generated_thumb_path ) ) {
 
 			$uploadUrl = $fedora_api->upload( array( 'file' => $generated_thumb_path, 'filename' => $generated_thumb_name, 'filetype' => $generated_thumb_mime ) );
 			if ( is_wp_error( $uploadUrl ) ) {
