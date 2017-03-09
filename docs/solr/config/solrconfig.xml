@@ -1122,6 +1122,11 @@
       <str name="captureAttr">true</str>
       <str name="fmap.a">links</str>
       <str name="fmap.div">ignored_</str>
+      <!-- ignore embedded meta -->
+      <str name="fmap.title">ignored_</str>
+      <str name="fmap.publisher">ignored_</str>
+      <str name="fmap.journal">ignored_</str>
+      <str name="fmap.issue">ignored_</str>
     </lst>
   </requestHandler>
 
