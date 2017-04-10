@@ -620,6 +620,9 @@
           <str name="facet.field">organization_facet</str>
           <str name="facet.field">department_facet</str>
           <str name="facet.field">group_facet</str>
+          <str name="facet.field">society_facet</str>
+          <str name="facet.field">language_facet</str>
+          <str name="facet.field">license_facet</str>
           <str name="facet.field">series_facet</str>
         </lst>
         <!-- query for single document to populate filter cache -->
@@ -640,6 +643,9 @@
           <str name="facet.field">organization_facet</str>
           <str name="facet.field">department_facet</str>
           <str name="facet.field">group_facet</str>
+          <str name="facet.field">society_facet</str>
+          <str name="facet.field">language_facet</str>
+          <str name="facet.field">license_facet</str>
           <str name="facet.field">series_facet</str>
         </lst>
       </arr>
@@ -663,6 +669,9 @@
           <str name="facet.field">organization_facet</str>
           <str name="facet.field">department_facet</str>
           <str name="facet.field">group_facet</str>
+          <str name="facet.field">society_facet</str>
+          <str name="facet.field">language_facet</str>
+          <str name="facet.field">license_facet</str>
           <str name="facet.field">series_facet</str>
         </lst>
         <!-- query for single document to populate filter cache -->
@@ -683,6 +692,9 @@
           <str name="facet.field">organization_facet</str>
           <str name="facet.field">department_facet</str>
           <str name="facet.field">group_facet</str>
+          <str name="facet.field">society_facet</str>
+          <str name="facet.field">language_facet</str>
+          <str name="facet.field">license_facet</str>
           <str name="facet.field">series_facet</str>
         </lst>
       </arr>
@@ -916,7 +928,7 @@
       <float name="tie">0.01</float>
 
       <!-- NOT using marc_display because it is large and will slow things down for search results -->
-      <str name="fl">id,score,author_display,author_facet,format,handle,record_creation_date,pub_date_facet,date_issued,title_display,subject_facet,genre_facet,organization_facet,department_facet,group_facet,series_facet,publisher,type_of_resource_facet,abstract,notes,language,type_of_resource_mods</str>
+      <str name="fl">id,score,author_display,author_facet,format,handle,record_creation_date,pub_date_facet,date_issued,title_display,subject_facet,genre_facet,organization_facet,department_facet,group_facet,society_facet,language_facet,license_facet,series_facet,publisher,type_of_resource_facet,abstract,notes,language,type_of_resource_mods</str>
      
       <str name="facet">true</str>
       <str name="facet.mincount">1</str>
@@ -930,6 +942,9 @@
       <str name="facet.field">organization_facet</str>
       <str name="facet.field">department_facet</str>
       <str name="facet.field">group_facet</str>
+      <str name="facet.field">society_facet</str>
+      <str name="facet.field">language_facet</str>
+      <str name="facet.field">license_facet</str>
       <str name="facet.field">series_facet</str>
       
       <str name="spellcheck">true</str>
@@ -1034,7 +1049,7 @@
       <str name="pf_keyword">text^10</str>
       
       <!-- NOT using marc_display because it is large and will slow things down for search results -->
-      <str name="fl">id,score,author_display,format,handle,pub_date_facet,title_display,subject_facet,genre_facet,organization_facet,department_facet,group_facet,series_facet,publisher</str>
+      <str name="fl">id,score,author_display,format,handle,pub_date_facet,title_display,subject_facet,genre_facet,organization_facet,department_facet,group_facet,society_facet,language_facet,license_facet,series_facet,publisher</str>
 
       <str name="facet">true</str>
       <str name="facet.mincount">1</str>
@@ -1048,6 +1063,9 @@
       <str name="facet.field">organization_facet</str>
       <str name="facet.field">department_facet</str>
       <str name="facet.field">group_facet</str>
+      <str name="facet.field">society_facet</str>
+      <str name="facet.field">language_facet</str>
+      <str name="facet.field">license_facet</str>
       <str name="facet.field">series_facet</str>
       
       <str name="spellcheck">true</str>
@@ -1122,6 +1140,11 @@
       <str name="captureAttr">true</str>
       <str name="fmap.a">links</str>
       <str name="fmap.div">ignored_</str>
+      <!-- ignore embedded meta -->
+      <str name="fmap.title">ignored_</str>
+      <str name="fmap.publisher">ignored_</str>
+      <str name="fmap.journal">ignored_</str>
+      <str name="fmap.issue">ignored_</str>
     </lst>
   </requestHandler>
 

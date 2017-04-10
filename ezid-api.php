@@ -16,7 +16,9 @@ class Humcore_Deposit_Ezid_Api {
 	private $options = array();
 	private $upload_filehandle = array(); // Handle the WP_HTTP inability to process file uploads by hooking curl settings.
 
+	/* getting removed
 	public $servername_hash;
+	*/
 	public $service_status;
 	public $namespace;
 	public $tempDir;
@@ -31,11 +33,13 @@ class Humcore_Deposit_Ezid_Api {
 
 		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
 
+		/* getting removed
 		if ( defined( 'CORE_EZID_HOST' ) && ! empty( CORE_EZID_HOST ) ) { // Better have a value if defined.
 			$this->servername_hash = md5( $humcoreSettings['servername'] );
 		} else {
 			$this->servername_hash = $humcoreSettings['servername_hash'];
 		}
+		*/
 
 		$this->service_status = $humcoreSettings['service_status'];
 
@@ -89,11 +93,13 @@ class Humcore_Deposit_Ezid_Api {
 		$this->options['api']['httpversion'] = '1.1';
 		$this->options['api']['sslverify'] = true;
 
+		/* getting removed
 		// Prevent copying prod config data to dev.
 		if ( ! empty( $this->servername_hash ) && $this->servername_hash != md5( $_SERVER['SERVER_NAME'] ) ) {
 			$this->baseUrl = '';
 			$this->options['api-auth']['headers']['Authorization'] = '';
 		}
+		*/
 
 	}
 

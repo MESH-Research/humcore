@@ -751,6 +751,8 @@
 			$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
 		}
 
+	// 	$metadata['society_id'] = Humanities_Commons::$society_id;
+
 		return $metadata;
 
 	}

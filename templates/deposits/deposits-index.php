@@ -21,29 +21,36 @@ Humcore_Theme_Compatibility::get_header(); ?>
 
     <div class="filters">
         <div class="row">
-            <div class="col-6">
+            <div class="col-12">
                 <div class="item-list-tabs" role="navigation">
-                    <ul>
                         <?php do_action( 'humcore_deposits_directory_deposit_sub_types' ); ?>
-                        <li id="deposits-order-select" class="filter">
+                        <div class="filter-type sort">
 
                             <label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
 
                             <select id="deposits-order-by">
-                                <option value="newest"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
-                                <option value="alphabetical"><?php _e( 'Title', 'humcore_domain' ); ?></option>
+                                <option value="newest" selected="selected"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
+                                <option value="alphabetical"><?php _e( 'Alphabetical', 'humcore_domain' ); ?></option>
 
                                 <?php do_action( 'humcore_deposits_directory_order_options' ); ?>
                             </select>
-                        </li>
-                    </ul>
-                </div><!-- .item-list-tabs -->
-            </div><!-- .col-6 -->
-            <div class="col-6">
-                <div id="deposits-dir-search" class="dir-search" role="search">
+                        </div>
+                        <div class="filter-type search">
+
+                            <label for="search-deposits-field"><?php _e( 'Search Field:', 'humcore_domain' ); ?></label>
+
+                            <select id="search-deposits-field">
+                                <option value="all" selected="selected">All Fields</option>
+                                <option value="author">Author</option>
+                                <option value="subject">Subject</option>
+                                <option value="tag">Tag</option>
+                                <option value="title">Title</option>
+
+                            </select>
+                        </div>
                     <?php humcore_deposits_search_form(); ?>
-                </div><!-- #deposits-dir-search -->
-            </div><!-- .col-6 -->
+                </div><!-- .item-list-tabs -->
+            </div><!-- .col-12 -->
         </div><!-- .row -->
     </div><!-- .filters -->
 
