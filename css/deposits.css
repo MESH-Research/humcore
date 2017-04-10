@@ -1,12 +1,4 @@
-/* temp - should go in boss custom.css */
-/* .society-aseees .site-header .left-col .icon#left-menu-toggle { display: none; } */
-
 /* core pages */
-/* goodbye
-#page p {
-    margin: 1em 0 1em 0;
-}
-*/
 .humcore ul {
     list-style: disc !important;
     list-style-position: outside !important;
@@ -23,13 +15,6 @@ ul#deposit-other-authors-entry-list {
 	margin-left: 0px;
 }
 */
-/* goodbye
-li#deposits-groups-li a:before,
-li#deposits-personal-li a:before,
-#user-deposits:before {
-    content: "M"
-}
-*/
 .page-template-deposit div.column.twelve.sidebar-left {
     width: 75% !important;
 }
@@ -39,8 +24,17 @@ li#deposits-personal-li a:before,
     width: 75% !important;
 }
 */
+#deposits-dir-search {
+	margin-top: 18px;
+}
 .search-page div.item-list-tabs ul li {
 	float: none;
+}
+.buddyboss-select #deposits-order-by {
+    min-width: 165px !important;
+}
+.buddyboss-select #search-deposits-field {
+    min-width: 125px !important;
 }
 /* deposit directory styles */
 .deposits-directory-page .dir-form h3 .button {

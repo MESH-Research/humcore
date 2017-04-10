@@ -17,11 +17,18 @@ function humcore_deposits_search_form() {
 	$search_value = '';
 	if ( ! empty( $_REQUEST['s'] ) ) { $search_value = stripslashes( $_REQUEST['s'] ); }
 
-	$search_form_html = '<form action="" method="get" id="search-deposits-form">
-			<label><input type="text" name="s" id="search-deposits-term" value="' . esc_attr( $search_value ) . '" placeholder="'. esc_attr( $default_search_value ) .'" /></label>
-			<input type="hidden" name="facets" id="search-deposits-facets"></input>
-			<input type="submit" id="search-deposits-submit" name="search_deposits_submit" value="' . __( 'Search', 'humcore_domain' ) . '" />
-			</form>';
+	$search_form_html = '
+<div id="deposits-dir-search" class="dir-search" role="search">
+  <form action="" method="post" id="search-deposits-form">
+	<label>
+	<input type="text" name="s" id="search-deposits-term" value="' . esc_attr( $search_value ) . '" placeholder="'. esc_attr( $default_search_value ) .'" />
+	</label>
+	<input type="hidden" name="facets" id="search-deposits-facets" />
+	<input type="hidden" name="field" id="search-deposits-field" />
+	<input type="submit" id="search-deposits-submit" name="search_deposits_submit" value="' . __( 'Search', 'humcore_domain' ) . '" />
+  </form>
+</div><!-- #deposits-dir-search -->
+';
 
 	echo apply_filters( 'humcore_deposits_search_form', $search_form_html ); // XSS OK.
 }

@@ -17,7 +17,9 @@ class Humcore_Deposit_Fedora_Api {
 	private $options = array();
 	private $upload_filehandle = array(); // Handle the WP_HTTP inability to process file uploads by hooking curl settings.
 
+	/* getting removed
 	public $servername_hash;
+	*/
 	public $service_status;
 	public $namespace;
 	public $tempDir;
@@ -50,11 +52,13 @@ class Humcore_Deposit_Fedora_Api {
                         $this->fedoraSettings['password'] = CORE_FEDORA_PASSWORD;
                 }
 		$this->baseUrl = $this->fedoraSettings['protocol'] . $this->fedoraSettings['host'] . ':' . $this->fedoraSettings['port'] . $this->fedoraSettings['path'];
+		/* getting removed
                 if ( defined( 'CORE_FEDORA_HOST' ) && ! empty( CORE_FEDORA_HOST ) ) { // Better have a value if defined.
                         $this->servername_hash = md5( $humcoreSettings['servername'] );
                 } else {
                         $this->servername_hash = $humcoreSettings['servername_hash'];
                 }
+		*/
 
                 $this->service_status = $humcoreSettings['service_status'];
 
@@ -82,11 +86,13 @@ class Humcore_Deposit_Fedora_Api {
 		$this->options['api-a']['httpversion'] = '1.1';
 		$this->options['api-a']['sslverify'] = true;
 
+		/* getting removed
 		// Prevent copying prod config data to dev.
 		if ( ! empty( $this->servername_hash ) && $this->servername_hash != md5( $_SERVER['SERVER_NAME'] ) ) {
 			$this->baseUrl = '';
 			$this->options['api-m']['headers']['Authorization'] = '';
 		}
+		*/
 
 	}
 

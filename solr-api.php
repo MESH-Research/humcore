@@ -14,7 +14,9 @@ class Humcore_Deposit_Solr_Api {
 	protected $config;
 	public $client;
 	public $select_query;
+	/* getting removed
 	public $servername_hash;
+	*/
 	public $service_status;
 	public $namespace;
 	public $tempDir;
@@ -30,12 +32,14 @@ class Humcore_Deposit_Solr_Api {
 		}
 
 		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
+		/* getting removed
                 if ( defined( 'CORE_SOLR_HOST' ) && ! empty( CORE_SOLR_HOST ) ) { // Better have a value if defined.
                         $this->servername_hash = md5( $humcoreSettings['servername'] );
                 } else {
                         $this->servername_hash = $humcoreSettings['servername_hash'];
                 }
-                
+		*/
+
                 $this->service_status = $humcoreSettings['service_status'];
                 
                 if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) {
@@ -79,10 +83,12 @@ class Humcore_Deposit_Solr_Api {
 			),
 		);
 
+		/* getting removed
 		// Prevent copying prod config data to dev.
 		if ( ! empty( $this->servername_hash ) && $this->servername_hash != md5( $_SERVER['SERVER_NAME'] ) ) {
 			$config['endpoint']['solrhost']['host'] = '';
 		}
+		*/
 
 		$this->client = new Solarium\Client( $config );
 
@@ -235,6 +241,9 @@ class Humcore_Deposit_Solr_Api {
 				$record['authors'] = $document->author_facet;
 				$record['author_info'] = $document->author_info;
 				$record['group'] = $document->group_facet;
+				$record['society_id'] = $document->society_facet;
+				$record['language'] = $document->language_facet;
+				$record['type_of_license'] = $document->_facet;
 				$record['organization'] = $document->organization_facet;
 				$record['subject'] = $document->subject_facet;
 				$record['keyword'] = $document->keyword_search;
@@ -270,7 +279,8 @@ class Humcore_Deposit_Solr_Api {
 				$record['meeting_organization'] = $document->meeting_organization;
 				$record['meeting_location'] = $document->meeting_location;
 				$record['meeting_date'] = $document->meeting_date;
-				$record['language'] = $document->language;
+				$record['publication_type'] = $document->publication_type;
+				$record['language'] = $document->language; //TODO convert solr contents to language_facet
 				$record['type_of_resource'] = $document->type_of_resource_facet[0];
 				$record['record_content_source'] = $document->record_content_source;
 				$record['record_creation_date'] = $document->record_creation_date;
@@ -309,7 +319,7 @@ class Humcore_Deposit_Solr_Api {
 		$doc = $query->createDocument();
 		$doc->id = $metadata['id'];
 		$doc->pid = $metadata['pid'];
-		$doc->language = $metadata['language'];
+		$doc->language = $metadata['language']; //TODO convert solr docs to user language_facet
 		$doc->title_display = $metadata['title'];
 		$doc->title_search = $metadata['title'];
 		$doc->title_unchanged = $metadata['title_unchanged'];
@@ -331,6 +341,9 @@ class Humcore_Deposit_Solr_Api {
 			$doc->genre_search = array( $metadata['genre'] );
 		}
 		$doc->group_facet = $metadata['group'];
+		$doc->society_facet = $metadata['society_id'];
+		$doc->language_facet = $metadata['language'];
+		$doc->license_facet = $metadata['type_of_license'];
 		if ( ! empty( $metadata['subject'] ) ) {
 			$doc->subject_facet = $metadata['subject'];
 			$doc->subject_search = $metadata['subject'];
@@ -344,7 +357,7 @@ class Humcore_Deposit_Solr_Api {
 		$doc->handle = $metadata['handle'];
 		$doc->notes = array( $metadata['notes'] );
 		$doc->notes_unchanged = array( $metadata['notes_unchanged'] );
-		if ( ! empty( $metadata['book_journal_title'] ) ) {$doc->book_journal_title = $metadata['book_journal_title']; }
+		if ( ! empty( $metadata['book_journal_title'] ) ) { $doc->book_journal_title = $metadata['book_journal_title']; }
 		if ( ! empty( $metadata['book_author'] ) ) { $doc->book_author = array( $metadata['book_author'] ); }
 		if ( ! empty( $metadata['publisher'] ) ) { $doc->publisher = $metadata['publisher']; }
 		if ( ! empty( $metadata['isbn'] ) ) { $doc->isbn = $metadata['isbn']; }
@@ -365,6 +378,7 @@ class Humcore_Deposit_Solr_Api {
 		if ( ! empty( $metadata['meeting_organization'] ) ) { $doc->meeting_organization = $metadata['meeting_organization']; }
 		if ( ! empty( $metadata['meeting_location'] ) ) { $doc->meeting_location = $metadata['meeting_location']; }
 		if ( ! empty( $metadata['meeting_date'] ) ) { $doc->meeting_date = $metadata['meeting_date']; }
+		if ( ! empty( $metadata['publication_type'] ) ) { $doc->publication_type = $metadata['publication_type']; }
 		$doc->date_issued = $metadata['date_issued'];
 		$doc->pub_date_facet = array( $metadata['date_issued'] );
 		if ( ! empty( $metadata['type_of_resource'] ) ) {
@@ -445,7 +459,7 @@ class Humcore_Deposit_Solr_Api {
 		if ( ! empty( $file ) ) {
 			$doc->content = file_get_contents( $file );
 		}
-		$doc->language = $metadata['language'];
+		$doc->language = $metadata['language']; //TODO convert solr docs to use language_facet
 		$doc->title_display = $metadata['title'];
 		$doc->title_search = $metadata['title'];
 		$doc->title_unchanged = $metadata['title_unchanged'];
@@ -467,6 +481,9 @@ class Humcore_Deposit_Solr_Api {
 			$doc->genre_search = array( $metadata['genre'] );
 		}
 		$doc->group_facet = $metadata['group'];
+		$doc->society_facet = $metadata['society_id'];
+		$doc->language_facet = $metadata['language'];
+		$doc->license_facet = $metadata['type_of_license'];
 		if ( ! empty( $metadata['subject'] ) ) {
 			$doc->subject_facet = $metadata['subject'];
 			$doc->subject_search = $metadata['subject'];
@@ -501,6 +518,7 @@ class Humcore_Deposit_Solr_Api {
 		if ( ! empty( $metadata['meeting_organization'] ) ) { $doc->meeting_organization = $metadata['meeting_organization']; }
 		if ( ! empty( $metadata['meeting_location'] ) ) { $doc->meeting_location = $metadata['meeting_location']; }
 		if ( ! empty( $metadata['meeting_date'] ) ) { $doc->meeting_date = $metadata['meeting_date']; }
+		if ( ! empty( $metadata['publication_type'] ) ) { $doc->publication_type = $metadata['publication_type']; }
 		$doc->date_issued = $metadata['date_issued'];
 		$doc->pub_date_facet = array( $metadata['date_issued'] );
 		if ( ! empty( $metadata['type_of_resource'] ) ) {
@@ -574,7 +592,8 @@ class Humcore_Deposit_Solr_Api {
 		$fac_count = -1; // All the facet values.
 		$lucene_reserved_characters = preg_quote( '+-&|!(){}[]^"~*?:\\' );
 		$facets_array = array(
-			'author_facet', 'organization_facet', 'group_facet', 'subject_facet', 'genre_facet', 'pub_date_facet', 'type_of_resource_facet',
+			'author_facet', 'organization_facet', 'group_facet', 'society_facet', 'language_facet', 'license_facet', 'subject_facet',
+			'genre_facet', 'pub_date_facet', 'type_of_resource_facet',
 		);
 
 		if ( ! empty( $facet_options ) && ! is_array( $facet_options ) ) {
@@ -590,22 +609,22 @@ class Humcore_Deposit_Solr_Api {
 
 		$query->setFields( array(
 			'id', 'pid', 'title_display', 'title_unchanged', 'abstract', 'abstract_unchanged', 'pub_date_facet', 'date', 'author_display',
-			'author_facet', 'author_uni', 'author_info', 'organization_facet', 'group_facet', 'subject_facet', 'keyword_search', 'handle',
-			'genre_facet', 'notes', 'notes_unchanged', 'book_journal_title', 'book_author', 'publisher', 'isbn', 'issn', 'doi', 'volume',
-			'issue', 'book_chapter', 'start_page', 'end_page', 'language', 'institution', 'conference_title', 'conference_organization',
-			'conference_location', 'conference_date', 'meeting_title', 'meeting_organization', 'meeting_location', 'meeting_date',
-			'date_issued', 'type_of_resource_facet', 'record_content_source', 'record_creation_date', 'record_change_date',
-			'record_identifier', 'member_of', 'free_to_read_start_date', 'score',
+			'author_facet', 'author_uni', 'author_info', 'organization_facet', 'group_facet', 'society_facet', 'language_facet', 'license_facet',
+			'subject_facet', 'keyword_search', 'handle', 'genre_facet', 'notes', 'notes_unchanged', 'book_journal_title', 'book_author',
+			'publisher', 'isbn', 'issn', 'doi', 'volume', 'issue', 'book_chapter', 'start_page', 'end_page', 'language', 'institution',
+			'conference_title', 'conference_organization', 'conference_location', 'conference_date', 'meeting_title', 'meeting_organization',
+			'meeting_location', 'meeting_date', 'publication_type', 'date_issued', 'type_of_resource_facet', 'record_content_source',
+			'record_creation_date', 'record_change_date', 'record_identifier', 'member_of', 'free_to_read_start_date', 'score',
 		) );
 
 		if ( null != $sort ) {
-			if ( 'date' == $sort ) {
+			if ( 'newest' == $sort ) {
 				$sort_field = 'record_creation_date';
 				$sort_value = $query::SORT_DESC;
 			} else if ( 'author' == $sort ) {
 				$sort_field = 'author_sort';
 				$sort_value = $query::SORT_ASC;
-			} else if ( 'title' == $sort ) {
+			} else if ( 'alphabetical' == $sort ) {
 				$sort_field = 'title_sort';
 				$sort_value = $query::SORT_ASC;
 			} else {
@@ -698,6 +717,7 @@ class Humcore_Deposit_Solr_Api {
 			$query->setStart( $st )->setRows( $number_of_res );
 		}
 
+//echo "QUERY",var_export($query,true),"<p>";
 		$resultset = $client->select( $query );
 
 		if ( ! empty( $facets_array ) ) {
@@ -728,6 +748,7 @@ class Humcore_Deposit_Solr_Api {
 		$resultSet = $client->select( $query );
 		$results = array();
 		$highlighting = $resultSet->getHighlighting();
+
 		$i = 1;
 		$cat_arr = array();
 
@@ -750,6 +771,9 @@ class Humcore_Deposit_Solr_Api {
 			$record['author_info'] = $document->author_info;
 			$record['organization'] = $document->organization_facet;
 			$record['group'] = $document->group_facet;
+			$record['society_id'] = $document->society_facet;
+			$record['language'] = $document->language_facet;
+			$record['type_of_license'] = $document->license_facet;
 			$record['subject'] = $document->subject_facet;
 			$record['keyword'] = $document->keyword_search;
 			$record['handle'] = $document->handle;
@@ -775,7 +799,6 @@ class Humcore_Deposit_Solr_Api {
 			$record['chapter'] = $document->book_chapter;
 			$record['start_page'] = $document->start_page;
 			$record['end_page'] = $document->end_page;
-			$record['language'] = $document->language;
 			$record['institution'] = $document->institution;
 			$record['conference_title'] = $document->conference_title;
 			$record['conference_organization'] = $document->conference_organization;
@@ -785,6 +808,8 @@ class Humcore_Deposit_Solr_Api {
 			$record['meeting_organization'] = $document->meeting_organization;
 			$record['meeting_location'] = $document->meeting_location;
 			$record['meeting_date'] = $document->meeting_date;
+			$record['publication_type'] = $document->publication_type;
+			$record['language'] = $document->language; //TODO convert solr contents to language_facet
 			$record['record_content_source'] = $document->record_content_source;
 			$record['record_content_source'] = $document->record_content_source;
 			$record['record_creation_date'] = $document->record_creation_date;

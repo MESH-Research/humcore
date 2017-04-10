@@ -77,18 +77,96 @@ jQuery( document ).ready( function( $ ) {
 
 	} );
 
-	$( '.search-page div.dir-search' ).off( 'click' );
-	$( '.search-page div.dir-search' ).on( 'click', function() {
-		var target = $( event.target );
+//                if ($.cookie('bp-deposits-filter')) {
+//                        $('select#deposits-order-by').val($.cookie('bp-deposits-filter'));
+//                }
+                $( '#deposits-order-by' ).on( 'change', function() {
 
-		if ( target.attr( 'type' ) == 'submit' ) {
-			var cookie_value = $.cookie( 'bp-deposits-extras' );
-			if ( cookie_value != null ) {
-				$( '#search-deposits-facets' ).val( cookie_value );
-			}
-			$( '#search-deposits-form' ).submit();
-		}
+                        var object = 'deposits';
+                        var scope = 'all';
+                        var filter = $('select#deposits-order-by').val();
+                        $.cookie('bp-deposits-filter',filter,{ path: '/' });
+                        var search_field = $('#search-deposits-field').val();
+                        $.cookie('bp-deposits-field',search_field,{ path: '/' });
+                        var search_terms = '';
+                        if ( $('.dir-search input#search-deposits-term').length ) {
+                                search_terms = $('.dir-search input#search-deposits-term').val();
+                        }
+                        if ($.cookie('bp-deposits-extras')) {
+                                $('#search-deposits-facets').val($.cookie('bp-deposits-extras'));
+                        }
 
+                        bp_filter_request( object, filter, scope, 'div.' + object, search_terms, 1, $.cookie('bp-' + object + '-extras') );
+
+                        return false;
+
+                });
+
+                //if ($.cookie('bp-deposits-field')) {
+                //        $('select#search-deposits-field').val($.cookie('bp-deposits-field'));
+                //}
+                $( '#search-deposits-field' ).on( 'change', function() {
+
+                        var object = 'deposits';
+                        var scope = 'all';
+                        var filter = $('select#deposits-order-by').val();
+                        $.cookie('bp-deposits-filter',filter,{ path: '/' });
+                        var search_field = $('#search-deposits-field').val();
+                        $.cookie('bp-deposits-field',search_field,{ path: '/' });
+                        var search_terms = '';
+                        if ( $('.dir-search input#search-deposits-term').length ) {
+                                search_terms = $('.dir-search input#search-deposits-term').val();
+                        }
+                        if ($.cookie('bp-deposits-extras')) {
+                                $('#search-deposits-facets').val($.cookie('bp-deposits-extras'));
+                        }
+
+                       	bp_filter_request( object, filter, scope, 'div.' + object, search_terms, 1, $.cookie('bp-' + object + '-extras') );
+
+                        return false;
+
+                });
+
+	$( '.dir-search input#search-deposits-term' ).on( 'change', function() {
+
+                        var object = 'deposits';
+                        var scope = 'all';
+                        var filter = $('select#deposits-order-by').val();
+                        $.cookie('bp-deposits-filter',filter,{ path: '/' });
+                        var search_field = $('#search-deposits-field').val();
+                        $.cookie('bp-deposits-field',search_field,{ path: '/' });
+                        var search_terms = '';
+                        if ( $('.dir-search input#search-deposits-term').length ) {
+                                search_terms = $('.dir-search input#search-deposits-term').val();
+                        }
+                        if ($.cookie('bp-deposits-extras')) {
+                                $('#search-deposits-facets').val($.cookie('bp-deposits-extras'));
+                        }
+
+                        bp_filter_request( object, filter, scope, 'div.' + object, search_terms, 1, $.cookie('bp-' + object + '-extras') );
+
+                        return false;
+	} );
+
+	$( '.dir-search input#search-deposits-submit' ).on( 'click', function() {
+
+                        var object = 'deposits';
+                        var scope = 'all';
+                        var filter = $('select#deposits-order-by').val();
+                        $.cookie('bp-deposits-filter',filter,{ path: '/' });
+                        var search_field = $('#search-deposits-field').val();
+                        $.cookie('bp-deposits-field',search_field,{ path: '/' });
+                        var search_terms = '';
+                        if ( $('.dir-search input#search-deposits-term').length ) {
+                                search_terms = $('.dir-search input#search-deposits-term').val();
+                        }
+                        if ($.cookie('bp-deposits-extras')) {
+                                $('#search-deposits-facets').val($.cookie('bp-deposits-extras'));
+                        }
+
+                        bp_filter_request( object, filter, scope, 'div.' + object, search_terms, 1, $.cookie('bp-' + object + '-extras') );
+
+                        return false;
 	} );
 
 	$('form#core-terms-acceptance-form input[type=submit][name=core_accept_terms_continue]').on('click', function(){

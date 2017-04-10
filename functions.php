@@ -519,7 +519,9 @@ function humcore_is_deposit_search() {
 
 	global $wp;
 	if ( ! empty( $wp->query_vars['pagename'] ) ) {
-		if ( 'deposits' == $wp->query_vars['pagename'] && ! empty( $wp->query_vars['s'] ) || ! empty( $wp->query_vars['facets'] ) ) {
+		if ( 'deposits' == $wp->query_vars['pagename'] &&
+			( ! empty( $wp->query_vars['s'] ) || ! empty( $wp->query_vars['facets'] ) || ! empty( $wp->query_vars['tag'] ) ||
+				! empty( $wp->query_vars['title'] ) || ! empty( $wp->query_vars['subject'] ) || ! empty( $wp->query_vars['author'] ) ) ) {
 			return true;
 		}
 	}
@@ -1685,14 +1687,20 @@ function humcore_get_search_request_querystring( $query_key = '' ) {
 				if ( ! is_array( $param ) ) {
 					if ( 'facets' == $key && ! empty( $_POST[ $key ] ) ) {
 						// Facets from form post and facets from url query string are formatted differently.
-						$request_params[] = $param;
+						if ( ! empty( $param ) ) {
+							$request_params[] = $param;
+						}
 					} else {
-						$request_params[] = sprintf( '%1$s=%2$s', $key, $param );
+						if ( ! empty( $param ) ) {
+							$request_params[] = sprintf( '%1$s=%2$s', $key, $param );
+						}
 					}
 				} else {
 					foreach ( $param as $param_key => $param_values ) {
 						foreach ( $param_values as $param_value ) {
-							$request_params[] = sprintf( '%1$s[%2$s][]=%3$s', $key, $param_key, urlencode( $param_value ) );
+							if ( ! empty( $param_value ) ) {
+								$request_params[] = sprintf( '%1$s[%2$s][]=%3$s', $key, $param_key, urlencode( $param_value ) );
+							}
 						}
 					}
 				}
@@ -1769,7 +1777,7 @@ function humcore_get_deposit_by_title_genre_and_author( $title, $genre, $group_i
 		$author_name = bp_get_loggedin_user_fullname();
 	}
 
-	humcore_has_deposits( sprintf( 'facets[author_facet][]=%s&facets[genre_facet][]=%s&search_title=%s',
+	humcore_has_deposits( sprintf( 'facets[author_facet][]=%s&facets[genre_facet][]=%s&search_title_exact=%s',
 			urlencode( $author_name ),
 			urlencode( $genre ),
 			urlencode( $title ) ) );

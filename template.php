@@ -14,21 +14,31 @@ function humcore_ajax_querystring_filter( $query ) {
 	if ( ! empty( $_POST['action'] ) ) {
 		if ( 'deposits_filter' == $_POST['action'] ) {
 
+			$search_params = array();
+			$search_field_cookie = $_COOKIE['bp-deposits-field'];
+			if ( ! empty( $search_field_cookie ) and 'all' !== $search_field_cookie ) {
+				$search_field = $search_field_cookie;
+			} else {
+				$search_field = 's';
+			}
 			if ( false != $_POST['search_terms'] && 'false' != $_POST['search_terms'] ) {
-				$search_terms = $_POST['search_terms'];
-			} else {
-				$search_terms = '';
+				$search_params[] = $search_field . '=' . $_POST['search_terms'];
+			}
+			if ( ! empty( $_POST['extras'] ) && 'undefined' !== $_POST['extras'] ) {
+				$search_params[] = $_POST['extras'];
+			}
+			if ( ! empty( $_POST['page'] ) ) {
+				$search_params[] = 'page' . '=' . $_POST['page'];
+			}
+			if ( ! empty( $_POST['filter'] ) && 'undefined' !== $_POST['filter'] ) {
+				$search_params[] = 'sort' . '=' . $_POST['filter'];
 			}
 
-			if ( ! empty( $_POST['extras'] ) ) {
-				$facets = '&' . $_POST['extras'];
+			if ( ! empty( $search_params ) ) {
+				$query = '?' . implode( $search_params, '&' );
 			} else {
-				$facets = '';
+				$query = '';
 			}
-			$page = $_POST['page'];
-			$sort = $_POST['filter'];
-
-			$query = 's=' . $search_terms . $facets . '&sort=' . $sort . '&page=' . $page;
 
 		}
 	}
@@ -62,6 +72,30 @@ add_action( 'wp_ajax_nopriv_deposits_filter', 'humcore_ajax_return_solr_results'
 add_action( 'wp_ajax_deposits_filter', 'humcore_ajax_return_solr_results' );
 
 /**
+ * Return solr results when called from an ajax call.
+ */
+function humcore_before_has_deposits_parse_args( $retval ) {
+
+	if ( ! empty( $retval['?tag'] ) ) {
+		$retval['search_tag'] = $retval['?tag'];
+	} else if ( ! empty( $retval['?title'] ) ) {
+		$retval['search_title'] = $retval['?title'];
+	} else if ( ! empty( $retval['?subject'] ) ) {
+		$retval['search_subject'] = $retval['?subject'];
+	} else if ( ! empty( $retval['?author'] ) ) {
+		$retval['search_author'] = $retval['?author'];
+	} else if ( ! empty( $retval['?s'] ) ) {
+		$retval['search_terms'] = $retval['?s'];
+	} else if ( ! empty( $retval['?page'] ) ) {
+		$retval['page'] = $retval['?page'];
+	} else if ( ! empty( $retval['?sort'] ) ) {
+		$retval['sort'] = $retval['?sort'];
+	}
+	return $retval;
+}
+add_action( 'bp_after_has_deposits_parse_args', 'humcore_before_has_deposits_parse_args' );
+
+/**
  * Initialize the deposits loop.
  *
  * @param array $args
@@ -74,14 +108,18 @@ function humcore_has_deposits( $args = '' ) {
 		// Note: any params used for filtering can be a single value, or multiple values comma separated.
 	$defaults = array(
 		'page_arg'          => 'dpage',
-		'sort'              => 'date',       // Sort date, author or title.
+		'sort'              => 'newest',     // Sort date, author or title.
 		'page'              => 1,            // Which page to load.
 		'per_page'          => 25,           // Number of items per page.
 		'max'               => false,        // Max number to return.
 		'include'           => false,        // Specify pid to get.
+		'search_by'         => false,        // Specify field to search 
 		'search_tag'        => false,        // Specify tag to search for (keyword_search field).
+		'search_subject'    => false,        // Specify subject to search for (subject_search field).
+		'search_author'     => false,        // Specify author to search for (author_search field).
 		'search_terms'      => false,        // Specify terms to search on.
-		'search_title'      => false,        // Specify title to search for an exact match (title_display field).
+		'search_title'      => false,        // Specify title to search for an widlcard match (title_search field).
+		'search_title_exact'=> false,        // Specify title to search for an exact match (title_search field).
 		'search_facets'     => false,        // Specify facets to filter search on.
 	);
 
@@ -93,6 +131,22 @@ function humcore_has_deposits( $args = '' ) {
 
 	if ( empty( $params['search_tag'] ) && ! empty( $_REQUEST['tag'] ) ) {
 		$params['search_tag'] = $_REQUEST['tag'];
+	}
+
+	if ( empty( $params['search_subject'] ) && ! empty( $params['subject'] ) ) {
+		$params['search_subject'] = $params['subject'];
+	}
+
+	if ( empty( $params['search_subject'] ) && ! empty( $_REQUEST['subject'] ) ) {
+		$params['search_subject'] = $_REQUEST['subject'];
+	}
+
+	if ( empty( $params['search_author'] ) && ! empty( $params['author'] ) ) {
+		$params['search_author'] = $params['author'];
+	}
+
+	if ( empty( $params['search_author'] ) && ! empty( $_REQUEST['author'] ) ) {
+		$params['search_author'] = $_REQUEST['author'];
 	}
 
 	if ( empty( $params['search_terms'] ) && ! empty( $params['s'] ) ) {
@@ -112,6 +166,14 @@ function humcore_has_deposits( $args = '' ) {
 
 	if ( empty( $params['search_title'] ) && ! empty( $_REQUEST['title'] ) ) {
 		$params['search_title'] = $_REQUEST['title'];
+	}
+
+	if ( empty( $params['search_title_exact'] ) && ! empty( $params['title_exact'] ) ) {
+		$params['search_title_exact'] = $params['title_exact'];
+	}
+
+	if ( empty( $params['search_title_exact'] ) && ! empty( $_REQUEST['title_exact'] ) ) {
+		$params['search_title_exact'] = $_REQUEST['title_exact'];
 	}
 
 	if ( empty( $params['search_facets'] ) && ! empty( $params['facets'] ) ) {
@@ -139,8 +201,11 @@ function humcore_has_deposits( $args = '' ) {
 		'sort'              => $params['sort'],
 		'include'           => $params['include'],
 		'search_tag'        => $params['search_tag'],
+		'search_subject'    => $params['search_subject'],
+		'search_author'     => $params['search_author'],
 		'search_terms'      => $params['search_terms'],
 		'search_title'      => $params['search_title'],
+		'search_title_exact'=> $params['search_title_exact'],
 		'search_facets'     => $params['search_facets'],
 	);
 
@@ -483,11 +548,14 @@ class Humcore_Deposit_Search_Results {
 			'per_page'          => 25,
 			'page_arg'          => 'dpage',
 			'max'               => false,
-			'sort'              => 'date',
+			'sort'              => 'newest',
 			'include'           => false,
 			'search_tag'        => '',
+			'search_subject'    => '',
+			'search_author'     => '',
 			'search_terms'      => '',
 			'search_title'      => '',
+			'search_title_exact'=> '',
 			'search_facets'     => '',
 		);
 		$r = wp_parse_args( $args, $defaults );
@@ -514,6 +582,40 @@ class Humcore_Deposit_Search_Results {
 
 		if ( ! empty( $search_tag ) ) {
 			$search_tag = 'keyword_search:' . $search_tag;
+		}
+
+		$search_subject = preg_replace_callback(
+			'/([' . $lucene_reserved_characters . '])/',
+			function($matches) {
+				return '\\' . $matches[0];
+			},
+			trim( $r['search_subject'], '"' )
+		);
+
+		$search_subject = str_replace( ' ', '\ ', $search_subject );
+		if ( false !== strpos( $search_subject, ' ' ) ) {
+			$search_subject = '"' . $search_subject . '"';
+		}
+
+		if ( ! empty( $search_subject ) ) {
+			$search_subject = 'subject_search:' . $search_subject;
+		}
+
+		$search_author = preg_replace_callback(
+			'/([' . $lucene_reserved_characters . '])/',
+			function($matches) {
+				return '\\' . $matches[0];
+			},
+			trim( $r['search_author'], '"' )
+		);
+
+		$search_author = str_replace( ' ', '\ ', $search_author );
+		if ( false !== strpos( $search_author, ' ' ) ) {
+			$search_author = '"' . $search_author . '"';
+		}
+
+		if ( ! empty( $search_author ) ) {
+			$search_author = 'author_search:' . $search_author;
 		}
 
 		$search_terms = preg_replace_callback(
@@ -543,7 +645,24 @@ class Humcore_Deposit_Search_Results {
 		}
 
 		if ( ! empty( $search_title ) ) {
-			$search_title = 'title_display:' . $search_title;
+			$search_title = 'title_search:' . $search_title;
+		}
+
+		$search_title_exact = preg_replace_callback(
+			'/([' . $lucene_reserved_characters . '])/',
+			function($matches) {
+				return '\\' . $matches[0];
+			},
+			trim( $r['search_title_exact'], '"' )
+		);
+
+		$search_title_exact = str_replace( ' ', '\ ', $search_title_exact );
+		if ( false !== strpos( $search_title_exact, ' ' ) ) {
+			$search_title_exact = '"' . $search_title_exact . '"';
+		}
+
+		if ( ! empty( $search_title_exact ) ) {
+			$search_title_exact = 'title_display:' . $search_title_exact;
 		}
 
 		$search_facets = $r['search_facets'];
@@ -560,10 +679,16 @@ class Humcore_Deposit_Search_Results {
 
 		if ( ! empty( $search_tag ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_tag ) );
+		} else if ( ! empty( $search_subject ) ) {
+			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_subject ) );
+		} else if ( ! empty( $search_author ) ) {
+			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_author ) );
 		} else if ( ! empty( $search_terms ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_terms ) );
 		} else if ( ! empty( $search_title ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_title ) );
+		} else if ( ! empty( $search_title_exact ) ) {
+			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_title_exact ) );
 		} else {
 			$restricted_search_terms = $query_collection;
 		}
@@ -576,7 +701,7 @@ class Humcore_Deposit_Search_Results {
 			if ( false === $results ) {
 				try {
 					$results = $solr_client->get_search_results( $restricted_search_terms, $search_facets, $this->pag_page, $sort, $this->pag_num );
-					$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', 30 );
+					$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', 3 );
 				} catch ( Exception $e ) {
 					$this->total_deposit_count = 0;
 					$this->facet_counts = '';
