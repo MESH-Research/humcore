@@ -235,14 +235,16 @@ add_action( 'bp_activity_filter_options', 'humcore_activity_action_group_deposit
 /**
  * Create a new deposit activity record.
  */
-function humcore_new_deposit_activity( $deposit_id, $deposit_content = '', $deposit_link = '' ) {
+function humcore_new_deposit_activity( $deposit_id, $deposit_content = '', $deposit_link = '', $user_id = '' ) {
 
 	if ( ! bp_is_active( 'activity' ) ) {
 		return false;
 	}
 
 	$bp = buddypress();
-	$user_id = bp_loggedin_user_id();
+        if ( empty( $user_id ) ) {
+                $user_id = bp_loggedin_user_id();
+        }
 	$userlink = bp_core_get_userlink( $user_id );
 	$activity_ID = bp_activity_add(
 		array(
@@ -1733,15 +1735,20 @@ add_action( 'humcore_get_current_deposit', 'humcore_check_test_handle' );
  *
  * @return array author_meta
  */
-function humcore_deposit_parse_author_info( $author_info, $element = 1 ) {
+function humcore_deposit_parse_author_info( $author_info, $element = 1, $filter = '' ) {
 
 	$author_meta = array();
-	$each_author_array = explode( ';', $author_info );
+	if ( ! empty( $filter ) && ! is_array( $filter ) ) {
+		$filter = array( $filter );
+	}
+	$author_info_array = explode( ';', $author_info );
 
-	foreach ( $each_author_array as $each_author_info ) {
+	foreach ( $author_info_array as $each_author_info ) {
 		$author_fields = explode( ' : ', $each_author_info );
 		if ( 5 == count( $author_fields ) ) {
-			$author_meta[] = $author_fields[$element];
+			if ( empty( $filter ) || ( ! empty( $filter ) && in_array( $author_fields[3], $filter ) ) ) {
+				$author_meta[] = $author_fields[$element];
+			}
 		}
 	}
 
@@ -1768,13 +1775,13 @@ function humcore_noindex() {
  * @param string $group_id Group ID, if group deposit.
  * @return object matching deposit or null.
  */
-function humcore_get_deposit_by_title_genre_and_author( $title, $genre, $group_id = '' ) {
+function humcore_get_deposit_by_title_genre_and_author( $title, $genre, $group_id = '', $user ) {
 
 	if ( ! empty( $group_id ) ) {
 		$group = groups_get_group( array( 'group_id' => $group_id ) );
 		$author_name = $group->name;
 	} else {
-		$author_name = bp_get_loggedin_user_fullname();
+		$author_name = $user->display_name;
 	}
 
 	humcore_has_deposits( sprintf( 'facets[author_facet][]=%s&facets[genre_facet][]=%s&search_title_exact=%s',

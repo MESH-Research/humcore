@@ -16,7 +16,7 @@ jQuery(document).ready( function($) {
 
  	function maybe_show_extra_genre_fields(event) {
 		var value = $(this).val();
-		if ( value == 'Dissertation' || value == 'Technical report' || value == 'Thesis' ) {
+		if ( value == 'Dissertation' || value == 'Technical report' || value == 'Thesis' || value == 'White paper' ) {
 			$('#deposit-conference-entries').hide();
 		   	$('#deposit-institution-entries').show();
 			$('#deposit-meeting-entries').hide();
@@ -44,7 +44,7 @@ jQuery(document).ready( function($) {
 		} else {
 			$('#deposit-author-display').show();
 			$('#deposit-committee-entry').hide();
-			$('#deposit-other-authors-entry span.description').html('Add any authors in addition to yourself.');
+			$('#deposit-other-authors-entry span.description').html('Add any contributors in addition to yourself.');
 		}
 	}
 
@@ -107,6 +107,11 @@ jQuery(document).ready( function($) {
 		e.preventDefault();
 		$('#deposit-other-authors-entry-table>tbody').append('		<tr><td class="borderTop"><input type="text" name="deposit-other-authors-first-name[]" class="text" value="" /></td>' +
 				'<td class="borderTop"><input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="" /></td>' +
+				'<td class="borderTop" style="vertical-align: top;">' +
+				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="author">Author &nbsp;</span>' +
+				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="editor">Editor &nbsp;</span>' +
+				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="translator">Translator &nbsp;</span>' +
+				'</td>' +
 				'<td class="borderTop"></td></tr>');
 	});
 
@@ -289,7 +294,7 @@ var uploader = new plupload.Uploader( {
 			{ title : 'Image files', extensions : 'gif,jpeg,jpg,png,psd,tiff' },
 //			{ title : 'Raw Image files', extensions : 'cr2,crw,dng,nef' },
 			{ title : 'Web files', extensions : 'htm,html' }, //css,js maybe?
-			{ title : 'Archive files', extensions : 'gz,rar,tar,zip' },
+//			{ title : 'Archive files', extensions : 'gz,rar,tar,zip' },
 			{ title : 'Document files', extensions : 'csv,doc,docx,odp,ods,odt,pdf,ppt,pptx,pps,rdf,rtf,sxc,sxi,sxw,txt,tsv,wpd,xls,xlsx,xml' },
 			{ title : 'Audio files', extensions : 'mp3,ogg,wav' },
 			{ title : 'Video files', extensions : 'f4v,flv,mov,mp4' }

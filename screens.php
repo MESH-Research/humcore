@@ -71,6 +71,8 @@ function humcore_new_deposit_form() {
 	$prev_val = array();
 	if ( ! empty( $_POST ) ) {
 		$prev_val = $_POST;
+	} else {
+		$prev_val['deposit-author-role'] = 'author';
 	}
 	humcore_display_deposit_form( $current_group_id, $user_id, $user_firstname, $user_lastname, $prev_val );
 
@@ -100,6 +102,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
         <input type="hidden" name="selected_file_name" id="selected_file_name" value="<?php if ( ! empty( $prev_val['selected_file_name'] ) ) { echo sanitize_text_field( $prev_val['selected_file_name'] ); } ?>" />
         <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_type'] ); } ?>" />
         <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_size'] ); } ?>" />
+        <input type="hidden" name="deposit-author-uni" id="deposit-author-uni" value="<?php echo bp_get_loggedin_user_username(); ?>" />
 
         <div id="deposit-file-entry">
                 <label for="deposit-file">Select the file you wish to upload and deposit. *</label>
@@ -273,30 +276,45 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	</p>
 	<p>
 	<div id="deposit-other-authors-entry">
-		<label for="deposit-other-authors-entry-list">Authors</label>
-		<span class="description">Add any authors in addition to yourself.</span>
+		<label for="deposit-other-authors-entry-list">Contributors</label>
+		<span class="description">Add any contributors in addition to yourself.</span>
 		<div id="deposit-other-authors-entry-list">
 		<table id="deposit-other-authors-entry-table"><tbody>
 		<tr><td class="noBorderTop" style="width:205px;">
-		First Name
+		Given Name
 		</td><td class="noBorderTop" style="width:205px;">
-		Last Name
+		Family Name
 		</td><td class="noBorderTop">
-		<input type="button" id="deposit-insert-other-author-button" class="button add_author" value="Add an Author">
+		Role
+		</td><td class="noBorderTop">
+		<input type="button" id="deposit-insert-other-author-button" class="button add_author" value="Add a Contributor">
 		</td></tr>
 		<tr id="deposit-author-display"><td class="borderTop" style="width:205px;">
 		<?php echo esc_html( $user_firstname ); ?>
+		<input type="hidden" name="deposit-author-first-name" id="deposit-author-first-name" value="<?php echo esc_html( $user_firstname ); ?>" />
 		</td><td class="borderTop" style="width:205px;">
 		<?php echo esc_html( $user_lastname ); ?>
+		<input type="hidden" name="deposit-author-last-name" id="deposit-author-last-name" value="<?php echo esc_html( $user_lastname ); ?>" />
+		</td><td class="borderTop" style="width:230px;">
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="author" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'author' ); } ?>>Author &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="editor" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'editor' ); } ?>>Editor &nbsp;</span>
+		<?php if ( is_super_admin() ) : ?>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="submitter" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'submitter' ); } ?>>Submitter &nbsp;</span>
+		<?php endif; ?>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="translator" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
 		</td><td class="borderTop">
 		</td></tr>
 
 <?php
 	if ( ! empty( $prev_val['deposit-other-authors-first-name'] ) && ! empty( $prev_val['deposit-other-authors-last-name'] ) ) {
 		$other_authors = array_map(
-			function ( $first_name, $last_name ) { return array( 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ) ); },
+			function ( $first_name, $last_name, $role ) {
+				return array( 'first_name' => sanitize_text_field( $first_name ),
+					'last_name' => sanitize_text_field( $last_name ),
+					'role' => sanitize_text_field( $role ) ); },
 			$prev_val['deposit-other-authors-first-name'],
-			$prev_val['deposit-other-authors-last-name']
+			$prev_val['deposit-other-authors-last-name'],
+			$prev_val['deposit-other-authors-role']
 		);
 		foreach ( $other_authors as $author_array ) {
 			if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
@@ -305,6 +323,10 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 		<input type="text" name="deposit-other-authors-first-name[]" class="text" value="<?php echo $author_array['first_name']; ?>" />
 		</td><td class="borderTop" style="width:205px;">
 		<input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
+		</td><td class="borderTop" style="width:230px; vertical-align: top;">
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="author" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'author' ); } ?>>Author &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="editor" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'editor' ); } ?>>Editor &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="translator" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
 		</td><td class="borderTop">
 		</td></tr>
 <?php
@@ -708,7 +730,7 @@ function humcore_deposits_feed_item_content() {
         $authors = array_filter( $metadata['authors'] );
         $authors_list = '';
         foreach ( $authors as $author ) {
-		$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $authors, ENT_QUOTES ) );
+		$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $author, ENT_QUOTES ) );
 	}
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
@@ -749,17 +771,46 @@ function humcore_deposits_entry_content() {
         if ( ! empty( $keywords ) ) {
                 $keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords ) );
         }
-	$authors = array_filter( $metadata['authors'] );
-	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
+	$contributors = array_filter( $metadata['authors'] );
+	$contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	$authors_list = array();
+	$editors_list = array();
+	$translators_list = array();
+	$project_directors_list = array();
+	foreach( $contributors_list as $contributor ) {
+		if ( 'author' === $contributor[2] ) {
+			$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} else if ( 'editor' === $contributor[2] ) {
+                        $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} else if ( 'project director' === $contributor[2] ) {
+                        $project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} else if ( 'translator' === $contributor[2] ) {
+                        $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		}
+	}
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 ?>
 <h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo $metadata['title_unchanged']; ?></a></h4>
 <div class="bp-group-documents-meta">
 <dl class='defList'>
+<?php if ( ! empty( $project_directors_list ) ) : ?>
+<dt><?php _e( 'Project Director(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $project_directors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $authors_list ) ) : ?>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
-<dd><?php echo $authors_list; // XSS OK. ?></dd>
+<dd><?php echo implode( ', ', $authors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $editors_list ) ) : ?>
+<dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $editors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $translators_list ) ) : ?>
+<dt><?php _e( 'Translator(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $translators_list ); // XSS OK. ?></dd>
+<?php endif; ?>
 <?php if ( ! empty( $metadata['date'] ) ) : ?>
 <dt><?php _e( 'Date:', 'humcore_domain' ); ?></dt>
 <dd><a href="/deposits/?facets[pub_date_facet][]=<?php echo urlencode( $metadata['date'] ); ?>"><?php echo esc_html( $metadata['date'] ); ?></a></dd>
@@ -816,10 +867,25 @@ function humcore_deposit_item_content() {
 		$keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords ) );
 	}
 
-	$authors = array_filter( $metadata['authors'] );
-	$author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-	$author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-	$authors_list = implode( ', ', array_map( 'humcore_linkify_author', $authors, $author_uni, $author_type ) );
+        $contributors = array_filter( $metadata['authors'] );
+        $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+        $contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+        $contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+        $authors_list = array();
+        $editors_list = array();
+        $translators_list = array();
+        $project_directors_list = array();
+        foreach( $contributors_list as $contributor ) {
+                if ( 'author' === $contributor[2] ) {
+                        $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                } else if ( 'editor' === $contributor[2] ) {
+                        $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                } else if ( 'project director' === $contributor[2] ) {
+                        $project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                } else if ( 'translator' === $contributor[2] ) {
+                        $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                }
+        }
 
         $wpmn_record_identifier = array();
         $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
@@ -903,8 +969,22 @@ function humcore_deposit_item_content() {
 <h3 class="bp-group-documents-title"><?php echo $metadata['title_unchanged']; ?></h3>
 <div class="bp-group-documents-meta">
 <dl class='defList'>
+<?php if ( ! empty( $project_directors_list ) ) : ?>
+<dt><?php _e( 'Project Director(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $project_directors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $authors_list ) ) : ?>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
-<dd><?php echo $authors_list; // XSS OK. ?></dd>
+<dd><?php echo implode( ', ', $authors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $editors_list ) ) : ?>
+<dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $editors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $translators_list ) ) : ?>
+<dt><?php _e( 'Translator(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $translators_list ); // XSS OK. ?></dd>
+<?php endif; ?>
 <?php if ( ! empty( $metadata['date'] ) ) : ?>
 <dt><?php _e( 'Date:', 'humcore_domain' ); ?></dt>
 <dd><a href="/deposits/?facets[pub_date_facet][]=<?php echo urlencode( $metadata['date'] ); ?>"><?php echo esc_html( $metadata['date'] ); ?></a></dd>
@@ -955,7 +1035,8 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical report' == $metadata['genre'] ) : ?>
+<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
+		 'White Paper' == $metadata['genre'] ) : ?>
 <?php if ( ! empty( $metadata['institution'] ) ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
@@ -1162,10 +1243,26 @@ function humcore_deposit_item_review_content() {
                 $keyword_list = implode( ', ', array_map( 'esc_html', $keywords ) );
         }
 
-        $authors = array_filter( $metadata['authors'] );
-        $author_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-        $author_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-        $authors_list = implode( ', ', array_map( 'esc_html', $authors ) );
+        $contributors = array_filter( $metadata['authors'] );
+        $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+        $contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+        $contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+        $authors_list = array();
+        $editors_list = array();
+        $translators_list = array();
+        $project_directors_list = array();
+        foreach( $contributors_list as $contributor ) {
+                if ( 'author' === $contributor[2] ) {
+                        $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                } else if ( 'editor' === $contributor[2] ) {
+                        $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                } else if ( 'project director' === $contributor[2] ) {
+                        $project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                } else if ( 'translator' === $contributor[2] ) {
+                        $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+                }
+        }
+
         $item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
 
         $wpmn_record_identifier = array();
@@ -1280,7 +1377,8 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Thesis' == $metadata['genre'] || 'Technical report' == $metadata['genre'] ) : ?>
+<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
+                 'White Paper' == $metadata['genre'] ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['institution'] ) ) : ?>
 <dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
@@ -1292,8 +1390,22 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'Deposit Type:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo 'Committee'; ?></span></dd>
 <?php endif; ?>
+<?php if ( ! empty( $project_directors_list ) ) : ?>
+<dt><?php _e( 'Project Director(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $project_directors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $authors_list ) ) : ?>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
-<dd><?php echo $authors_list; // XSS OK. ?></dd>
+<dd><?php echo implode( ', ', $authors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $editors_list ) ) : ?>
+<dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $editors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $translators_list ) ) : ?>
+<dt><?php _e( 'Translator(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $translators_list ); // XSS OK. ?></dd>
+<?php endif; ?>
 <dt><?php _e( 'Subject(s):', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $subjects ) ) : ?>
 <dd><?php echo $subject_list; // XSS OK. ?></dd>
