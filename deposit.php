@@ -61,7 +61,8 @@
 		} else {
 			$group_id = '';
 		}
-		$title_match = humcore_get_deposit_by_title_genre_and_author( $title_check, $genre, $group_id );
+		$user = get_user_by( 'login', sanitize_text_field( $_POST['deposit-author-uni'] ) );
+		$title_match = humcore_get_deposit_by_title_genre_and_author( $title_check, $genre, $group_id, $user );
 		if ( ! empty( $title_match ) ) {
 			echo '<div id="message" class="info">';
 			if ( ! empty( $group_id ) ) {
@@ -84,7 +85,8 @@
 
 		// Single file uploads at this point.
 		$tempname = sanitize_file_name( $_POST['selected_temp_name'] );
-		$fileloc = $fedora_api->tempDir . '/' . $tempname;
+		$yyyy_mm = '2017/04';
+		$fileloc = $fedora_api->tempDir . '/' . $yyyy_mm . '/' . $tempname;
 		$filename = strtolower( sanitize_file_name( $_POST['selected_file_name'] ) );
 		$filesize = sanitize_text_field( $_POST['selected_file_size'] );
 		$renamed_file = $fileloc . '.' . $filename;
@@ -108,7 +110,7 @@
 				$current_size = $thumb_image->get_size();
 				$thumb_image->resize( 150, 150, false );
 				$thumb_image->set_quality( 95 );
-				$thumb_filename = $thumb_image->generate_filename( 'thumb', $fedora_api->tempDir . '/', 'jpg' );
+				$thumb_filename = $thumb_image->generate_filename( 'thumb', $fedora_api->tempDir . '/' . $yyyy_mm . '/', 'jpg' );
 				$generated_thumb = $thumb_image->save( $thumb_filename, 'image/jpeg' );
 				$generated_thumb_path = $generated_thumb['path'];
 				$generated_thumb_name = str_replace( $tempname . '.', '', $generated_thumb['file'] );
@@ -121,7 +123,9 @@
 
 		humcore_write_error_log( 'info', 'HumCORE deposit started' );
 		humcore_write_error_log( 'info', 'HumCORE deposit - check_filetype ' . var_export( $check_filetype, true ) );
-		humcore_write_error_log( 'info', 'HumCORE deposit - thumb_image ' . var_export( $thumb_image, true ) );
+		if ( ! empty( $thumb_image ) ) {
+			humcore_write_error_log( 'info', 'HumCORE deposit - thumb_image ' . var_export( $thumb_image, true ) );
+		}
 
 		/**
 		 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr.
@@ -134,8 +138,9 @@
 			return false;
 		}
 
-		$metadata = prepare_metadata( $nextPids );
+		$metadata = prepare_metadata( $nextPids, $user );
 
+		$deposit_activity_needed = true;
 		$deposit_review_needed = false;
 		$deposit_post_date = (new DateTime())->format('Y-m-d H:i:s');
 		$deposit_post_status = 'draft';
@@ -143,19 +148,24 @@
 			$deposit_post_status = 'future';
 			$deposit_post_date = date( 'Y-m-d H:i:s', strtotime( '+' . sanitize_text_field( $_POST['deposit-embargo-length'] ) ) );
                 }
+		if ( 'hcadmin' === $user->user_login ) {
+			$deposit_activity_needed = false;
+			$deposit_post_date = '';
+			$deposit_post_status = 'publish';
+		}
 
                 //if in HC lookup user
                 //if HC only user send to provisional deposit review group
-                if ( 'hc' === Humanities_Commons::$society_id ) {
+                if ( 'hc' === Humanities_Commons::$society_id && 'hcadmin' !== $user->user_login ) {
 			$query_args = array(
 				'post_parent'    => 0,
 				'post_type'      => 'humcore_deposit',
 				'post_status'    => array( 'draft', 'publish' ),
-				'author'         => bp_loggedin_user_id(),
+				'author'         => $user->ID,
 			);
 
 			$deposit_posts = get_posts( $query_args );
-                        $member_types = bp_get_member_type( bp_loggedin_user_id(), false );
+                        $member_types = bp_get_member_type( $user->ID, false );
                         if ( empty( $deposit_posts ) && 1 === count( $member_types ) && 'hc' === $member_types[0] ) {
 				$deposit_review_needed = true;
 				$deposit_post_status = 'pending';
@@ -210,7 +220,7 @@
 			'post_date'    => $deposit_post_date,
 			'post_type'    => 'humcore_deposit',
 			'post_name'    => $nextPids[0],
-			'post_author'  => bp_loggedin_user_id()
+			'post_author'  => $user->ID
 		);
 
 		$deposit_post_ID = wp_insert_post( $deposit_post_data );
@@ -430,7 +440,7 @@
 			'post_status'    => 'publish',
 			'post_type'      => 'humcore_deposit',
 			'post_name'      => $nextPids[1],
-			'post_author'    => bp_loggedin_user_id(),
+			'post_author'    => $user->ID,
 			'post_parent'    => $deposit_post_ID,
 		);
 
@@ -445,7 +455,9 @@
 		/**
 		 * Add the activity entry for the author.
 		 */
-		$activity_ID = humcore_new_deposit_activity( $deposit_post_ID, $metadata['abstract'], $local_link );
+		if ( $deposit_activity_needed ) {
+			$activity_ID = humcore_new_deposit_activity( $deposit_post_ID, $metadata['abstract'], $local_link, $user->ID );
+		}
 
 		/**
 		 * Publish the reserved DOI.
@@ -474,7 +486,7 @@
 				bp_notifications_add_notification( array(
 					'user_id'           => $group_member->ID,
 					'item_id'           => $deposit_post_ID,
-					'secondary_item_id' => bp_loggedin_user_id(),
+					'secondary_item_id' => $user->ID,
 					'component_name'    => $bp->humcore_deposits->id,
 					'component_action'  => 'deposit_review',
 					'date_notified'     => bp_core_current_time(),
@@ -499,7 +511,7 @@
 	 * @param array $nextPids Array of fedora pids.
 	 * @return array metadata content
 	 */
-	function prepare_metadata( $nextPids ) {
+	function prepare_metadata( $nextPids, $user ) {
 
 		global $fedora_api;
 
@@ -522,8 +534,12 @@
 			);
 		$metadata['genre'] = sanitize_text_field( $_POST['deposit-genre'] );
 		$metadata['committee_deposit'] = sanitize_text_field( $_POST['deposit-on-behalf-flag'] );
-		$metadata['committee_id'] = sanitize_text_field( $_POST['deposit-committee'] );
-		$metadata['submitter'] = bp_loggedin_user_id();
+		if ( ! empty( $_POST['deposit-committee'] ) ) {
+			$metadata['committee_id'] = sanitize_text_field( $_POST['deposit-committee'] );
+		} else {
+			$metadata['committee_id'] = '';
+		}
+		$metadata['submitter'] = $user->ID;
 
 		/**
 		 * Get committee or author metadata.
@@ -531,34 +547,38 @@
 
 		if ( 'yes' === $metadata['committee_deposit'] ) {
 			$committee = groups_get_group( array( 'group_id' => $metadata['committee_id'] ) );
-			$metadata['organization'] = 'MLA';
+			$metadata['organization'] = strtoupper( Humanities_Commons::$society_id );
 			$metadata['authors'][] = array(
 				'fullname' => $committee->name,
 				'given' => '',
 				'family' => '',
 				'uni' => $committee->slug,
 				'role' => 'creator',
-				'affiliation' => 'MLA',
+				'affiliation' => strtoupper( Humanities_Commons::$society_id ),
 			);
-		} else {
-			$user_id = bp_loggedin_user_id();
+		} else if ( 'submitter' !== sanitize_text_field( $_POST['deposit-author-role'] ) ) {
+			$user_id = $user->ID;
 			$user_firstname = get_the_author_meta( 'first_name', $user_id );
 			$user_lastname = get_the_author_meta( 'last_name', $user_id );
 			$user_affiliation = bp_get_profile_field_data( array( 'field' => 2, 'user_id' => $user_id ) );
 			$metadata['organization'] = $user_affiliation;
 			$metadata['authors'][] = array(
-				'fullname' => bp_get_loggedin_user_fullname(),
+				'fullname' => $user->display_name,
 				'given' => $user_firstname,
 				'family' => $user_lastname,
-				'uni' => bp_get_loggedin_user_username(),
-				'role' => 'author',
+				'uni' => $user->user_login,
+				'role' => sanitize_text_field( $_POST['deposit-author-role'] ),
 				'affiliation' => $user_affiliation,
 			);
 		}
 
 		if ( ( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) ) {
-			$other_authors = array_map( function ( $first_name, $last_name ) { return array( 'first_name' => sanitize_text_field( $first_name ), 'last_name' => sanitize_text_field( $last_name ) ); },
-				$_POST['deposit-other-authors-first-name'], $_POST['deposit-other-authors-last-name']
+			$other_authors = array_map( function ( $first_name, $last_name, $role ) {
+				return array( 'first_name' => sanitize_text_field( $first_name ),
+					 'last_name' => sanitize_text_field( $last_name ),
+					 'role' => sanitize_text_field( $role )
+				); },
+				$_POST['deposit-other-authors-first-name'], $_POST['deposit-other-authors-last-name'], $_POST['deposit-other-authors-role']
 			);
 			foreach ( $other_authors as $author_array ) {
 				if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
@@ -584,7 +604,7 @@
 						'given' => $author_firstname,
 						'family' => $author_lastname,
 						'uni' => $author_uni,
-						'role' => 'author',
+						'role' => $author_array['role'],
 						'affiliation' => $author_affiliation,
 					);
 				}
@@ -600,9 +620,11 @@
 		 */
 		$metadata['author_info'] = humcore_deposits_format_author_info( $metadata['authors'] );
 
-		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis' ) ) && ! empty( $_POST['deposit-institution'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis', 'White paper' ) ) &&
+			! empty( $_POST['deposit-institution'] ) ) {
 			$metadata['institution'] = sanitize_text_field( $_POST['deposit-institution'] );
-		} else if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis' ) ) && empty( $_POST['deposit-institution'] ) ) {
+		} else if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis', 'White paper' ) ) &&
+			empty( $_POST['deposit-institution'] ) ) {
 			$metadata['institution'] = $metadata['organization'];
 		}
 
@@ -710,6 +732,7 @@
 			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-proceeding-end-page'] );
 			$metadata['doi'] = sanitize_text_field( $_POST['deposit-proceeding-doi'] );
 		} elseif ( 'none' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = '';
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-non-published-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
@@ -922,11 +945,15 @@
                 }
 		if ( ! empty( $metadata['publisher'] ) ) {
 			$publisher = '<dc:publisher>' . htmlspecialchars( $metadata['publisher'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) . '</dc:publisher>';
+		} else {
+			$publisher = '';
 		}
                 if ( ! empty( $metadata['date_issued'] ) ) {
-                        $date .= '
+                        $date = '
                         <dc:date encoding="w3cdtf">' . $metadata['date_issued'] . '</dc:date>';
-                }
+                } else {
+			$date = '';
+		}
 
 		return '<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
 			xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -1097,7 +1124,7 @@
 				$authorMODS .= '
 				  <namePart type="family">' . $author['family'] . '</namePart>
 				  <namePart type="given">' . $author['given'] . '</namePart>';
-			} else {
+			} else if ( 'author' === $author['role'] ) {
 				$authorMODS .= '
 				<namePart>' . $author['fullname'] . '</namePart>';
 			}
@@ -1128,7 +1155,8 @@
 		 * Format MODS xml fragment for organization affiliation.
 		 */
 		$orgMODS = '';
-		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis' ) ) && ! empty( $metadata['institution'] ) ) {
+		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis', 'White paper' ) ) &&
+			! empty( $metadata['institution'] ) ) {
 			$orgMODS .= '
 				<name type="corporate">
 				  <namePart>

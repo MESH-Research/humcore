@@ -249,14 +249,14 @@ class Humcore_Deposit_Solr_Api {
 				$record['keyword'] = $document->keyword_search;
 				$record['handle'] = $document->handle;
 				$record['genre'] = $document->genre_facet[0];
-				if ( ! empty( $document->notes ) ) {
-					$record['notes'] = implode( ' ', $document->notes );
+				if ( ! empty( (array)$document->notes ) ) {
+					$record['notes'] = implode( ' ', (array)$document->notes );
 				}
-				if ( ! empty( $document->notes_unchanged ) ) {
-					$record['notes_unchanged'] = implode( ' ', $document->notes_unchanged );
+				if ( ! empty( (array)$document->notes_unchanged ) ) {
+					$record['notes_unchanged'] = implode( ' ', (array)$document->notes_unchanged );
 				}
-				if ( '' == $document->notes_unchanged && ! empty( $document->notes ) ) {
-					$record['notes_unchanged'] = implode( ' ', $document->notes );
+				if ( empty( (array)$document->notes_unchanged ) && ! empty( (array)$document->notes ) ) {
+					$record['notes_unchanged'] = implode( ' ', (array)$document->notes );
 				}
 				$record['book_journal_title'] = $document->book_journal_title;
 				$record['book_author'] = $document->book_author[0];
@@ -290,7 +290,6 @@ class Humcore_Deposit_Solr_Api {
 				$record['embargo_end_date'] = $document->free_to_read_start_date;
 				$search_result['documents'][] = $record ;
 				$search_result['total'] = 1;
-//echo "debugsolr",var_export($record['abstract_unchanged'],true);
 
 				return $search_result;
 			}
@@ -334,14 +333,18 @@ class Humcore_Deposit_Solr_Api {
 		$doc->author_facet = array_filter( $author_fullname );
 		$doc->author_display = implode( ', ', array_filter( $author_fullname ) );
 		$doc->author_info = $metadata['author_info'];
-		$doc->organization_facet = array( $metadata['organization'] );
+		if ( ! empty( $metadata['organization'] ) ) {
+			$doc->organization_facet = array( $metadata['organization'] );
+		}
 		// Genre is not an array in MODS record.
 		if ( ! empty( $metadata['genre'] ) ) {
 			$doc->genre_facet = array( $metadata['genre'] );
 			$doc->genre_search = array( $metadata['genre'] );
 		}
 		$doc->group_facet = $metadata['group'];
-		$doc->society_facet = $metadata['society_id'];
+		if ( ! empty( $metadata['society_id'] ) ) {
+			$doc->society_facet = $metadata['society_id'];
+		}
 		$doc->language_facet = $metadata['language'];
 		$doc->license_facet = $metadata['type_of_license'];
 		if ( ! empty( $metadata['subject'] ) ) {
@@ -778,14 +781,14 @@ class Humcore_Deposit_Solr_Api {
 			$record['keyword'] = $document->keyword_search;
 			$record['handle'] = $document->handle;
 			$record['genre'] = $document->genre_facet[0];
-			if ( ! empty( $document->notes ) ) {
-				$record['notes'] = implode( ' ', $document->notes );
+			if ( ! empty( (array)$document->notes ) ) {
+				$record['notes'] = implode( ' ', (array)$document->notes );
 			}
-			if ( ! empty( $document->notes_unchanged ) ) {
-				$record['notes_unchanged'] = implode( ' ', $document->notes_unchanged );
+			if ( ! empty( (array)$document->notes_unchanged ) ) {
+				$record['notes_unchanged'] = implode( ' ', (array)$document->notes_unchanged );
 			}
-			if ( '' == $document->notes_unchanged && ! empty( $document->notes ) ) {
-				$record['notes_unchanged'] = implode( ' ', $document->notes );
+			if ( empty( (array)$document->notes_unchanged ) && ! empty( (array)$document->notes ) ) {
+				$record['notes_unchanged'] = implode( ' ', (array)$document->notes );
 			}
 			$record['book_journal_title'] = $document->book_journal_title;
 			$record['book_author'] = $document->book_author[0];
