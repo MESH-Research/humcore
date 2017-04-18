@@ -782,7 +782,7 @@ function humcore_deposits_entry_content() {
 	$translators_list = array();
 	$project_directors_list = array();
 	foreach( $contributors_list as $contributor ) {
-		if ( 'author' === $contributor[2] ) {
+		if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
 			$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} else if ( 'editor' === $contributor[2] ) {
                         $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
@@ -879,7 +879,7 @@ function humcore_deposit_item_content() {
         $translators_list = array();
         $project_directors_list = array();
         foreach( $contributors_list as $contributor ) {
-                if ( 'author' === $contributor[2] ) {
+                if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
                         $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
                 } else if ( 'editor' === $contributor[2] ) {
                         $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
@@ -1256,7 +1256,7 @@ function humcore_deposit_item_review_content() {
         $translators_list = array();
         $project_directors_list = array();
         foreach( $contributors_list as $contributor ) {
-                if ( 'author' === $contributor[2] ) {
+                if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
                         $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
                 } else if ( 'editor' === $contributor[2] ) {
                         $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
