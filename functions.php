@@ -1247,9 +1247,9 @@ function humcore_linkify_subject( $subject ) {
  *
  * @return string
  */
-function humcore_linkify_tag( $tag ) {
+function humcore_linkify_tag( $tag, $tag_name ) {
 
-	$linked_tag = sprintf( '<a href="/deposits/?tag=%s">%s</a>', urlencode( $tag ), $tag );
+	$linked_tag = sprintf( '<a href="/deposits/?tag=%s">%s</a>', urlencode( $tag ), empty( $tag_name ) ? $tag : $tag_name );
 	return $linked_tag;
 }
 

@@ -767,10 +767,12 @@ function humcore_deposits_entry_content() {
 	}
         if ( ! empty( $metadata['keyword'] ) ) {
                 $keywords = array_filter( $metadata['keyword'] );
+                $keyword_display_values = array_filter( explode( ', ', $metadata['keyword_display'] ) );
         }
         if ( ! empty( $keywords ) ) {
-                $keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords ) );
+                $keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
         }
+
 	$contributors = array_filter( $metadata['authors'] );
 	$contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
 	$contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
@@ -860,12 +862,13 @@ function humcore_deposit_item_content() {
 	if ( ! empty( $subjects ) ) {
 		$subject_list = implode( ', ', array_map( 'humcore_linkify_subject', $subjects ) );
 	}
-	if ( ! empty( $metadata['keyword'] ) ) {
-		$keywords = array_filter( $metadata['keyword'] );
-	}
-	if ( ! empty( $keywords ) ) {
-		$keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords ) );
-	}
+        if ( ! empty( $metadata['keyword'] ) ) {
+                $keywords = array_filter( $metadata['keyword'] );
+                $keyword_display_values = array_filter( explode( ', ', $metadata['keyword_display'] ) );
+        }
+        if ( ! empty( $keywords ) ) {
+                $keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
+        }
 
         $contributors = array_filter( $metadata['authors'] );
         $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
@@ -1036,7 +1039,7 @@ function humcore_deposit_item_content() {
 <dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
-		 'White Paper' == $metadata['genre'] ) : ?>
+		 'White paper' == $metadata['genre'] ) : ?>
 <?php if ( ! empty( $metadata['institution'] ) ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
@@ -1238,9 +1241,10 @@ function humcore_deposit_item_review_content() {
         }
         if ( ! empty( $metadata['keyword'] ) ) {
                 $keywords = array_filter( $metadata['keyword'] );
+                $keyword_display_values = explode( ', ', array_filter( $metadata['keyword_display'] ) );
         }
         if ( ! empty( $keywords ) ) {
-                $keyword_list = implode( ', ', array_map( 'esc_html', $keywords ) );
+                $keyword_list = implode( ', ', array_map( 'esc_html', $keywords, $keyword_display_values ) );
         }
 
         $contributors = array_filter( $metadata['authors'] );
@@ -1378,7 +1382,7 @@ function humcore_deposit_item_review_content() {
 <dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
-                 'White Paper' == $metadata['genre'] ) : ?>
+                 'White paper' == $metadata['genre'] ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['institution'] ) ) : ?>
 <dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
