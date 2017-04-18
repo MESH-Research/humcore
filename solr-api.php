@@ -247,6 +247,7 @@ class Humcore_Deposit_Solr_Api {
 				$record['organization'] = $document->organization_facet;
 				$record['subject'] = $document->subject_facet;
 				$record['keyword'] = $document->keyword_search;
+				$record['keyword_display'] = $document->keyword_display;
 				$record['handle'] = $document->handle;
 				$record['genre'] = $document->genre_facet[0];
 				if ( ! empty( (array)$document->notes ) ) {
@@ -613,7 +614,7 @@ class Humcore_Deposit_Solr_Api {
 		$query->setFields( array(
 			'id', 'pid', 'title_display', 'title_unchanged', 'abstract', 'abstract_unchanged', 'pub_date_facet', 'date', 'author_display',
 			'author_facet', 'author_uni', 'author_info', 'organization_facet', 'group_facet', 'society_facet', 'language_facet', 'license_facet',
-			'subject_facet', 'keyword_search', 'handle', 'genre_facet', 'notes', 'notes_unchanged', 'book_journal_title', 'book_author',
+			'subject_facet', 'keyword_search', 'keyword_display', 'handle', 'genre_facet', 'notes', 'notes_unchanged', 'book_journal_title', 'book_author',
 			'publisher', 'isbn', 'issn', 'doi', 'volume', 'issue', 'book_chapter', 'start_page', 'end_page', 'language', 'institution',
 			'conference_title', 'conference_organization', 'conference_location', 'conference_date', 'meeting_title', 'meeting_organization',
 			'meeting_location', 'meeting_date', 'publication_type', 'date_issued', 'type_of_resource_facet', 'record_content_source',
@@ -779,6 +780,7 @@ class Humcore_Deposit_Solr_Api {
 			$record['type_of_license'] = $document->license_facet;
 			$record['subject'] = $document->subject_facet;
 			$record['keyword'] = $document->keyword_search;
+			$record['keyword_display'] = $document->keyword_display;
 			$record['handle'] = $document->handle;
 			$record['genre'] = $document->genre_facet[0];
 			if ( ! empty( (array)$document->notes ) ) {

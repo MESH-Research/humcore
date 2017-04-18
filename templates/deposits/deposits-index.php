@@ -41,7 +41,7 @@ Humcore_Theme_Compatibility::get_header(); ?>
 
                             <select id="search-deposits-field">
                                 <option value="all" selected="selected">All Fields</option>
-                                <option value="author">Author</option>
+                                <option value="author">Author/Contributor</option>
                                 <option value="subject">Subject</option>
                                 <option value="tag">Tag</option>
                                 <option value="title">Title</option>
