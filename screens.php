@@ -727,10 +727,19 @@ function humcore_deposits_feed_item_content() {
 
 	$metadata = (array) humcore_get_current_deposit();
 
-        $authors = array_filter( $metadata['authors'] );
+        $contributors = array_filter( $metadata['authors'] );
+        $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+        $contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+        $contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+        $authors_list = array();
         $authors_list = '';
+        foreach( $contributors_list as $contributor ) {
+                if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
+			$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $contributor[0], ENT_QUOTES ) );
+                }
+        }
+
         foreach ( $authors as $author ) {
-		$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $author, ENT_QUOTES ) );
 	}
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
