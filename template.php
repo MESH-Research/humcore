@@ -21,7 +21,7 @@ function humcore_ajax_querystring_filter( $query ) {
 			} else {
 				$search_field = 's';
 			}
-			if ( false != $_POST['search_terms'] && 'false' != $_POST['search_terms'] ) {
+			if ( false != $_POST['search_terms'] && ! empty( $_POST['search_terms'] ) ) {
 				$search_params[] = $search_field . '=' . $_POST['search_terms'];
 			}
 			if ( ! empty( $_POST['extras'] ) && 'undefined' !== $_POST['extras'] ) {
@@ -84,6 +84,8 @@ function humcore_before_has_deposits_parse_args( $retval ) {
 		$retval['search_subject'] = $retval['?subject'];
 	} else if ( ! empty( $retval['?author'] ) ) {
 		$retval['search_author'] = $retval['?author'];
+	} else if ( ! empty( $retval['?facets'] ) ) {
+		$retval['search_facets'] = $retval['?facets'];
 	} else if ( ! empty( $retval['?s'] ) ) {
 		$retval['search_terms'] = $retval['?s'];
 	} else if ( ! empty( $retval['?page'] ) ) {
@@ -107,7 +109,7 @@ function humcore_has_deposits( $args = '' ) {
 	global $deposits_results;
 		// Note: any params used for filtering can be a single value, or multiple values comma separated.
 	$defaults = array(
-		'page_arg'          => 'dpage',
+		'page_arg'          => 'page',
 		'sort'              => 'newest',     // Sort date, author or title.
 		'page'              => 1,            // Which page to load.
 		'per_page'          => 25,           // Number of items per page.
@@ -546,7 +548,7 @@ class Humcore_Deposit_Search_Results {
 		$defaults = array(
 			'page'              => 1,
 			'per_page'          => 25,
-			'page_arg'          => 'dpage',
+			'page_arg'          => 'page',
 			'max'               => false,
 			'sort'              => 'newest',
 			'include'           => false,

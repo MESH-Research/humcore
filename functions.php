@@ -392,10 +392,16 @@ function humcore_deposit_item_search_meta() {
 	if ( ! empty( $metadata['publisher'] ) ) {
 		printf( '<meta name="citation_publisher" content="%1$s">' . "\n\r", htmlentities( $metadata['publisher'] ) );
 	}
-
-	foreach ( $metadata['authors']  as $author ) {
-		printf( '<meta name="citation_author" content="%1$s">' . "\n\r", htmlentities( $author ) );
-	}
+        $contributors = array_filter( $metadata['authors'] );
+        $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+        $contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+        $contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+        $authors_list = array();
+        foreach( $contributors_list as $contributor ) {
+                if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
+			printf( '<meta name="citation_author" content="%1$s">' . "\n\r", htmlentities( $contributor[0] ) );
+                }
+        }
 
 	if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Thesis' ) ) && ! empty( $metadata['institution'][0] ) ) {
 		printf( '<meta name="citation_dissertation_institution" content="%1$s">' . "\n\r", htmlentities( $metadata['institution'][0] ) );
