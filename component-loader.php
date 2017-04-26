@@ -190,7 +190,8 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_get_user_deposit_count() {
 
-		humcore_has_deposits( sprintf( 'facets[author_facet][]=%s', urlencode( bp_get_displayed_user_fullname() ) ) );
+		$displayed_user = bp_get_displayed_user();
+		humcore_has_deposits( sprintf( 'username=%s', urlencode( $displayed_user->userdata->user_login ) ) );
 		return (int) humcore_get_deposit_count();
 
 		/*

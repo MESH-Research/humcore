@@ -84,6 +84,8 @@ function humcore_before_has_deposits_parse_args( $retval ) {
 		$retval['search_subject'] = $retval['?subject'];
 	} else if ( ! empty( $retval['?author'] ) ) {
 		$retval['search_author'] = $retval['?author'];
+	} else if ( ! empty( $retval['?username'] ) ) {
+		$retval['search_username'] = $retval['?username'];
 	} else if ( ! empty( $retval['?facets'] ) ) {
 		$retval['search_facets'] = $retval['?facets'];
 	} else if ( ! empty( $retval['?s'] ) ) {
@@ -119,6 +121,7 @@ function humcore_has_deposits( $args = '' ) {
 		'search_tag'        => false,        // Specify tag to search for (keyword_search field).
 		'search_subject'    => false,        // Specify subject to search for (subject_search field).
 		'search_author'     => false,        // Specify author to search for (author_search field).
+		'search_username'   => false,        // Specify username to search for (author_uni field).
 		'search_terms'      => false,        // Specify terms to search on.
 		'search_title'      => false,        // Specify title to search for an widlcard match (title_search field).
 		'search_title_exact'=> false,        // Specify title to search for an exact match (title_search field).
@@ -149,6 +152,14 @@ function humcore_has_deposits( $args = '' ) {
 
 	if ( empty( $params['search_author'] ) && ! empty( $_REQUEST['author'] ) ) {
 		$params['search_author'] = $_REQUEST['author'];
+	}
+
+	if ( empty( $params['search_username'] ) && ! empty( $params['username'] ) ) {
+		$params['search_username'] = $params['username'];
+	}
+
+	if ( empty( $params['search_username'] ) && ! empty( $_REQUEST['username'] ) ) {
+		$params['search_username'] = $_REQUEST['username'];
 	}
 
 	if ( empty( $params['search_terms'] ) && ! empty( $params['s'] ) ) {
@@ -205,6 +216,7 @@ function humcore_has_deposits( $args = '' ) {
 		'search_tag'        => $params['search_tag'],
 		'search_subject'    => $params['search_subject'],
 		'search_author'     => $params['search_author'],
+		'search_username'   => $params['search_username'],
 		'search_terms'      => $params['search_terms'],
 		'search_title'      => $params['search_title'],
 		'search_title_exact'=> $params['search_title_exact'],
@@ -555,6 +567,7 @@ class Humcore_Deposit_Search_Results {
 			'search_tag'        => '',
 			'search_subject'    => '',
 			'search_author'     => '',
+			'search_username'   => '',
 			'search_terms'      => '',
 			'search_title'      => '',
 			'search_title_exact'=> '',
@@ -618,6 +631,23 @@ class Humcore_Deposit_Search_Results {
 
 		if ( ! empty( $search_author ) ) {
 			$search_author = 'author_search:' . $search_author;
+		}
+
+		$search_username = preg_replace_callback(
+			'/([' . $lucene_reserved_characters . '])/',
+			function($matches) {
+				return '\\' . $matches[0];
+			},
+			trim( $r['search_username'], '"' )
+		);
+
+		$search_username = str_replace( ' ', '\ ', $search_username );
+		if ( false !== strpos( $search_username, ' ' ) ) {
+			$search_username = '"' . $search_username . '"';
+		}
+
+		if ( ! empty( $search_username ) ) {
+			$search_username = 'author_uni:' . $search_username;
 		}
 
 		$search_terms = preg_replace_callback(
@@ -685,6 +715,8 @@ class Humcore_Deposit_Search_Results {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_subject ) );
 		} else if ( ! empty( $search_author ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_author ) );
+		} else if ( ! empty( $search_username ) ) {
+			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_username ) );
 		} else if ( ! empty( $search_terms ) ) {
 			$restricted_search_terms = implode( ' AND ', array( $query_collection, $search_terms ) );
 		} else if ( ! empty( $search_title ) ) {
