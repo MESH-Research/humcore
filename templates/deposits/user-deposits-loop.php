@@ -16,17 +16,20 @@
 <?php
 
 $displayed_user_fullname = bp_get_displayed_user_fullname();
+$displayed_user = bp_get_displayed_user();
 
+/* TODO find out if this was necessary.
 if ( empty( $displayed_user_fullname ) ) {
 	$displayed_user_fullname = bp_get_loggedin_user_fullname();
 }
+*/
 
 // Fill this string with the list of activity types
 // you want to see when the filter is set to "everything."
 // An easy way to get this list is to check out the html source
 // and get all the values of the <option>s.
 
-$my_querystring = sprintf( 'facets[author_facet][]=%s', urlencode( $displayed_user_fullname ) );
+$my_querystring = sprintf( 'username=%s', urlencode( $displayed_user->userdata->user_login ) );
 
 // If the ajax string is empty, that usually means that
 // it's the first page of the "everything" filter.
