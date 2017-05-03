@@ -85,7 +85,7 @@
 
 		// Single file uploads at this point.
 		$tempname = sanitize_file_name( $_POST['selected_temp_name'] );
-		$yyyy_mm = '2017/04';
+		$yyyy_mm = '2017/05';
 		$fileloc = $fedora_api->tempDir . '/' . $yyyy_mm . '/' . $tempname;
 		$filename = strtolower( sanitize_file_name( $_POST['selected_file_name'] ) );
 		$filesize = sanitize_text_field( $_POST['selected_file_size'] );
