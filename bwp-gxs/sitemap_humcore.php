@@ -52,7 +52,7 @@ class BWP_GXS_MODULE_SITEMAP_HUMCORE extends BWP_GXS_MODULE {
 			$data = $this->init_data( $data );
 
 			// We cannot use the WP get_permalink function.
-			$data['location'] = sprintf( '%1$s/deposits/item/%2$s/', bp_get_root_domain(), $post_metadata['pid'] );
+			$data['location'] = sprintf( '%1$s/deposits/item/%2$s/', HC_SITE_URL, $post_metadata['pid'] );
 			$data['lastmod']  = $this->get_lastmod( $post );
 			$data['freq']     = $this->cal_frequency( $post );
 			$data['priority'] = $this->cal_priority( $post, $data['freq'] );

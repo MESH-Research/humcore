@@ -696,7 +696,7 @@ function humcore_deposits_list_entry_content() {
         $authors = array_filter( $metadata['authors'] );
         $authors_list = implode( ', ', $authors );
 
-	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 ?>
 <ul class="deposits-item">
 <li>
@@ -742,7 +742,7 @@ function humcore_deposits_feed_item_content() {
         foreach ( $authors as $author ) {
 	}
 
-	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 	$pub_date = DateTime::createFromFormat( 'Y-m-d\TH:i:s\Z', $metadata['record_creation_date'] );
 ?>
 		<title><?php echo htmlspecialchars( $metadata['title'], ENT_QUOTES ); ?></title>
@@ -801,7 +801,7 @@ function humcore_deposits_entry_content() {
                         $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		}
 	}
-	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 ?>
 <h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo $metadata['title_unchanged']; ?></a></h4>
 <div class="bp-group-documents-meta">
@@ -975,7 +975,7 @@ function humcore_deposit_item_content() {
         if ( $switched ) {
                 restore_current_blog();
         }
-	$item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 ?>
 
 <h3 class="bp-group-documents-title"><?php echo $metadata['title_unchanged']; ?></h3>
@@ -1276,7 +1276,7 @@ function humcore_deposit_item_review_content() {
                 }
         }
 
-        $item_url = sprintf( '%1$s/deposits/item/%2$s', bp_get_root_domain(), $metadata['pid'] );
+        $item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 
         $wpmn_record_identifier = array();
         $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
