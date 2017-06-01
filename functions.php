@@ -1033,9 +1033,11 @@ function humcore_deposits_list_screen() {
                         wp_redirect( '/deposits/offline/' );
                         exit();
                 }
-		do_action( 'humcore_deposits_list_screen' );
-		add_action( 'wp_head', 'humcore_noindex' );
-		bp_get_template_part( apply_filters( 'humcore_deposits_list_screen', 'deposits/deposits-list' ) );
+		bp_do_404();
+		exit();
+		//do_action( 'humcore_deposits_list_screen' );
+		//add_action( 'wp_head', 'humcore_noindex' );
+		//bp_get_template_part( apply_filters( 'humcore_deposits_list_screen', 'deposits/deposits-list' ) );
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_list_screen' );
