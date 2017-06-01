@@ -387,13 +387,11 @@ function humcore_deposit_item_search_meta() {
 	printf( '<meta property="og:title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
 	printf( '<meta property="og:description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
         printf( '<meta property="og:url" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
-        printf( '<meta property="og:image" content="%1$s/%2$s">' . "\n\r", HC_SITE_URL, 'app/uploads/sites/1000360/2016/10/hc_55.png' );
 
 	print( '<meta name="twitter:card" content="summary">' . "\n\r" );
 	printf( '<meta name="twitter:title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
 	printf( '<meta name="twitter:description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
         printf( '<meta name="twitter:site" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
-        printf( '<meta name="twitter:image:src" content="%1$s/%2$s">' . "\n\r", HC_SITE_URL, 'app/uploads/sites/1000360/2016/10/hc_55.png' );
 
         printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
 
