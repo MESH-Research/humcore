@@ -399,13 +399,23 @@ class Humcore_Deposit_Component extends BP_Component {
  
 		if ( ! empty( $wp->query_vars['pagename'] ) ) {
         		if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
-				$title = 'Deposit Item' . " $sep " . $wp->query_vars['deposits_item'] . " $sep ";
+				$item_found = humcore_has_deposits( 'include=' . $wp->query_vars['deposits_item'] );
+				if ( $item_found ) {
+					humcore_the_deposit();
+					$the_deposit = humcore_get_current_deposit();
+					$title = $the_deposit->title . " $sep " . $wp->query_vars['deposits_item'] . " $sep " . 'Humanities CORE';
+				} else {
+					$title = 'Deposit Item' . " $sep " . $wp->query_vars['deposits_item'] . " $sep ";
+				}
                 		if ( 'review' === $wp->query_vars['deposits_command'] ) {
 					$title .= $wp->query_vars['deposits_command'] . " $sep ";
 				}
 			}
 		}
 
+		$title = wptexturize( $title );
+		$title = convert_chars( $title );
+		$title = esc_html( $title );
 		return $title;
 	}
 

@@ -752,7 +752,13 @@ class Humcore_Deposit_Search_Results {
 				}
 			}
 		} else {
-			 $results = $solr_client->get_humcore_document( $include );
+			$cache_key = http_build_query( $include );
+			$results = wp_cache_get( $cache_key, 'humcore_solr_search_results' );
+			$results = $solr_client->get_humcore_document( $include );
+			if ( false === $results ) {
+				$results = $solr_client->get_humcore_document( $include );
+				$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', 3 );
+			}
 		}
 
 		if ( ! $max || $max >= (int) $results['total'] ) {
