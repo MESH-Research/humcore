@@ -2,6 +2,7 @@
 
 /*
  * Add support for HumCORE to the Better WordPress Google XML Sitemaps plugin
+ * Deposits from all networks will be in the HC sitemap xml file 
  */
 
 class BWP_GXS_MODULE_SITEMAP_HUMCORE extends BWP_GXS_MODULE {
@@ -28,39 +29,60 @@ class BWP_GXS_MODULE_SITEMAP_HUMCORE extends BWP_GXS_MODULE {
 
 		global $wpdb, $post;
 
-		$deposits_post_query = "
-			SELECT *
-			FROM " . $wpdb->posts . "
-			WHERE post_status = 'publish'
-				AND post_type = 'humcore_deposit'
-				AND post_parent = 0
-			ORDER BY post_modified DESC";
-
-		// Use $this->get_results instead of $wpdb->get_results.
-		$deposits_posts = $this->get_results( $deposits_post_query );
-
-		if ( ! isset( $deposits_posts ) || 0 == sizeof( $deposits_posts ) ) {
-			return false;
-		}
-
 		$data = array();
+		$found_posts = false;
 
-		for ( $i = 0; $i < sizeof( $deposits_posts ); $i++ ) {
-			$post = $deposits_posts[$i];
-			$post_metadata = json_decode( get_post_meta( $post->ID, '_deposit_metadata', true ), true );
+		$group_types = bp_groups_get_group_types();
 
-			$data = $this->init_data( $data );
+		//Loop thru all societies
+		foreach ( $group_types as $group_type ) {
 
-			// We cannot use the WP get_permalink function.
-			$data['location'] = sprintf( '%1$s/deposits/item/%2$s/', HC_SITE_URL, $post_metadata['pid'] );
-			$data['lastmod']  = $this->get_lastmod( $post );
-			$data['freq']     = $this->cal_frequency( $post );
-			$data['priority'] = $this->cal_priority( $post, $data['freq'] );
-			$this->data[] = $data;
+			$root_blog_id = (int) constant( strtoupper( $group_type ) . '_ROOT_BLOG_ID' );
+			$society_id =  $group_type;
+
+			$switched = false;
+			//Whitelist the societies processed for now.
+			if ( ! empty( $root_blog_id ) && in_array( $group_type, array( 'ajs', 'aseees', 'hc', 'mla' ) ) ) {
+				if ( $root_blog_id !== get_current_blog_id() ) {
+					switch_to_blog( $root_blog_id );
+					$switched = true;
+				}
+
+				$deposits_post_query = "
+					SELECT *
+					FROM " . $wpdb->posts . "
+					WHERE post_status = 'publish'
+						AND post_type = 'humcore_deposit'
+						AND post_parent = 0
+					ORDER BY post_modified DESC";
+
+				// Use $this->get_results instead of $wpdb->get_results.
+				$deposits_posts = $this->get_results( $deposits_post_query );
+				if ( ! isset( $deposits_posts ) || 0 == sizeof( $deposits_posts ) ) {
+					continue;
+				}
+
+				for ( $i = 0; $i < sizeof( $deposits_posts ); $i++ ) {
+					$post = $deposits_posts[$i];
+					$post_metadata = json_decode( get_post_meta( $post->ID, '_deposit_metadata', true ), true );
+
+					$data = $this->init_data( $data );
+					// We cannot use the WP get_permalink function.
+					$data['location'] = sprintf( '%1$s/deposits/item/%2$s/', HC_SITE_URL, $post_metadata['pid'] );
+					$data['lastmod']  = $this->get_lastmod( $post );
+					$data['freq']     = $this->cal_frequency( $post );
+					$data['priority'] = $this->cal_priority( $post, $data['freq'] );
+					$this->data[] = $data;
+				}
+
+			}
+			unset( $deposits_posts );
+			if ( $switched ) {
+				restore_current_blog();
+			}
+
 		}
+		return false; //We control when we're done. TODO handle more than 50,000 depoists.
 
-		unset( $deposits_posts );
-
-		return true;
 	}
 }
