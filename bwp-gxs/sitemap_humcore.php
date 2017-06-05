@@ -49,7 +49,12 @@ class BWP_GXS_MODULE_SITEMAP_HUMCORE extends BWP_GXS_MODULE {
 				}
 
 				$deposits_post_query = "
-					SELECT *
+					SELECT ID, post_author, post_date,
+						IF(post_date_gmt = '0000-00-00 00:00:00', post_date, post_date_gmt) AS post_date_gmt,
+						post_content, post_title, post_excerpt, post_status, comment_status, ping_status,
+						post_password, post_name, to_ping, pinged, post_modified ,
+						IF(post_modified_gmt = '0000-00-00 00:00:00', post_modified, post_modified_gmt) AS post_modified_gmt,
+						post_content_filtered, post_parent, guid, menu_order, post_type, post_mime_type, comment_count
 					FROM " . $wpdb->posts . "
 					WHERE post_status = 'publish'
 						AND post_type = 'humcore_deposit'
