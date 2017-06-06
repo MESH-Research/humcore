@@ -455,7 +455,7 @@ function humcore_deposit_item_search_meta() {
 	if ( ! empty( $metadata['subject'] ) ) {
 		$full_subject_list = $metadata['subject'];
 		foreach ( $full_subject_list as $subject ) {
-			printf( '<meta name="citation_keywords" content="%1$s">' . "\n\r", htmlentities( $subject ) );
+			printf( '<meta name="citation_keyword" content="%1$s">' . "\n\r", htmlentities( $subject ) );
 		}
 	}
 
@@ -472,7 +472,7 @@ function humcore_deposit_item_search_meta() {
                 $switched = true;
         }
 
-	$site_url = get_option( 'siteurl' ); 
+	$site_url = HC_SITE_URL; 
 	printf( '<meta name="citation_abstract_html_url" content="%1$s/deposits/item/%2$s/">' . "\n", $site_url, htmlentities( $metadata['pid'] ) );
 
 	$post_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_metadata', true ), true );
