@@ -85,7 +85,7 @@
 
 		// Single file uploads at this point.
 		$tempname = sanitize_file_name( $_POST['selected_temp_name'] );
-		$yyyy_mm = '2017/05';
+		$yyyy_mm = '2017/06';
 		$fileloc = $fedora_api->tempDir . '/' . $yyyy_mm . '/' . $tempname;
 		$filename = strtolower( sanitize_file_name( $_POST['selected_file_name'] ) );
 		$filesize = sanitize_text_field( $_POST['selected_file_size'] );
@@ -814,7 +814,7 @@
                 $date_value = strtotime( $temp_date_entered );
 
                 if ( false === $date_value ) {
-			return ''; // No year is better than the wrong year.
+			return date( 'Y', strtotime( 'today' ) ); //TODO Real date edit message, kick back to user to fix. Meanwhile, this year is better than nothing.
 		}
 
                 return date( 'Y', $date_value );
