@@ -15,7 +15,7 @@
 	 * Mint and reserve a DOI.
 	 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr and 2 posts.
 	 * Get the next 2 object id values for Fedora.
-	 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
+	 * Add solr first, if Tika errors out we'll add the index without full text.
 	 * Create the aggregator post so that we can reference the ID in the Solr document.
 	 * Set object terms for subjects.
 	 * Add any new keywords and set object terms for tags.
@@ -40,6 +40,9 @@
 		}
 
 		global $fedora_api, $solr_client;
+		//$tika_client = \Vaites\ApacheTika\Client::make('localhost', 9998);
+		$tika_client = \Vaites\ApacheTika\Client::make('/srv/www/commons/current/vendor/tika/tika-app-1.16.jar');     // app mode 
+
 
 		$upload_error_message = '';
 		if ( empty( $_POST['selected_file_name'] ) ) {
@@ -85,12 +88,13 @@
 
 		// Single file uploads at this point.
 		$tempname = sanitize_file_name( $_POST['selected_temp_name'] );
-		$yyyy_mm = '2017/06';
+		$yyyy_mm = '2017/08';
 		$fileloc = $fedora_api->tempDir . '/' . $yyyy_mm . '/' . $tempname;
 		$filename = strtolower( sanitize_file_name( $_POST['selected_file_name'] ) );
 		$filesize = sanitize_text_field( $_POST['selected_file_size'] );
 		$renamed_file = $fileloc . '.' . $filename;
 		$MODS_file = $fileloc . '.MODS.' . $filename . '.xml';
+                $filename_dir = pathinfo( $renamed_file, PATHINFO_DIRNAME );
 		$datastream_id = 'CONTENT';
 		$thumb_datastream_id = 'THUMB';
 		$generated_thumb_name = '';
@@ -110,7 +114,7 @@
 				$current_size = $thumb_image->get_size();
 				$thumb_image->resize( 150, 150, false );
 				$thumb_image->set_quality( 95 );
-				$thumb_filename = $thumb_image->generate_filename( 'thumb', $fedora_api->tempDir . '/' . $yyyy_mm . '/', 'jpg' );
+				$thumb_filename = $thumb_image->generate_filename( 'thumb', $filename_dir . '/' . $yyyy_mm . '/', 'jpg' );
 				$generated_thumb = $thumb_image->save( $thumb_filename, 'image/jpeg' );
 				$generated_thumb_path = $generated_thumb['path'];
 				$generated_thumb_name = str_replace( $tempname . '.', '', $generated_thumb['file'] );
@@ -298,18 +302,29 @@
                 humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', json_decode( $json_metadata, true ) );
 
 		/**
-		 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
+		 * Add solr first, if Tika errors out we'll index without full text
 		 *
 		 * Index the deposit content and metadata in Solr.
 		 */
 		try {
+			$tika_text = $tika_client->getText( $renamed_file );
+			$content = $tika_text;
+		} catch ( Exception $e ) {
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $nextPids[0] ) );
+			echo "*******HumCORE Deposit Error***** - Tika error message: ", var_export( $e, true ),"\n\n\n";
+			echo "*******HumCORE Deposit Error***** - Tika error message: ", $e->getMessage(),"\n\n\n";
+			$content='';
+		}
+
+		try {
 			if ( preg_match( '~^audio/|^image/|^video/~', $check_filetype['type'] ) ) {
 				$sResult = $solr_client->create_humcore_document( '', $metadata );
 			} else {
-				$sResult = $solr_client->create_humcore_extract( $renamed_file, $metadata );
+				//$sResult = $solr_client->create_humcore_extract( $renamed_file, $metadata ); //no longer using tika on server
+				$sResult = $solr_client->create_humcore_document( $content, $metadata );
 			}
 		} catch ( Exception $e ) {
-			if ( '500' == $e->getCode() && strpos( $e->getMessage(), 'TikaException' ) ) {
+			if ( '500' == $e->getCode() && strpos( $e->getMessage(), 'TikaException' ) ) { // Only happens if tika is on the solr server.
 				try {
 					$sResult = $solr_client->create_humcore_document( '', $metadata );
 					humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $nextPids[0] ) );

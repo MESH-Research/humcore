@@ -445,6 +445,12 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 		<p>
+			<label>Society ID<br>
+				<input type="hidden" name="aggregator_society_id" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['society_id'] ); ?>">
+				<input type="text" name="aggregator_society_id_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['society_id'] ); ?>">
+			</label>
+		</p>
+		<p>
 			<label>Creative Commons License<br>
 			<select name="aggregator_type_of_license">
 <?php
@@ -740,6 +746,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	// No changes allowed.
 	// $aggregator_metadata['record_identifier'] = sanitize_text_field( $_POST['aggregator_record_identifier'] );
+	// $aggregator_metadata['society_id'] = sanitize_text_field( $_POST['aggregator_society_id'] );
 
 	$aggregator_metadata['type_of_license'] = sanitize_text_field( $_POST['aggregator_type_of_license'] );
 	$aggregator_metadata['embargoed'] = sanitize_text_field( stripslashes( $_POST['aggregator_embargoed'] ) );

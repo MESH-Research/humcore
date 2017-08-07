@@ -360,7 +360,7 @@ class Humcore_Deposit_Solr_Api {
 		$doc->abstract_unchanged = $metadata['abstract_unchanged'];
 		$doc->handle = $metadata['handle'];
 		$doc->notes = array( $metadata['notes'] );
-		$doc->notes_unchanged = array( $metadata['notes_unchanged'] );
+		if ( ! empty( $metadata['notes_unchanged'] ) ) { $doc->notes_unchanged = array( $metadata['notes_unchanged'] ); }
 		if ( ! empty( $metadata['book_journal_title'] ) ) { $doc->book_journal_title = $metadata['book_journal_title']; }
 		if ( ! empty( $metadata['book_author'] ) ) { $doc->book_author = array( $metadata['book_author'] ); }
 		if ( ! empty( $metadata['publisher'] ) ) { $doc->publisher = $metadata['publisher']; }
@@ -390,7 +390,7 @@ class Humcore_Deposit_Solr_Api {
 		}
 		$doc->record_content_source = $metadata['record_content_source'];
 		$doc->record_creation_date = $metadata['record_creation_date'];
-		$doc->record_change_date = $metadata['record_change_date'];
+		if ( ! empty( $metadata['record_change_date'] ) ) { $doc->record_change_date = $metadata['record_change_date']; }
 		$doc->record_identifier = $metadata['record_identifier'];
 		$doc->member_of = $metadata['member_of'];
                 if ( ! empty( $metadata['embargo_end_date'] ) ) {
@@ -450,7 +450,7 @@ class Humcore_Deposit_Solr_Api {
 	/**
 	 * Create a document without text extract.
 	 */
-	public function create_humcore_document( $file, $metadata ) {
+	public function create_humcore_document( $content, $metadata ) {
 
 		$client = $this->client;
 
@@ -460,8 +460,8 @@ class Humcore_Deposit_Solr_Api {
 		$doc = $query->createDocument();
 		$doc->id = $metadata['id'];
 		$doc->pid = $metadata['pid'];
-		if ( ! empty( $file ) ) {
-			$doc->content = file_get_contents( $file );
+		if ( ! empty( $content ) ) {
+		$doc->content = $content;
 		}
 		$doc->language = $metadata['language']; //TODO convert solr docs to use language_facet
 		$doc->title_display = $metadata['title'];
@@ -500,7 +500,7 @@ class Humcore_Deposit_Solr_Api {
 		$doc->abstract_unchanged = $metadata['abstract_unchanged'];
 		$doc->handle = $metadata['handle'];
 		$doc->notes = array( $metadata['notes'] );
-		$doc->notes_unchanged = array( $metadata['notes_unchanged'] );
+		if ( ! empty( $metadata['notes_unchanged'] ) ) { $doc->notes_unchanged = array( $metadata['notes_unchanged'] ); }
 		if ( ! empty( $metadata['book_journal_title'] ) ) { $doc->book_journal_title = $metadata['book_journal_title']; }
 		if ( ! empty( $metadata['book_author'] ) ) { $doc->book_author = array( $metadata['book_author'] ); }
 		if ( ! empty( $metadata['publisher'] ) ) { $doc->publisher = $metadata['publisher']; }
@@ -530,7 +530,7 @@ class Humcore_Deposit_Solr_Api {
 		}
 		$doc->record_content_source = $metadata['record_content_source'];
 		$doc->record_creation_date = $metadata['record_creation_date'];
-		$doc->record_change_date = $metadata['record_change_date'];
+		if ( ! empty( $metadata['record_change_date'] ) ) { $doc->record_change_date = $metadata['record_change_date']; }
 		$doc->record_identifier = $metadata['record_identifier'];
 		$doc->member_of = $metadata['member_of'];
 		if ( ! empty( $metadata['embargo_end_date'] ) ) {
@@ -608,8 +608,18 @@ class Humcore_Deposit_Solr_Api {
 		$msg = '';
 		$client = $this->client;
 		$query = $client->createSelect();
+
+		// add debug settings
+		//$debug = $query->getDebug();
+		//$debug->setExplainOther('id:MA*');
+
 		$edismax = $query->getEDisMax();
-		$query->setQuery( $term );
+		if ( false === strpos( ' AND ', $term ) ) {
+			$query->getEDisMax()->setQueryAlternative( $term );
+			$query->setQuery( '' );
+		} else {
+			$query->getEDisMax()->setQueryAlternative( $term );
+		}
 
 		$query->setFields( array(
 			'id', 'pid', 'title_display', 'title_unchanged', 'abstract', 'abstract_unchanged', 'pub_date_facet', 'date', 'author_display',
@@ -723,6 +733,14 @@ class Humcore_Deposit_Solr_Api {
 
 //echo "QUERY",var_export($query,true),"<p>";
 		$resultset = $client->select( $query );
+
+		// display the debug results
+		//$debugResult = $resultset->getDebug();
+		//echo '<h1>Debug data</h1>';
+		//echo 'Querystring: ' . $debugResult->getQueryString() . '<br/>';
+		//echo 'Parsed query: ' . $debugResult->getParsedQuery() . '<br/>';
+		//echo 'Query parser: ' . $debugResult->getQueryParser() . '<br/>';
+		//echo 'Other query: ' . $debugResult->getOtherQuery() . '<br/>';
 
 		if ( ! empty( $facets_array ) ) {
 			$output = array();

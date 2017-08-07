@@ -12,7 +12,7 @@
 function humcore_upload_handler() {
 
 	global $fedora_api;
-	$yyyy_mm = '2017/06';
+	$yyyy_mm = '2017/08';
 
 	require_once dirname( __FILE__ ) . '/PluploadHandler.php';
 
