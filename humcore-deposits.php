@@ -595,6 +595,23 @@ if ( class_exists( 'BWP_Sitemaps' ) ) {
 }
 
 /**
+ * Register our asynchronous tika extraction.
+ *
+ * @see Humcore_Async_Tika_Action
+**/
+function humcore_register_async_tika_action() {
+        if( false === class_exists( 'WP_Async_Task' ) ) {
+                require( plugin_dir_path( __FILE__ ) . 'lib/wp-async-task.php' );        }
+        if ( false === class_exists( 'Humcore_Async_Tika_Action' ) ) {
+                require( plugin_dir_path( __FILE__ ) . 'class-humcore-async-tika-action.php' );
+        }
+        // We need to call the Humcore_Async_Tika_Action constructor to hook in our asynchronous request logic.
+        $humcore_async_tika_action = new Humcore_Async_Tika_Action();
+}
+add_action( 'init', 'humcore_register_async_tika_action' );
+add_filter( 'https_local_ssl_verify', '__return_false' );
+
+/**
  * HumCORE: CLI Commands
  */
 

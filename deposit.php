@@ -302,18 +302,45 @@
                 humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', json_decode( $json_metadata, true ) );
 
 		/**
+		 * Prepare an array of post data for the resource post.
+		 */
+		$resource_post_data = array(
+			'post_title'     => $filename,
+			'post_status'    => 'publish',
+			'post_type'      => 'humcore_deposit',
+			'post_name'      => $nextPids[1],
+			'post_author'    => $user->ID,
+			'post_parent'    => $deposit_post_ID,
+		);
+
+		/**
+		 * Insert the resource post.
+		 */
+		$resource_id = wp_insert_post( $resource_post_data );
+
+		/**
+		 * Add POST variables needed for async tika extraction
+		 */
+		$_POST['aggregator-post-id'] = $deposit_post_ID;
+
+		/**
 		 * Add solr first, if Tika errors out we'll index without full text
 		 *
 		 * Index the deposit content and metadata in Solr.
 		 */
+	        if ( (int)$filesize < 1000000 ) {
+
 		try {
 			$tika_text = $tika_client->getText( $renamed_file );
 			$content = $tika_text;
 		} catch ( Exception $e ) {
 			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $nextPids[0] ) );
-			echo "*******HumCORE Deposit Error***** - Tika error message: ", var_export( $e, true ),"\n\n\n";
-			echo "*******HumCORE Deposit Error***** - Tika error message: ", $e->getMessage(),"\n\n\n";
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
 			$content='';
+		}
+
+                } else {
+			do_action( 'humcore_tika_text_extraction' );
 		}
 
 		try {
@@ -446,23 +473,6 @@
 			}
 		}
                 humcore_write_error_log( 'info', 'HumCORE deposit fedora/solr writes complete' );
-
-		/**
-		 * Prepare an array of post data for the resource post.
-		 */
-		$resource_post_data = array(
-			'post_title'     => $filename,
-			'post_status'    => 'publish',
-			'post_type'      => 'humcore_deposit',
-			'post_name'      => $nextPids[1],
-			'post_author'    => $user->ID,
-			'post_parent'    => $deposit_post_ID,
-		);
-
-		/**
-		 * Insert the resource post.
-		 */
-		$resource_id = wp_insert_post( $resource_post_data );
 
 		//DOI's are taking too long to resolve, put the permalink in the activity records.
 		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
@@ -1421,6 +1431,63 @@
 		return $metadataMODS;
 
 }
+
+/**
+ * Extract document text using tika and update the document in solr.
+ *
+ * @param Array $args An array of arguments passed by Humcore_Async_Tika_Action::run_action()
+ *
+ * @see Humcore_Async_Tika_Action
+**/
+function humcore_tika_text_extraction( $args ) {
+
+	if ( empty( $args['aggregator-post-id'] ) ) {
+		humcore_write_error_log( 'error', '*****HumCORE Update Deposit Extract Error***** - missing arg : ' . var_export( $args, true ) );
+		exit();
+	}
+	$aggregator_post_id = $args['aggregator-post-id'];
+	$post_metadata = json_decode( get_post_meta( $aggregator_post_id, '_deposit_metadata', true ), true );
+	$file_metadata = json_decode( get_post_meta( $aggregator_post_id, '_deposit_file_metadata', true ), true );
+	$deposit_id = $post_metadata['pid'];
+	$filename = $file_metadata['files'][0]['filename'];
+	$deposit_file = $file_metadata['files'][0]['fileloc'];
+	$filetype = $file_metadata['files'][0]['filetype'];
+	$filesize = $file_metadata['files'][0]['filesize'];
+
+	if ( preg_match( '~^audio/|^image/|^video/~', $filetype ) ) {
+		exit();
+	}
+
+	if ( is_numeric( $filesize ) ) {
+		if ( (int)$filesize < 1000000 ) {
+			exit();
+		}
+	}
+
+	global $solr_client;
+	//$tika_client = \Vaites\ApacheTika\Client::make('localhost', 9998);
+	$tika_client = \Vaites\ApacheTika\Client::make('/srv/www/commons/current/vendor/tika/tika-app-1.16.jar');     // app mode 
+
+	try {
+		$tika_text = $tika_client->getText( $deposit_file );
+	} catch ( Exception $e ) {
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $deposit_id ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
+		exit();
+	}
+
+	try {
+		//$sResult = $solr_client->update_document_content( $deposit_id, $tika_text ); // This gets a solarium error
+		$sResult = $solr_client->create_humcore_document( $tika_text, $post_metadata );
+	} catch ( Exception $e ) {
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Update Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
+		exit();
+	}
+
+	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - A Tika text extract for deposit, %1$s, is complete.', $deposit_id ) );
+
+}
+add_action( 'wp_async_humcore_tika_text_extraction', 'humcore_tika_text_extraction' );
 
 	/**
 	 * Format and ingest the foxml used to create a Fedora collection object.

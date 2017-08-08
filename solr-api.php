@@ -447,6 +447,73 @@ class Humcore_Deposit_Solr_Api {
 
 	}
 
+        /**
+         * Update a field in a document
+	 *
+	 * Sadly, this option does not work. It gets an error from Solarium. In addition we may not fqualify for atomic updates as currently configured in solr.
+         */
+        public function update_document_content( $id, $content ) {
+
+                $client = $this->client;
+
+		$update = $client->createUpdate();
+		$doc = $update->createDocument();
+		$doc->setField( 'id' );
+		$doc->setKey( 'id' ); 
+		$doc->setField( 'content', $content );
+		$doc->setFieldModifier( 'content', 'set' );
+
+		//add document and commit
+		$update->addDocument( $doc )->addCommit();
+
+                // This updates the document and returns the result.
+                try {
+                        $result = $client->update( $update );
+                } catch ( Exception $e ) {
+                        humcore_write_error_log( 'error', '***Error trying to update Solr Document with text extract***' . var_export( $e->getMessage(), true ) );
+
+                        // Begin debug.
+                        $query_info = $result->getQuery();
+                        $endpoint = $client->getEndpoint( 'solrhost' );
+
+                        $info = array(
+                                'url'             => $endpoint->getBaseUri(),
+                                'handler'         => $query_info->getHandler(),
+                                'file'            => $query_info->getOption( 'file' ),
+                                'fields'          => $doc->getFields(),
+                                'status'          => $result->getStatus(),
+                                'time'            => $result->getQueryTime(),
+                        );
+                        if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                                humcore_write_error_log( 'info', 'solr debug', $info );
+                        }
+                                humcore_write_error_log( 'info', 'solr debug', $info );
+                        // End of debug.
+                        throw $e;
+                }
+
+                humcore_write_error_log( 'info', 'Update Solr Document with text extract ', array( $result->getData() ) );
+
+                // Begin debug.
+                $query_info = $result->getQuery();
+                $endpoint = $client->getEndpoint( 'solrhost' );
+
+                $info = array(
+                        'url'             => $endpoint->getBaseUri(),
+                        'handler'         => $query_info->getHandler(),
+                        'file'            => $query_info->getOption( 'file' ),
+                        'fields'          => $doc->getFields(),
+                        'status'          => $result->getStatus(),
+                        'time'            => $result->getQueryTime(),
+                );
+                if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        humcore_write_error_log( 'info', 'solr debug', $info );
+                }
+                // End of debug.
+                return true;
+
+	}
+
 	/**
 	 * Create a document without text extract.
 	 */
@@ -613,12 +680,11 @@ class Humcore_Deposit_Solr_Api {
 		//$debug = $query->getDebug();
 		//$debug->setExplainOther('id:MA*');
 
+		$query->setQueryDefaultField( 'text' );
 		$edismax = $query->getEDisMax();
+		$query->getEDisMax()->setQueryAlternative( $term );
 		if ( false === strpos( ' AND ', $term ) ) {
-			$query->getEDisMax()->setQueryAlternative( $term );
 			$query->setQuery( '' );
-		} else {
-			$query->getEDisMax()->setQueryAlternative( $term );
 		}
 
 		$query->setFields( array(
@@ -731,7 +797,6 @@ class Humcore_Deposit_Solr_Api {
 			$query->setStart( $st )->setRows( $number_of_res );
 		}
 
-//echo "QUERY",var_export($query,true),"<p>";
 		$resultset = $client->select( $query );
 
 		// display the debug results
