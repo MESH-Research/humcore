@@ -53,7 +53,7 @@ class Humcore_Async_Tika_Action extends WP_Async_Task {
 	**/
 	protected function run_action() {
 
-        	//humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract run action %1$s', $_POST['aggregator-post-id'] ) );
+        	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract run action %1$s', $_POST['aggregator-post-id'] ) );
 
 		$args = array();
 		$args['aggregator-post-id']        = $_POST['aggregator-post-id'];

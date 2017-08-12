@@ -582,6 +582,9 @@ function humcore_deposit_metabox_save( $post_id ) {
 	}
 
 	global $fedora_api, $solr_client;
+	//$tika_client = \Vaites\ApacheTika\Client::make('localhost', 9998);
+	$tika_client = \Vaites\ApacheTika\Client::make('/srv/www/commons/current/vendor/tika/tika-app-1.16.jar');     // app mode 
+
 
 	$aggregator_metadata = json_decode( get_post_meta( $post_id, '_deposit_metadata', true ), true );
 	$current_groups = $aggregator_metadata['group'];
@@ -807,11 +810,37 @@ function humcore_deposit_metabox_save( $post_id ) {
 			echo 'Error - rContent : ' . esc_html( $rContent->get_error_message() );
 			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - rContent : %1$s-%2$s',  $rContent->get_error_code(), $rContent->get_error_message() ) );
 		}
+
+                /**
+                 * Add POST variables needed for async tika extraction
+                 */
+                $_POST['aggregator-post-id'] = $post_id;
+
+                /**
+                 * Extract text first if small. If Tika errors out we'll index without full text.
+                 */
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filetype < 1000000 ) {
+
+                    try {
+                        $tika_text = $tika_client->getText( $resource_fileloc );
+                        $content = $tika_text;
+                    } catch ( Exception $e ) {
+                        humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $thesePids[0] ) );
+                        humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
+                        $content='';
+                    }
+
+                }
+
+                /**
+                 * Index the deposit content and metadata in Solr.
+                 */
 		try {
-			if ( preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) ) {
+			if ( preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) ) {
 				$sResult = $solr_client->create_humcore_document( '', $aggregator_metadata );
 			} else {
-				$sResult = $solr_client->create_humcore_extract( $resource_fileloc, $aggregator_metadata );
+				//$sResult = $solr_client->create_humcore_extract( $resource_fileloc, $aggregator_metadata );
+				$sResult = $solr_client->create_humcore_document( $content, $aggregator_metadata );
 			}
 		} catch ( Exception $e ) {
 
@@ -824,9 +853,10 @@ function humcore_deposit_metabox_save( $post_id ) {
 		if ( ! empty( $aggregator_metadata['deposit_doi'] ) ) {
                 	$creators = array();
                 	foreach ( $aggregator_metadata['authors'] as $author ) {
-                        	if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
-                                	$creators[] = $author['fullname'];
-                        	}
+				if ( ( in_array( $author['role'], array( 'author', 'editor', 'translator' ) ) ) &&
+					 ! empty( $author['fullname'] ) ) {
+					$creators[] = $author['fullname'];
+				}
                 	}
                 	$creator_list = implode( ',', $creators );
 
@@ -842,6 +872,12 @@ function humcore_deposit_metabox_save( $post_id ) {
                                 echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
                         }
 		}
+
+		humcore_write_error_log( 'info', '*****WP Admin HumCORE Deposit***** - before do_action ' );
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filetype >= 1000000 ) {
+                        do_action( 'humcore_tika_text_extraction' );
+		}
+		humcore_write_error_log( 'info', '*****WP Admin HumCORE Deposit***** - after do_action ' );
 
 	}
 
