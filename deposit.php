@@ -368,10 +368,6 @@
 			}
 		}
 
-		if ( ! preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) && (int)$filesize >= 1000000 ) {
-			do_action( 'humcore_tika_text_extraction' );
-		}
-
 		/**
 		 * Create the aggregator Fedora object along with the DC and RELS-EXT datastreams.
 		 */
@@ -525,6 +521,13 @@
 			//$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $review_group_id, $metadata['abstract'], $local_link );
 			//$metadata['group'][] = $review_group->name;
 			//$metadata['group_ids'][] = $review_group_id;
+		}
+
+		/**
+		 * Re-index larger text based deposits in the background.
+		 */
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) && (int)$filesize >= 1000000 ) {
+			// TODO fix logout problem do_action( 'humcore_tika_text_extraction' );
 		}
 
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );

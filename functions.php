@@ -1823,10 +1823,10 @@ function humcore_get_deposit_by_title_genre_and_author( $title, $genre, $group_i
 **/
 function humcore_tika_text_extraction( $args ) {
 
-	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - An async Tika text extract for deposit, %1$s, is starting.', $args['aggregator-post-id'] ) );
+	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Async Tika text extract for deposit, %1$s, is starting.', $args['aggregator-post-id'] ) );
 	if ( empty( $args['aggregator-post-id'] ) ) {
 		humcore_write_error_log( 'error', '*****HumCORE Update Deposit Extract Error***** - missing arg : ' . var_export( $args, true ) );
-		exit();
+		return;
 	}
 	$aggregator_post_id = $args['aggregator-post-id'];
 	$post_metadata = json_decode( get_post_meta( $aggregator_post_id, '_deposit_metadata', true ), true );
@@ -1838,12 +1838,12 @@ function humcore_tika_text_extraction( $args ) {
 	$filesize = $file_metadata['files'][0]['filesize'];
 
 	if ( preg_match( '~^audio/|^image/|^video/~', $filetype ) ) {
-		exit();
+		return;
 	}
 
 	if ( is_numeric( $filesize ) ) {
 		if ( (int)$filesize < 1000000 ) {
-			exit();
+			return;
 		}
 	}
 
@@ -1856,7 +1856,7 @@ function humcore_tika_text_extraction( $args ) {
 	} catch ( Exception $e ) {
 		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $deposit_id ) );
 		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
-		exit();
+		return;
 	}
 
 	try {
@@ -1864,11 +1864,12 @@ function humcore_tika_text_extraction( $args ) {
 		$sResult = $solr_client->create_humcore_document( $tika_text, $post_metadata );
 	} catch ( Exception $e ) {
 		humcore_write_error_log( 'error', sprintf( '*****HumCORE Update Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
-		exit();
+		return;
 	}
 
-	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - A Tika text extract for deposit, %1$s, is complete.', $deposit_id ) );
+	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Async Tika text extract for deposit, %1$s, is complete.', $deposit_id ) );
 
 }
 add_action( 'wp_async_humcore_tika_text_extraction', 'humcore_tika_text_extraction' );
+add_action( 'wp_async_nopriv_humcore_tika_text_extraction', 'humcore_tika_text_extraction' );
 

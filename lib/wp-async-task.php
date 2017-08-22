@@ -141,12 +141,10 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 						'cookie' => implode( '; ', $cookies ),
 					),
 				);
-				error_log( '**********wp_async remote_post args***********' . var_export( $request_args , true ) );
 
 				$url = admin_url( 'admin-post.php' );
 
-				$result = wp_remote_post( $url, $request_args );
-				error_log( '**********wp_async remote_post result***********' . var_export( $result , true ) );
+				wp_remote_post( $url, $request_args );
 			}
 		}
 

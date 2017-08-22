@@ -17,7 +17,7 @@ class Humcore_Async_Tika_Action extends WP_Async_Task {
 	**/
 	protected function prepare_data( $data ) {
 
-		humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract prepare data %1$s', $_POST['deposit-id'] ) );
+		//humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract prepare data %1$s', $_POST['aggregator-post-id'] ) );
 
 /*
 		// Check to make sure Buddypress is turned on
@@ -53,7 +53,7 @@ class Humcore_Async_Tika_Action extends WP_Async_Task {
 	**/
 	protected function run_action() {
 
-        	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract run action %1$s', $_POST['aggregator-post-id'] ) );
+		//humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract run action %1$s', $_POST['aggregator-post-id'] ) );
 
 		$args = array();
 		$args['aggregator-post-id']        = $_POST['aggregator-post-id'];

@@ -819,7 +819,7 @@ function humcore_deposit_metabox_save( $post_id ) {
                 /**
                  * Extract text first if small. If Tika errors out we'll index without full text.
                  */
-		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filetype < 1000000 ) {
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filesize < 1000000 ) {
 
                     try {
                         $tika_text = $tika_client->getText( $resource_fileloc );
@@ -873,11 +873,9 @@ function humcore_deposit_metabox_save( $post_id ) {
                         }
 		}
 
-		humcore_write_error_log( 'info', '*****WP Admin HumCORE Deposit***** - before do_action ' );
-		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filetype >= 1000000 ) {
-                        do_action( 'humcore_tika_text_extraction' );
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filesize >= 1000000 ) {
+                        // TODO fix logout problem do_action( 'humcore_tika_text_extraction' );
 		}
-		humcore_write_error_log( 'info', '*****WP Admin HumCORE Deposit***** - after do_action ' );
 
 	}
 
