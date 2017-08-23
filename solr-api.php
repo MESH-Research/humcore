@@ -697,6 +697,20 @@ class Humcore_Deposit_Solr_Api {
 			'record_creation_date', 'record_change_date', 'record_identifier', 'member_of', 'free_to_read_start_date', 'score',
 		) );
 
+		// get highlighting component and apply settings
+		$highlight_fields = array(
+			'title_search' => 'Title',
+			'abstract' => 'Abstract',
+			'subject_search' => 'Subject',
+			'keyword_search' => 'Tag',
+			'notes' => 'Notes',
+			'content' => 'Full Text',
+		);
+		$highlighting = $query->getHighlighting();
+		$highlighting->setFields( implode( ', ', array_keys( $highlight_fields) ) );
+		$highlighting->setSimplePrefix('<strong>');
+		$highlighting->setSimplePostfix('</strong>');
+
 		if ( null != $sort ) {
 			if ( 'newest' == $sort ) {
 				$sort_field = 'record_creation_date';
@@ -799,6 +813,8 @@ class Humcore_Deposit_Solr_Api {
 
 		$resultset = $client->select( $query );
 
+		$highlighting = $resultset->getHighlighting();
+
 		// display the debug results
 		//$debugResult = $resultset->getDebug();
 		//echo '<h1>Debug data</h1>';
@@ -828,18 +844,12 @@ class Humcore_Deposit_Solr_Api {
 			$search_result['total'] = $found;
 		}
 
-		$hl = $query->getHighlighting();
-		$hl->getField( 'title_display' )->setSimplePrefix( '<b>' )->setSimplePostfix( '</b>' );
-		$hl->getField( 'abstract' )->setSimplePrefix( '<b>' )->setSimplePostfix( '</b>' );
-		$resultSet = '';
-		$resultSet = $client->select( $query );
 		$results = array();
-		$highlighting = $resultSet->getHighlighting();
 
 		$i = 1;
 		$cat_arr = array();
 
-		foreach ( $resultSet as $document ) {
+		foreach ( $resultset as $document ) {
 			$record = array();
 			$record['id'] = $document->id;
 			$record['pid'] = $document->pid;
@@ -905,8 +915,23 @@ class Humcore_Deposit_Solr_Api {
 			$record['record_identifier'] = $document->record_identifier;
 			$record['member_of'] = $document->member_of;
 			$record['embargo_end_date'] = $document->free_to_read_start_date;
+			// highlighting results can be fetched by document id (the field defined as uniquekey in this schema)
+			$raw_highlights = array();
+			$highlights = array();
+			$highlightedDoc = $highlighting->getResult( $document->id );
+			if ( $highlightedDoc ) {
+				$raw_highlights = (array)$highlightedDoc;
+				foreach ($raw_highlights['' . "\0" . '*' . "\0" . 'fields'] as $field => $highlight) {
+					$highlights[$highlight_fields[$field]] = $highlight;
+				}
+			}
+			if ( ! empty( $highlights ) ) {
+				$record['highlights'] = $highlights;
+			}
+
 			array_push( $results, $record );
 			$i = $i + 1;
+
 		}
 
 		if ( count( $results ) < 0 ) {

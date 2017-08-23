@@ -843,14 +843,22 @@ function humcore_deposits_entry_content() {
 <dt><?php _e( 'Tag(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo $keyword_list; // XSS OK. ?></dd>
 <?php endif; ?>
-<dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt>
-<dd><a href="<?php echo esc_attr( $item_url ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd>
+<!-- <dt><?php _e( 'Permanent URL:', 'humcore_domain' ); ?></dt> -->
+<!-- <dd><a href="<?php echo esc_attr( $item_url ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd> -->
+<?php
+$highlights = $metadata['highlights'];
+if ( ! empty( $highlights ) ) { ?>
+<dt>Search term matches:</dt><dd></dd>
+<?php    foreach ( $highlights as $field => $highlight ) {
+        echo '<dt>' . $field . '</dt>';
+        echo '<dd>... ' . implode( ' ( ... ) ', $highlight ) . ' ...</dd>';
+    }
+}
+?>
 </dl>
 </div>
 <br style='clear:both'>
-<?php
-
-}
+<?php }
 
 /**
  * Output deposits single item html.
