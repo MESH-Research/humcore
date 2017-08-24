@@ -316,21 +316,23 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 			$prev_val['deposit-other-authors-last-name'],
 			$prev_val['deposit-other-authors-role']
 		);
+		$row_counter = 0;
 		foreach ( $other_authors as $author_array ) {
 			if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
 ?>
 		<tr><td class="borderTop" style="width:205px;">
-		<input type="text" name="deposit-other-authors-first-name[]" class="text" value="<?php echo $author_array['first_name']; ?>" />
+		<input type="text" name="deposit-other-authors-first-name[<?php echo $row_counter; ?>]" class="text" value="<?php echo $author_array['first_name']; ?>" />
 		</td><td class="borderTop" style="width:205px;">
-		<input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
+		<input type="text" name="deposit-other-authors-last-name[<?php echo $row_counter; ?>]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
 		</td><td class="borderTop" style="width:230px; vertical-align: top;">
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="author" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'author' ); } ?>>Author &nbsp;</span>
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="editor" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'editor' ); } ?>>Editor &nbsp;</span>
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="translator" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="author" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'author' ); } ?>>Author &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="editor" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'editor' ); } ?>>Editor &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="translator" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
 		</td><td class="borderTop">
 		</td></tr>
 <?php
 			}
+			$row_counter++;
 		}
 	}
 ?>

@@ -783,7 +783,7 @@
 		 */
 		$creators = array();
                 foreach ( $metadata['authors'] as $author ) {
-                        if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
+			if ( ( in_array( $author['role'], array( 'author', 'editor', 'translator' ) ) ) && ! empty( $author['fullname'] ) ) {
                                 $creators[] = $author['fullname'];
                         }
                 }

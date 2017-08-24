@@ -105,12 +105,13 @@ jQuery(document).ready( function($) {
 	// Add other authors as needed.
 	$('#deposit-insert-other-author-button').on('click', function(e) {
 		e.preventDefault();
-		$('#deposit-other-authors-entry-table>tbody').append('		<tr><td class="borderTop"><input type="text" name="deposit-other-authors-first-name[]" class="text" value="" /></td>' +
-				'<td class="borderTop"><input type="text" name="deposit-other-authors-last-name[]" class="text deposit-other-authors-last-name" value="" /></td>' +
+		var row_count = $('#deposit-other-authors-entry-table>tbody tr').length - 2;
+		$('#deposit-other-authors-entry-table>tbody').append('		<tr><td class="borderTop"><input type="text" name="deposit-other-authors-first-name[' + row_count + ']" class="text" value="" /></td>' +
+				'<td class="borderTop"><input type="text" name="deposit-other-authors-last-name[' + row_count + ']" class="text deposit-other-authors-last-name" value="" /></td>' +
 				'<td class="borderTop" style="vertical-align: top;">' +
-				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="author">Author &nbsp;</span>' +
-				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="editor">Editor &nbsp;</span>' +
-				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[]" class="styled" style="margin-top: 12px;" value="translator">Translator &nbsp;</span>' +
+				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[' + row_count + ']" class="styled" style="margin-top: 12px;" value="author">Author &nbsp;</span>' +
+				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[' + row_count + ']" class="styled" style="margin-top: 12px;" value="editor">Editor &nbsp;</span>' +
+				'<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[' + row_count + ']" class="styled" style="margin-top: 12px;" value="translator">Translator &nbsp;</span>' +
 				'</td>' +
 				'<td class="borderTop"></td></tr>');
 	});
