@@ -1312,7 +1312,6 @@ function humcore_linkify_license( $license ) {
 
 $license_link_list = array();
 
-        $license_link_list['All Rights Reserved'] = '';
         $license_link_list['Attribution'] = 'https://creativecommons.org/licenses/by/4.0/';
         $license_link_list['Attribution-NonCommercial'] = 'https://creativecommons.org/licenses/by-nc/4.0/';
         $license_link_list['Attribution-ShareAlike'] = 'https://creativecommons.org/licenses/by-sa/4.0/';
@@ -1320,6 +1319,7 @@ $license_link_list = array();
         $license_link_list['Attribution-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nd/4.0/';
         $license_link_list['Attribution-NonCommercial-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nc-nd/4.0/';
         $license_link_list['All-Rights-Granted'] = 'https://creativecommons.org/publicdomain/zero/1.0/';
+        $license_link_list['All Rights Reserved'] = '';
 
 	if ( ! empty( $license_link_list[$license] ) ) {
         	return sprintf( '<a onclick="target=' . "'" . '_blank' . "'" . '" href="%s">%s</a>', $license_link_list[$license], $license );
@@ -1635,7 +1635,6 @@ function humcore_deposits_license_type_list() {
 
 	$license_type_list = array();
 
-	$license_type_list['All Rights Reserved'] = 'All Rights Reserved';
 	$license_type_list['Attribution'] = 'Attribution';
 	$license_type_list['Attribution-NonCommercial'] = 'Attribution-NonCommercial';
 	$license_type_list['Attribution-ShareAlike'] = 'Attribution-ShareAlike';
@@ -1643,6 +1642,7 @@ function humcore_deposits_license_type_list() {
 	$license_type_list['Attribution-NoDerivatives'] = 'Attribution-NoDerivatives';
 	$license_type_list['Attribution-NonCommercial-NoDerivatives'] = 'Attribution-NonCommercial-NoDerivatives';
 	$license_type_list['All-Rights-Granted'] = 'All Rights Granted';
+	$license_type_list['All Rights Reserved'] = 'All Rights Reserved';
 
 	return apply_filters( 'bp_humcore_deposits_license_type_list', $license_type_list );
 

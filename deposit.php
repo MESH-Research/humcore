@@ -223,7 +223,7 @@
 			'post_status'  => $deposit_post_status,
 			'post_date'    => $deposit_post_date,
 			'post_type'    => 'humcore_deposit',
-			'post_name'    => $nextPids[0],
+			'post_name'    => str_replace( ':', '', $nextPids[0] ),
 			'post_author'  => $user->ID
 		);
 
