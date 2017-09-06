@@ -360,7 +360,7 @@ class Humcore_Deposit_Solr_Api {
 		$doc->abstract_unchanged = $metadata['abstract_unchanged'];
 		$doc->handle = $metadata['handle'];
 		$doc->notes = array( $metadata['notes'] );
-		$doc->notes_unchanged = array( $metadata['notes_unchanged'] );
+		if ( ! empty( $metadata['notes_unchanged'] ) ) { $doc->notes_unchanged = array( $metadata['notes_unchanged'] ); }
 		if ( ! empty( $metadata['book_journal_title'] ) ) { $doc->book_journal_title = $metadata['book_journal_title']; }
 		if ( ! empty( $metadata['book_author'] ) ) { $doc->book_author = array( $metadata['book_author'] ); }
 		if ( ! empty( $metadata['publisher'] ) ) { $doc->publisher = $metadata['publisher']; }
@@ -390,7 +390,7 @@ class Humcore_Deposit_Solr_Api {
 		}
 		$doc->record_content_source = $metadata['record_content_source'];
 		$doc->record_creation_date = $metadata['record_creation_date'];
-		$doc->record_change_date = $metadata['record_change_date'];
+		if ( ! empty( $metadata['record_change_date'] ) ) { $doc->record_change_date = $metadata['record_change_date']; }
 		$doc->record_identifier = $metadata['record_identifier'];
 		$doc->member_of = $metadata['member_of'];
                 if ( ! empty( $metadata['embargo_end_date'] ) ) {
@@ -447,10 +447,77 @@ class Humcore_Deposit_Solr_Api {
 
 	}
 
+        /**
+         * Update a field in a document
+	 *
+	 * Sadly, this option does not work. It gets an error from Solarium. In addition we may not fqualify for atomic updates as currently configured in solr.
+         */
+        public function update_document_content( $id, $content ) {
+
+                $client = $this->client;
+
+		$update = $client->createUpdate();
+		$doc = $update->createDocument();
+		$doc->setField( 'id' );
+		$doc->setKey( 'id' ); 
+		$doc->setField( 'content', $content );
+		$doc->setFieldModifier( 'content', 'set' );
+
+		//add document and commit
+		$update->addDocument( $doc )->addCommit();
+
+                // This updates the document and returns the result.
+                try {
+                        $result = $client->update( $update );
+                } catch ( Exception $e ) {
+                        humcore_write_error_log( 'error', '***Error trying to update Solr Document with text extract***' . var_export( $e->getMessage(), true ) );
+
+                        // Begin debug.
+                        $query_info = $result->getQuery();
+                        $endpoint = $client->getEndpoint( 'solrhost' );
+
+                        $info = array(
+                                'url'             => $endpoint->getBaseUri(),
+                                'handler'         => $query_info->getHandler(),
+                                'file'            => $query_info->getOption( 'file' ),
+                                'fields'          => $doc->getFields(),
+                                'status'          => $result->getStatus(),
+                                'time'            => $result->getQueryTime(),
+                        );
+                        if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                                humcore_write_error_log( 'info', 'solr debug', $info );
+                        }
+                                humcore_write_error_log( 'info', 'solr debug', $info );
+                        // End of debug.
+                        throw $e;
+                }
+
+                humcore_write_error_log( 'info', 'Update Solr Document with text extract ', array( $result->getData() ) );
+
+                // Begin debug.
+                $query_info = $result->getQuery();
+                $endpoint = $client->getEndpoint( 'solrhost' );
+
+                $info = array(
+                        'url'             => $endpoint->getBaseUri(),
+                        'handler'         => $query_info->getHandler(),
+                        'file'            => $query_info->getOption( 'file' ),
+                        'fields'          => $doc->getFields(),
+                        'status'          => $result->getStatus(),
+                        'time'            => $result->getQueryTime(),
+                );
+                if ( defined( 'CORE_HTTP_DEBUG' ) && 'true' === CORE_HTTP_DEBUG && defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
+                        humcore_write_error_log( 'info', 'solr debug', $info );
+                }
+                // End of debug.
+                return true;
+
+	}
+
 	/**
 	 * Create a document without text extract.
 	 */
-	public function create_humcore_document( $file, $metadata ) {
+	public function create_humcore_document( $content, $metadata ) {
 
 		$client = $this->client;
 
@@ -460,8 +527,8 @@ class Humcore_Deposit_Solr_Api {
 		$doc = $query->createDocument();
 		$doc->id = $metadata['id'];
 		$doc->pid = $metadata['pid'];
-		if ( ! empty( $file ) ) {
-			$doc->content = file_get_contents( $file );
+		if ( ! empty( $content ) ) {
+		$doc->content = $content;
 		}
 		$doc->language = $metadata['language']; //TODO convert solr docs to use language_facet
 		$doc->title_display = $metadata['title'];
@@ -500,7 +567,7 @@ class Humcore_Deposit_Solr_Api {
 		$doc->abstract_unchanged = $metadata['abstract_unchanged'];
 		$doc->handle = $metadata['handle'];
 		$doc->notes = array( $metadata['notes'] );
-		$doc->notes_unchanged = array( $metadata['notes_unchanged'] );
+		if ( ! empty( $metadata['notes_unchanged'] ) ) { $doc->notes_unchanged = array( $metadata['notes_unchanged'] ); }
 		if ( ! empty( $metadata['book_journal_title'] ) ) { $doc->book_journal_title = $metadata['book_journal_title']; }
 		if ( ! empty( $metadata['book_author'] ) ) { $doc->book_author = array( $metadata['book_author'] ); }
 		if ( ! empty( $metadata['publisher'] ) ) { $doc->publisher = $metadata['publisher']; }
@@ -530,7 +597,7 @@ class Humcore_Deposit_Solr_Api {
 		}
 		$doc->record_content_source = $metadata['record_content_source'];
 		$doc->record_creation_date = $metadata['record_creation_date'];
-		$doc->record_change_date = $metadata['record_change_date'];
+		if ( ! empty( $metadata['record_change_date'] ) ) { $doc->record_change_date = $metadata['record_change_date']; }
 		$doc->record_identifier = $metadata['record_identifier'];
 		$doc->member_of = $metadata['member_of'];
 		if ( ! empty( $metadata['embargo_end_date'] ) ) {
@@ -608,8 +675,17 @@ class Humcore_Deposit_Solr_Api {
 		$msg = '';
 		$client = $this->client;
 		$query = $client->createSelect();
+
+		// add debug settings
+		//$debug = $query->getDebug();
+		//$debug->setExplainOther('id:MA*');
+
+		$query->setQueryDefaultField( 'text' );
 		$edismax = $query->getEDisMax();
-		$query->setQuery( $term );
+		$query->getEDisMax()->setQueryAlternative( $term );
+		if ( false === strpos( ' AND ', $term ) ) {
+			$query->setQuery( '' );
+		}
 
 		$query->setFields( array(
 			'id', 'pid', 'title_display', 'title_unchanged', 'abstract', 'abstract_unchanged', 'pub_date_facet', 'date', 'author_display',
@@ -620,6 +696,20 @@ class Humcore_Deposit_Solr_Api {
 			'meeting_location', 'meeting_date', 'publication_type', 'date_issued', 'type_of_resource_facet', 'record_content_source',
 			'record_creation_date', 'record_change_date', 'record_identifier', 'member_of', 'free_to_read_start_date', 'score',
 		) );
+
+		// get highlighting component and apply settings
+		$highlight_fields = array(
+			'title_search' => 'Title',
+			'abstract' => 'Abstract',
+			'subject_search' => 'Subject',
+			'keyword_search' => 'Tag',
+			'notes' => 'Notes',
+			'content' => 'Full Text',
+		);
+		$highlighting = $query->getHighlighting();
+		$highlighting->setFields( implode( ', ', array_keys( $highlight_fields) ) );
+		$highlighting->setSimplePrefix('<strong>');
+		$highlighting->setSimplePostfix('</strong>');
 
 		if ( null != $sort ) {
 			if ( 'newest' == $sort ) {
@@ -721,8 +811,17 @@ class Humcore_Deposit_Solr_Api {
 			$query->setStart( $st )->setRows( $number_of_res );
 		}
 
-//echo "QUERY",var_export($query,true),"<p>";
 		$resultset = $client->select( $query );
+
+		$highlighting = $resultset->getHighlighting();
+
+		// display the debug results
+		//$debugResult = $resultset->getDebug();
+		//echo '<h1>Debug data</h1>';
+		//echo 'Querystring: ' . $debugResult->getQueryString() . '<br/>';
+		//echo 'Parsed query: ' . $debugResult->getParsedQuery() . '<br/>';
+		//echo 'Query parser: ' . $debugResult->getQueryParser() . '<br/>';
+		//echo 'Other query: ' . $debugResult->getOtherQuery() . '<br/>';
 
 		if ( ! empty( $facets_array ) ) {
 			$output = array();
@@ -745,18 +844,12 @@ class Humcore_Deposit_Solr_Api {
 			$search_result['total'] = $found;
 		}
 
-		$hl = $query->getHighlighting();
-		$hl->getField( 'title_display' )->setSimplePrefix( '<b>' )->setSimplePostfix( '</b>' );
-		$hl->getField( 'abstract' )->setSimplePrefix( '<b>' )->setSimplePostfix( '</b>' );
-		$resultSet = '';
-		$resultSet = $client->select( $query );
 		$results = array();
-		$highlighting = $resultSet->getHighlighting();
 
 		$i = 1;
 		$cat_arr = array();
 
-		foreach ( $resultSet as $document ) {
+		foreach ( $resultset as $document ) {
 			$record = array();
 			$record['id'] = $document->id;
 			$record['pid'] = $document->pid;
@@ -822,8 +915,23 @@ class Humcore_Deposit_Solr_Api {
 			$record['record_identifier'] = $document->record_identifier;
 			$record['member_of'] = $document->member_of;
 			$record['embargo_end_date'] = $document->free_to_read_start_date;
+			// highlighting results can be fetched by document id (the field defined as uniquekey in this schema)
+			$raw_highlights = array();
+			$highlights = array();
+			$highlightedDoc = $highlighting->getResult( $document->id );
+			if ( $highlightedDoc ) {
+				$raw_highlights = (array)$highlightedDoc;
+				foreach ($raw_highlights['' . "\0" . '*' . "\0" . 'fields'] as $field => $highlight) {
+					$highlights[$highlight_fields[$field]] = $highlight;
+				}
+			}
+			if ( ! empty( $highlights ) ) {
+				$record['highlights'] = $highlights;
+			}
+
 			array_push( $results, $record );
 			$i = $i + 1;
+
 		}
 
 		if ( count( $results ) < 0 ) {

@@ -273,6 +273,7 @@ function humcore_release_provisional_fire() {
 		$metadata = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
 		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
 		$local_link = $metadata['handle']; // Let's try doi.
+		$post_name = str_replace( ':', '', $metadata['pid'] );
 		$diff = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
 		$hours_since = round( $diff / HOUR_IN_SECONDS );
 		 //echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
@@ -281,6 +282,7 @@ function humcore_release_provisional_fire() {
 				$post_args = array(
 					'ID'          => $deposit_post->ID,
 					'post_status' => 'publish',
+					'post_name' => $post_name,
 				);
 				$update_status = wp_update_post( $post_args, true );
 				//echo $deposit_post->ID, ", ", var_export( $update_status, true ), ", ", $deposit_post->post_name, ", ", "Published!", "\n";
@@ -593,6 +595,23 @@ if ( class_exists( 'BWP_Sitemaps' ) ) {
 	add_filter( 'bwp_gxs_rewrite_rules', 'humcore_bwp_gxs_add_rewrite_rules' );
 	add_action( 'bwp_gxs_modules_built', 'humcore_bwp_gxs_add_modules' );
 }
+
+/**
+ * Register our asynchronous tika extraction.
+ *
+ * @see Humcore_Async_Tika_Action
+**/
+function humcore_register_async_tika_action() {
+        if( false === class_exists( 'WP_Async_Task' ) ) {
+                require( plugin_dir_path( __FILE__ ) . 'lib/wp-async-task.php' );        }
+        if ( false === class_exists( 'Humcore_Async_Tika_Action' ) ) {
+                require( plugin_dir_path( __FILE__ ) . 'class-humcore-async-tika-action.php' );
+        }
+        // We need to call the Humcore_Async_Tika_Action constructor to hook in our asynchronous request logic.
+        $humcore_async_tika_action = new Humcore_Async_Tika_Action();
+}
+add_action( 'init', 'humcore_register_async_tika_action' );
+add_filter( 'https_local_ssl_verify', '__return_false' );
 
 /**
  * HumCORE: CLI Commands

@@ -1312,7 +1312,6 @@ function humcore_linkify_license( $license ) {
 
 $license_link_list = array();
 
-        $license_link_list['All Rights Reserved'] = '';
         $license_link_list['Attribution'] = 'https://creativecommons.org/licenses/by/4.0/';
         $license_link_list['Attribution-NonCommercial'] = 'https://creativecommons.org/licenses/by-nc/4.0/';
         $license_link_list['Attribution-ShareAlike'] = 'https://creativecommons.org/licenses/by-sa/4.0/';
@@ -1320,6 +1319,7 @@ $license_link_list = array();
         $license_link_list['Attribution-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nd/4.0/';
         $license_link_list['Attribution-NonCommercial-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nc-nd/4.0/';
         $license_link_list['All-Rights-Granted'] = 'https://creativecommons.org/publicdomain/zero/1.0/';
+        $license_link_list['All Rights Reserved'] = '';
 
 	if ( ! empty( $license_link_list[$license] ) ) {
         	return sprintf( '<a onclick="target=' . "'" . '_blank' . "'" . '" href="%s">%s</a>', $license_link_list[$license], $license );
@@ -1635,7 +1635,6 @@ function humcore_deposits_license_type_list() {
 
 	$license_type_list = array();
 
-	$license_type_list['All Rights Reserved'] = 'All Rights Reserved';
 	$license_type_list['Attribution'] = 'Attribution';
 	$license_type_list['Attribution-NonCommercial'] = 'Attribution-NonCommercial';
 	$license_type_list['Attribution-ShareAlike'] = 'Attribution-ShareAlike';
@@ -1643,6 +1642,7 @@ function humcore_deposits_license_type_list() {
 	$license_type_list['Attribution-NoDerivatives'] = 'Attribution-NoDerivatives';
 	$license_type_list['Attribution-NonCommercial-NoDerivatives'] = 'Attribution-NonCommercial-NoDerivatives';
 	$license_type_list['All-Rights-Granted'] = 'All Rights Granted';
+	$license_type_list['All Rights Reserved'] = 'All Rights Reserved';
 
 	return apply_filters( 'bp_humcore_deposits_license_type_list', $license_type_list );
 
@@ -1814,3 +1814,62 @@ function humcore_get_deposit_by_title_genre_and_author( $title, $genre, $group_i
 	}
 
 }
+/**
+ * Extract document text using tika and update the document in solr.
+ *
+ * @param Array $args An array of arguments passed by Humcore_Async_Tika_Action::run_action()
+ *
+ * @see Humcore_Async_Tika_Action
+**/
+function humcore_tika_text_extraction( $args ) {
+
+	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Async Tika text extract for deposit, %1$s, is starting.', $args['aggregator-post-id'] ) );
+	if ( empty( $args['aggregator-post-id'] ) ) {
+		humcore_write_error_log( 'error', '*****HumCORE Update Deposit Extract Error***** - missing arg : ' . var_export( $args, true ) );
+		return;
+	}
+	$aggregator_post_id = $args['aggregator-post-id'];
+	$post_metadata = json_decode( get_post_meta( $aggregator_post_id, '_deposit_metadata', true ), true );
+	$file_metadata = json_decode( get_post_meta( $aggregator_post_id, '_deposit_file_metadata', true ), true );
+	$deposit_id = $post_metadata['pid'];
+	$filename = $file_metadata['files'][0]['filename'];
+	$deposit_file = $file_metadata['files'][0]['fileloc'];
+	$filetype = $file_metadata['files'][0]['filetype'];
+	$filesize = $file_metadata['files'][0]['filesize'];
+
+	if ( preg_match( '~^audio/|^image/|^video/~', $filetype ) ) {
+		return;
+	}
+
+	if ( is_numeric( $filesize ) ) {
+		if ( (int)$filesize < 1000000 ) {
+			return;
+		}
+	}
+
+	global $solr_client;
+	//$tika_client = \Vaites\ApacheTika\Client::make('localhost', 9998);
+	$tika_client = \Vaites\ApacheTika\Client::make('/srv/www/commons/current/vendor/tika/tika-app-1.16.jar');     // app mode 
+
+	try {
+		$tika_text = $tika_client->getText( $deposit_file );
+	} catch ( Exception $e ) {
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $deposit_id ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
+		return;
+	}
+
+	try {
+		//$sResult = $solr_client->update_document_content( $deposit_id, $tika_text ); // This gets a solarium error
+		$sResult = $solr_client->create_humcore_document( $tika_text, $post_metadata );
+	} catch ( Exception $e ) {
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Update Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
+		return;
+	}
+
+	humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Async Tika text extract for deposit, %1$s, is complete.', $deposit_id ) );
+
+}
+add_action( 'wp_async_humcore_tika_text_extraction', 'humcore_tika_text_extraction' );
+add_action( 'wp_async_nopriv_humcore_tika_text_extraction', 'humcore_tika_text_extraction' );
+

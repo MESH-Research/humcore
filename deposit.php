@@ -15,7 +15,7 @@
 	 * Mint and reserve a DOI.
 	 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr and 2 posts.
 	 * Get the next 2 object id values for Fedora.
-	 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
+	 * Add solr first, if Tika errors out we'll add the index without full text.
 	 * Create the aggregator post so that we can reference the ID in the Solr document.
 	 * Set object terms for subjects.
 	 * Add any new keywords and set object terms for tags.
@@ -40,6 +40,9 @@
 		}
 
 		global $fedora_api, $solr_client;
+		//$tika_client = \Vaites\ApacheTika\Client::make('localhost', 9998);
+		$tika_client = \Vaites\ApacheTika\Client::make('/srv/www/commons/current/vendor/tika/tika-app-1.16.jar');     // app mode 
+
 
 		$upload_error_message = '';
 		if ( empty( $_POST['selected_file_name'] ) ) {
@@ -85,12 +88,16 @@
 
 		// Single file uploads at this point.
 		$tempname = sanitize_file_name( $_POST['selected_temp_name'] );
-		$yyyy_mm = '2017/06';
+		$time = current_time( 'mysql' );
+		$y = substr( $time, 0, 4 );
+		$m = substr( $time, 5, 2 );
+		$yyyy_mm = "$y/$m";
 		$fileloc = $fedora_api->tempDir . '/' . $yyyy_mm . '/' . $tempname;
 		$filename = strtolower( sanitize_file_name( $_POST['selected_file_name'] ) );
 		$filesize = sanitize_text_field( $_POST['selected_file_size'] );
 		$renamed_file = $fileloc . '.' . $filename;
 		$MODS_file = $fileloc . '.MODS.' . $filename . '.xml';
+                $filename_dir = pathinfo( $renamed_file, PATHINFO_DIRNAME );
 		$datastream_id = 'CONTENT';
 		$thumb_datastream_id = 'THUMB';
 		$generated_thumb_name = '';
@@ -110,7 +117,7 @@
 				$current_size = $thumb_image->get_size();
 				$thumb_image->resize( 150, 150, false );
 				$thumb_image->set_quality( 95 );
-				$thumb_filename = $thumb_image->generate_filename( 'thumb', $fedora_api->tempDir . '/' . $yyyy_mm . '/', 'jpg' );
+				$thumb_filename = $thumb_image->generate_filename( 'thumb', $filename_dir . '/' . $yyyy_mm . '/', 'jpg' );
 				$generated_thumb = $thumb_image->save( $thumb_filename, 'image/jpeg' );
 				$generated_thumb_path = $generated_thumb['path'];
 				$generated_thumb_name = str_replace( $tempname . '.', '', $generated_thumb['file'] );
@@ -219,7 +226,7 @@
 			'post_status'  => $deposit_post_status,
 			'post_date'    => $deposit_post_date,
 			'post_type'    => 'humcore_deposit',
-			'post_name'    => $nextPids[0],
+			'post_name'    => str_replace( ':', '', $nextPids[0] ),
 			'post_author'  => $user->ID
 		);
 
@@ -298,18 +305,54 @@
                 humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', json_decode( $json_metadata, true ) );
 
 		/**
-		 * Add solr first, if Tika errors out we'll quit before updating Fedora and WordPress.
-		 *
+		 * Prepare an array of post data for the resource post.
+		 */
+		$resource_post_data = array(
+			'post_title'     => $filename,
+			'post_status'    => 'publish',
+			'post_type'      => 'humcore_deposit',
+			'post_name'      => $nextPids[1],
+			'post_author'    => $user->ID,
+			'post_parent'    => $deposit_post_ID,
+		);
+
+		/**
+		 * Insert the resource post.
+		 */
+		$resource_post_ID = wp_insert_post( $resource_post_data );
+
+		/**
+		 * Add POST variables needed for async tika extraction
+		 */
+		$_POST['aggregator-post-id'] = $deposit_post_ID;
+
+		/**
+		 * Extract text first if small. If Tika errors out we'll index without full text.
+		 */
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) && (int)$filesize < 1000000 ) {
+
+		try {
+			$tika_text = $tika_client->getText( $renamed_file );
+			$content = $tika_text;
+		} catch ( Exception $e ) {
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $nextPids[0] ) );
+			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
+			$content='';
+		}
+		}
+
+		/**
 		 * Index the deposit content and metadata in Solr.
 		 */
 		try {
 			if ( preg_match( '~^audio/|^image/|^video/~', $check_filetype['type'] ) ) {
 				$sResult = $solr_client->create_humcore_document( '', $metadata );
 			} else {
-				$sResult = $solr_client->create_humcore_extract( $renamed_file, $metadata );
+				//$sResult = $solr_client->create_humcore_extract( $renamed_file, $metadata ); //no longer using tika on server
+				$sResult = $solr_client->create_humcore_document( $content, $metadata );
 			}
 		} catch ( Exception $e ) {
-			if ( '500' == $e->getCode() && strpos( $e->getMessage(), 'TikaException' ) ) {
+			if ( '500' == $e->getCode() && strpos( $e->getMessage(), 'TikaException' ) ) { // Only happens if tika is on the solr server.
 				try {
 					$sResult = $solr_client->create_humcore_document( '', $metadata );
 					humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $nextPids[0] ) );
@@ -323,6 +366,7 @@
 				echo '<h3>', __( 'An error occurred while depositing your file!', 'humcore_domain' ), '</h3>';
 				humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
 				wp_delete_post( $deposit_post_ID );
+				wp_delete_post( $resource_post_ID );
 				return false;
 			}
 		}
@@ -432,23 +476,6 @@
 		}
                 humcore_write_error_log( 'info', 'HumCORE deposit fedora/solr writes complete' );
 
-		/**
-		 * Prepare an array of post data for the resource post.
-		 */
-		$resource_post_data = array(
-			'post_title'     => $filename,
-			'post_status'    => 'publish',
-			'post_type'      => 'humcore_deposit',
-			'post_name'      => $nextPids[1],
-			'post_author'    => $user->ID,
-			'post_parent'    => $deposit_post_ID,
-		);
-
-		/**
-		 * Insert the resource post.
-		 */
-		$resource_id = wp_insert_post( $resource_post_data );
-
 		//DOI's are taking too long to resolve, put the permalink in the activity records.
 		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
 
@@ -497,6 +524,13 @@
 			//$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $review_group_id, $metadata['abstract'], $local_link );
 			//$metadata['group'][] = $review_group->name;
 			//$metadata['group_ids'][] = $review_group_id;
+		}
+
+		/**
+		 * Re-index larger text based deposits in the background.
+		 */
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) && (int)$filesize >= 1000000 ) {
+			do_action( 'humcore_tika_text_extraction' );
 		}
 
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
@@ -752,7 +786,7 @@
 		 */
 		$creators = array();
                 foreach ( $metadata['authors'] as $author ) {
-                        if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
+			if ( ( in_array( $author['role'], array( 'author', 'editor', 'translator' ) ) ) && ! empty( $author['fullname'] ) ) {
                                 $creators[] = $author['fullname'];
                         }
                 }
@@ -774,7 +808,7 @@
 			$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
 		}
 
-	// 	$metadata['society_id'] = Humanities_Commons::$society_id;
+		$metadata['society_id'] = Humanities_Commons::$society_id;
 
 		return $metadata;
 
