@@ -874,7 +874,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 		}
 
 		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filesize >= 1000000 ) {
-                        // TODO fix logout problem do_action( 'humcore_tika_text_extraction' );
+                        do_action( 'humcore_tika_text_extraction' );
 		}
 
 	}

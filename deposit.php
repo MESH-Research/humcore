@@ -530,7 +530,7 @@
 		 * Re-index larger text based deposits in the background.
 		 */
 		if ( ! preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) && (int)$filesize >= 1000000 ) {
-			// TODO fix logout problem do_action( 'humcore_tika_text_extraction' );
+			do_action( 'humcore_tika_text_extraction' );
 		}
 
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
