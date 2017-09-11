@@ -961,9 +961,9 @@
 		if ( empty( $pid ) ) {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
-		$title = htmlspecialchars( $metadata['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
- 		$type = htmlspecialchars( $metadata['genre'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
-		$description = htmlspecialchars( $metadata['abstract'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+		$title = humcore_cleanup_utf8( htmlspecialchars( $metadata['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+ 		$type = humcore_cleanup_utf8( htmlspecialchars( $metadata['genre'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+		$description = humcore_cleanup_utf8( htmlspecialchars( $metadata['abstract'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 		$creator_list = '';
                 foreach ( $metadata['authors'] as $author ) {
                         if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
@@ -975,10 +975,10 @@
                 $subject_list = '';
                 foreach ( $metadata['subject'] as $subject ) {
                         $subject_list .= '
-                        <dc:subject>' . htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) . '</dc:subject>';
+                        <dc:subject>' . humcore_cleanup_utf8( htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) ) . '</dc:subject>';
                 }
 		if ( ! empty( $metadata['publisher'] ) ) {
-			$publisher = '<dc:publisher>' . htmlspecialchars( $metadata['publisher'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) . '</dc:publisher>';
+			$publisher = '<dc:publisher>' . humcore_cleanup_utf8( htmlspecialchars( $metadata['publisher'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) ) . '</dc:publisher>';
 		} else {
 			$publisher = '';
 		}
