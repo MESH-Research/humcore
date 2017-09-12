@@ -468,137 +468,10 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 			<input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'none' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
 	</div>
 	</p>
-	<div id="deposit-book-entries">
 
-		<div id="deposit-book-doi-entry">
-			<label for="deposit-book-doi">Publisher DOI</label>
-			<input type="text" id="deposit-book-doi" name="deposit-book-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-publisher-entry">
-			<label for="deposit-book-publisher">Publisher</label>
-			<input type="text" id="deposit-book-publisher" name="deposit-book-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-publish-date-entry">
-			<label for="deposit-book-publish-date">Pub Date</label>
-			<input type="text" id="deposit-book-publish-date" name="deposit-book-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-title-entry">
-			<label for="deposit-book-title">Book Title</label>
-			<input type="text" id="deposit-book-title" name="deposit-book-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-author-entry">
-			<label for="deposit-book-author">Book Author or Editor</label>
-			<input type="text" id="deposit-book-author" name="deposit-book-author" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-author'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-author'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-entry">
-			<label for="deposit-book-chapter">Chapter</label>
-			<input type="text" id="deposit-book-chapter" name="deposit-book-chapter" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-pages-entry">
-			<label for="deposit-book-start-page"><span>Start Page</span>
-			<input type="text" id="deposit-book-start-page" name="deposit-book-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-start-page'] ); } ?>" />
-			</label>
-			<label for="deposit-book-end-page"><span>End Page</span>
-			<input type="text" id="deposit-book-end-page" name="deposit-book-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-end-page'] ); } ?>" />
-			</label>
-			<br style='clear:both'>
-		</div>
-
-		<div id="deposit-book-isbn-entry">
-			<label for="deposit-book-isbn">ISBN</label>
-			<input type="text" id="deposit-book-isbn" name="deposit-book-isbn" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-isbn'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-isbn'] ); } ?>" />
-		</div>
-
-	</div>
-
-	<div id="deposit-journal-entries">
-
-		<div id="deposit-journal-doi-entry">
-			<label for="deposit-journal-doi">Publisher DOI</label>
-			<input type="text" id="deposit-journal-doi" name="deposit-journal-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-publisher-entry">
-			<label for="deposit-journal-publisher">Publisher</label>
-			<input type="text" id="deposit-journal-publisher" name="deposit-journal-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-publish-date-entry">
-			<label for="deposit-journal-publish-date">Pub Date</label>
-			<input type="text" id="deposit-journal-publish-date" name="deposit-journal-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-title-entry">
-			<label for="deposit-journal-title">Journal Title</label>
-			<input type="text" id="deposit-journal-title" name="deposit-journal-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-volume-entry">
-			<label for="deposit-journal-volume"><span>Volume</span>
-			<input type="text" id="deposit-journal-volume" name="deposit-journal-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-volume'] ); } ?>" />
-			</label>
-			<label for="deposit-journal-issue"><span>Issue</span>
-			<input type="text" id="deposit-journal-issue" name="deposit-journal-issue" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-volume'] ); } ?>" />
-			</label>
-			<br style='clear:both'>
-		</div>
-
-		<div id="deposit-journal-pages-entry">
-			<label for="deposit-journal-start-page"><span>Start Page</span>
-			<input type="text" id="deposit-journal-start-page" name="deposit-journal-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-start-page'] ); } ?>" />
-			</label>
-			<label for="deposit-journal-end-page"><span>End Page</span>
-			<input type="text" id="deposit-journal-end-page" name="deposit-journal-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-start-page'] ); } ?>" />
-			</label>
-			<br style='clear:both'>
-		</div>
-
-		<div id="deposit-journal-issn-entry">
-			<label for="deposit-journal-issn">ISSN</label>
-			<input type="text" id="deposit-journal-issn" name="deposit-journal-issn" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-issn'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-issn'] ); } ?>" />
-		</div>
-
-	</div>
-
-	<div id="deposit-proceedings-entries">
-
-		<div id="deposit-proceeding-doi-entry">
-			<label for="deposit-proceeding-doi">Publisher DOI</label>
-			<input type="text" id="deposit-proceeding-doi" name="deposit-proceeding-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-publisher-entry">
-			<label for="deposit-proceeding-publisher">Publisher</label>
-			<input type="text" id="deposit-proceeding-publisher" name="deposit-proceeding-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-publish-date-entry">
-			<label for="deposit-proceeding-publish-date">Pub Date</label>
-			<input type="text" id="deposit-proceeding-publish-date" name="deposit-proceeding-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-title-entry">
-			<label for="deposit-proceeding-title">Proceeding Title</label>
-			<input type="text" id="deposit-proceeding-title" name="deposit-proceeding-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-pages-entry">
-			<label for="deposit-proceeding-start-page"><span>Start Page</span>
-			<input type="text" id="deposit-proceeding-start-page" name="deposit-proceeding-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-start-page'] ); } ?>" />
-			</label>
-			<label for="deposit-proceeding-end-page"><span>End Page</span>
-			<input type="text" id="deposit-proceeding-end-page" name="deposit-proceeding-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-start-page'] ); } ?>" />
-			</label>
-			<br style='clear:both'>
-		</div>
-
-	</div>
+<?php format_book_chapter_input( $prev_val ); ?>
+<?php format_journal_article_input( $prev_val ); ?>
+<?php format_conference_proceeding_input( $prev_val ); ?>
 
 	<div id="deposit-non-published-entries">
 
@@ -684,6 +557,161 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 </div>
 <div id="deposit-error-dialog">
 </div>
+
+<?php
+
+}
+
+function format_book_chapter_input( $prev_val ) { ?>
+
+	<div id="deposit-book-entries">
+
+		<div id="deposit-book-doi-entry">
+			<label for="deposit-book-doi">Publisher DOI</label>
+			<input type="text" id="deposit-book-doi" name="deposit-book-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-doi'] ); } ?>" />
+		</div>
+
+		<div id="deposit-book-publisher-entry">
+			<label for="deposit-book-publisher">Publisher</label>
+			<input type="text" id="deposit-book-publisher" name="deposit-book-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publisher'] ); } ?>" />
+		</div>
+
+		<div id="deposit-book-publish-date-entry">
+			<label for="deposit-book-publish-date">Pub Date</label>
+			<input type="text" id="deposit-book-publish-date" name="deposit-book-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publish-date'] ); } ?>" />
+		</div>
+
+		<div id="deposit-book-title-entry">
+			<label for="deposit-book-title">Book Title</label>
+			<input type="text" id="deposit-book-title" name="deposit-book-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-title'] ); } ?>" />
+		</div>
+
+		<div id="deposit-book-author-entry">
+			<label for="deposit-book-author">Book Author or Editor</label>
+			<input type="text" id="deposit-book-author" name="deposit-book-author" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-author'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-author'] ); } ?>" />
+		</div>
+
+		<div id="deposit-book-chapter-entry">
+			<label for="deposit-book-chapter">Chapter</label>
+			<input type="text" id="deposit-book-chapter" name="deposit-book-chapter" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter'] ); } ?>" />
+		</div>
+
+		<div id="deposit-book-pages-entry">
+			<label for="deposit-book-start-page"><span>Start Page</span>
+			<input type="text" id="deposit-book-start-page" name="deposit-book-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-start-page'] ); } ?>" />
+			</label>
+			<label for="deposit-book-end-page"><span>End Page</span>
+			<input type="text" id="deposit-book-end-page" name="deposit-book-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-end-page'] ); } ?>" />
+			</label>
+			<br style='clear:both'>
+		</div>
+
+		<div id="deposit-book-isbn-entry">
+			<label for="deposit-book-isbn">ISBN</label>
+			<input type="text" id="deposit-book-isbn" name="deposit-book-isbn" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-isbn'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-isbn'] ); } ?>" />
+		</div>
+
+	</div>
+<?php
+
+}
+
+function format_journal_article_input( $prev_val ) { ?>
+
+	<div id="deposit-journal-entries">
+
+		<div id="deposit-journal-doi-entry">
+			<label for="deposit-journal-doi">Publisher DOI</label>
+			<input type="text" id="deposit-journal-doi" name="deposit-journal-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-doi'] ); } ?>" />
+		</div>
+
+		<div id="deposit-journal-publisher-entry">
+			<label for="deposit-journal-publisher">Publisher</label>
+			<input type="text" id="deposit-journal-publisher" name="deposit-journal-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publisher'] ); } ?>" />
+		</div>
+
+		<div id="deposit-journal-publish-date-entry">
+			<label for="deposit-journal-publish-date">Pub Date</label>
+			<input type="text" id="deposit-journal-publish-date" name="deposit-journal-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publish-date'] ); } ?>" />
+		</div>
+
+		<div id="deposit-journal-title-entry">
+			<label for="deposit-journal-title">Journal Title</label>
+			<input type="text" id="deposit-journal-title" name="deposit-journal-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-title'] ); } ?>" />
+		</div>
+
+		<div id="deposit-journal-volume-entry">
+			<label for="deposit-journal-volume"><span>Volume</span>
+			<input type="text" id="deposit-journal-volume" name="deposit-journal-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-volume'] ); } ?>" />
+			</label>
+			<label for="deposit-journal-issue"><span>Issue</span>
+			<input type="text" id="deposit-journal-issue" name="deposit-journal-issue" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-issue'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-issue'] ); } ?>" />
+			</label>
+			<br style='clear:both'>
+		</div>
+
+		<div id="deposit-journal-pages-entry">
+			<label for="deposit-journal-start-page"><span>Start Page</span>
+			<input type="text" id="deposit-journal-start-page" name="deposit-journal-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-start-page'] ); } ?>" />
+			</label>
+			<label for="deposit-journal-end-page"><span>End Page</span>
+			<input type="text" id="deposit-journal-end-page" name="deposit-journal-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-end-page'] ); } ?>" />
+			</label>
+			<br style='clear:both'>
+		</div>
+
+		<div id="deposit-journal-issn-entry">
+			<label for="deposit-journal-issn">ISSN</label>
+			<input type="text" id="deposit-journal-issn" name="deposit-journal-issn" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-issn'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-issn'] ); } ?>" />
+		</div>
+
+	</div>
+
+<?php
+
+}
+
+function format_conference_proceeding_input( $prev_val ) { ?>
+
+	<div id="deposit-proceedings-entries">
+
+		<div id="deposit-proceeding-doi-entry">
+			<label for="deposit-proceeding-doi">Publisher DOI</label>
+			<input type="text" id="deposit-proceeding-doi" name="deposit-proceeding-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-doi'] ); } ?>" />
+		</div>
+
+		<div id="deposit-proceeding-publisher-entry">
+			<label for="deposit-proceeding-publisher">Publisher</label>
+			<input type="text" id="deposit-proceeding-publisher" name="deposit-proceeding-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publisher'] ); } ?>" />
+		</div>
+
+		<div id="deposit-proceeding-publish-date-entry">
+			<label for="deposit-proceeding-publish-date">Pub Date</label>
+			<input type="text" id="deposit-proceeding-publish-date" name="deposit-proceeding-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publish-date'] ); } ?>" />
+		</div>
+
+		<div id="deposit-proceeding-title-entry">
+			<label for="deposit-proceeding-title">Proceeding Title</label>
+			<input type="text" id="deposit-proceeding-title" name="deposit-proceeding-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-title'] ); } ?>" />
+		</div>
+
+		<div id="deposit-proceeding-pages-entry">
+			<label for="deposit-proceeding-start-page"><span>Start Page</span>
+			<input type="text" id="deposit-proceeding-start-page" name="deposit-proceeding-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-start-page'] ); } ?>" />
+			</label>
+			<label for="deposit-proceeding-end-page"><span>End Page</span>
+			<input type="text" id="deposit-proceeding-end-page" name="deposit-proceeding-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-end-page'] ); } ?>" />
+			</label>
+			<br style='clear:both'>
+		</div>
+
+	</div>
+
+<?php
+
+}
+
+function format_xxx_input( $prev_val ) { ?>
 
 <?php
 
@@ -1080,102 +1108,13 @@ function humcore_deposit_item_content() {
 <?php endif; ?>
 <dt><?php _e( 'Metadata:', 'humcore_domain' ); ?></dt>
 <dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" rel="nofollow" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
-<?php if ( 'journal-article' == $post_metadata['publication-type'] ) : ?>
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Journal Article'; // XSS OK. ?></span></dd>
-<?php if ( ! empty( $metadata['doi'] ) ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['doi'] ) ) : ?>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
-<dt><?php _e( 'Journal:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['volume'] ) ) : ?>
-<dt><?php _e( 'Volume:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['issue'] ) ) : ?>
-<dt><?php _e( 'Issue:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['issue']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
-<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
-<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['issn'] ) ) : ?>
-<dt><?php _e( 'ISSN:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['issn']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php elseif ( 'book-chapter' == $post_metadata['publication-type'] ) : ?>
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Book chapter'; // XSS OK. ?></span></dd>
-<?php if ( ! empty( $metadata['doi'] ) ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_author'] ) ) : ?>
-<dt><?php _e( 'Author/Editor:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_author']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
-<dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['chapter'] ) ) : ?>
-<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['chapter']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
-<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
-<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['isbn'] ) ) : ?>
-<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) : ?>
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Proceedings article'; // XSS OK. ?></span></dd>
-<?php if ( ! empty( $metadata['doi'] ) ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
-<dt><?php _e( 'Proceeding:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
-<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
-<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php endif; ?>
+<?php if ( 'journal-article' == $post_metadata['publication-type'] ) :
+        humcore_display_journal_article_pub_metadata( $metadata );
+elseif ( 'book-chapter' == $post_metadata['publication-type'] ) :
+        humcore_display_book_chapter_pub_metadata( $metadata );
+elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) :
+        humcore_display_proceedings_article_pub_metadata( $metadata );
+endif; ?>
 <?php if ( 'draft' === $post_data->post_status ) : ?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
 <dd><?php echo '<strong>Provisional</strong>'; ?></dd>
@@ -1457,169 +1396,15 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>( None )</dd>
 <?php endif; ?>
-<?php if ( 'journal-article' == $post_metadata['publication-type'] ) : ?>
-<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Journal Article'; // XSS OK. ?></span></dd>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['doi'] ) ) : ?>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['date'] ) ) : ?>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Journal:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Volume:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['volume'] ) ) : ?>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Issue:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['issue'] ) ) : ?>
-<dd><span><?php echo $metadata['issue']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
-<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
-<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'ISSN:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['issn'] ) ) : ?>
-<dd><span><?php echo $metadata['issn']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<?php elseif ( 'book-chapter' == $post_metadata['publication-type'] ) : ?>
-<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Book chapter'; // XSS OK. ?></span></dd>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['doi'] ) ) : ?>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['date'] ) ) : ?>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Author/Editor:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['book_author'] ) ) : ?>
-<dd><span><?php echo $metadata['book_author']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['chapter'] ) ) : ?>
-<dd><span><?php echo $metadata['chapter']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
-<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
-<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['isbn'] ) ) : ?>
-<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<?php elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) : ?>
-<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'Proceedings article'; // XSS OK. ?></span></dd>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['doi'] ) ) : ?>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['publisher'] ) ) : ?>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['date'] ) ) : ?>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Proceeding:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['book_journal_title'] ) ) : ?>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['start_page'] ) ) : ?>
-<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['end_page'] ) ) : ?>
-<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php else : ?>
-<dd>&nbsp;</dd>
-<?php endif; ?>
-<?php elseif ( empty( $post_metadata['publication-type'] ) || 'none' == $post_metadata['publication-type'] ) : ?>
-<dt><?php _e( 'Pub. Type:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo 'None'; // XSS OK. ?></span></dd>
-<dt><?php _e( 'Creation Date:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['date'] ) ) : ?>
-<dd><?php echo esc_html( $metadata['date'] ); ?></dd>
-<?php else : ?>
-<dd>( None entered )</dd>
-<?php endif; ?>
-<?php endif; ?>
+<?php if ( 'journal-article' == $post_metadata['publication-type'] ) :
+	humcore_display_journal_article_pub_metadata( $metadata );
+elseif ( 'book-chapter' == $post_metadata['publication-type'] ) :
+	humcore_display_book_chapter_pub_metadata( $metadata );
+elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) :
+	humcore_display_proceedings_article_pub_metadata( $metadata );
+elseif ( empty( $post_metadata['publication-type'] ) || 'none' == $post_metadata['publication-type'] ) :
+	humcore_display_non_published_metadata( $metadata );
+endif; ?>
 <?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
@@ -1639,7 +1424,7 @@ function humcore_deposit_item_review_content() {
 <dd><span><?php echo $update_time . ' ago'; // XSS OK. ?></span></dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['embargoed'] ) ) : ?>
-<dt><?php _e( 'Embargoed?:', 'humcore_domain' ); ?></dt>
+<dt><?php _e( 'Embargoed?', 'humcore_domain' ); ?></dt>
 <dd><?php echo $post_metadata['embargoed']; ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $post_metadata['embargo_end_date'] ) ) : ?>
@@ -1660,6 +1445,132 @@ function humcore_deposit_item_review_content() {
 <a class="bp-deposits-view button white" title="View" href="<?php echo esc_url( $item_url ); ?>"><?php _e( 'View your Deposit', 'humcore_domain' ); ?></a>
 <?php
 
+}
+
+function humcore_display_journal_article_pub_metadata( $metadata ) { ?>
+
+<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
+<dd><span><?php _e( 'Journal Article', 'humcore_domain' ); // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Journal:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['volume'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Volume:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['issue'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Issue:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['issue']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['end_page'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['issn'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'ISSN:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['issn']; // XSS OK. ?></span></dd>
+<?php endif;
+}
+
+function humcore_display_book_chapter_pub_metadata( $metadata ) { ?>
+
+<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
+<dd><span><?php _e( 'Book chapter', 'humcore_domain' ); // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_author'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Author/Editor:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_author']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['chapter'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['chapter']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['end_page'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['isbn'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
+<?php endif;
+}
+
+function humcore_display_proceedings_article_pub_metadata( $metadata ) { ?>
+
+<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
+<dd><span><?php _e( 'Proceedings article', 'humcore_domain' ); // XSS OK. ?></span></dd>
+<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Proceeding:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'Start Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['start_page']; // XSS OK. ?></span></dd>
+<?php endif; ?>
+<?php if ( ! empty( $metadata['end_page'] ) || humcore_is_deposit_item_review() ) : ?>
+<dt><?php _e( 'End Page:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo $metadata['end_page']; // XSS OK. ?></span></dd>
+<?php endif;
+}
+
+function humcore_display_non_published_metadata( $metadata ) { ?>
+
+<dt><?php _e( 'Published?', 'humcore_domain' ); ?></dt>
+<dd><span><?php _e( 'No', 'humcore_domain' ); // XSS OK. ?></span></dd>
+<dt><?php _e( 'Creation Date:', 'humcore_domain' ); ?></dt>
+<?php if ( ! empty( $metadata['date'] ) ) : ?>
+<dd><?php echo esc_html( $metadata['date'] ); ?></dd>
+<?php else : ?>
+<dd>( None entered )</dd>
+<?php endif;
 }
 
 /**
