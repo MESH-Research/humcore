@@ -177,4 +177,14 @@ jQuery( document ).ready( function( $ ) {
 		}
 	});
 
+	$( '.defList .pub-metadata-display-button' ).on('click', function() {
+		if ( $( '.defList .deposit-item-pub-metadata' ).css( 'display' ) == 'none' ) {
+			$( '.defList .deposit-item-pub-metadata' ).css( 'display', 'block' );
+			$( this ).html( '<span class="pub-metadata-display-button button white right">Hide details</span>' );
+		} else {
+			$( '.defList .deposit-item-pub-metadata' ).css( 'display', 'none' );
+			$( this ).html( '<span class="pub-metadata-display-button button white right">Show details</span>' );
+		}
+	} );
+
 } );

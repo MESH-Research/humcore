@@ -723,7 +723,58 @@
 			$metadata['publication-type'] = 'none';
 		}
 
-		if ( 'journal-article' == $metadata['publication-type'] ) {
+		if ( 'book' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-publisher'] );
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['edition'] = sanitize_text_field( $_POST['deposit-book-edition'] );
+			$metadata['volume'] = sanitize_text_field( $_POST['deposit-book-volume'] );
+			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-doi'] );
+		} elseif ( 'book-chapter' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-chapter-publisher'] );
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-chapter-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-book-chapter-title'] );
+			$metadata['book_author'] = sanitize_text_field( $_POST['deposit-book-chapter-author'] );
+			$metadata['chapter'] = sanitize_text_field( $_POST['deposit-book-chapter-chapter'] );
+			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-book-chapter-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-book-chapter-end-page'] );
+			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-chapter-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-chapter-doi'] );
+		} elseif ( 'book-review' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-review-publisher'] );
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-review-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-review-doi'] );
+		} elseif ( 'book-section' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-section-publisher'] );
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-section-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-book-section-title'] );
+			$metadata['book_author'] = sanitize_text_field( $_POST['deposit-book-section-author'] );
+			$metadata['edition'] = sanitize_text_field( $_POST['deposit-book-section-edition'] );
+			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-book-section-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-book-section-end-page'] );
+			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-section-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-section-doi'] );
+		} elseif ( 'journal-article' == $metadata['publication-type'] ) {
 			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-journal-publisher'] );
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-journal-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
@@ -738,21 +789,63 @@
 			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-journal-end-page'] );
 			$metadata['issn'] = sanitize_text_field( $_POST['deposit-journal-issn'] );
 			$metadata['doi'] = sanitize_text_field( $_POST['deposit-journal-doi'] );
-		} elseif ( 'book-chapter' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-publish-date'] );
+		} elseif ( 'magazine-section' == $metadata['publication-type'] ) {
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-magazine-section-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-book-title'] );
-			$metadata['book_author'] = sanitize_text_field( $_POST['deposit-book-author'] );
-			$metadata['chapter'] = sanitize_text_field( $_POST['deposit-book-chapter'] );
-			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-book-start-page'] );
-			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-book-end-page'] );
-			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-isbn'] );
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-doi'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-magazine-section-title'] );
+			$metadata['volume'] = sanitize_text_field( $_POST['deposit-magazine-section-volume'] );
+			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-magazine-section-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-magazine-section-end-page'] );
+			$metadata['url'] = sanitize_text_field( $_POST['deposit-magazine-section-url'] );
+		} elseif ( 'monograph' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-monograph-publisher'] );
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-monograph-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-monograph-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $_POST['deposit-monograph-doi'] );
+		} elseif ( 'newspaper-article' == $metadata['publication-type'] ) {
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-newspaper-article-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-newspaper-article-title'] );
+			$metadata['edition'] = sanitize_text_field( $_POST['deposit-newspaper-article-edition'] );
+			$metadata['volume'] = sanitize_text_field( $_POST['deposit-newspaper-article-volume'] );
+			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-newspaper-article-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-newspaper-article-end-page'] );
+			$metadata['url'] = sanitize_text_field( $_POST['deposit-newspaper-article-url'] );
+		} elseif ( 'online-publication' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-online-publication-publisher'] );
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-online-publication-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-online-publication-title'] );
+			$metadata['edition'] = sanitize_text_field( $_POST['deposit-online-publication-edition'] );
+			$metadata['volume'] = sanitize_text_field( $_POST['deposit-online-publication-volume'] );
+			$metadata['url'] = sanitize_text_field( $_POST['deposit-online-publication-url'] );
+		} elseif ( 'podcast' == $metadata['publication-type'] ) {
+			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-podcast-publisher'] );
+			$metadata['date'] = sanitize_text_field( $_POST['deposit-podcast-publish-date'] );
+			if ( ! empty( $metadata['date'] ) ) {
+				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
+			} else {
+				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
+			}
+			$metadata['volume'] = sanitize_text_field( $_POST['deposit-podcast-volume'] );
+			$metadata['url'] = sanitize_text_field( $_POST['deposit-podcast-url'] );
 		} elseif ( 'proceedings-article' == $metadata['publication-type'] ) {
 			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-proceeding-publisher'] );
 			$metadata['date'] = sanitize_text_field( $_POST['deposit-proceeding-publish-date'] );
