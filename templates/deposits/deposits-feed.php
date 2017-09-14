@@ -14,7 +14,7 @@ echo '<?xml version="1.0" encoding="'.get_option('blog_charset').'"?'.'>';
         <title><?php echo 'CORE Deposits'; ?> - Feed</title>
         <atom:link href="<?php self_link(); ?>" rel="self" type="application/rss+xml" />
         <link><?php bloginfo_rss('url') ?></link>
-        <description><?php echo 'The lastest deposits to CORE at commons.mla.org'; ?></description>
+        <description><?php echo 'The lastest deposits to CORE at hcommons.org'; ?></description>
         <lastBuildDate><?php echo mysql2date('D, d M Y H:i:s +0000', get_lastpostmodified('GMT'), false); ?></lastBuildDate>
         <language>en_us</language>
         <sy:updatePeriod><?php echo apply_filters( 'rss_update_period', 'hourly' ); ?></sy:updatePeriod>

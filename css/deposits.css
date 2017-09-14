@@ -153,6 +153,25 @@ ul.deposits-item .list-item-value {
         float: left;
 	width: 85%;
 }
+.deposit-item-pub-metadata.hide-details {
+	display: none;
+}
+.deposit-item-pub-metadata.show-details {
+	display: block;
+}
+.pub-metadata-display-button {
+	background-color: #006650;
+	border-radius: 4px;
+	border-width: 0;
+	box-shadow: rgba(0,0,0,0.117647) 0px 1px 6px,rgba(0,0,0,0.117647) 0px 1px 4px;
+	color: #fff;
+	font-weight: normal;
+	letter-spacing: unset;
+	padding: 1px 2px;
+	text-align: center;
+	text-transform: none;
+	width: unset;
+}
 /* deposit form styles */
 .deposits-new-item-page div.main-wrap.row {
 	margin-left: 0;
@@ -216,7 +235,7 @@ ul.deposits-item .list-item-value {
 #deposit-conference-entries, #deposit-meeting-entries, #deposit-institution-entries {
 	padding-left: 10px;
 }
-#deposit-book-entries, #deposit-journal-entries, #deposit-proceedings-entries {
+#deposit-book-entries, #deposit-journal-entries, #deposit-proceedings-entries, #deposit-publication-type-entries {
 	padding-left: 10px;
 }
 #deposit-embargoed-entries {

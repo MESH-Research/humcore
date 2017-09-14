@@ -237,7 +237,7 @@ class Humcore_Deposit_Solr_Api {
 				if ( '' == $document->abstract_unchanged ) {
 					$record['abstract_unchanged'] = $document->abstract;
 				}
-				$record['date'] = $document->pub_date_facet[0];
+				$record['date'] = $document->date;
 				$record['authors'] = $document->author_facet;
 				$record['author_info'] = $document->author_info;
 				$record['group'] = $document->group_facet;
@@ -265,7 +265,9 @@ class Humcore_Deposit_Solr_Api {
 				$record['isbn'] = $document->isbn;
 				$record['issn'] = $document->issn;
 				$record['doi'] = $document->doi;
+				$record['url'] = $document->url;
 				$record['volume'] = $document->volume;
+				$record['edition'] = $document->edition;
 				$record['date_issued'] = $document->date_issued;
 				$record['issue'] = $document->issue;
 				$record['chapter'] = $document->book_chapter;
@@ -367,7 +369,9 @@ class Humcore_Deposit_Solr_Api {
 		if ( ! empty( $metadata['isbn'] ) ) { $doc->isbn = $metadata['isbn']; }
 		if ( ! empty( $metadata['issn'] ) ) { $doc->issn = $metadata['issn']; }
 		if ( ! empty( $metadata['doi'] ) ) { $doc->doi = $metadata['doi']; }
+		if ( ! empty( $metadata['url'] ) ) { $doc->uri = $metadata['url']; }
 		if ( ! empty( $metadata['volume'] ) ) { $doc->volume = $metadata['volume']; }
+		if ( ! empty( $metadata['edition'] ) ) { $doc->edition = $metadata['edition']; }
 		if ( ! empty( $metadata['date'] ) ) { $doc->date = $metadata['date']; }
 		if ( ! empty( $metadata['issue'] ) ) { $doc->issue = $metadata['issue']; }
 		if ( ! empty( $metadata['chapter'] ) ) { $doc->book_chapter = $metadata['chapter']; }
@@ -574,7 +578,9 @@ class Humcore_Deposit_Solr_Api {
 		if ( ! empty( $metadata['isbn'] ) ) { $doc->isbn = $metadata['isbn']; }
 		if ( ! empty( $metadata['issn'] ) ) { $doc->issn = $metadata['issn']; }
 		if ( ! empty( $metadata['doi'] ) ) { $doc->doi = $metadata['doi']; }
+		if ( ! empty( $metadata['url'] ) ) { $doc->url = $metadata['url']; }
 		if ( ! empty( $metadata['volume'] ) ) { $doc->volume = $metadata['volume']; }
+		if ( ! empty( $metadata['edition'] ) ) { $doc->edition = $metadata['edition']; }
 		if ( ! empty( $metadata['date'] ) ) { $doc->date = $metadata['date']; }
 		if ( ! empty( $metadata['issue'] ) ) { $doc->issue = $metadata['issue']; }
 		if ( ! empty( $metadata['chapter'] ) ) { $doc->book_chapter = $metadata['chapter']; }
@@ -691,7 +697,7 @@ class Humcore_Deposit_Solr_Api {
 			'id', 'pid', 'title_display', 'title_unchanged', 'abstract', 'abstract_unchanged', 'pub_date_facet', 'date', 'author_display',
 			'author_facet', 'author_uni', 'author_info', 'organization_facet', 'group_facet', 'society_facet', 'language_facet', 'license_facet',
 			'subject_facet', 'keyword_search', 'keyword_display', 'handle', 'genre_facet', 'notes', 'notes_unchanged', 'book_journal_title', 'book_author',
-			'publisher', 'isbn', 'issn', 'doi', 'volume', 'issue', 'book_chapter', 'start_page', 'end_page', 'language', 'institution',
+			'publisher', 'isbn', 'issn', 'doi', 'url', 'volume', 'edition', 'issue', 'book_chapter', 'start_page', 'end_page', 'language', 'institution',
 			'conference_title', 'conference_organization', 'conference_location', 'conference_date', 'meeting_title', 'meeting_organization',
 			'meeting_location', 'meeting_date', 'publication_type', 'date_issued', 'type_of_resource_facet', 'record_content_source',
 			'record_creation_date', 'record_change_date', 'record_identifier', 'member_of', 'free_to_read_start_date', 'score',
@@ -891,7 +897,9 @@ class Humcore_Deposit_Solr_Api {
 			$record['isbn'] = $document->isbn;
 			$record['issn'] = $document->issn;
 			$record['doi'] = $document->doi;
+			$record['url'] = $document->url;
 			$record['volume'] = $document->volume;
+			$record['edition'] = $document->edition;
 			$record['date_issued'] = $document->date_issued;
 			$record['issue'] = $document->issue;
 			$record['chapter'] = $document->book_chapter;

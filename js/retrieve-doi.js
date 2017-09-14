@@ -88,9 +88,9 @@
 
             // parse the received JSON
             var deposittype = returnJSON(data.message, "type");
-            if (deposittype != 'journal-article' && deposittype != 'book-chapter' && deposittype != 'proceedings-article')
+            if (deposittype != 'book' && deposittype != 'book-chapter' && deposittype != 'book-section' && deposittype != 'journal-article' && deposittype != 'monograph' && deposittype != 'proceedings-article')
             {
-              message.text('Sorry, we only support information retrieval for a journal article, a book chapter or a conference proceeding at this time.');
+              message.text('Sorry, we only support information retrieval for book, book chapter, book section, conference proceeding, journal article and monograph at this time.');
               return false;
             }
 
@@ -122,6 +122,7 @@
               issn = issn[0];
             }
 
+            //var edition = returnJSON(data.message, "edition");
             var volume = returnJSON(data.message, "volume");
             var issue = returnJSON(data.message, "issue");
             var createddate = data.message["created"]["date-parts"][0];
@@ -134,9 +135,16 @@
               // Multiple ISBNs can be returned so here we take the first if it's an array
               var first_isbn = crossref_isbn[0];
               // Parse isbn, we don't want the full url.
-              var isbn_regex = /^http.+?isbn\/(.+?)$/;
+              var isbn_regex = /^(?:http.+?isbn\/|)(.+?)$/;
               var isbn_matches = first_isbn.match(isbn_regex);
-              var isbn = isbn_matches[1];
+              if (typeof isbn_matches !== "undefined" && isbn_matches != '')
+              {
+                var isbn = isbn_matches[1];
+              }
+              else
+              {
+                var isbn = first_isbn;
+              }
             }
             else
             {
@@ -171,7 +179,78 @@
 
             $('#deposit-title-unchanged').val(title);
 
-            if (deposittype == 'journal-article')
+            if (deposittype == 'book')
+            {
+              // update "Item Type"
+              $('#deposit-genre').val("Book").trigger("change");
+
+              // update published item type
+              $('input[type="radio"][name="deposit-publication-type"][value="book"]').prop('checked', true);
+              $('input[type="radio"][name="deposit-publication-type"][value="book"]').click();
+                
+              // update book fields
+              $('#deposit-book-doi').val(DOI);
+              $('#deposit-book-publisher').val(publisher);
+              $('#deposit-book-title').val(containertitle);
+              $('#deposit-book-author').val(author_editor);
+              $('#deposit-book-isbn').val(isbn);
+              //$('#deposit-book-edition').val(edition);
+              $('#deposit-book-volume').val(volume);
+              if (createddate != null)
+              {
+                $('#deposit-book-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
+              }
+              message.text('We found information for that book! You can review it before submitting your deposit.');
+            }
+            else if (deposittype == 'book-chapter')
+            {
+              // update "Item Type"
+              $('#deposit-genre').val("Book chapter").trigger("change");
+
+              // update published item type
+              $('input[type="radio"][name="deposit-publication-type"][value="book-chapter"]').prop('checked', true);
+              $('input[type="radio"][name="deposit-publication-type"][value="book-chapter"]').click();
+                
+              // update book chapter fields
+              $('#deposit-book-chapter-doi').val(DOI);
+              $('#deposit-book-chapter-publisher').val(publisher);
+              $('#deposit-book-chapter-title').val(containertitle);
+              $('#deposit-book-chapter-author').val(author_editor);
+              $('#deposit-book-chapter-isbn').val(isbn);
+              $('#deposit-book-chapter-chapter').val(chapter);
+              $('#deposit-book-chapter-start-page').val(pages[0]);
+              $('#deposit-book-chapter-end-page').val(pages[1]);
+              if (createddate != null)
+              {
+                $('#deposit-book-chapter-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
+              }
+              message.text('We found information for that book chapter! You can review it before submitting your deposit.');
+            }
+            else if (deposittype == 'book-section')
+            {
+              // update "Item Type"
+              $('#deposit-genre').val("Book section").trigger("change");
+
+              // update published item type
+              $('input[type="radio"][name="deposit-publication-type"][value="book-section"]').prop('checked', true);
+              $('input[type="radio"][name="deposit-publication-type"][value="book-section"]').click();
+                
+              // update book section fields
+              $('#deposit-book-section-doi').val(DOI);
+              $('#deposit-book-section-publisher').val(publisher);
+              $('#deposit-book-section-title').val(containertitle);
+              $('#deposit-book-section-author').val(author_editor);
+              //$('#deposit-book-section-edition').val(edition);
+              $('#deposit-book-section-isbn').val(isbn);
+              $('#deposit-book-section-start-page').val(pages[0]);
+              $('#deposit-book-section-end-page').val(pages[1]);
+              if (createddate != null)
+              {
+                $('#deposit-book-section-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
+              }
+              message.text('We found information for that book section! You can review it before submitting your deposit.');
+            }
+            else if (deposittype == 'journal-article')
             {
               // update "Item Type"
               $('#deposit-genre').val("Article").trigger("change");
@@ -195,29 +274,25 @@
               }
               message.text('We found information for that journal article! You can review it before submitting your deposit.');
             }
-            else if (deposittype == 'book-chapter')
+            else if (deposittype == 'monograph')
             {
               // update "Item Type"
-              $('#deposit-genre').val("Book chapter").trigger("change");
+              $('#deposit-genre').val("Monograph").trigger("change");
 
               // update published item type
-              $('input[type="radio"][name="deposit-publication-type"][value="book-chapter"]').prop('checked', true);
-              $('input[type="radio"][name="deposit-publication-type"][value="book-chapter"]').click();
+              $('input[type="radio"][name="deposit-publication-type"][value="monograph"]').prop('checked', true);
+              $('input[type="radio"][name="deposit-publication-type"][value="monograph"]').click();
                 
-              // update book chapter fields
-              $('#deposit-book-doi').val(DOI);
-              $('#deposit-book-publisher').val(publisher);
-              $('#deposit-book-title').val(containertitle);
-              $('#deposit-book-author').val(author_editor);
-              $('#deposit-book-isbn').val(isbn);
-              $('#deposit-book-chapter').val(chapter);
-              $('#deposit-book-start-page').val(pages[0]);
-              $('#deposit-book-end-page').val(pages[1]);
+              // update monograph fields
+              $('#deposit-monograph-doi').val(DOI);
+              $('#deposit-monograph-publisher').val(publisher);
+              $('#deposit-monograph-title').val(containertitle);
+              $('#deposit-monograph-isbn').val(isbn);
               if (createddate != null)
               {
-                $('#deposit-book-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
+                $('#deposit-monograph-publish-date').val(createddate[0] + "-" + createddate[1] + "-" + createddate[2]);
               }
-              message.text('We found information for that book chapter! You can review it before submitting your deposit.');
+              message.text('We found information for that monograph! You can review it before submitting your deposit.');
             }
             else if (deposittype == 'proceedings-article')
             {
@@ -257,6 +332,45 @@
       $('input[type="radio"][name="deposit-publication-type"][value="none"]').prop('checked', true);
 //      $('input[type="radio"][name="deposit-publication-type"][value="none"]').click();
 
+      // update book fields
+      $('#deposit-book-doi').val("");
+      $('#deposit-book-publisher').val("");
+      $('#deposit-book-title').val("");
+      $('#deposit-book-isbn').val("");
+      $('#deposit-book-edition').val("");
+      $('#deposit-book-volume').val("");
+      $('#deposit-book-publish-date').val("");
+
+      // update book chapter fields
+      $('#deposit-book-chapter-doi').val("");
+      $('#deposit-book-chapter-publisher').val("");
+      $('#deposit-book-chapter-title').val("");
+      $('#deposit-book-chapter-author').val("");
+      $('#deposit-book-chapter-isbn').val("");
+      $('#deposit-book-chapter-chapter').val("");
+      $('#deposit-book-chapter-start-page').val("");
+      $('#deposit-book-chapter-end-page').val("");
+      $('#deposit-book-chapter-publish-date').val("");
+
+      // update book section fields
+      $('#deposit-book-section-doi').val("");
+      $('#deposit-book-section-publisher').val("");
+      $('#deposit-book-section-title').val("");
+      $('#deposit-book-section-author').val("");
+      $('#deposit-book-section-isbn').val("");
+      $('#deposit-book-section-edition').val("");
+      $('#deposit-book-section-start-page').val("");
+      $('#deposit-book-section-end-page').val("");
+      $('#deposit-book-section-publish-date').val("");
+
+      // update conference proceeding fields
+      $('#deposit-proceeding-doi').val("");
+      $('#deposit-proceeding-publisher').val("");
+      $('#deposit-proceeding-title').val("");
+      $('#deposit-proceeding-start-page').val("");
+      $('#deposit-proceeding-end-page').val("");
+      $('#deposit-proceeding-publish-date').val("");
+
       // update journal fields
       $('#deposit-journal-doi').val("");
       $('#deposit-journal-publisher').val("");
@@ -268,23 +382,11 @@
       $('#deposit-journal-end-page').val("");
       $('#deposit-journal-publish-date').val("");
 
-      // update book chapter fields
-      $('#deposit-book-doi').val("");
-      $('#deposit-book-publisher').val("");
-      $('#deposit-book-title').val("");
-      $('#deposit-book-author').val("");
-      $('#deposit-book-isbn').val("");
-      $('#deposit-book-chapter').val("");
-      $('#deposit-book-start-page').val("");
-      $('#deposit-book-end-page').val("");
-      $('#deposit-book-publish-date').val("");
-
-      // update conference proceeding fields
-      $('#deposit-proceeding-doi').val("");
-      $('#deposit-proceeding-publisher').val("");
-      $('#deposit-proceeding-title').val("");
-      $('#deposit-proceeding-start-page').val("");
-      $('#deposit-proceeding-end-page').val("");
-      $('#deposit-proceeding-publish-date').val("");
+      // update monograph fields
+      $('#deposit-monograph-doi').val("");
+      $('#deposit-monograph-publisher').val("");
+      $('#deposit-monograph-title').val("");
+      $('#deposit-monograph-publish-date').val("");
+      $('#deposit-monograph-isbn').val("");
 
     }
