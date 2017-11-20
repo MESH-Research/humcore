@@ -533,6 +533,10 @@
 			do_action( 'humcore_tika_text_extraction' );
 		}
 
+                $new_author_unis = array_map( function( $element ) { return urlencode( $element['uni'] ); }, $metadata['authors'] );
+                $author_uni_keys = array_filter( $new_author_unis );
+                humcore_delete_cache_keys( 'author_uni', $author_uni_keys );
+
                 humcore_write_error_log( 'info', 'HumCORE deposit transaction complete' );
 		echo '<h3>', __( 'Deposit complete!', 'humcore_domain' ), '</h3><br />';
 		return $nextPids[0];
