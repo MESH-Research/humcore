@@ -729,13 +729,19 @@ class Humcore_Deposit_Search_Results {
 
 		if ( ! $include ) {
 
-			$cache_key = http_build_query( array( $restricted_search_terms, $search_facets, $this->pag_page, $sort, $this->pag_num ), 'param_' );
+			$cache_key = http_build_query( array( $restricted_search_terms, $search_facets, $this->pag_page, $sort, $this->pag_num ) );
 			// Check cache for search results.
 			$results = wp_cache_get( $cache_key, 'humcore_solr_search_results' );
 			if ( false === $results ) {
 				try {
 					$results = $solr_client->get_search_results( $restricted_search_terms, $search_facets, $this->pag_page, $sort, $this->pag_num );
-					$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', 3 );
+					if ( false === strpos( $cache_key, 'author_uni' ) ) {
+						$cache_ttl = 60;
+					} else {
+						$cache_ttl = 0;
+					}
+					$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', $cache_ttl );
+//humcore_write_error_log('info','*****cache set sea*****'.var_export($cache_key,true));
 				} catch ( Exception $e ) {
 					$this->total_deposit_count = 0;
 					$this->facet_counts = '';
@@ -757,7 +763,8 @@ class Humcore_Deposit_Search_Results {
 			if ( false === $results ) {
 				try {
 					$results = $solr_client->get_humcore_document( $include );
-					$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', 3 );
+					$cache_status = wp_cache_set( $cache_key, $results, 'humcore_solr_search_results', 0 );
+//humcore_write_error_log('info','*****cache set inc*****'.var_export($cache_key,true));
 				} catch ( Exception $e ) {
 					$this->total_deposit_count = 0;
 					$this->facet_counts = '';
