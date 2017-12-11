@@ -370,7 +370,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	<div id="deposit-keyword-entry">
 		<label for="deposit-keyword">Tags</label>
 		<span class="description">Enter up to five tags to further categorize this item.</span><br />
-		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-tags" multiple="multiple" data-placeholder="Enter tags">
+		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-keywords" multiple="multiple" data-placeholder="Enter tags">
 <?php
 	$posted_keyword_list = array();
 	if ( ! empty( $prev_val['deposit-keyword'] ) ) {

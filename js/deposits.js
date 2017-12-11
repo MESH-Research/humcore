@@ -539,7 +539,7 @@ jQuery(document).ready( function($) {
 		maximumSelectionLength: 5,
 		width: "75%"
 	});
-	$( '.js-basic-multiple-tags' ).select2( {
+	$( '.js-basic-multiple-keywords' ).select2( {
 		maximumSelectionLength: 5,
 		width: "75%",
 		tags: true,
@@ -561,7 +561,6 @@ jQuery(document).ready( function($) {
 	$( '.js-basic-multiple-subjects' ).select2( {
 		maximumSelectionLength: 5,
 		width: "75%",
-		tags: true,
 		tokenSeparators: [','],
 		minimumInputLength: 1,
 		ajax: {
@@ -581,7 +580,7 @@ jQuery(document).ready( function($) {
 	// set selected to false for all options.
 	// this allows users to click a term in the dropdown even if it is already selected.
 	// (instead of that click resulting in the unselecting of the term)
-	$( '.js-basic-multiple-tags' ).on( 'select2:open', function( e ) {
+	$( '.js-basic-multiple-keywords' ).on( 'select2:open', function( e ) {
 		var observer = new MutationObserver( function() {
 			$( '.select2-results__options [aria-selected]' ).attr( 'aria-selected', false );
 		} );
@@ -591,10 +590,10 @@ jQuery(document).ready( function($) {
 
 	// ensure user-input terms conform to existing terms regardless of case
 	// e.g. if user enters "music" and "Music" exists, select "Music"
-	$( '.js-basic-multiple-tags' ).on( 'select2:selecting', function( e ) {
+	$( '.js-basic-multiple-keywords' ).on( 'select2:selecting', function( e ) {
 		var input_term = e.params.args.data.id;
 		var existing_terms = $( '.select2-results__option' ).not( '.select2-results__option--highlighted' );
-		var Select2 = $( '.js-basic-multiple-tags' ).data( 'select2' );
+		var Select2 = $( '.js-basic-multiple-keywords' ).data( 'select2' );
 
 		$.each( existing_terms, function( i, term_el ) {
 			var term = $( term_el ).text();
