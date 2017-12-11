@@ -159,8 +159,7 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Submitter<br>
-				<input type="hidden" name="aggregator_submitter" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
-				<input type="text" name="aggregator_submitter_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
+				<input type="text" name="aggregator_submitter" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
 			</label>
 		</p>
 		<p>
@@ -645,7 +644,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// No changes allowed.
 	//$aggregator_metadata['committee_deposit'] = sanitize_text_field( $_POST['aggregator_committee_deposit'] );
 	//$aggregator_metadata['committee_id'] = sanitize_text_field( $_POST['aggregator_committee_id'] );
-	//$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
+	$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
 
 	$aggregator_metadata['authors'] = array();
 	$authors = array();

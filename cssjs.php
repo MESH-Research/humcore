@@ -24,7 +24,7 @@ function humcore_deposits_front_cssjs() {
 		wp_register_script( 'humcore_retrieve_doi_js', plugins_url( 'js/retrieve-doi.js', __FILE__ ), array( 'jquery' ), '091317', true );
 		wp_enqueue_script( 'humcore_retrieve_doi_js' );
 
-		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '091317', true );
+		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '121117', true );
 		wp_enqueue_script( 'humcore_deposits_js' );
 
 /*

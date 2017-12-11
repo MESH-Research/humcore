@@ -351,17 +351,16 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 		<label for="deposit-subject">Subjects</label>
 		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:core@hcommons.org?subject=CORE" target="_blank">suggest additional subject
  fields</a>.</span><br />
-		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select subjects">
+		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple-subjects" multiple="multiple" data-placeholder="Select subjects">
 <?php
-	$subject_list = humcore_deposits_subject_list();
 	$posted_subject_list = array();
 	if ( ! empty( $prev_val['deposit-subject'] ) ) {
 		$posted_subject_list = array_map( 'sanitize_text_field', $prev_val['deposit-subject'] );
 	}
-	foreach ( $subject_list as $subject_key => $subject_value ) {
+	foreach ( $posted_subject_list as $subject_value ) {
 		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			( in_array( $subject_key, $posted_subject_list ) ) ? 'selected="selected"' : '',
-			$subject_key,
+			'selected="selected"',
+			$subject_value,
 			$subject_value
 		);
 	}
@@ -371,17 +370,16 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	<div id="deposit-keyword-entry">
 		<label for="deposit-keyword">Tags</label>
 		<span class="description">Enter up to five tags to further categorize this item.</span><br />
-		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-tags" multiple="multiple" data-placeholder="Enter tags">
+		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-keywords" multiple="multiple" data-placeholder="Enter tags">
 <?php
-	$keyword_list = humcore_deposits_keyword_list();
 	$posted_keyword_list = array();
 	if ( ! empty( $prev_val['deposit-keyword'] ) ) {
 		$posted_keyword_list = array_map( 'sanitize_text_field', $prev_val['deposit-keyword'] );
 	}
-	foreach ( $keyword_list as $keyword_key => $keyword_value ) {
+	foreach ( $posted_keyword_list as $keyword_value ) {
 		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			( in_array( $keyword_key, $posted_keyword_list ) ) ? 'selected="selected"' : '',
-			$keyword_key,
+			'selected="selected"',
+			$keyword_value,
 			$keyword_value
 		);
 	}
@@ -438,7 +436,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	</div>
 	<div id="deposit-publication-type-entry">
 		<label for="deposit-publication-type">Publication Type</label>
-		<div id=deposit-publication-type-entries">
+		<div id="deposit-publication-type-entries">
 			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book' ); } ?>>Book &nbsp;</span>
 			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-chapter" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;</span>
 			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-review" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-review' ); } ?>>Book review &nbsp;</span>
