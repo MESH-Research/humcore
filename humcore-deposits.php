@@ -20,11 +20,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Creates the namespace next used
+require_once dirname( __FILE__ ) . '/class-logger.php';
+
 use MLA\Commons\Plugin\Logging\Logger;
 
 global $humcore_logger;
 $humcore_logger = new Logger( 'humcore_error' );
 $humcore_logger->createLog( 'humcore_error' );
+
+// Wrapper around wp taxonomy functions for multi-sites, from 'humanities-commons'
+require_once dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php';
 
 /**
  * Register the humcore_deposit custom post type.
