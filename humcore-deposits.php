@@ -619,6 +619,19 @@ function humcore_register_async_tika_action() {
 add_action( 'init', 'humcore_register_async_tika_action' );
 add_filter( 'https_local_ssl_verify', '__return_false' );
 
+// Keyword REST controllers.
+require_once dirname( __FILE__ ) . '/class-humcore-deposits-keyword-rest-controller.php';
+require_once dirname( __FILE__ ) . '/class-humcore-deposits-subject-rest-controller.php';
+add_action(
+        'rest_api_init', function () {
+
+                $keyword_controller = new Humcore_Deposits_Keyword_REST_Controller;
+                $keyword_controller->register_routes();
+                $subject_controller = new Humcore_Deposits_Subject_REST_Controller;
+                $subject_controller->register_routes();
+        }
+);
+
 /**
  * HumCORE: CLI Commands
  */

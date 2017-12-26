@@ -1992,3 +1992,34 @@ function humcore_cleanup_utf8( $text ) {
 	return preg_replace( $utf8_cleanup_pattern, '', $text );
 }
 
+/**
+ * Clear selected cache keys
+ *
+ * @param string $text
+ * @return bool sucess
+ */
+function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) {
+
+	//error_log( '*****cache keys delete*****' . $key_type . '***' . var_export( $key_parameters, true ) );
+	if ( empty( $key_type ) || empty ( $key_parameters ) ) {
+		return false;
+	}
+        if ( ! empty( $key_parameters ) && ! is_array( $key_parameters ) ) {
+                $key_parameters = array( $key_parameters );
+        }
+
+	$key_formats = array();
+	$key_formats['item'][] = '0=%s';
+	$key_formats['author_uni'][] = '0=%%28+member_of%%3Ahccollection%%5C%%3A1+OR+member_of%%3Amlacollection%%5C%%3A1+%%29+AND+author_uni%%3A%s&1=0&2=1&3=newest&4=25';
+	$key_formats['author_uni'][] = '0=%%28+member_of%%3Ahccollection%%5C%%3A1+OR+member_of%%3Amlacollection%%5C%%3A1+%%29+AND+author_uni%%3A%s&1=0&2=1&3=newest&4=99';
+
+	foreach( $key_formats[$key_type] as $key_format ) {
+		foreach( $key_parameters as $key_parameter ) {
+			$status = wp_cache_delete( sprintf( $key_format, $key_parameter ), 'humcore_solr_search_results' );
+			error_log( '*****key delete*****' . sprintf( $key_format, $key_parameter ) . var_export( $status, true ) );
+		}
+	}
+
+	return;
+}
+

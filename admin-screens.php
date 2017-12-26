@@ -159,8 +159,7 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Submitter<br>
-				<input type="hidden" name="aggregator_submitter" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
-				<input type="text" name="aggregator_submitter_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
+				<input type="text" name="aggregator_submitter" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['submitter'] ); ?>">
 			</label>
 		</p>
 		<p>
@@ -605,6 +604,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 
 	$aggregator_metadata = json_decode( get_post_meta( $post_id, '_deposit_metadata', true ), true );
+	$current_authors = $aggregator_metadata['authors'];
 	$current_groups = $aggregator_metadata['group'];
 	$current_group_ids = $aggregator_metadata['group_ids'];
 	$current_subjects = $aggregator_metadata['subject'];
@@ -644,7 +644,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// No changes allowed.
 	//$aggregator_metadata['committee_deposit'] = sanitize_text_field( $_POST['aggregator_committee_deposit'] );
 	//$aggregator_metadata['committee_id'] = sanitize_text_field( $_POST['aggregator_committee_id'] );
-	//$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
+	$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
 
 	$aggregator_metadata['authors'] = array();
 	$authors = array();
@@ -870,6 +870,12 @@ function humcore_deposit_metabox_save( $post_id ) {
 			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
 			return  $post_id;
 		}
+
+		$old_author_unis = array_map( function( $element ) { return urlencode( $element['uni'] ); }, $current_authors );
+		$new_author_unis = array_map( function( $element ) { return urlencode( $element['uni'] ); }, $aggregator_metadata['authors'] );
+		$author_uni_keys = array_filter( array_unique( array_merge( $old_author_unis, $new_author_unis ) ) );
+		humcore_delete_cache_keys( 'item', urlencode( $thesePids[0] ) );
+		humcore_delete_cache_keys( 'author_uni', $author_uni_keys );
 
 		// Handle doi metadata changes.
 		if ( ! empty( $aggregator_metadata['deposit_doi'] ) ) {
