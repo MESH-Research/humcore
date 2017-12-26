@@ -173,7 +173,7 @@ ul.deposits-item .list-item-value {
 	width: unset;
 }
 /* deposit form styles */
-.deposits-new-item-page div.main-wrap.row {
+.deposits-new-item-page div.main-wrap.row, .deposits-edit-item-page div.main-wrap.row {
 	margin-left: 0;
 }
 #progressbar {

@@ -18,7 +18,7 @@ function humcore_deposits_front_cssjs() {
 	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '091317' );
 	wp_enqueue_style( 'humcore_deposits_css' );
 
-	if ( humcore_is_deposit_new_page() ) {
+	if ( humcore_is_deposit_new_page() || humcore_is_deposit_item_edit() ) {
 		wp_enqueue_script( 'plupload', array( 'jquery' ) );
 
 		wp_register_script( 'humcore_retrieve_doi_js', plugins_url( 'js/retrieve-doi.js', __FILE__ ), array( 'jquery' ), '091317', true );

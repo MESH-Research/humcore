@@ -39,6 +39,7 @@ function humcore_deposits_search_form() {
 function humcore_new_deposit_form() {
 
 	if ( ! empty( $_POST ) ) {
+		//check nonce
 		$deposit_id = humcore_deposit_file();
 		if ( $deposit_id ) {
                 	$review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
@@ -66,6 +67,7 @@ function humcore_new_deposit_form() {
 	}
 
 	$user_id = bp_loggedin_user_id();
+	$user_login = get_the_author_meta( 'user_login', $user_id );
 	$user_firstname = get_the_author_meta( 'first_name', $user_id );
 	$user_lastname = get_the_author_meta( 'last_name', $user_id );
 	$prev_val = array();
@@ -74,12 +76,90 @@ function humcore_new_deposit_form() {
 	} else {
 		$prev_val['deposit-author-role'] = 'author';
 	}
-	humcore_display_deposit_form( $current_group_id, $user_id, $user_firstname, $user_lastname, $prev_val );
+	humcore_display_deposit_form( $current_group_id, $user_id, $user_login, $user_firstname, $user_lastname, $prev_val, 'new' );
 
 }
 
-function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstname, $user_lastname, $prev_val ) {
+/**
+ * Render the content for deposits/item/edit.
+ */
+function humcore_edit_deposit_form() {
 
+	global $solr_client, $wp;
+
+        if ( ! empty( $_POST ) ) {
+		//check nonce
+                $deposit_id = humcore_deposit_edit_file();
+                if ( $deposit_id ) {
+                        $review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
+                        wp_redirect( $review_url );
+                        exit();
+                }
+        }
+
+        ob_end_flush(); // We've been capturing output.
+        if ( ! humcore_check_externals() ) {
+                echo '<h3>Edit <em>CORE</em> Deposit</h3>';
+                echo "<p>We're so sorry, but one of the components of <em>CORE</em> is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to edit your work) so please come back and try again later.</p>";
+                $wp_referer = wp_get_referer();
+                printf(
+                        '<a href="%1$s" class="button white" style="line-height: 1.2em;">Go Back</a>',
+                        ( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/edit' ) ) ? $wp_referer : '/deposits/'
+                );
+                return;
+        }
+
+        $current_group_id = '';
+        preg_match( '~.*?/groups/(.*[^/]?)/deposits/~i', wp_get_referer(), $slug_match );
+        if ( ! empty( $slug_match ) ) {
+                $current_group_id = BP_Groups_Group::get_id_from_slug( $slug_match[1] );
+        }
+
+	$deposit_id = $wp->query_vars['deposits_item'];
+        $item_found = humcore_has_deposits( 'include=' . $deposit_id );
+	humcore_the_deposit();
+	$record_identifier = humcore_get_deposit_record_identifier();
+	$record_location = explode( '-', $record_identifier );
+	// handle legacy MLA Commons value
+	if ( $record_location[0] === $record_identifier ) {
+		$record_location[0] = '1';
+		$record_location[1] = $record_identifier;
+	}
+	//Switch blog not needed here, current blog already checked.
+	$post_data = get_post( $record_location[1] );
+	$post_metadata = json_decode( get_post_meta( $record_location[1], '_deposit_metadata', true ), true );
+	$prev_val = humcore_prepare_edit_page_metadata( $post_metadata );
+	$file_metadata = json_decode( get_post_meta( $record_location[1], '_deposit_file_metadata', true ), true );
+	$full_tempname = pathinfo( $file_metadata['files'][0]['fileloc'], PATHINFO_BASENAME );
+	$tempname = str_replace( '.' . $file_metadata['files'][0]['filename'], '', $full_tempname );
+	$prev_val['selected_temp_name'] =  $tempname;
+	$prev_val['selected_file_name'] =  $file_metadata['files'][0]['filename'];
+	$prev_val['selected_file_type'] =  $file_metadata['files'][0]['filetype'];
+	$prev_val['selected_file_size'] =  $file_metadata['files'][0]['filesize'];
+	if ( 'yes' == $prev_val['deposit-on-behalf-flag'] ) {
+		$user = get_user_by( 'ID', sanitize_text_field( $prev_val['submitter'] ) );
+	} else {
+		$user = get_user_by( 'login', $prev_val['deposit-author-uni'] );
+	}
+        $user_id = $user->ID;
+        $user_login = $prev_val['deposit-author-uni'];
+        $user_firstname = $prev_val['deposit-author-first-name'];
+        $user_lastname = $prev_val['deposit-author-last-name'];
+
+	/*
+	maybe get file data and load prev_val
+	in deposit check for type and if found we need to do edit - maybe a whole new file shoud be used.
+	*/
+        if ( ! empty( $_POST ) ) {
+                $prev_val = $_POST;
+        }
+        humcore_display_deposit_form( $current_group_id, $user_id, $user_login, $user_firstname, $user_lastname, $prev_val, 'edit' );
+
+}
+
+function humcore_display_deposit_form( $current_group_id, $user_id, $user_login, $user_firstname, $user_lastname, $prev_val, $form_type ) {
+
+$deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 ?>
 
 <script type="text/javascript">
@@ -91,7 +171,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	};
 </script>
 
-<h3>New <em>CORE</em> Deposit</h3>
+<h3><?php echo ucfirst( $form_type ); ?> CORE</em> Deposit</h3>
 
 <form id="deposit-form" name="deposit-form" class="standard-form" method="post" enctype="multipart/form-data">
 
@@ -102,7 +182,9 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
         <input type="hidden" name="selected_file_name" id="selected_file_name" value="<?php if ( ! empty( $prev_val['selected_file_name'] ) ) { echo sanitize_text_field( $prev_val['selected_file_name'] ); } ?>" />
         <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_type'] ); } ?>" />
         <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_size'] ); } ?>" />
-        <input type="hidden" name="deposit-author-uni" id="deposit-author-uni" value="<?php echo bp_get_loggedin_user_username(); ?>" />
+        <input type="hidden" name="deposit-form-type" id="deposit-form-type" value="<?php echo $form_type; ?>" />
+        <input type="hidden" name="deposit_blog_id" id="deposit_blog_id" value="<?php if ( ! empty( $prev_val['deposit_blog_id'] ) ) { echo sanitize_text_field( $prev_val['deposit_blog_id'] ); } ?>" />
+        <input type="hidden" name="deposit_post_id" id="deposit_post_id" value="<?php if ( ! empty( $prev_val['deposit_post_id'] ) ) { echo sanitize_text_field( $prev_val['deposit_post_id'] ); } ?>" />
 
         <div id="deposit-file-entry">
 <br />
@@ -228,7 +310,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 	</div>
 	<div id="deposit-on-behalf-flag-entry">
 <?php
-        $committee_list = humcore_deposits_user_committee_list( bp_loggedin_user_id() );
+        $committee_list = humcore_deposits_user_committee_list( $user_id );
         if ( empty( $committee_list ) ) {
 ?>
         <input type="hidden" name="deposit-on-behalf-flag" id="deposit-on-behalf-flag" value="" />
@@ -292,19 +374,27 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="submitter" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'submitter' ); } ?>>Submitter &nbsp;</span>
 		<?php endif; ?>
 		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="translator" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
+		<input type="hidden" name="deposit-author-uni" id="deposit-author-uni" value="<?php
+			if ( 'new' === $form_type ) {
+				echo $user_login;
+			} else if ( ! empty( $prev_val['deposit-author-uni'] ) ) {
+				echo sanitize_text_field( $prev_val['deposit-author-uni'] );
+			} ?>" />
 		</td><td class="borderTop">
 		</td></tr>
 
 <?php
 	if ( ! empty( $prev_val['deposit-other-authors-first-name'] ) && ! empty( $prev_val['deposit-other-authors-last-name'] ) ) {
 		$other_authors = array_map(
-			function ( $first_name, $last_name, $role ) {
+			function ( $first_name, $last_name, $role, $uni ) {
 				return array( 'first_name' => sanitize_text_field( $first_name ),
 					'last_name' => sanitize_text_field( $last_name ),
-					'role' => sanitize_text_field( $role ) ); },
+					'role' => sanitize_text_field( $role ),
+					'uni' => sanitize_text_field( $uni ) ); },
 			$prev_val['deposit-other-authors-first-name'],
 			$prev_val['deposit-other-authors-last-name'],
-			$prev_val['deposit-other-authors-role']
+			$prev_val['deposit-other-authors-role'],
+			$prev_val['deposit-other-authors-uni']
 		);
 		$row_counter = 0;
 		foreach ( $other_authors as $author_array ) {
@@ -318,6 +408,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="author" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'author' ); } ?>>Author &nbsp;</span>
 		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="editor" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'editor' ); } ?>>Editor &nbsp;</span>
 		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="translator" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
+		<input type="hidden" name="deposit-other-authors-uni[<?php echo $row_counter; ?>]" value="<?php echo $author_array['uni']; ?>" />
 		</td><td class="borderTop">
 		</td></tr>
 <?php
@@ -334,7 +425,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
 		<span class="description">Share this item with up to five groups that you are a member of.<br />Selecting a group will notify members of that group about your deposit.</span><br />
 		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select groups">
 <?php
-	$group_list = humcore_deposits_group_list( bp_loggedin_user_id() );
+	$group_list = humcore_deposits_group_list( $user_id );
 	$posted_group_list = array();
 	if ( ! empty( $prev_val['deposit-group'] ) ) { $posted_group_list = array_map( 'sanitize_text_field', $prev_val['deposit-group'] ); }
 	foreach ( $group_list as $group_key => $group_value ) {
@@ -527,7 +618,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_firstn
         </div>
 	</div>
 <br />
-	<input id="deposit-submit" name="deposit-submit" type="submit" value="Deposit" />
+	<input id="deposit-submit" name="deposit-submit" type="submit" value="<?php echo ucfirst( $deposit_button_label ); ?>" />
 	<?php $wp_referer = wp_get_referer();
 		printf(
 			'<a id="deposit-cancel" href="%1$s" class="button white">Cancel</a>',
@@ -1024,7 +1115,7 @@ function humcore_deposits_feed_item_content() {
         $authors_list = array();
         $authors_list = '';
         foreach( $contributors_list as $contributor ) {
-                if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
+                if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 			$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $contributor[0], ENT_QUOTES ) );
                 }
         }
@@ -1081,7 +1172,7 @@ function humcore_deposits_entry_content() {
 	$translators_list = array();
 	$project_directors_list = array();
 	foreach( $contributors_list as $contributor ) {
-		if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
+		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 			$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} else if ( 'editor' === $contributor[2] ) {
                         $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
@@ -1186,7 +1277,7 @@ function humcore_deposit_item_content() {
         $translators_list = array();
         $project_directors_list = array();
         foreach( $contributors_list as $contributor ) {
-                if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
+                if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
                         $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
                 } else if ( 'editor' === $contributor[2] ) {
                         $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
@@ -1400,6 +1491,9 @@ endif; ?>
 <?php elseif ( 'publish' === $post_data->post_status ) : ?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
 <dd><?php echo 'Published'; ?></dd>
+<?php elseif ( 'future' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
+<dd><?php echo 'Scheduled'; ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $update_time ) ) : ?>
 <dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>
@@ -1490,7 +1584,7 @@ function humcore_deposit_item_review_content() {
         $translators_list = array();
         $project_directors_list = array();
         foreach( $contributors_list as $contributor ) {
-                if ( 'author' === $contributor[2] || empty( $contributor[2] ) ) {
+                if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
                         $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
                 } else if ( 'editor' === $contributor[2] ) {
                         $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
@@ -1624,7 +1718,7 @@ function humcore_deposit_item_review_content() {
 <?php endif; ?>
 <dt><?php _e( 'Abstract:', 'humcore_domain' ); // Google Scholar wants Abstract. ?></dt>
 <dd><?php echo $metadata['abstract_unchanged']; ?></dd>
-<?php if ( 'yes' === $metadata['committee_deposit'] ) : // Do not show unless this is a committee deposit. ?>
+<?php if ( 'yes' === $post_metadata['committee_deposit'] ) : // Do not show unless this is a committee deposit. ?>
 <dt><?php _e( 'Deposit Type:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo 'Committee'; ?></span></dd>
 <?php endif; ?>
@@ -1710,6 +1804,9 @@ endif; ?>
 <?php elseif ( 'publish' === $post_data->post_status ) : ?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
 <dd><?php echo 'Published'; ?></dd>
+<?php elseif ( 'future' === $post_data->post_status ) : ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
+<dd><?php echo 'Scheduled'; ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $update_time ) ) : ?>
 <dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>

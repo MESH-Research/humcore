@@ -40,8 +40,6 @@
                         </div>--!><!-- #item-nav -->
 
 <div id="item-body" role="main">
-<h3>Deposit Complete!</h3>
-Thank you for your submission! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:core@hcommons.org?subject=Fix my deposit!">contact us</a> and we’ll be happy to assist you.
 <?php do_action( 'bp_before_deposit_item' ); ?>
 <ul class="deposit-list item-list">
 <?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
@@ -49,6 +47,15 @@ Thank you for your submission! We strive to make the <em>CORE</em> deposit proce
 <li class="deposit-item mini" id="deposit-<?php humcore_deposit_id(); ?>">
 
 	<div class="deposit-content">
+
+<?php $current_deposit = humcore_get_current_deposit();
+	if ( $current_deposit->record_creation_date === $current_deposit->record_change_date ) { ?>
+<h3>Deposit Complete!</h3>
+Thank you for your submission! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:core@hcommons.org?subject=Fix my deposit!">contact us</a> and we’ll be happy to assist you.
+	<?php } else { ?>
+<h3>Deposit Updated!</h3>
+Thank you for updating your deposit! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:core@hcommons.org?subject=Fix my deposit!">contact us</a> and we’ll be happy to assist you.
+	<?php } ?>
 
 		<?php do_action( 'humcore_deposit_item_review_content' ); ?>
 

@@ -145,7 +145,44 @@
 			return false;
 		}
 
-		$metadata = prepare_metadata( $nextPids, $user );
+		$curr_val = $_POST;
+		$metadata = prepare_user_entered_metadata( $user, $curr_val );
+		$metadata['id'] = $nextPids[0];
+		$metadata['pid'] = $nextPids[0];
+		$metadata['creator'] = 'HumCORE';
+		$metadata['submitter'] = $user->ID;
+		$metadata['society_id'] = Humanities_Commons::$society_id;
+		$metadata['member_of'] = $fedora_api->collectionPid;
+		$metadata['record_content_source'] = 'HumCORE';
+		$metadata['record_creation_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
+		$metadata['record_change_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
+
+		/**
+		 * Mint and reserve a DOI.
+		 */
+		$creators = array();
+                foreach ( $metadata['authors'] as $author ) {
+			if ( ( in_array( $author['role'], array( 'creator', 'author', 'editor', 'translator' ) ) ) && ! empty( $author['fullname'] ) ) {
+                                $creators[] = $author['fullname'];
+                        }
+                }
+		$creator_list = implode( ',', $creators );
+
+		$deposit_doi = humcore_create_handle(
+				$metadata['title'],
+				$nextPids[0],
+				$creator_list,
+				$metadata['genre'],
+				$metadata['date_issued'],
+				$metadata['publisher']
+			);
+		if ( ! $deposit_doi ) {
+			$metadata['handle'] = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
+			$metadata['deposit_doi'] = ''; // Not stored in solr.
+		} else {
+			$metadata['handle'] = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );
+			$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
+		}
 
 		$deposit_activity_needed = true;
 		$deposit_review_needed = false;
@@ -542,38 +579,33 @@
 	/**
 	 * Prepare the metadata sent to Fedora and Solr from $_POST input.
 	 *
-	 * @param array $nextPids Array of fedora pids.
+	 * @param string $user deposit user
+	 * @param array $curr_val array on $_POST entries. 
 	 * @return array metadata content
 	 */
-	function prepare_metadata( $nextPids, $user ) {
-
-		global $fedora_api;
+	function prepare_user_entered_metadata( $user, $curr_val ) {
 
 		/**
 		 * Prepare the metadata to be sent to Fedora and Solr.
 		 */
 		$metadata = array();
-		$metadata['id'] = $nextPids[0];
-		$metadata['pid'] = $nextPids[0];
-		$metadata['creator'] = 'HumCORE';
-		$metadata['title'] = wp_strip_all_tags( stripslashes( $_POST['deposit-title-unchanged'] ) );
+		$metadata['title'] = wp_strip_all_tags( stripslashes( $curr_val['deposit-title-unchanged'] ) );
 		$metadata['title_unchanged'] = wp_kses(
-				stripslashes( $_POST['deposit-title-unchanged'] ),
+				stripslashes( $curr_val['deposit-title-unchanged'] ),
 				array( 'b' => array(), 'em' => array(), 'strong' => array() )
 			);
-		$metadata['abstract'] = wp_strip_all_tags( stripslashes( $_POST['deposit-abstract-unchanged'] ) );
+		$metadata['abstract'] = wp_strip_all_tags( stripslashes( $curr_val['deposit-abstract-unchanged'] ) );
 		$metadata['abstract_unchanged'] = wp_kses(
-				stripslashes( $_POST['deposit-abstract-unchanged'] ),
+				stripslashes( $curr_val['deposit-abstract-unchanged'] ),
 				array( 'b' => array(), 'em' => array(), 'strong' => array() )
 			);
-		$metadata['genre'] = sanitize_text_field( $_POST['deposit-genre'] );
-		$metadata['committee_deposit'] = sanitize_text_field( $_POST['deposit-on-behalf-flag'] );
-		if ( ! empty( $_POST['deposit-committee'] ) ) {
-			$metadata['committee_id'] = sanitize_text_field( $_POST['deposit-committee'] );
+		$metadata['genre'] = sanitize_text_field( $curr_val['deposit-genre'] );
+		$metadata['committee_deposit'] = sanitize_text_field( $curr_val['deposit-on-behalf-flag'] );
+		if ( ! empty( $curr_val['deposit-committee'] ) ) {
+			$metadata['committee_id'] = sanitize_text_field( $curr_val['deposit-committee'] );
 		} else {
 			$metadata['committee_id'] = '';
 		}
-		$metadata['submitter'] = $user->ID;
 
 		/**
 		 * Get committee or author metadata.
@@ -590,7 +622,7 @@
 				'role' => 'creator',
 				'affiliation' => strtoupper( Humanities_Commons::$society_id ),
 			);
-		} else if ( 'submitter' !== sanitize_text_field( $_POST['deposit-author-role'] ) ) {
+		} else if ( 'submitter' !== sanitize_text_field( $curr_val['deposit-author-role'] ) ) {
 			$user_id = $user->ID;
 			$user_firstname = get_the_author_meta( 'first_name', $user_id );
 			$user_lastname = get_the_author_meta( 'last_name', $user_id );
@@ -601,18 +633,18 @@
 				'given' => $user_firstname,
 				'family' => $user_lastname,
 				'uni' => $user->user_login,
-				'role' => sanitize_text_field( $_POST['deposit-author-role'] ),
+				'role' => sanitize_text_field( $curr_val['deposit-author-role'] ),
 				'affiliation' => $user_affiliation,
 			);
 		}
 
-		if ( ( ! empty( $_POST['deposit-other-authors-first-name'] ) && ! empty( $_POST['deposit-other-authors-last-name'] ) ) ) {
+		if ( ( ! empty( $curr_val['deposit-other-authors-first-name'] ) && ! empty( $curr_val['deposit-other-authors-last-name'] ) ) ) {
 			$other_authors = array_map( function ( $first_name, $last_name, $role ) {
 				return array( 'first_name' => sanitize_text_field( $first_name ),
 					 'last_name' => sanitize_text_field( $last_name ),
 					 'role' => sanitize_text_field( $role )
 				); },
-				$_POST['deposit-other-authors-first-name'], $_POST['deposit-other-authors-last-name'], $_POST['deposit-other-authors-role']
+				$curr_val['deposit-other-authors-first-name'], $curr_val['deposit-other-authors-last-name'], $curr_val['deposit-other-authors-role']
 			);
 			foreach ( $other_authors as $author_array ) {
 				if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
@@ -655,29 +687,29 @@
 		$metadata['author_info'] = humcore_deposits_format_author_info( $metadata['authors'] );
 
 		if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis', 'White paper' ) ) &&
-			! empty( $_POST['deposit-institution'] ) ) {
-			$metadata['institution'] = sanitize_text_field( $_POST['deposit-institution'] );
+			! empty( $curr_val['deposit-institution'] ) ) {
+			$metadata['institution'] = sanitize_text_field( $curr_val['deposit-institution'] );
 		} else if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis', 'White paper' ) ) &&
-			empty( $_POST['deposit-institution'] ) ) {
+			empty( $curr_val['deposit-institution'] ) ) {
 			$metadata['institution'] = $metadata['organization'];
 		}
 
 		if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
-			$metadata['conference_title'] = sanitize_text_field( $_POST['deposit-conference-title'] );
-			$metadata['conference_organization'] = sanitize_text_field( $_POST['deposit-conference-organization'] );
-			$metadata['conference_location'] = sanitize_text_field( $_POST['deposit-conference-location'] );
-			$metadata['conference_date'] = sanitize_text_field( $_POST['deposit-conference-date'] );
+			$metadata['conference_title'] = sanitize_text_field( $curr_val['deposit-conference-title'] );
+			$metadata['conference_organization'] = sanitize_text_field( $curr_val['deposit-conference-organization'] );
+			$metadata['conference_location'] = sanitize_text_field( $curr_val['deposit-conference-location'] );
+			$metadata['conference_date'] = sanitize_text_field( $curr_val['deposit-conference-date'] );
 		}
 
 		if ( ! empty( $metadata['genre'] ) && 'Presentation' == $metadata['genre'] ) {
-			$metadata['meeting_title'] = sanitize_text_field( $_POST['deposit-meeting-title'] );
-			$metadata['meeting_organization'] = sanitize_text_field( $_POST['deposit-meeting-organization'] );
-			$metadata['meeting_location'] = sanitize_text_field( $_POST['deposit-meeting-location'] );
-			$metadata['meeting_date'] = sanitize_text_field( $_POST['deposit-meeting-date'] );
+			$metadata['meeting_title'] = sanitize_text_field( $curr_val['deposit-meeting-title'] );
+			$metadata['meeting_organization'] = sanitize_text_field( $curr_val['deposit-meeting-organization'] );
+			$metadata['meeting_location'] = sanitize_text_field( $curr_val['deposit-meeting-location'] );
+			$metadata['meeting_date'] = sanitize_text_field( $curr_val['deposit-meeting-date'] );
 		}
 
 		$metadata['group'] = array();
-                $deposit_groups = $_POST['deposit-group'];
+                $deposit_groups = $curr_val['deposit-group'];
 		if ( ! empty( $deposit_groups ) ) {
 			foreach ( $deposit_groups as $group_id ) {
 				$group = groups_get_group( array( 'group_id' => sanitize_text_field( $group_id ) ) );
@@ -687,7 +719,7 @@
 		}
 
 		$metadata['subject'] = array();
-                $deposit_subjects = $_POST['deposit-subject'];
+                $deposit_subjects = $curr_val['deposit-subject'];
 		if ( ! empty( $deposit_subjects ) ) {
 			foreach ( $deposit_subjects as $subject ) {
 				$metadata['subject'][] = sanitize_text_field( stripslashes( $subject ) );
@@ -696,7 +728,7 @@
 		}
 
 		$metadata['keyword'] = array();
-                $deposit_keywords = $_POST['deposit-keyword'];
+                $deposit_keywords = $curr_val['deposit-keyword'];
 		if ( ! empty( $deposit_keywords ) ) {
 			foreach ( $deposit_keywords as $keyword ) {
 				$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
@@ -704,163 +736,159 @@
 			}
 		}
 
-		$metadata['type_of_resource'] = sanitize_text_field( $_POST['deposit-resource-type'] );
-		$metadata['language'] = sanitize_text_field( $_POST['deposit-language'] );
-		$metadata['notes'] = sanitize_text_field( stripslashes( $_POST['deposit-notes-unchanged'] ) ); // Where do they go in MODS?
+		$metadata['type_of_resource'] = sanitize_text_field( $curr_val['deposit-resource-type'] );
+		$metadata['language'] = sanitize_text_field( $curr_val['deposit-language'] );
+		$metadata['notes'] = sanitize_text_field( stripslashes( $curr_val['deposit-notes-unchanged'] ) ); // Where do they go in MODS?
 		$metadata['notes_unchanged'] = wp_kses(
-				stripslashes( $_POST['deposit-notes-unchanged'] ),
+				stripslashes( $curr_val['deposit-notes-unchanged'] ),
 				array( 'b' => array(), 'em' => array(), 'strong' => array() )
 			);
-		$metadata['type_of_license'] = sanitize_text_field( $_POST['deposit-license-type'] );
-		$metadata['record_content_source'] = 'HumCORE';
-		$metadata['record_creation_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
-		$metadata['record_change_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
-		$metadata['member_of'] = $fedora_api->collectionPid;
-		$metadata['published'] = sanitize_text_field( $_POST['deposit-published'] ); // Not stored in solr.
-		if ( ! empty( $_POST['deposit-publication-type'] ) ) {
-			$metadata['publication-type'] = sanitize_text_field( $_POST['deposit-publication-type'] ); // Not stored in solr.
+		$metadata['type_of_license'] = sanitize_text_field( $curr_val['deposit-license-type'] );
+		$metadata['published'] = sanitize_text_field( $curr_val['deposit-published'] ); // Not stored in solr.
+		if ( ! empty( $curr_val['deposit-publication-type'] ) ) {
+			$metadata['publication-type'] = sanitize_text_field( $curr_val['deposit-publication-type'] ); // Not stored in solr.
 		} else {
 			$metadata['publication-type'] = 'none';
 		}
 
 		if ( 'book' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-book-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-book-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['edition'] = sanitize_text_field( $_POST['deposit-book-edition'] );
-			$metadata['volume'] = sanitize_text_field( $_POST['deposit-book-volume'] );
-			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-isbn'] );
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-doi'] );
+			$metadata['edition'] = sanitize_text_field( $curr_val['deposit-book-edition'] );
+			$metadata['volume'] = sanitize_text_field( $curr_val['deposit-book-volume'] );
+			$metadata['isbn'] = sanitize_text_field( $curr_val['deposit-book-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $curr_val['deposit-book-doi'] );
 		} elseif ( 'book-chapter' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-chapter-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-chapter-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-book-chapter-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-book-chapter-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-book-chapter-title'] );
-			$metadata['book_author'] = sanitize_text_field( $_POST['deposit-book-chapter-author'] );
-			$metadata['chapter'] = sanitize_text_field( $_POST['deposit-book-chapter-chapter'] );
-			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-book-chapter-start-page'] );
-			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-book-chapter-end-page'] );
-			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-chapter-isbn'] );
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-chapter-doi'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $curr_val['deposit-book-chapter-title'] );
+			$metadata['book_author'] = sanitize_text_field( $curr_val['deposit-book-chapter-author'] );
+			$metadata['chapter'] = sanitize_text_field( $curr_val['deposit-book-chapter-chapter'] );
+			$metadata['start_page'] = sanitize_text_field( $curr_val['deposit-book-chapter-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $curr_val['deposit-book-chapter-end-page'] );
+			$metadata['isbn'] = sanitize_text_field( $curr_val['deposit-book-chapter-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $curr_val['deposit-book-chapter-doi'] );
 		} elseif ( 'book-review' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-review-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-review-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-book-review-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-book-review-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-review-doi'] );
+			$metadata['doi'] = sanitize_text_field( $curr_val['deposit-book-review-doi'] );
 		} elseif ( 'book-section' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-book-section-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-book-section-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-book-section-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-book-section-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-book-section-title'] );
-			$metadata['book_author'] = sanitize_text_field( $_POST['deposit-book-section-author'] );
-			$metadata['edition'] = sanitize_text_field( $_POST['deposit-book-section-edition'] );
-			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-book-section-start-page'] );
-			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-book-section-end-page'] );
-			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-book-section-isbn'] );
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-book-section-doi'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $curr_val['deposit-book-section-title'] );
+			$metadata['book_author'] = sanitize_text_field( $curr_val['deposit-book-section-author'] );
+			$metadata['edition'] = sanitize_text_field( $curr_val['deposit-book-section-edition'] );
+			$metadata['start_page'] = sanitize_text_field( $curr_val['deposit-book-section-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $curr_val['deposit-book-section-end-page'] );
+			$metadata['isbn'] = sanitize_text_field( $curr_val['deposit-book-section-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $curr_val['deposit-book-section-doi'] );
 		} elseif ( 'journal-article' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-journal-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-journal-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-journal-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-journal-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-journal-title'] );
-			$metadata['volume'] = sanitize_text_field( $_POST['deposit-journal-volume'] );
-			$metadata['issue'] = sanitize_text_field( $_POST['deposit-journal-issue'] );
-			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-journal-start-page'] );
-			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-journal-end-page'] );
-			$metadata['issn'] = sanitize_text_field( $_POST['deposit-journal-issn'] );
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-journal-doi'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $curr_val['deposit-journal-title'] );
+			$metadata['volume'] = sanitize_text_field( $curr_val['deposit-journal-volume'] );
+			$metadata['issue'] = sanitize_text_field( $curr_val['deposit-journal-issue'] );
+			$metadata['start_page'] = sanitize_text_field( $curr_val['deposit-journal-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $curr_val['deposit-journal-end-page'] );
+			$metadata['issn'] = sanitize_text_field( $curr_val['deposit-journal-issn'] );
+			$metadata['doi'] = sanitize_text_field( $curr_val['deposit-journal-doi'] );
 		} elseif ( 'magazine-section' == $metadata['publication-type'] ) {
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-magazine-section-publish-date'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-magazine-section-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-magazine-section-title'] );
-			$metadata['volume'] = sanitize_text_field( $_POST['deposit-magazine-section-volume'] );
-			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-magazine-section-start-page'] );
-			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-magazine-section-end-page'] );
-			$metadata['url'] = sanitize_text_field( $_POST['deposit-magazine-section-url'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $curr_val['deposit-magazine-section-title'] );
+			$metadata['volume'] = sanitize_text_field( $curr_val['deposit-magazine-section-volume'] );
+			$metadata['start_page'] = sanitize_text_field( $curr_val['deposit-magazine-section-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $curr_val['deposit-magazine-section-end-page'] );
+			$metadata['url'] = sanitize_text_field( $curr_val['deposit-magazine-section-url'] );
 		} elseif ( 'monograph' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-monograph-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-monograph-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-monograph-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-monograph-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['isbn'] = sanitize_text_field( $_POST['deposit-monograph-isbn'] );
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-monograph-doi'] );
+			$metadata['isbn'] = sanitize_text_field( $curr_val['deposit-monograph-isbn'] );
+			$metadata['doi'] = sanitize_text_field( $curr_val['deposit-monograph-doi'] );
 		} elseif ( 'newspaper-article' == $metadata['publication-type'] ) {
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-newspaper-article-publish-date'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-newspaper-article-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-newspaper-article-title'] );
-			$metadata['edition'] = sanitize_text_field( $_POST['deposit-newspaper-article-edition'] );
-			$metadata['volume'] = sanitize_text_field( $_POST['deposit-newspaper-article-volume'] );
-			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-newspaper-article-start-page'] );
-			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-newspaper-article-end-page'] );
-			$metadata['url'] = sanitize_text_field( $_POST['deposit-newspaper-article-url'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $curr_val['deposit-newspaper-article-title'] );
+			$metadata['edition'] = sanitize_text_field( $curr_val['deposit-newspaper-article-edition'] );
+			$metadata['volume'] = sanitize_text_field( $curr_val['deposit-newspaper-article-volume'] );
+			$metadata['start_page'] = sanitize_text_field( $curr_val['deposit-newspaper-article-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $curr_val['deposit-newspaper-article-end-page'] );
+			$metadata['url'] = sanitize_text_field( $curr_val['deposit-newspaper-article-url'] );
 		} elseif ( 'online-publication' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-online-publication-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-online-publication-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-online-publication-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-online-publication-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-online-publication-title'] );
-			$metadata['edition'] = sanitize_text_field( $_POST['deposit-online-publication-edition'] );
-			$metadata['volume'] = sanitize_text_field( $_POST['deposit-online-publication-volume'] );
-			$metadata['url'] = sanitize_text_field( $_POST['deposit-online-publication-url'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $curr_val['deposit-online-publication-title'] );
+			$metadata['edition'] = sanitize_text_field( $curr_val['deposit-online-publication-edition'] );
+			$metadata['volume'] = sanitize_text_field( $curr_val['deposit-online-publication-volume'] );
+			$metadata['url'] = sanitize_text_field( $curr_val['deposit-online-publication-url'] );
 		} elseif ( 'podcast' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-podcast-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-podcast-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-podcast-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-podcast-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['volume'] = sanitize_text_field( $_POST['deposit-podcast-volume'] );
-			$metadata['url'] = sanitize_text_field( $_POST['deposit-podcast-url'] );
+			$metadata['volume'] = sanitize_text_field( $curr_val['deposit-podcast-volume'] );
+			$metadata['url'] = sanitize_text_field( $curr_val['deposit-podcast-url'] );
 		} elseif ( 'proceedings-article' == $metadata['publication-type'] ) {
-			$metadata['publisher'] = sanitize_text_field( $_POST['deposit-proceeding-publisher'] );
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-proceeding-publish-date'] );
+			$metadata['publisher'] = sanitize_text_field( $curr_val['deposit-proceeding-publisher'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-proceeding-publish-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
 				$metadata['date_issued'] = date( 'Y', strtotime( 'today' ) );
 			}
-			$metadata['book_journal_title'] = sanitize_text_field( $_POST['deposit-proceeding-title'] );
-			$metadata['start_page'] = sanitize_text_field( $_POST['deposit-proceeding-start-page'] );
-			$metadata['end_page'] = sanitize_text_field( $_POST['deposit-proceeding-end-page'] );
-			$metadata['doi'] = sanitize_text_field( $_POST['deposit-proceeding-doi'] );
+			$metadata['book_journal_title'] = sanitize_text_field( $curr_val['deposit-proceeding-title'] );
+			$metadata['start_page'] = sanitize_text_field( $curr_val['deposit-proceeding-start-page'] );
+			$metadata['end_page'] = sanitize_text_field( $curr_val['deposit-proceeding-end-page'] );
+			$metadata['doi'] = sanitize_text_field( $curr_val['deposit-proceeding-doi'] );
 		} elseif ( 'none' == $metadata['publication-type'] ) {
 			$metadata['publisher'] = '';
-			$metadata['date'] = sanitize_text_field( $_POST['deposit-non-published-date'] );
+			$metadata['date'] = sanitize_text_field( $curr_val['deposit-non-published-date'] );
 			if ( ! empty( $metadata['date'] ) ) {
 				$metadata['date_issued'] = get_year_issued( $metadata['date'] );
 			} else {
@@ -868,40 +896,11 @@
 			}
 		}
 
-                $metadata['embargoed'] = sanitize_text_field( $_POST['deposit-embargoed-flag'] );
+                $metadata['embargoed'] = sanitize_text_field( $curr_val['deposit-embargoed-flag'] );
 
                 if ( 'yes' === $metadata['embargoed'] ) {
-                        $metadata['embargo_end_date'] = date( 'm/d/Y', strtotime( '+' . sanitize_text_field( $_POST['deposit-embargo-length'] ) ) );
+                        $metadata['embargo_end_date'] = date( 'm/d/Y', strtotime( '+' . sanitize_text_field( $curr_val['deposit-embargo-length'] ) ) );
 		}
-
-		/**
-		 * Mint and reserve a DOI.
-		 */
-		$creators = array();
-                foreach ( $metadata['authors'] as $author ) {
-			if ( ( in_array( $author['role'], array( 'author', 'editor', 'translator' ) ) ) && ! empty( $author['fullname'] ) ) {
-                                $creators[] = $author['fullname'];
-                        }
-                }
-		$creator_list = implode( ',', $creators );
-
-		$deposit_doi = humcore_create_handle(
-				$metadata['title'],
-				$nextPids[0],
-				$creator_list,
-				$metadata['genre'],
-				$metadata['date_issued'],
-				$metadata['publisher']
-			);
-		if ( ! $deposit_doi ) {
-			$metadata['handle'] = sprintf( HC_SITE_URL . '/deposits/item/%s/', $nextPids[0] );
-			$metadata['deposit_doi'] = ''; // Not stored in solr.
-		} else {
-			$metadata['handle'] = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );
-			$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
-		}
-
-		$metadata['society_id'] = Humanities_Commons::$society_id;
 
 		return $metadata;
 
@@ -1059,7 +1058,7 @@
 		$description = humcore_cleanup_utf8( htmlspecialchars( $metadata['abstract'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 		$creator_list = '';
                 foreach ( $metadata['authors'] as $author ) {
-                        if ( ( 'author' === $author['role'] ) && ! empty( $author['fullname'] ) ) {
+                        if ( ( in_array( $author['role'], array( 'creator', 'author' ) ) ) && ! empty( $author['fullname'] ) ) {
                                 $creator_list .= '
                                   <dc:creator>' . $author['fullname'] . '</dc:creator>';
                         }
@@ -1234,6 +1233,7 @@
 		$authorMODS = '';
 		foreach ( $metadata['authors'] as $author ) {
 
+			if ( in_array( $author['role'], array( 'creator', 'author' ) ) ) {
 			if ( 'creator' === $author['role'] ) {
 				$authorMODS .= '
 				<name type="corporate">';
@@ -1247,11 +1247,12 @@
 				}
 			}
 
-			if ( ( 'author' === $author['role'] ) && ( ! empty( $author['family'] ) || ! empty( $author['given'] ) ) ) {
+			if ( ( 'creator' !== $author['role'] ) && ( ! empty( $author['family'] ) || ! empty( $author['given'] ) ) ) {
 				$authorMODS .= '
 				  <namePart type="family">' . $author['family'] . '</namePart>
 				  <namePart type="given">' . $author['given'] . '</namePart>';
-			} else if ( 'author' === $author['role'] ) {
+//			} else if ( 'creator' !== $author['role'] ) {
+			} else {
 				$authorMODS .= '
 				<namePart>' . $author['fullname'] . '</namePart>';
 			}
@@ -1264,7 +1265,7 @@
 			} else {
 				$authorMODS .= '
 					<role>
-						<roleTerm type="text">author</roleTerm>
+						<roleTerm type="text">' . $author['role'] . '</roleTerm>
 					</role>';
 			}
 
@@ -1276,6 +1277,7 @@
 			$authorMODS .= '
 				</name>';
 
+			}
 		}
 
 		/**

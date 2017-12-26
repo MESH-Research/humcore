@@ -802,7 +802,8 @@ function humcore_deposit_metabox_save( $post_id ) {
 		$upload_MODS = $fedora_api->upload( array( 'file' => $resource_MODS_file ) );
 		if ( is_wp_error( $upload_MODS ) ) {
 			echo 'Error - uploadMODS : ' . esc_html( $upload_MODS->get_error_message() );
-			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',  $upload_MODS->get_error_code(), $upload_MODS->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',
+				$upload_MODS->get_error_code(), $upload_MODS->get_error_message() ) );
 		}
 
 		$mContent = $fedora_api->modify_datastream( array(
@@ -815,7 +816,8 @@ function humcore_deposit_metabox_save( $post_id ) {
 					) );
 		if ( is_wp_error( $mContent ) ) {
 			echo esc_html( 'Error - mContent : ' . $mContent->get_error_message() );
-			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - mContent : %1$s-%2$s',  $mContent->get_error_code(), $mContent->get_error_message() ) );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - mContent : %1$s-%2$s',
+				$mContent->get_error_code(), $mContent->get_error_message() ) );
 		}
 
 		$resource_Xml = create_resource_xml( $aggregator_metadata, $resource_filetype );
@@ -873,7 +875,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 		if ( ! empty( $aggregator_metadata['deposit_doi'] ) ) {
                 	$creators = array();
                 	foreach ( $aggregator_metadata['authors'] as $author ) {
-				if ( ( in_array( $author['role'], array( 'author', 'editor', 'translator' ) ) ) &&
+				if ( ( in_array( $author['role'], array( 'creator', 'author', 'editor', 'translator' ) ) ) &&
 					 ! empty( $author['fullname'] ) ) {
 					$creators[] = $author['fullname'];
 				}
