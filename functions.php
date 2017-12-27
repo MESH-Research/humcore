@@ -754,7 +754,7 @@ function humcore_user_can_edit_deposit( $deposit_post_id ) {
  */
 function humcore_member_groups_with_authorship() {
 
-	return array( 378,444 );
+	return array( 296, 378, 444 );
 }
 
 /**
@@ -1558,7 +1558,7 @@ function humcore_deposits_genre_list() {
 	$genre_list['White paper'] = 'White paper';
 	$genre_list['Other'] = 'Other';
 
-	return apply_filters( 'bp_humcore_deposits_genre_list', $genre_list );
+	return apply_filters( 'humcore_deposits_genre_list', $genre_list );
 
 }
 
@@ -1674,7 +1674,7 @@ function humcore_deposits_subject_list() {
 
 	natcasesort( $subjects_list );
 
-	return apply_filters( 'bp_humcore_deposits_subject_list', $subjects_list );
+	return apply_filters( 'humcore_deposits_subject_list', $subjects_list );
 
 }
 
@@ -1701,7 +1701,7 @@ function humcore_deposits_keyword_list() {
 
 	natcasesort( $keywords_list );
 
-	return apply_filters( 'bp_humcore_deposits_keyword_list', $keywords_list );
+	return apply_filters( 'humcore_deposits_keyword_list', $keywords_list );
 
 }
 
@@ -1728,7 +1728,7 @@ function humcore_deposits_language_list() {
 
 	natcasesort( $languages_list );
 
-	return apply_filters( 'bp_humcore_deposits_language_list', $languages_list );
+	return apply_filters( 'humcore_deposits_language_list', $languages_list );
 
 }
 
@@ -1750,7 +1750,7 @@ function humcore_deposits_license_type_list() {
 	$license_type_list['Attribution-NonCommercial-NoDerivatives'] = 'Attribution-NonCommercial-NoDerivatives';
 	$license_type_list['All-Rights-Granted'] = 'All Rights Granted';
 
-	return apply_filters( 'bp_humcore_deposits_license_type_list', $license_type_list );
+	return apply_filters( 'humcore_deposits_license_type_list', $license_type_list );
 
 }
 
@@ -1770,7 +1770,7 @@ function humcore_deposits_resource_type_list() {
 	$resource_type_list['Text'] = 'Text';
 	$resource_type_list['Video'] = 'Video';
 
-	return apply_filters( 'bp_humcore_deposits_resource_type_list', $resource_type_list );
+	return apply_filters( 'humcore_deposits_resource_type_list', $resource_type_list );
 
 }
 
@@ -1788,7 +1788,7 @@ function humcore_deposits_embargo_length_list() {
 	$embargo_length_list['18 months'] = '18 months';
 	$embargo_length_list['24 months'] = '24 months';
 
-	return apply_filters( 'bp_humcore_deposits_embargo_length_list', $embargo_length_list );
+	return apply_filters( 'humcore_deposits_embargo_length_list', $embargo_length_list );
 
 }
 
@@ -2022,4 +2022,3 @@ function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) 
 
 	return;
 }
-
