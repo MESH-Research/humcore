@@ -121,6 +121,7 @@
 		$metadata['record_content_source'] = $deposit_post_metadata['record_content_source'];
 		$metadata['record_creation_date'] = $deposit_post_metadata['record_creation_date'];
 		$metadata['record_change_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
+		$current_authors = $deposit_post_metadata['authors'];
 		$current_embargo_flag = $deposit_post_metadata['embargoed'];
 		$current_post_date = $deposit_post->post_date;
 		$current_post_status = $deposit_post->post_status;
@@ -293,6 +294,15 @@
 			$file_meta_update_status = update_post_meta( $deposit_post_id, '_deposit_file_metadata', wp_slash( $json_metadata ) );
 			humcore_write_error_log( 'info', 'HumCORE Deposit Edit - postmeta (2)', json_decode( $json_metadata, true ) );
 		}
+
+		/**
+		 * Bust cache for this deposit.
+		 */
+		$old_author_unis = array_map( function( $element ) { return urlencode( $element['uni'] ); }, $current_authors );
+		$new_author_unis = array_map( function( $element ) { return urlencode( $element['uni'] ); }, $metadata['authors'] );
+		$author_uni_keys = array_filter( array_unique( array_merge( $old_author_unis, $new_author_unis ) ) );
+		humcore_delete_cache_keys( 'item', urlencode( $nextPids[0] ) );
+		humcore_delete_cache_keys( 'author_uni', $author_uni_keys );
 
 		/**
 		 * Upload the MODS file to the Fedora server temp file storage.

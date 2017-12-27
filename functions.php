@@ -2016,7 +2016,7 @@ function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) 
 	foreach( $key_formats[$key_type] as $key_format ) {
 		foreach( $key_parameters as $key_parameter ) {
 			$status = wp_cache_delete( sprintf( $key_format, $key_parameter ), 'humcore_solr_search_results' );
-			error_log( '*****key delete*****' . sprintf( $key_format, $key_parameter ) . var_export( $status, true ) );
+			//error_log( '*****key delete*****' . sprintf( $key_format, $key_parameter ) . var_export( $status, true ) );
 		}
 	}
 
