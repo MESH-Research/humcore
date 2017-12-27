@@ -1,5 +1,39 @@
 <?php
+/**
+ * Deposit Edit transaction and related support functions.
+ *
+ * @package HumCORE
+ * @subpackage Deposits
+ */
 
+        /**
+         * Check for matching pid and post.
+	 * Determine if file changed.
+         * Make a usable unique filename.
+         * Generate a thumb if necessary.
+         * For an uploaded file, we will change 2 objects in Fedora and 1 document in Solr and 2 posts,
+           get the next 2 object id values for Fedora.
+         * Prepare the metadata sent to Fedora and Solr.
+         * Determine post date, status and necessary activity.
+         * Create XML needed for the fedora objects.
+         * Set object terms for subjects.
+         * Add any new keywords and set object terms for tags.
+         * Extract text first if small. If Tika errors out we'll index without full text.
+         * Index the deposit content and metadata in Solr.
+         * Update the aggregator post.
+         * Add to metadata and store in post meta.
+         * Prepare an array of post data for the resource post.
+         * Update the resource post.
+         * Upload the MODS file to the Fedora server temp file storage.
+         * Update the descMetadata datastream for the aggregator object.
+         * Upload the deposited file to the Fedora server temp file storage.
+         * Update the CONTENT datastream for the resource object.
+	 * Modify the resource object metadata datastream.
+         * Upload the thumb to the Fedora server temp file storage if necessary.
+         * Update the THUMB datastream for the resource object if necessary.
+         * Handle doi metadata changes.
+         * Re-index larger text based deposits in the background.
+         */
 	function humcore_deposit_edit_file () {
 
 		if ( empty( $_POST ) ) {
@@ -375,7 +409,7 @@
 		}
 
 		/**
-		 * Modify the metadata datastream
+		 * Modify the resource object metadata datastream.
 		 */
 		$rDCContent = $fedora_api->modify_datastream( array(
 			'pid' => $nextPids[1],
@@ -481,6 +515,12 @@
 
 	}
 
+        /**
+         * Prepare metadata for the edit screen from existing post metadata.
+         *
+         * @param array $curr_val array of existing metadata entries. 
+         * @return array metadata content
+         */
 	function humcore_prepare_edit_page_metadata( $curr_val ) {
 
 		$metadata['submitter'] = $curr_val['submitter'];

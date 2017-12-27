@@ -8,18 +8,22 @@
 
 	/**
 	 * Process the uploaded file:
-	 *
+	 * Check for duplicate entries.
 	 * Make a usable unique filename.
 	 * Generate a thumb if necessary.
+	 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr and 2 posts,
+	   get the next 2 object id values for Fedora.
 	 * Prepare the metadata sent to Fedora and Solr.
 	 * Mint and reserve a DOI.
-	 * For this uploaded file, we will create 2 objects in Fedora and 1 document in Solr and 2 posts.
-	 * Get the next 2 object id values for Fedora.
-	 * Add solr first, if Tika errors out we'll add the index without full text.
+	 * Determine post date, status and necessary activity.
+	 * Create XML needed for the fedora objects.
 	 * Create the aggregator post so that we can reference the ID in the Solr document.
 	 * Set object terms for subjects.
 	 * Add any new keywords and set object terms for tags.
 	 * Add to metadata and store in post meta.
+	 * Prepare an array of post data for the resource post.
+	 * Insert the resource post.
+	 * Extract text first if small. If Tika errors out we'll index without full text.
 	 * Index the deposit content and metadata in Solr.
 	 * Create the aggregator Fedora object along with the DC and RELS-EXT datastreams.
 	 * Upload the MODS file to the Fedora server temp file storage.
@@ -27,11 +31,11 @@
 	 * Upload the deposited file to the Fedora server temp file storage.
 	 * Create the CONTENT datastream for the resource object.
 	 * Upload the thumb to the Fedora server temp file storage if necessary.
-	 * Prepare an array of post data for the resource post.
-	 * Insert the resource post.
+	 * Create the THUMB datastream for the resource object if necessary.
 	 * Add the activity entry for the author.
 	 * Publish the reserved DOI.
-	 * Add any group activity entries.
+	 * Notify provisional deposit review group for HC member deposits.
+	 * Re-index larger text based deposits in the background.
 	 */
 	function humcore_deposit_file () {
 
@@ -56,7 +60,9 @@
 			return false;
 		}
 
-		// Check for dups!
+		/**
+		 * Check for duplicate entries.
+		 */
 		$title_check = wp_strip_all_tags( stripslashes( $_POST['deposit-title-unchanged'] ) );
 		$genre = sanitize_text_field( $_POST['deposit-genre'] );
 		if ( 'yes' === $_POST['deposit-on-behalf-flag'] ) {
@@ -102,7 +108,9 @@
 		$thumb_datastream_id = 'THUMB';
 		$generated_thumb_name = '';
 
-		// Make a usable unique filename.
+		/**
+		 * Make a usable unique filename.
+		 */
 		if ( file_exists( $fileloc ) ) {
 			$file_rename_status = rename( $fileloc, $renamed_file );
 		}
@@ -145,6 +153,9 @@
 			return false;
 		}
 
+		/**
+		 * Prepare the metadata to send to Fedore and Solr.
+		 */
 		$curr_val = $_POST;
 		$metadata = prepare_user_entered_metadata( $user, $curr_val );
 		$metadata['id'] = $nextPids[0];
@@ -184,6 +195,9 @@
 			$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
 		}
 
+		/**
+		 * Determine post date, status and necessary activity.
+		 */
 		$deposit_activity_needed = true;
 		$deposit_review_needed = false;
 		$deposit_post_date = (new DateTime())->format('Y-m-d H:i:s');
@@ -216,6 +230,9 @@
                         }
                 }
 
+		/**
+		 * Create XML needed for the fedora objects.
+		 */
 		$aggregatorXml = create_aggregator_xml( array(
 								'pid' => $nextPids[0],
 								'creator' => $metadata['creator'],
@@ -359,7 +376,7 @@
 		$resource_post_ID = wp_insert_post( $resource_post_data );
 
 		/**
-		 * Add POST variables needed for async tika extraction
+		 * Add POST variables needed for async tika extraction.
 		 */
 		$_POST['aggregator-post-id'] = $deposit_post_ID;
 
@@ -453,7 +470,7 @@
 		}
 
 		/**
-		 * Upload the deposit to the Fedora server temp file storage.
+		 * Upload the deposited file to the Fedora server temp file storage.
 		 */
 		$uploadUrl = $fedora_api->upload( array( 'file' => $renamed_file, 'filename' => $filename, 'filetype' => $filetype ) );
 		if ( is_wp_error( $uploadUrl ) ) {
@@ -535,7 +552,7 @@
 		}
 
 		/**
-		 * Notify provisional deposit review group for HC member deposits
+		 * Notify provisional deposit review group for HC member deposits.
 		 */
 		if ( $deposit_review_needed ) {
 			$bp = buddypress();
@@ -584,7 +601,7 @@
 	 * Prepare the metadata sent to Fedora and Solr from $_POST input.
 	 *
 	 * @param string $user deposit user
-	 * @param array $curr_val array on $_POST entries. 
+	 * @param array $curr_val array of $_POST entries. 
 	 * @return array metadata content
 	 */
 	function prepare_user_entered_metadata( $user, $curr_val ) {
