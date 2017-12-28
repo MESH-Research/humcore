@@ -748,7 +748,7 @@ function humcore_user_can_edit_deposit( $deposit_post_id ) {
 
 	$post_data = get_post( $deposit_post_id );
 	if ( ( 'publish' !== $post_data->post_status && $post_data->post_author === bp_loggedin_user_id() ) || is_super_admin() ||
-			in_array( bp_loggedin_user_id(), $global_super_admins ) ) {
+			in_array( bp_loggedin_user_username(), $global_super_admins ) ) {
 		return true;
 	} else {
 		return false;
