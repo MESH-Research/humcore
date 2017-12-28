@@ -734,13 +734,21 @@ function humcore_is_bot_user_agent() {
 /**
  * User can edit deposit.
  *
- * @param string $deposit_post_id  Current deposit.
- * @return bool True if the current user can edit the current deposit
+ * @param string $deposit_post_id  Current deposit aggregator post.
+ * @return bool True if the current user can edit the current deposit.
  */
 function humcore_user_can_edit_deposit( $deposit_post_id ) {
 
+
+	$global_super_admins = array();
+	if ( defined( 'GLOBAL_SUPER_ADMINS' ) ) {
+		$global_super_admin_list = constant( 'GLOBAL_SUPER_ADMINS' );
+		$global_super_admins = explode( ',', $global_super_admin_list );
+	}
+
 	$post_data = get_post( $deposit_post_id );
-	if ( ( 'publish' !== $post_data->post_status && $post_data->post_author === bp_loggedin_user_id() ) || is_super_admin() ) {
+	if ( ( 'publish' !== $post_data->post_status && $post_data->post_author === bp_loggedin_user_id() ) || is_super_admin() ||
+			in_array( bp_loggedin_user_id(), $global_super_admins ) ) {
 		return true;
 	} else {
 		return false;
@@ -1334,9 +1342,9 @@ function humcore_is_group_forum( $group_id = 0 ) {
  * Returns group with link.
  * @return string
  */
-function humcore_linkify_group( $group, $link_type = 'facet' ) {
+function humcore_linkify_group( $group, $link_type = 'group' ) {
 
-	if ( 'facet' != $link_type && function_exists( 'bp_is_active' ) ) {
+	if ( 'facet' !== $link_type && function_exists( 'bp_is_active' ) ) {
 		if ( bp_is_active( 'groups' ) ) {
 			$group_slug = humcore_get_slug_from_name( $group );
 			$linked_group = sprintf( '<a href="/groups/%s/deposits">%s</a>', urlencode( $group_slug ), esc_html( $group ) );

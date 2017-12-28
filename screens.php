@@ -1480,19 +1480,20 @@ elseif ( 'podcast' == $post_metadata['publication-type'] ) :
 elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) :
         humcore_display_proceedings_article_pub_metadata( $metadata );
 endif; ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
 <?php if ( 'draft' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
-<dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<dd><?php echo '<strong>Provisional</strong>'; ?>
 <?php elseif ( 'pending' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
-<dd><?php echo 'Pending Review'; ?></dd>
+<dd><?php echo 'Pending Review'; ?>
 <?php elseif ( 'publish' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
-<dd><?php echo 'Published'; ?></dd>
+<dd><?php echo 'Published'; ?>
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
-<dd><?php echo 'Scheduled'; ?></dd>
+<dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
+<?php if ( humcore_user_can_edit_deposit() ) : ?>
+ &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this deposit" href="<?php echo esc_url( $item_url . '/edit/' ); ?>"><?php _e( 'Edit this deposit', 'humcore_domain' ); ?></a>
+<?php endif; ?>
+</dd>
 <?php if ( ! empty( $update_time ) ) : ?>
 <dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $update_time . ' ago'; // XSS OK. ?></span></dd>
@@ -1793,19 +1794,20 @@ endif; ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
 <?php endif; ?>
+<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
 <?php if ( 'draft' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
-<dd><?php echo '<strong>Provisional</strong>'; ?></dd>
+<dd><?php echo '<strong>Provisional</strong>'; ?>
 <?php elseif ( 'pending' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
-<dd><?php echo 'Pending Review'; ?></dd>
+<dd><?php echo 'Pending Review'; ?>
 <?php elseif ( 'publish' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
-<dd><?php echo 'Published'; ?></dd>
+<dd><?php echo 'Published'; ?>
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
-<dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt>
-<dd><?php echo 'Scheduled'; ?></dd>
+<dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
+<?php if ( humcore_user_can_edit_deposit() ) : ?>
+ &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this deposit" href="<?php echo esc_url( $item_url . '/edit/' ); ?>"><?php _e( 'Edit this deposit', 'humcore_domain' ); ?></a>
+<?php endif; ?>
+</dd>
 <?php if ( ! empty( $update_time ) ) : ?>
 <dt><?php _e( 'Last Updated:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $update_time . ' ago'; // XSS OK. ?></span></dd>
