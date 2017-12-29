@@ -317,7 +317,7 @@ jQuery(document).ready( function($) {
 				}
 			},
 			{
-			text: 'Deposit',
+			text: 'Confirm',
 			class: 'button-primary',
 			click: function() {
 				$(this).dialog('close');
@@ -415,7 +415,7 @@ jQuery(document).ready( function($) {
 			$('#deposit-error-dialog').html(error_message).dialog('open');
 			return false;
 		} else if ( ( groups === null && deposit_on_behalf_of === 'no' ) || subjects === null ) {
-			warning_message += '</ul>Want to fix this? Press <b>Edit</b> to make changes. To upload your item as is, press <b>Deposit</b>.</p>';
+			warning_message += '</ul>Want to fix this? Press <b>Edit</b> to make changes. To upload your item as is, press <b>Confirm</b>.</p>';
 			$('#deposit-warning-dialog').html(warning_message).dialog('open');
 			return false;
 		} else {
