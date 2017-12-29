@@ -1342,7 +1342,7 @@ function humcore_is_group_forum( $group_id = 0 ) {
  * Returns group with link.
  * @return string
  */
-function humcore_linkify_group( $group, $link_type = 'group' ) {
+function humcore_linkify_group( $group, $link_type = 'facet' ) {
 
 	if ( 'facet' !== $link_type && function_exists( 'bp_is_active' ) ) {
 		if ( bp_is_active( 'groups' ) ) {

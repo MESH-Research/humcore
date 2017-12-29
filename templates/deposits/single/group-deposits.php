@@ -43,6 +43,41 @@
                                 </div>
                         </div><!-- #item-nav -->
 
+    <div class="filters">
+        <div class="row">
+            <div class="col-12">
+                <div class="item-list-tabs" role="navigation">
+                        <?php do_action( 'humcore_deposits_directory_deposit_sub_types' ); ?>
+                        <div class="filter-type sort">
+
+                            <label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
+
+                            <select id="deposits-order-by">
+                                <option value="newest" selected="selected"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
+                                <option value="alphabetical"><?php _e( 'Alphabetical', 'humcore_domain' ); ?></option>
+
+                                <?php do_action( 'humcore_deposits_directory_order_options' ); ?>
+                            </select>
+                        </div>
+                        <div class="filter-type search">
+
+                            <label for="search-deposits-field"><?php _e( 'Search Field:', 'humcore_domain' ); ?></label>
+
+                            <select id="search-deposits-field">
+                                <option value="all" selected="selected">All Fields</option>
+                                <option value="author">Author/Contributor</option>
+                                <option value="subject">Subject</option>
+                                <option value="tag">Tag</option>
+                                <option value="title">Title</option>
+
+                            </select>
+                        </div>
+                    <?php humcore_deposits_search_form(); ?>
+                </div><!-- .item-list-tabs -->
+            </div><!-- .col-12 -->
+        </div><!-- .row -->
+    </div><!-- .filters -->
+
 			<div id="item-body" role="main">
 
 				<?php do_action( 'bp_before_group_deposits_body' ); ?>
@@ -54,26 +89,6 @@
 				if ( is_user_logged_in() && 'public' === bp_get_group_status() ) {
 					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work" style="float: right;">Upload Your Work</a><p />';
 				} ?>
-
-				<div class="item-list-tabs no-ajax" id="subnav">
-					<ul>
-					<li class="current selected" id="deposits-groups"><h3>Group Deposits</h3></li>
-
-					<li id="deposits-order-select" class="last filter">
-
-						<label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
-						<select id="deposits-order-by">
-							<option value="date"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
-							<!-- <option value="author"><?php _e( 'Primary Author', 'humcore_domain' ); ?></option> -->
-							<option value="title"><?php _e( 'Title', 'humcore_domain' ); ?></option>
-
-							<?php do_action( 'humcore_deposits_directory_order_options' ); ?>
-
-						</select>
-					</li>
-
-					</ul>
-				</div><!-- .item-list-tabs -->
 
 				<h3><?php do_action( 'bp_template_title' ); ?></h3>
 				<div id="deposits-dir-list" class="deposits dir-list" style="display: block;">
