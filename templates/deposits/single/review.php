@@ -51,10 +51,10 @@
 <?php $current_deposit = humcore_get_current_deposit();
 	if ( $current_deposit->record_creation_date === $current_deposit->record_change_date ) { ?>
 <h3>Deposit Complete!</h3>
-Thank you for your submission! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:core@hcommons.org?subject=Fix my deposit!">contact us</a> and we’ll be happy to assist you.
+Thank you for uploading your work to <em>CORE</em>! Please take a moment to review your metadata. If you need to make changes or upload a different file, press Edit this Deposit. This file will be available for edit until it is reviewed and its status changed to published by the Humanities Commons team, at which point we'll send notifications to your groups. If you want to make later changes, please contact us at <a href="mailto:hello@hcommons.org?subject=My Deposit">hello@hcommons.org</a>
 	<?php } else { ?>
 <h3>Deposit Updated!</h3>
-Thank you for updating your deposit! We strive to make the <em>CORE</em> deposit process as easy as possible. If you notice any omissions in your entry or made this deposit in error, please <a href="mailto:core@hcommons.org?subject=Fix my deposit!">contact us</a> and we’ll be happy to assist you.
+We've made those edits for you. Should you wish to make any further edits, you can visit this item's <a href="/deposits/item/<?php echo $current_deposit->pid; ?>">permanent URL</a> until its status has changed from provisional to published. After that, please contact us at <a href="mailto:hello@hcommons.org?subject=My Deposit">hello@hcommons.org</a>
 	<?php } ?>
 
 		<?php do_action( 'humcore_deposit_item_review_content' ); ?>

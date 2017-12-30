@@ -345,7 +345,7 @@ jQuery(document).ready( function($) {
 		closeOnEscape: false,
 		dialogClass: 'no-close',
 		modal: true,
-		title: 'Just one more thing...',
+		title: 'This item is not complete.',
 		width: 400
 		});
 
@@ -366,7 +366,7 @@ jQuery(document).ready( function($) {
 		var embargo_length = $('#deposit-embargo-length').val();
 
 		var error_message = '<ul>';
-		var warning_message = '<p>Several important fields are empty.<ul>';
+		var warning_message = '<p>Please review the information you provided, as you left some important fields blank.<ul>';
 
 		if ( selected_file === '' ) {
 			error_message += '<li>Please select a file.</li>';
@@ -400,7 +400,7 @@ jQuery(document).ready( function($) {
 			error_message += '<li>Please add an embargo length.</li>';
 			$('#deposit-embargo-length-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
-		if ( groups === null && deposit_on_behalf_of === 'no' ) {
+		if ( groups === null ) {
 			warning_message += '<li>We noticed you haven’t shared your deposit with any groups, members of groups you share your deposit with receive a notification about its inclusion in <em>CORE</em>.</li>';
 			$('#deposit-group-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
@@ -414,7 +414,7 @@ jQuery(document).ready( function($) {
 			( committee === '' && deposit_on_behalf_of === 'yes' ) ) {
 			$('#deposit-error-dialog').html(error_message).dialog('open');
 			return false;
-		} else if ( ( groups === null && deposit_on_behalf_of === 'no' ) || subjects === null ) {
+		} else if ( ( groups === null ) || subjects === null ) {
 			warning_message += '</ul>Want to fix this? Press <b>Edit</b> to make changes. To upload your item as is, press <b>Confirm</b>.</p>';
 			$('#deposit-warning-dialog').html(warning_message).dialog('open');
 			return false;
