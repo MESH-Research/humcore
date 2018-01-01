@@ -55,12 +55,12 @@
 
 			<div class="deposit-meta">
 <!--TODO check if activity component is active -->
-				<?php if ( 1 == 2 ) : ?>
-					<?php $activity_id = humcore_get_deposit_activity_id(); ?>
+				<?php $activity_id = humcore_get_deposit_activity_id(); ?>
+				<?php if ( false !== $activity_id && 1 == 2) : ?>
 
 					<?php if ( ! humcore_deposit_activity_is_favorite( $activity_id ) ) : ?>
 
-						<a href="<?php humcore_deposit_activity_favorite_link( $activity_id ); ?>" class="button fav bp-secondary-action" title="<?php esc_attr_e( 'Mark as Favorite', 'humcore_domain' ); ?>"><?php _e( 'Favorite', 'humcore_domain' ); ?></a>
+						<a href="<?php humcore_deposit_activity_favorite_link( $activity_id ); ?>" class="button fav bp-secondary-action" title="<?php esc_attr_e( 'Mark as a Favorite', 'humcore_domain' ); ?>"><?php _e( 'Mark as a Favorite', 'humcore_domain' ); ?></a>
 
 					<?php $wp_referer = wp_get_referer();
 					printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',
@@ -69,7 +69,7 @@
 
 					<?php else : ?>
 
-						<a href="<?php humcore_deposit_activity_unfavorite_link( $activity_id ); ?>" class="button unfav bp-secondary-action" title="<?php esc_attr_e( 'Remove Favorite', 'humcore_domain' ); ?>"><?php _e( 'Remove Favorite', 'humcore_domain' ); ?></a>
+						<a href="<?php humcore_deposit_activity_unfavorite_link( $activity_id ); ?>" class="button unfav bp-secondary-action" title="<?php esc_attr_e( 'Remove as a Favorite', 'humcore_domain' ); ?>"><?php _e( 'Remove as a Favorite', 'humcore_domain' ); ?></a>
 
 					<?php $wp_referer = wp_get_referer();
 					printf( '<div class="action"><a id="deposit-return" href="%1$s" class="button deposits-return white">Back to Deposits</a></div>',

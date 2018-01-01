@@ -45,6 +45,7 @@ class Humcore_Deposit_Component extends BP_Component {
 			'ajax-functions.php',
 			'cssjs.php',
 			'deposit.php',
+			'deposit-edit.php',
 			'functions.php',
 			'screens.php',
 			'template.php',
@@ -113,6 +114,7 @@ class Humcore_Deposit_Component extends BP_Component {
 		add_action( 'humcore_deposits_entry_content', 'humcore_deposits_entry_content' );
 		add_action( 'humcore_deposit_item_content', 'humcore_deposit_item_content' );
 		add_action( 'humcore_deposit_item_review_content', 'humcore_deposit_item_review_content' );
+		add_action( 'humcore_deposit_item_edit_content', 'humcore_deposit_item_edit_content' );
 
 		add_action( 'bp_activity_filter_options', array( $this, 'display_activity_actions' ) );
 		add_action( 'bp_member_activity_filter_options', array( $this, 'display_activity_actions' ) );
@@ -407,7 +409,7 @@ class Humcore_Deposit_Component extends BP_Component {
 				} else {
 					$title = 'Deposit Item' . " $sep " . $wp->query_vars['deposits_item'] . " $sep ";
 				}
-                		if ( 'review' === $wp->query_vars['deposits_command'] ) {
+				if ( in_array( $wp->query_vars['deposits_command'], array( 'edit', 'review' ) ) ) {
 					$title .= $wp->query_vars['deposits_command'] . " $sep ";
 				}
 			}

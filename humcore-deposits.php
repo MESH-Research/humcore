@@ -277,7 +277,7 @@ function humcore_release_provisional_fire() {
 		$diff = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
 		$hours_since = round( $diff / HOUR_IN_SECONDS );
 		 //echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
-		if ( $hours_since > 6 ) {
+		if ( $hours_since > 2 ) {
 			if ( 'no' === $metadata['embargoed'] ) {
 				$post_args = array(
 					'ID'          => $deposit_post->ID,
@@ -389,6 +389,12 @@ function humcore_add_rewrite_rule() {
 
 	add_rewrite_rule(
 		'(deposits/item)/([^/]+)(/(review))?/?$',
+		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
+		'top'
+	);
+
+	add_rewrite_rule(
+		'(deposits/item)/([^/]+)(/(edit))?/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
 		'top'
 	);

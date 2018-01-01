@@ -455,10 +455,19 @@ function humcore_get_deposit_record_identifier() {
 function humcore_get_deposit_activity_id() {
 	global $bp;
 
+        $wpmn_record_identifier = array();
+	$deposit_id = humcore_get_deposit_record_identifier();
+        $wpmn_record_identifier = explode( '-', $deposit_id );
+        // handle legacy MLA value
+        if ( $wpmn_record_identifier[0] === $deposit_id ) {
+                $wpmn_record_identifier[0] = '1';
+                $wpmn_record_identifier[1] = $deposit_id;
+        }
+
 	$activity_id = bp_activity_get_activity_id( array(
 		'type' => 'new_deposit',
 		'component' => $bp->humcore_deposits->id,
-		'secondary_item_id' => humcore_get_deposit_record_identifier(),
+		'secondary_item_id' => $wpmn_record_identifier[1],
 	) );
 
 	return apply_filters( 'humcore_get_deposit_activity_id', $activity_id );
