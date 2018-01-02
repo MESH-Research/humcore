@@ -1,5 +1,5 @@
 /* core pages */
-.humcore ul {
+.humcore ul, #deposit-error-dialog ul, #deposit-warning-dialog ul {
     list-style: disc !important;
     list-style-position: outside !important;
     margin-left: 20px;

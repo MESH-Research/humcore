@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function humcore_deposits_front_cssjs() {
 
-	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '122817' );
+	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '010218' );
 	wp_enqueue_style( 'humcore_deposits_css' );
 
 	if ( humcore_is_deposit_new_page() || humcore_is_deposit_item_edit() ) {
@@ -24,7 +24,7 @@ function humcore_deposits_front_cssjs() {
 		wp_register_script( 'humcore_retrieve_doi_js', plugins_url( 'js/retrieve-doi.js', __FILE__ ), array( 'jquery' ), '091317', true );
 		wp_enqueue_script( 'humcore_retrieve_doi_js' );
 
-		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '123017', true );
+		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '010218', true );
 		wp_enqueue_script( 'humcore_deposits_js' );
 
 /*

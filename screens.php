@@ -1490,7 +1490,7 @@ endif; ?>
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
-<?php if ( humcore_user_can_edit_deposit() ) : ?>
+<?php if ( humcore_user_can_edit_deposit( $post_data->ID ) ) : ?>
  &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $item_url . '/edit/' ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
@@ -1804,7 +1804,7 @@ endif; ?>
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
-<?php if ( humcore_user_can_edit_deposit() ) : ?>
+<?php if ( humcore_user_can_edit_deposit( $post_data->ID ) ) : ?>
  &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $item_url . '/edit/' ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
