@@ -366,7 +366,7 @@ jQuery(document).ready( function($) {
 		var embargo_length = $('#deposit-embargo-length').val();
 
 		var error_message = '<ul>';
-		var warning_message = '<p>Please review the information you provided, as you left some important fields blank.<ul>';
+		var warning_message = 'Please review the information you provided, as you left some important fields blank.<p /><ul>';
 
 		if ( selected_file === '' ) {
 			error_message += '<li>Please select a file.</li>';
@@ -401,7 +401,7 @@ jQuery(document).ready( function($) {
 			$('#deposit-embargo-length-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
 		if ( groups === null ) {
-			warning_message += '<li>We noticed you haven’t shared your deposit with any groups, members of groups you share your deposit with receive a notification about its inclusion in <em>CORE</em>.</li>';
+			warning_message += '<li>We noticed you haven’t shared your deposit with any groups. Group members receive a notification about the work you’ve uploaded to <em>CORE</em>.</li>';
 			$('#deposit-group-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
 		if ( subjects === null ) {
@@ -415,7 +415,7 @@ jQuery(document).ready( function($) {
 			$('#deposit-error-dialog').html(error_message).dialog('open');
 			return false;
 		} else if ( ( groups === null ) || subjects === null ) {
-			warning_message += '</ul>Want to fix this? Press <b>Edit</b> to make changes. To upload your item as is, press <b>Confirm</b>.</p>';
+			warning_message += '</ul>Want to fix this? Press <b>Edit</b> to make changes. To upload your item as is, press <b>Confirm</b>.';
 			$('#deposit-warning-dialog').html(warning_message).dialog('open');
 			return false;
 		} else {

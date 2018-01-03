@@ -1180,7 +1180,8 @@ function humcore_deposits_entry_content() {
                         $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		}
 	}
-	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+	//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+	$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
 ?>
 <h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo $metadata['title_unchanged']; ?></a></h4>
 <div class="bp-group-documents-meta">
@@ -1362,7 +1363,9 @@ function humcore_deposit_item_content() {
         if ( $switched ) {
                 restore_current_blog();
         }
-	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+	//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+	$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
+	$edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
 ?>
 
 <h3 class="bp-group-documents-title"><?php echo $metadata['title_unchanged']; ?></h3>
@@ -1490,8 +1493,8 @@ endif; ?>
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
-<?php if ( humcore_user_can_edit_deposit() ) : ?>
- &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $item_url . '/edit/' ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
+<?php if ( humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
+ &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
 <?php if ( ! empty( $update_time ) ) : ?>
@@ -1594,7 +1597,9 @@ function humcore_deposit_item_review_content() {
                 }
         }
 
-        $item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+        //$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+        $item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
+        $edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
 
         $wpmn_record_identifier = array();
         $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
@@ -1804,8 +1809,8 @@ endif; ?>
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
-<?php if ( humcore_user_can_edit_deposit() ) : ?>
- &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $item_url . '/edit/' ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
+<?php if ( humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
+ &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
 <?php if ( ! empty( $update_time ) ) : ?>

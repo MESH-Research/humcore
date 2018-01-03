@@ -734,11 +734,16 @@ function humcore_is_bot_user_agent() {
 /**
  * User can edit deposit.
  *
- * @param string $deposit_post_id  Current deposit aggregator post.
+ * @param array $wpmn_record_identifier  Current deposit blog and aggregator post.
  * @return bool True if the current user can edit the current deposit.
  */
-function humcore_user_can_edit_deposit( $deposit_post_id ) {
+function humcore_user_can_edit_deposit( $wpmn_record_identifier ) {
 
+///*
+	if ( ! is_array( $wpmn_record_identifier ) || $wpmn_record_identifier[0] != get_current_blog_id() ) {
+		return false;
+	}
+//*/
 
 	$global_super_admins = array();
 	if ( defined( 'GLOBAL_SUPER_ADMINS' ) ) {
@@ -747,8 +752,8 @@ function humcore_user_can_edit_deposit( $deposit_post_id ) {
 	}
 
 	$post_data = get_post( $deposit_post_id );
-	if ( ( 'publish' !== $post_data->post_status && $post_data->post_author === bp_loggedin_user_id() ) || is_super_admin() ||
-			in_array( bp_loggedin_user_username(), $global_super_admins ) ) {
+	if ( ( 'publish' !== $post_data->post_status && $post_data->post_author == bp_loggedin_user_id() ) || is_super_admin() ||
+			in_array( bp_get_loggedin_user_username(), $global_super_admins ) ) {
 		return true;
 	} else {
 		return false;
@@ -1214,18 +1219,20 @@ function humcore_deposits_edit_item_screen() {
                 }
 		humcore_the_deposit();
 		$record_identifier = humcore_get_deposit_record_identifier();
-		$record_location = explode( '-', $record_identifier );
+		$wpmn_record_identifier = explode( '-', $record_identifier );
 		// handle legacy MLA Commons value
-		if ( $record_location[0] === $record_identifier ) {
-			$record_location[0] = '1';
-			$record_location[1] = $record_identifier;
+		if ( $wpmn_record_identifier[0] === $record_identifier ) {
+			$wpmn_record_identifier[0] = '1';
+			$wpmn_record_identifier[1] = $record_identifier;
 		}
-		if ( $record_location[0] != get_current_blog_id() ) {
-                        //TODO do something...wp_redirect( '/deposits/item/' . $deposit_item . '/' );
+
+		// Cannot edit from another network yet.
+		if ( $wpmn_record_identifier[0] != get_current_blog_id() ) {
+                        wp_redirect( '/deposits/item/' . $deposit_item . '/' );
                         exit();
 		}
-		//$post_data = get_post( $record_location[1] );
-		if ( ! humcore_user_can_edit_deposit( $record_location[1] ) ) {
+		//$post_data = get_post( $wpmn_record_identifier[1] );
+		if ( ! humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) {
                         wp_redirect( '/deposits/item/' . $deposit_item . '/' );
                         exit();
 		}
