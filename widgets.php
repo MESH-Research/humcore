@@ -20,9 +20,9 @@ class Humcore_Deposits_Search_Facets_Widget extends WP_Widget {
 	 * Constructor method.
 	 */
 	function __construct() {
-		$widget_ops = array(
+		$widget_ops                       = array(
 			'description' => __( '(HumCORE) Faceted Search Results', 'humcore_domain' ),
-			'classname' => 'widget_deposits_search_facets_widget',
+			'classname'   => 'widget_deposits_search_facets_widget',
 		);
 		parent::__construct( false, $name = _x( '(HumCORE) Faceted Search Results', 'widget name', 'humcore_domain' ), $widget_ops );
 	}
@@ -44,10 +44,11 @@ class Humcore_Deposits_Search_Facets_Widget extends WP_Widget {
 			$title .
 			$args['after_title']; ?>
 		<div class="search-facets facet-set" role="navigation"><h5><label for="search-facets"><?php _e( 'Filter results (select all that apply)', 'humcore_domain' ); ?></label></h5>
-		<?php humcore_search_sidebar_content() ?>
+		<?php humcore_search_sidebar_content(); ?>
 		</div>
 
-		<?php echo $args['after_widget'];
+		<?php
+		echo $args['after_widget'];
 	}
 
 	/**
@@ -58,7 +59,7 @@ class Humcore_Deposits_Search_Facets_Widget extends WP_Widget {
 	 * @return array $instance The parsed options to be saved.
 	 */
 	function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
+		$instance          = $old_instance;
 		$instance['title'] = strip_tags( $new_instance['title'] );
 
 		return $instance;
@@ -85,7 +86,11 @@ class Humcore_Deposits_Search_Facets_Widget extends WP_Widget {
 	<?php
 	}
 }
-add_action( 'widgets_init', function() { register_widget( 'Humcore_Deposits_Search_Facets_Widget' ); } );
+add_action(
+	'widgets_init', function() {
+		register_widget( 'Humcore_Deposits_Search_Facets_Widget' );
+	}
+);
 
 /**
  * Directory Sidebar Widget
@@ -96,9 +101,9 @@ class Humcore_Deposits_Directory_Sidebar_Widget extends WP_Widget {
 	 * Constructor method.
 	 */
 	function __construct() {
-		$widget_ops = array(
+		$widget_ops                       = array(
 			'description' => __( '(HumCORE) Deposits Directory Sidebar', 'humcore_domain' ),
-			'classname' => 'widget_deposits_directory_sidebar_widget',
+			'classname'   => 'widget_deposits_directory_sidebar_widget',
 		);
 		parent::__construct( false, $name = _x( '(HumCORE) Deposits Directory Sidebar', 'widget name', 'humcore_domain' ), $widget_ops );
 	}
@@ -118,12 +123,14 @@ class Humcore_Deposits_Directory_Sidebar_Widget extends WP_Widget {
 		echo $args['before_widget'];
 		echo $args['before_title'] .
 			$title .
-			$args['after_title']; ?>
+			$args['after_title'];
+			?>
 		<div class="directory-facets facet-set" role="navigation">
-		<?php humcore_directory_sidebar_content() ?>
+		<?php humcore_directory_sidebar_content(); ?>
 		</div>
 
-		<?php echo $args['after_widget'];
+		<?php
+		echo $args['after_widget'];
 	}
 
 	/**
@@ -134,7 +141,7 @@ class Humcore_Deposits_Directory_Sidebar_Widget extends WP_Widget {
 	 * @return array $instance The parsed options to be saved.
 	 */
 	function update( $new_instance, $old_instance ) {
-		$instance = $old_instance;
+		$instance          = $old_instance;
 		$instance['title'] = strip_tags( $new_instance['title'] );
 
 		return $instance;
@@ -161,4 +168,8 @@ class Humcore_Deposits_Directory_Sidebar_Widget extends WP_Widget {
 	<?php
 	}
 }
-add_action( 'widgets_init', function() { register_widget( 'Humcore_Deposits_Directory_Sidebar_Widget' ); } );
+add_action(
+	'widgets_init', function() {
+		register_widget( 'Humcore_Deposits_Directory_Sidebar_Widget' );
+	}
+);

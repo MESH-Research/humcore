@@ -65,7 +65,7 @@ if ( ! class_exists( '\MLA\Commons\Plugin\Logging\Logger' ) ) {
 		public function createLog( $slug = null ) { // @codingStandardsIgnoreLine camelCase
 			if ( null === $slug ) {
 				$this->suppress = true;
-			} else if ( is_string( $slug ) && strlen( $slug ) ) {
+			} elseif ( is_string( $slug ) && strlen( $slug ) ) {
 				$this->slug = '[' . $slug . '] ';
 			}
 		}

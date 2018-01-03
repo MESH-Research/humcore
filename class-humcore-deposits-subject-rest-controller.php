@@ -35,7 +35,7 @@ class Humcore_Deposits_Subject_REST_Controller extends WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace, $this->rest_base, [
-				'methods' => 'GET',
+				'methods'  => 'GET',
 				'callback' => [ $this, 'get_terms' ],
 			]
 		);
@@ -101,8 +101,8 @@ class Humcore_Deposits_Subject_REST_Controller extends WP_REST_Controller {
 			// Populate array of matches.
 			foreach ( $all_terms as $term_id => $term ) {
 				if ( false !== strpos( strtolower( $term ), strtolower( $user_input ) ) ) {
-					$matched_term = new stdClass;
-					$matched_term->id = $term_id;
+					$matched_term       = new stdClass;
+					$matched_term->id   = $term_id;
 					$matched_term->text = $term;
 
 					$matched_terms[] = $matched_term;

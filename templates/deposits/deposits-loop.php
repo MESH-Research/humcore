@@ -34,7 +34,7 @@ if ( empty( $querystring ) ) {
 if ( 'page' == substr( $querystring, 0, 4 ) && strlen( $querystring ) < 8 ) {
 	$querystring = $my_querystring . '&' . $querystring;
 }
-?> 
+?>
 
 <?php if ( humcore_has_deposits( $querystring ) ) : ?>
 
@@ -44,7 +44,10 @@ if ( 'page' == substr( $querystring, 0, 4 ) && strlen( $querystring ) < 8 ) {
 
 	<?php endif; ?>
 
-	<?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
+	<?php
+	while ( humcore_deposits() ) :
+		humcore_the_deposit();
+?>
 
 		<?php bp_locate_template( array( 'deposits/entry.php' ), true, false ); ?>
 
@@ -58,7 +61,7 @@ if ( 'page' == substr( $querystring, 0, 4 ) && strlen( $querystring ) < 8 ) {
 
 	<?php endif; ?>
 
-	<?php if (  1 == 1 || empty( $_POST['page'] ) ) : //disable for now ?>
+	<?php if ( 1 == 1 || empty( $_POST['page'] ) ) : //disable for now ?>
 
 		</ul>
 

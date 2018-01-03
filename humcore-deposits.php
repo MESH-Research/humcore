@@ -2,7 +2,7 @@
 /**
  * The HumCORE Deposits Plugin
  *
- * HumCORE Deposits is a Wordpress / Buddypress plugin to connect the Commons-In-A-Box (CBOX) social network platform to a Fedora-based institutional repository system.
+ * HumCORE Deposits is a WordPress / Buddypress plugin to connect the Commons-In-A-Box (CBOX) social network platform to a Fedora-based institutional repository system.
  *
  * @package HumCORE
  * @subpackage Deposits
@@ -10,7 +10,7 @@
 
 /**
  * Plugin Name: HumCORE Deposits
- * Description: HumCORE Deposits is a Wordpress / Buddypress plugin to connect the Commons-In-A-Box (CBOX) social network platform to a Fedora-based institutional repository system.
+ * Description: HumCORE Deposits is a WordPress / Buddypress plugin to connect the Commons-In-A-Box (CBOX) social network platform to a Fedora-based institutional repository system.
  * Version: 1.0
  * Author: MLA
  */
@@ -50,22 +50,22 @@ function humcore_register_post_type() {
 	);
 
 	$post_type_args = array(
-		'label'              => __( 'HumCORE Deposits', 'humcore_domain' ),
-		'labels'             => $labels,
-		'public'             => false,
-		'show_ui'            => true,
-		'show_in_menu'       => true,
-		'show_in_admin_bar'  => false,
-		'query_var'          => false,
-		'rewrite'            => array(
-			'slug'           => 'humcore_deposit',
-			'with_front'     => true,
+		'label'                => __( 'HumCORE Deposits', 'humcore_domain' ),
+		'labels'               => $labels,
+		'public'               => false,
+		'show_ui'              => true,
+		'show_in_menu'         => true,
+		'show_in_admin_bar'    => false,
+		'query_var'            => false,
+		'rewrite'              => array(
+			'slug'       => 'humcore_deposit',
+			'with_front' => true,
 		),
-		'capability_type'    => 'post',
-		'has_archive'        => false,
-		'hierarchical'       => true,
-		'menu_position'      => null,
-		'supports'           => array( 'title', 'author', 'excerpt' ),
+		'capability_type'      => 'post',
+		'has_archive'          => false,
+		'hierarchical'         => true,
+		'menu_position'        => null,
+		'supports'             => array( 'title', 'author', 'excerpt' ),
 		// 'supports'           => array( 'title', 'author', 'excerpt', 'custom-fields', revisions', 'page-attributes' ),
 		'register_meta_box_cb' => 'humcore_add_post_type_metabox',
 	);
@@ -80,8 +80,8 @@ add_action( 'init', 'humcore_register_post_type' );
  */
 function humcore_register_taxonomies() {
 
-        $current_network = get_current_site();
-        if ( 1 === (int) $current_network->id ) {
+		$current_network = get_current_site();
+	if ( 1 === (int) $current_network->id ) {
 		$taxonomy_ui_setting = true;
 	} else {
 		$taxonomy_ui_setting = false;
@@ -205,35 +205,41 @@ add_action( 'admin_menu', 'humcore_remove_meta_boxes' );
  */
 function humcore_register_sidebars() {
 
-	register_sidebar( array(
-		'name' => 'CORE Welcome Right',
-		'id' => 'core-welcome-right',
-		'description' => __( 'The Welcome page widget area', 'humcore_domain' ),
-		'before_widget' => '',
-		'after_widget' => '',
-		'before_title' => '',
-		'after_title' => '',
-	) );
+	register_sidebar(
+		array(
+			'name'          => 'CORE Welcome Right',
+			'id'            => 'core-welcome-right',
+			'description'   => __( 'The Welcome page widget area', 'humcore_domain' ),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '',
+			'after_title'   => '',
+		)
+	);
 
-	register_sidebar( array(
-		'name' => 'Deposits Directory Sidebar',
-		'id' => 'deposits-directory-sidebar',
-		'description' => __( 'The Deposits directory widget area', 'humcore_domain' ),
-		'before_widget' => '',
-		'after_widget' => '',
-		'before_title' => '',
-		'after_title' => '',
-	) );
+	register_sidebar(
+		array(
+			'name'          => 'Deposits Directory Sidebar',
+			'id'            => 'deposits-directory-sidebar',
+			'description'   => __( 'The Deposits directory widget area', 'humcore_domain' ),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '',
+			'after_title'   => '',
+		)
+	);
 
-	register_sidebar( array(
-		'name' => 'Deposits Search Sidebar',
-		'id' => 'deposits-search-sidebar',
-		'description' => __( 'The Deposits faceted search widget area', 'humcore_domain' ),
-		'before_widget' => '',
-		'after_widget' => '',
-		'before_title' => '<h4>',
-		'after_title' => '</h4>',
-	) );
+	register_sidebar(
+		array(
+			'name'          => 'Deposits Search Sidebar',
+			'id'            => 'deposits-search-sidebar',
+			'description'   => __( 'The Deposits faceted search widget area', 'humcore_domain' ),
+			'before_widget' => '',
+			'after_widget'  => '',
+			'before_title'  => '<h4>',
+			'after_title'   => '</h4>',
+		)
+	);
 
 }
 // Hook into the init action and call humcore_register_sidebars when init fires.
@@ -257,75 +263,85 @@ function humcore_release_provisional_fire() {
 
 	// TODO move the activity creation to an action - https://codex.wordpress.org/Post_Status_Transitions#transition_post_status_Hook
 	$group_activity_ids = array();
-        $query_args = array(
-                'post_parent'    => 0,
-                'post_type'      => 'humcore_deposit',
-                'post_status'    => 'draft',
-                'posts_per_page' => -1,
-		'order'          => 'ASC',
-                'order_by'       => 'ID',
-        );
+		$query_args     = array(
+			'post_parent'    => 0,
+			'post_type'      => 'humcore_deposit',
+			'post_status'    => 'draft',
+			'posts_per_page' => -1,
+			'order'          => 'ASC',
+			'order_by'       => 'ID',
+		);
 
 	// echo "\n";
 	$deposit_posts = get_posts( $query_args );
-	foreach( $deposit_posts as $deposit_post ) {
-		$now = time();
-		$metadata = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
-		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
-		$local_link = $metadata['handle']; // Let's try doi.
-		$post_name = str_replace( ':', '', $metadata['pid'] );
-		$diff = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
+	foreach ( $deposit_posts as $deposit_post ) {
+		$now         = time();
+		$metadata    = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
+		$local_link  = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
+		$local_link  = $metadata['handle']; // Let's try doi.
+		$post_name   = str_replace( ':', '', $metadata['pid'] );
+		$diff        = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
 		$hours_since = round( $diff / HOUR_IN_SECONDS );
-		 //echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
+		//echo $deposit_post->ID, ", ", $deposit_post->post_name, ", ", $deposit_post->post_status, ", ", $metadata['record_change_date'], ", ", $hours_since, "\n";
 		if ( $hours_since > 2 ) {
 			if ( 'no' === $metadata['embargoed'] ) {
-				$post_args = array(
+				$post_args     = array(
 					'ID'          => $deposit_post->ID,
 					'post_status' => 'publish',
-					'post_name' => $post_name,
+					'post_name'   => $post_name,
 				);
 				$update_status = wp_update_post( $post_args, true );
 				//echo $deposit_post->ID, ", ", var_export( $update_status, true ), ", ", $deposit_post->post_name, ", ", "Published!", "\n";
 				if ( is_wp_error( $update_status ) ) {
-					humcore_write_error_log( 'error', '*****HumCORE Error - CRON provisional release error*****' .
-						 $deposit_post->ID . ', ' . $deposit_post->post_name . ' ' . var_export( $update_status, true ) );
+					humcore_write_error_log(
+						'error', '*****HumCORE Error - CRON provisional release error*****' .
+						$deposit_post->ID . ', ' . $deposit_post->post_name . ' ' . var_export( $update_status, true )
+					);
 				} else {
-					humcore_write_error_log( 'info', '*****HumCORE CRON *****' . $deposit_post->ID . ', ' .
-						$deposit_post->post_name . ' Published!' );
-					$bp = buddypress();
-					$notification_id = bp_notifications_add_notification( array(
-						'user_id'           => $deposit_post->post_author,
-						'item_id'           => $deposit_post->ID,
-						'component_name'    => $bp->humcore_deposits->id,
-						'component_action'  => 'deposit_published',
-						'date_notified'     => bp_core_current_time(),
-						'is_new'            => 1,
-					) );
+					humcore_write_error_log(
+						'info', '*****HumCORE CRON *****' . $deposit_post->ID . ', ' .
+						$deposit_post->post_name . ' Published!'
+					);
+					$bp              = buddypress();
+					$notification_id = bp_notifications_add_notification(
+						array(
+							'user_id'          => $deposit_post->post_author,
+							'item_id'          => $deposit_post->ID,
+							'component_name'   => $bp->humcore_deposits->id,
+							'component_action' => 'deposit_published',
+							'date_notified'    => bp_core_current_time(),
+							'is_new'           => 1,
+						)
+					);
 					//echo "Notification ID ", $notification_id,"\n";
 					if ( ! empty( $metadata['group_ids'] ) ) {
-				 		foreach ( $metadata['group_ids'] as $group_id ) {
+						foreach ( $metadata['group_ids'] as $group_id ) {
 							//echo "Group ID ", $group_id,"\n";
-							$group_activity_id = humcore_new_group_deposit_activity( $metadata['record_identifier'],
-								$group_id, $metadata['abstract'], $local_link, $metadata['submitter'] );
+							$group_activity_id = humcore_new_group_deposit_activity(
+								$metadata['record_identifier'],
+								$group_id, $metadata['abstract'], $local_link, $metadata['submitter']
+							);
 							//echo "Group Activity ID ", $Group_activity_id,"\n";
 							$group_society_id = bp_groups_get_group_type( $group_id );
-							if ( $group_society_id !== Humanities_Commons::$society_id ) {
-								bp_activity_update_meta( $group_activity_id, 'society_id', $group_society_id,
-									Humanities_Commons::$society_id );
+							if ( Humanities_Commons::$society_id != $group_society_id ) {
+								bp_activity_update_meta(
+									$group_activity_id, 'society_id', $group_society_id,
+									Humanities_Commons::$society_id
+								);
 							}
 							$group_activity_ids[] = $group_activity_id;
 						}
 						if ( ! empty( $group_activity_ids ) ) {
-							humcore_write_error_log( 'info', '*****HumCORE CRON GROUP ACTIVITIES*****' . $deposit_post->ID . ', ' .
-								$deposit_post->post_name . implode( ',', $group_activity_ids ) );
+							humcore_write_error_log(
+								'info', '*****HumCORE CRON GROUP ACTIVITIES*****' . $deposit_post->ID . ', ' .
+								$deposit_post->post_name . implode( ',', $group_activity_ids )
+							);
 						}
 						//echo "After ", implode( ',', $group_activity_ids ),"\n";
-			 		}
+					}
 				}
 			}
-
 		}
-
 	}
 
 }
@@ -335,15 +351,15 @@ add_action( 'humcore_release_provisional', 'humcore_release_provisional_fire' );
  * Register HumCORE cron job(s) upon activation.
  */
 function humcore_activate_cron_jobs() {
-        $the_time = date( 'Y-m-d' ) . ' ' . '04' . ':' . '00';
-        $the_timestamp = strtotime( $the_time );
+		$the_time      = date( 'Y-m-d' ) . ' ' . '04' . ':' . '00';
+		$the_timestamp = strtotime( $the_time );
 
-        /* If the time has already passed today, the next run will be tomorrow */
-        $the_timestamp = ( $the_timestamp > time() ) ? $the_timestamp : (int) $the_timestamp + 86400;
+		/* If the time has already passed today, the next run will be tomorrow */
+		$the_timestamp = ( $the_timestamp > time() ) ? $the_timestamp : (int) $the_timestamp + 86400;
 
-        /* Clear any existing recurring event and set up a new one */
-        wp_clear_scheduled_hook( 'humcore_release_provisional' );
-        wp_schedule_event( $the_timestamp, 'daily', 'humcore_release_provisional' );
+		/* Clear any existing recurring event and set up a new one */
+		wp_clear_scheduled_hook( 'humcore_release_provisional' );
+		wp_schedule_event( $the_timestamp, 'daily', 'humcore_release_provisional' );
 
 }
 register_activation_hook( __FILE__, 'humcore_activate_cron_jobs' );
@@ -367,8 +383,8 @@ register_activation_hook( __FILE__, 'humcore_activate' );
  */
 function humcore_deactivate_cron_jobs() {
 
-        /* Clear any existing recurring event */
-        wp_clear_scheduled_hook( 'humcore_release_provisional' );
+		/* Clear any existing recurring event */
+		wp_clear_scheduled_hook( 'humcore_release_provisional' );
 }
 register_deactivation_hook( __FILE__, 'humcore_deactivate_cron_jobs' );
 
@@ -413,11 +429,11 @@ function humcore_add_rewrite_rule() {
 		'top'
 	);
 
-        add_rewrite_rule(
-                '(deposits/list)/?$',
-                'index.php?pagename=$matches[1]',
-                'top'
-        );
+		add_rewrite_rule(
+			'(deposits/list)/?$',
+			'index.php?pagename=$matches[1]',
+			'top'
+		);
 
 }
 // Hook into the init action and call humcore_add_rewrite_rule when init fires.
@@ -466,15 +482,15 @@ function humcore_deposit_api_classes_init() {
 	global $ezid_api, $fedora_api, $solr_client;
 
 	// Create an ezid client instance.
-	require_once dirname( __FILE__ ) . '/ezid-api.php';
+	require_once dirname( __FILE__ ) . '/class-humcore-deposit-ezid-api.php';
 	$ezid_api = new Humcore_Deposit_Ezid_Api;
 
 	// Create a fedora client instance.
-	require_once dirname( __FILE__ ) . '/fedora-api.php';
+	require_once dirname( __FILE__ ) . '/class-humcore-deposit-fedora-api.php';
 	$fedora_api = new Humcore_Deposit_Fedora_Api;
 
 	// Create a solr client instance.
-	require_once dirname( __FILE__ ) . '/solr-api.php';
+	require_once dirname( __FILE__ ) . '/class-humcore-deposit-solr-api.php';
 	$solr_client = new Humcore_Deposit_Solr_Api;
 
 }
@@ -486,16 +502,23 @@ add_action( 'plugins_loaded', 'humcore_deposit_api_classes_init' );
  */
 function humcore_deposit_show_user_fields( $user ) {
 ?>
-        <h3><em>CORE</em> Details</h3>
+		<h3><em>CORE</em> Details</h3>
 
-        <table class="form-table">
-            <tbody>
-        <tr>
-            <th><label>Accepted Terms</label></th>
-            <td><?php if ( get_the_author_meta( 'accepted_core_terms', $user->ID ) == 'Yes' ) { echo 'Yes'; } else { echo 'No'; } ?></td>
-        </tr>
-            </tbody>
-        </table>
+		<table class="form-table">
+			<tbody>
+		<tr>
+			<th><label>Accepted Terms</label></th>
+			<td>
+			<?php
+			if ( get_the_author_meta( 'accepted_core_terms', $user->ID ) == 'Yes' ) {
+				echo 'Yes';
+			} else {
+				echo 'No'; }
+	?>
+	</td>
+		</tr>
+			</tbody>
+		</table>
 <?php
 
 }
@@ -508,9 +531,9 @@ add_action( 'edit_user_profile', 'humcore_deposit_show_user_fields' );
  */
 function humcore_deposit_component_include() {
 
-	require( dirname( __FILE__ ) . '/component-loader.php' );
-	require_once dirname( __FILE__ ) . '/class-page-templater.php';
-	require_once dirname( __FILE__ ) . '/class-theme-compatibility.php';
+	require_once dirname( __FILE__ ) . '/class-humcore-deposit-component.php';
+	require_once dirname( __FILE__ ) . '/class-pagetemplater.php';
+	require_once dirname( __FILE__ ) . '/class-humcore-theme-compatibility.php';
 
 }
 // Hook into the bp_include action and call humcore_deposit_component_include when bp_include fires.
@@ -540,7 +563,7 @@ function humcore_write_error_log( $error_type, $error_message, $info = null ) {
  */
 function humcore_http_api_debug( $response = null, $state = null, $class = null, $args = null, $url = null ) {
 
-	if ( stripos( $url, 'wordpress.' ) !== false || stripos( $url, 'akismet.' ) !== false ||
+	if ( stripos( $url, 'WordPress.' ) !== false || stripos( $url, 'akismet.' ) !== false ||
 			stripos( $url, 'commons.' ) !== false ) {
 		return;
 	}
@@ -585,16 +608,16 @@ if ( is_admin() ) {
  */
 function humcore_bwp_gxs_add_modules() {
 
-    global $bwp_gxs;
-    $bwp_gxs->add_module( 'sitemap_humcore' );
+	global $bwp_gxs;
+	$bwp_gxs->add_module( 'sitemap_humcore' );
 
 }
 function humcore_bwp_gxs_add_rewrite_rules() {
 
-    $humcore_rules = array(
-        'sitemap_humcore\.xml' => 'index.php?gxs_module=sitemap_humcore'
-    );
-    return $humcore_rules;
+	$humcore_rules = array(
+		'sitemap_humcore\.xml' => 'index.php?gxs_module=sitemap_humcore',
+	);
+	return $humcore_rules;
 
 }
 if ( class_exists( 'BWP_Sitemaps' ) ) {
@@ -608,13 +631,13 @@ if ( class_exists( 'BWP_Sitemaps' ) ) {
  * @see Humcore_Async_Tika_Action
 **/
 function humcore_register_async_tika_action() {
-        if( false === class_exists( 'WP_Async_Task' ) ) {
-                require( plugin_dir_path( __FILE__ ) . 'lib/wp-async-task.php' );        }
-        if ( false === class_exists( 'Humcore_Async_Tika_Action' ) ) {
-                require( plugin_dir_path( __FILE__ ) . 'class-humcore-async-tika-action.php' );
-        }
-        // We need to call the Humcore_Async_Tika_Action constructor to hook in our asynchronous request logic.
-        $humcore_async_tika_action = new Humcore_Async_Tika_Action();
+	if ( false === class_exists( 'WP_Async_Task' ) ) {
+			require( plugin_dir_path( __FILE__ ) . 'lib/wp-async-task.php' );        }
+	if ( false === class_exists( 'Humcore_Async_Tika_Action' ) ) {
+			require( plugin_dir_path( __FILE__ ) . 'class-humcore-async-tika-action.php' );
+	}
+		// We need to call the Humcore_Async_Tika_Action constructor to hook in our asynchronous request logic.
+		$humcore_async_tika_action = new Humcore_Async_Tika_Action();
 }
 add_action( 'init', 'humcore_register_async_tika_action' );
 add_filter( 'https_local_ssl_verify', '__return_false' );
@@ -623,22 +646,22 @@ add_filter( 'https_local_ssl_verify', '__return_false' );
 require_once dirname( __FILE__ ) . '/class-humcore-deposits-keyword-rest-controller.php';
 require_once dirname( __FILE__ ) . '/class-humcore-deposits-subject-rest-controller.php';
 add_action(
-        'rest_api_init', function () {
+	'rest_api_init', function () {
 
-                $keyword_controller = new Humcore_Deposits_Keyword_REST_Controller;
-                $keyword_controller->register_routes();
-                $subject_controller = new Humcore_Deposits_Subject_REST_Controller;
-                $subject_controller->register_routes();
-        }
+				$keyword_controller = new Humcore_Deposits_Keyword_REST_Controller;
+				$keyword_controller->register_routes();
+				$subject_controller = new Humcore_Deposits_Subject_REST_Controller;
+				$subject_controller->register_routes();
+	}
 );
 
 /**
  * HumCORE: CLI Commands
  */
 
-if ( defined('WP_CLI') && WP_CLI ) {
-    require_once dirname( __FILE__ ) . '/ezid-cli.php';
-    require_once dirname( __FILE__ ) . '/fedora-cli.php';
-/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
-    require_once dirname( __FILE__ ) . '/solr-cli.php';
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once dirname( __FILE__ ) . '/class-ezid-command.php';
+	require_once dirname( __FILE__ ) . '/class-fedora-command.php';
+	/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
+	require_once dirname( __FILE__ ) . '/class-solr-command.php';
 }

@@ -16,7 +16,7 @@
 <?php
 
 $displayed_user_fullname = bp_get_displayed_user_fullname();
-$displayed_user = bp_get_displayed_user();
+$displayed_user          = bp_get_displayed_user();
 
 /* TODO find out if this was necessary.
 if ( empty( $displayed_user_fullname ) ) {
@@ -44,7 +44,7 @@ if ( empty( $querystring ) ) {
 if ( 'page' == substr( $querystring, 0, 4 ) && strlen( $querystring ) < 8 ) {
 	$querystring = $my_querystring . '&' . $querystring;
 }
-?> 
+?>
 
 <?php if ( ! empty( $displayed_user_fullname ) && humcore_has_deposits( $querystring ) ) : ?>
 
@@ -54,7 +54,10 @@ if ( 'page' == substr( $querystring, 0, 4 ) && strlen( $querystring ) < 8 ) {
 
 	<?php endif; ?>
 
-	<?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
+	<?php
+	while ( humcore_deposits() ) :
+		humcore_the_deposit();
+?>
 
 		<?php bp_locate_template( array( 'deposits/entry.php' ), true, false ); ?>
 
@@ -81,7 +84,7 @@ if ( 'page' == substr( $querystring, 0, 4 ) && strlen( $querystring ) < 8 ) {
 
 <?php else : ?>
 
-	<?php if ( ! empty( $displayed_user_fullname ) && $displayed_user_fullname == bp_get_loggedin_user_fullname() ) : ?>
+	<?php if ( ! empty( $displayed_user_fullname ) && bp_get_loggedin_user_fullname() == $displayed_user_fullname ) : ?>
 		<div id="message" class="info">
 			<p><?php _e( 'You have not deposited any items yet.', 'humcore_domain' ); ?></p>
 		</div>

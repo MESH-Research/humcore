@@ -11,10 +11,10 @@
  */
 class Humcore_Deposit_Fedora_Api {
 
-	private $fedoraSettings = array();
-	private $baseUrl;
-	private $maxResults;
-	private $options = array();
+	private $fedora_settings = array();
+	private $base_url;
+	private $max_results;
+	private $options           = array();
 	private $upload_filehandle = array(); // Handle the WP_HTTP inability to process file uploads by hooking curl settings.
 
 	/* getting removed
@@ -22,74 +22,74 @@ class Humcore_Deposit_Fedora_Api {
 	*/
 	public $service_status;
 	public $namespace;
-	public $tempDir;
-	public $collectionPid;
+	public $temp_dir;
+	public $collection_pid;
 
 	/**
 	 * Initialize Fedora API settings.
 	 */
 	public function __construct() {
 
-		$humcoreSettings = get_option( 'humcore-deposits-humcore-settings' );
+		$humcore_settings = get_option( 'humcore-deposits-humcore-settings' );
 
-		$this->fedoraSettings = get_option( 'humcore-deposits-fedora-settings' );
-                if ( defined( 'CORE_FEDORA_PROTOCOL' ) ) {
-                        $this->fedoraSettings['protocol'] = CORE_FEDORA_PROTOCOL;
-                }
-                if ( defined( 'CORE_FEDORA_HOST' ) ) {
-                        $this->fedoraSettings['host'] = CORE_FEDORA_HOST;
-                }
-                if ( defined( 'CORE_FEDORA_PORT' ) ) {
-                        $this->fedoraSettings['port'] = CORE_FEDORA_PORT;
-                }
-                if ( defined( 'CORE_FEDORA_PATH' ) ) {
-                        $this->fedoraSettings['path'] = CORE_FEDORA_PATH;
-                }
-                if ( defined( 'CORE_FEDORA_LOGIN' ) ) {
-                        $this->fedoraSettings['login'] = CORE_FEDORA_LOGIN;
-                }
-                if ( defined( 'CORE_FEDORA_PASSWORD' ) ) {
-                        $this->fedoraSettings['password'] = CORE_FEDORA_PASSWORD;
-                }
-		$this->baseUrl = $this->fedoraSettings['protocol'] . $this->fedoraSettings['host'] . ':' . $this->fedoraSettings['port'] . $this->fedoraSettings['path'];
+		$this->fedora_settings = get_option( 'humcore-deposits-fedora-settings' );
+		if ( defined( 'CORE_FEDORA_PROTOCOL' ) ) {
+				$this->fedora_settings['protocol'] = CORE_FEDORA_PROTOCOL;
+		}
+		if ( defined( 'CORE_FEDORA_HOST' ) ) {
+				$this->fedora_settings['host'] = CORE_FEDORA_HOST;
+		}
+		if ( defined( 'CORE_FEDORA_PORT' ) ) {
+				$this->fedora_settings['port'] = CORE_FEDORA_PORT;
+		}
+		if ( defined( 'CORE_FEDORA_PATH' ) ) {
+				$this->fedora_settings['path'] = CORE_FEDORA_PATH;
+		}
+		if ( defined( 'CORE_FEDORA_LOGIN' ) ) {
+				$this->fedora_settings['login'] = CORE_FEDORA_LOGIN;
+		}
+		if ( defined( 'CORE_FEDORA_PASSWORD' ) ) {
+				$this->fedora_settings['password'] = CORE_FEDORA_PASSWORD;
+		}
+		$this->base_url = $this->fedora_settings['protocol'] . $this->fedora_settings['host'] . ':' . $this->fedora_settings['port'] . $this->fedora_settings['path'];
 		/* getting removed
-                if ( defined( 'CORE_FEDORA_HOST' ) && ! empty( CORE_FEDORA_HOST ) ) { // Better have a value if defined.
-                        $this->servername_hash = md5( $humcoreSettings['servername'] );
-                } else {
-                        $this->servername_hash = $humcoreSettings['servername_hash'];
-                }
+				if ( defined( 'CORE_FEDORA_HOST' ) && ! empty( CORE_FEDORA_HOST ) ) { // Better have a value if defined.
+						$this->servername_hash = md5( $humcore_settings['servername'] );
+				} else {
+						$this->servername_hash = $humcore_settings['servername_hash'];
+				}
 		*/
 
-                $this->service_status = $humcoreSettings['service_status'];
+				$this->service_status = $humcore_settings['service_status'];
 
-                if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) {
-                        $this->namespace = CORE_HUMCORE_NAMESPACE;
-                } else {
-                        $this->namespace = $humcoreSettings['namespace'];
-                }
-                if ( defined( 'CORE_HUMCORE_TEMP_DIR' ) && ! empty( CORE_HUMCORE_TEMP_DIR ) ) { 
-                        $this->tempDir = CORE_HUMCORE_TEMP_DIR;
-                } else {
-                        $this->tempDir = $humcoreSettings['tempdir'];
-                }
-
-                if ( defined( 'CORE_HUMCORE_COLLECTION_PID' ) && ! empty( CORE_HUMCORE_COLLECTION_PID ) ) { 
-			$this->collectionPid = CORE_HUMCORE_COLLECTION_PID;
-                } else {
-			$this->collectionPid = $humcoreSettings['collectionpid'];
+		if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) {
+				$this->namespace = CORE_HUMCORE_NAMESPACE;
+		} else {
+				$this->namespace = $humcore_settings['namespace'];
+		}
+		if ( defined( 'CORE_HUMCORE_TEMP_DIR' ) && ! empty( CORE_HUMCORE_TEMP_DIR ) ) {
+				$this->temp_dir = CORE_HUMCORE_TEMP_DIR;
+		} else {
+				$this->temp_dir = $humcore_settings['tempdir'];
 		}
 
-		$this->maxResults = 512;
-		$this->options['api-m']['headers']['Authorization'] = 'Basic ' . base64_encode( $this->fedoraSettings['login'] . ':' . $this->fedoraSettings['password'] );
-		$this->options['api-m']['httpversion'] = '1.1';
-		$this->options['api-m']['sslverify'] = true;
-		$this->options['api-a']['httpversion'] = '1.1';
-		$this->options['api-a']['sslverify'] = true;
+		if ( defined( 'CORE_HUMCORE_COLLECTION_PID' ) && ! empty( CORE_HUMCORE_COLLECTION_PID ) ) {
+			$this->collection_pid = CORE_HUMCORE_COLLECTION_PID;
+		} else {
+			$this->collection_pid = $humcore_settings['collectionpid'];
+		}
+
+		$this->max_results                                  = 512;
+		$this->options['api-m']['headers']['Authorization'] = 'Basic ' . base64_encode( $this->fedora_settings['login'] . ':' . $this->fedora_settings['password'] );
+		$this->options['api-m']['httpversion']              = '1.1';
+		$this->options['api-m']['sslverify']                = true;
+		$this->options['api-a']['httpversion']              = '1.1';
+		$this->options['api-a']['sslverify']                = true;
 
 		/* getting removed
 		// Prevent copying prod config data to dev.
 		if ( ! empty( $this->servername_hash ) && $this->servername_hash != md5( $_SERVER['SERVER_NAME'] ) ) {
-			$this->baseUrl = '';
+			$this->base_url = '';
 			$this->options['api-m']['headers']['Authorization'] = '';
 		}
 		*/
@@ -111,9 +111,9 @@ class Humcore_Deposit_Fedora_Api {
 	 */
 	public function describe() {
 
-		$url = sprintf( '%1$s/describe', $this->baseUrl );
+		$url = sprintf( '%1$s/describe', $this->base_url );
 
-		$request_args = $this->options['api-a'];
+		$request_args           = $this->options['api-a'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -121,9 +121,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -150,43 +150,45 @@ class Humcore_Deposit_Fedora_Api {
 
 		$defaults = array(
 
-			'terms'             => '',
-			'query'             => '',
-			'maxResults'        => $this->maxResults,
-			'resultFormat'      => 'xml',
-			'pid'               => '',
-			'label'             => '',
-			'state'             => '',
-			'ownerid'           => '',
-			'cDate'             => '',
-			'mDate'             => '',
-			'dcmDate'           => '',
-			'title'             => '',
-			'creator'           => '',
-			'subject'           => '',
-			'description'       => '',
-			'publisher'         => '',
-			'contributor'       => '',
-			'date'              => '',
-			'type'              => '',
-			'format'            => '',
-			'identifier'        => '',
-			'source'            => '',
-			'language'          => '',
-			'relation'          => '',
-			'coverage'          => '',
-			'rights'            => '',
+			'terms'        => '',
+			'query'        => '',
+			'maxResults'   => $this->max_results,
+			'resultFormat' => 'xml',
+			'pid'          => '',
+			'label'        => '',
+			'state'        => '',
+			'ownerid'      => '',
+			'cDate'        => '',
+			'mDate'        => '',
+			'dcmDate'      => '',
+			'title'        => '',
+			'creator'      => '',
+			'subject'      => '',
+			'description'  => '',
+			'publisher'    => '',
+			'contributor'  => '',
+			'date'         => '',
+			'type'         => '',
+			'format'       => '',
+			'identifier'   => '',
+			'source'       => '',
+			'language'     => '',
+			'relation'     => '',
+			'coverage'     => '',
+			'rights'       => '',
 
 		);
 		$params = wp_parse_args( $args, $defaults );
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects', $this->baseUrl ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects', $this->base_url ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-a'];
+		$request_args           = $this->options['api-a'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -194,9 +196,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -220,34 +222,36 @@ class Humcore_Deposit_Fedora_Api {
 
 		$defaults = array(
 
-			'pid'               => '',
-			'dsID'              => '',
-			'asOfDateTime'      => '',
-			'download'          => false,
+			'pid'          => '',
+			'dsID'         => '',
+			'asOfDateTime' => '',
+			'download'     => false,
 
 		);
 		$params = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
-		$dsID = $params['dsID'];
+		$ds_id = $params['dsID'];
 		unset( $params['dsID'] );
 
 		if ( empty( $pid ) ) {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
 
-		if ( empty( $dsID ) ) {
+		if ( empty( $ds_id ) ) {
 			return new WP_Error( 'missingArg', 'Datastream ID is missing.' );
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams/%3$s/content', $this->baseUrl, $pid, $dsID ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams/%3$s/content', $this->base_url, $pid, $ds_id ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-a'];
+		$request_args           = $this->options['api-a'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -255,9 +259,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -302,9 +306,9 @@ class Humcore_Deposit_Fedora_Api {
 
 		$defaults = array(
 
-			'pid'               => '',
-			'format'            => 'xml',
-			'asOfDateTime'      => '',
+			'pid'          => '',
+			'format'       => 'xml',
+			'asOfDateTime' => '',
 
 		);
 		$params = wp_parse_args( $args, $defaults );
@@ -317,12 +321,14 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-a'];
+		$request_args           = $this->options['api-a'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -330,9 +336,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -375,27 +381,27 @@ class Humcore_Deposit_Fedora_Api {
 
 		$defaults = array(
 
-			'pid'               => '',
-			'dsID'              => '',
-			'controlGroup'      => 'M',
-			'dsLocation'        => '',
-			'altIDs'            => '',
-			'dsLabel'           => '',
-			'versionable'       => true,
-			'dsState'           => 'A',
-			'formatURI'         => '',
-			'checksumType'      => '',
-			'checksum'          => '',
-			'mimeType'          => false,
-			'logMessage'        => '',
-			'content'           => false,
+			'pid'          => '',
+			'dsID'         => '',
+			'controlGroup' => 'M',
+			'dsLocation'   => '',
+			'altIDs'       => '',
+			'dsLabel'      => '',
+			'versionable'  => true,
+			'dsState'      => 'A',
+			'formatURI'    => '',
+			'checksumType' => '',
+			'checksum'     => '',
+			'mimeType'     => false,
+			'logMessage'   => '',
+			'content'      => false,
 
-		 );
+		);
 		$params = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
-		$dsID = $params['dsID'];
+		$ds_id = $params['dsID'];
 		unset( $params['dsID'] );
 		$content = ( $params['content'] ) ? $params['content'] : '';
 		unset( $params['content'] );
@@ -404,31 +410,33 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
 
-		if ( empty( $dsID ) ) {
+		if ( empty( $ds_id ) ) {
 			return new WP_Error( 'missingArg', 'Datastream ID is missing.' );
 		}
 
-		$mimeType = ( $params['mimeType'] ) ? $params['mimeType'] : '';
+		$mime_type = ( $params['mimeType'] ) ? $params['mimeType'] : '';
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->baseUrl, $pid, $dsID ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->base_url, $pid, $ds_id ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
-		$request_args['headers']['Content-Type'] = $mimeType;
-		$request_args['body'] = $content;
+		$request_args                            = $this->options['api-m'];
+		$request_args['method']                  = 'POST';
+		$request_args['headers']['Content-Type'] = $mime_type;
+		$request_args['body']                    = $content;
 
 		$response = wp_remote_request( $url, $request_args );
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 201 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -452,14 +460,14 @@ class Humcore_Deposit_Fedora_Api {
 
 		$defaults = array(
 
-			'pid'               => '',
-			'subject'           => '',
-			'predicate'         => '',
-			'object'            => '',
-			'isLiteral'         => true,
-			'datatype'          => '',
+			'pid'       => '',
+			'subject'   => '',
+			'predicate' => '',
+			'object'    => '',
+			'isLiteral' => true,
+			'datatype'  => '',
 
-		 );
+		);
 		$params = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
@@ -482,12 +490,14 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/relationships/new', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/relationships/new', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'POST';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -495,9 +505,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -527,12 +537,12 @@ class Humcore_Deposit_Fedora_Api {
 	public function export( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'format'            => 'info:fedora/fedora-system:FOXML-1.1',
-			'context'           => 'public',
-			'encoding'          => 'UTF-8',
+			'pid'      => '',
+			'format'   => 'info:fedora/fedora-system:FOXML-1.1',
+			'context'  => 'public',
+			'encoding' => 'UTF-8',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
@@ -542,12 +552,14 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/export', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/export', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -555,9 +567,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -580,34 +592,36 @@ class Humcore_Deposit_Fedora_Api {
 	public function get_datastream( array $args = array() ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'dsID'              => '',
-			'format'            => 'xml',
-			'asOfDateTime'      => '',
-			'validateChecksum'  => false,
+			'pid'              => '',
+			'dsID'             => '',
+			'format'           => 'xml',
+			'asOfDateTime'     => '',
+			'validateChecksum' => false,
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
-		$dsID = $params['dsID'];
+		$ds_id = $params['dsID'];
 		unset( $params['dsID'] );
 
 		if ( empty( $pid ) ) {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
 
-		if ( empty( $dsID ) ) {
+		if ( empty( $ds_id ) ) {
 			return new WP_Error( 'missingArg', 'Datastream ID is missing.' );
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->baseUrl, $pid, $dsID ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->base_url, $pid, $ds_id ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -615,9 +629,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -640,32 +654,34 @@ class Humcore_Deposit_Fedora_Api {
 	public function get_datastream_history( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'dsID'              => '',
-			'format'            => 'xml',
+			'pid'    => '',
+			'dsID'   => '',
+			'format' => 'xml',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
-		$dsID = $params['dsID'];
+		$ds_id = $params['dsID'];
 		unset( $params['dsID'] );
 
 		if ( empty( $pid ) ) {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
 
-		if ( empty( $dsID ) ) {
+		if ( empty( $ds_id ) ) {
 			return new WP_Error( 'missingArg', 'Datastream ID is missing.' );
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams/%3$s/history', $this->baseUrl, $pid, $dsID ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams/%3$s/history', $this->base_url, $pid, $ds_id ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -673,9 +689,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -698,11 +714,11 @@ class Humcore_Deposit_Fedora_Api {
 	public function get_datastreams( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'profile'           => false,
-			'asOfDateTime'      => '',
+			'pid'          => '',
+			'profile'      => false,
+			'asOfDateTime' => '',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
@@ -712,12 +728,14 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -725,9 +743,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -750,19 +768,21 @@ class Humcore_Deposit_Fedora_Api {
 	public function get_next_pid( $args ) {
 
 		$defaults = array(
-			'numPIDs'           => 1,
-			'namespace'         => $this->namespace,
-			'format'            => 'xml',
+			'numPIDs'   => 1,
+			'namespace' => $this->namespace,
+			'format'    => 'xml',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/nextPID', $this->baseUrl ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/nextPID', $this->base_url ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'POST';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -770,9 +790,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -782,8 +802,8 @@ class Humcore_Deposit_Fedora_Api {
 		$doc->loadXML( $response_body );
 
 		$pids = array();
-		foreach ( $doc->getElementsByTagName( 'pid' ) as $eachPid ) {
-			$pids[] = $eachPid->nodeValue;
+		foreach ( $doc->getElementsByTagName( 'pid' ) as $each_pid ) {
+			$pids[] = $each_pid->nodeValue;
 		}
 
 		return $pids;
@@ -808,9 +828,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
 
-		$url = sprintf( '%1$s/objects/%2$s/objectXML', $this->baseUrl, $pid );
+		$url = sprintf( '%1$s/objects/%2$s/objectXML', $this->base_url, $pid );
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -818,19 +838,19 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
 		}
 
-                $doc = new DOMDocument;
-                $doc->formatOutput = true;
-                $doc->loadXML( $response_body );
+				$doc               = new DOMDocument;
+				$doc->formatOutput = true;
+				$doc->loadXML( $response_body );
 
-                return $doc->saveXML();
+				return $doc->saveXML();
 
 	}
 
@@ -847,12 +867,12 @@ class Humcore_Deposit_Fedora_Api {
 	public function get_relationships( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'subject'           => '',
-			'predicate'         => '',
-			'format'            => 'rdf/xml',
+			'pid'       => '',
+			'subject'   => '',
+			'predicate' => '',
+			'format'    => 'rdf/xml',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
@@ -862,12 +882,14 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/relationships', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/relationships', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -875,9 +897,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -900,47 +922,49 @@ class Humcore_Deposit_Fedora_Api {
 	public function ingest( $args ) {
 
 		$defaults = array(
-			'pid'               => 'new',
-			'label'             => '',
-			'ownerId'           => '',
-			'format'            => 'info:fedora/fedora-system:FOXML-1.1',
-			'encoding'          => 'UTF-8',
-			'namespace'         => $this->namespace,
-			'logMessage'        => '',
-			'ignoreMime'        => false,
-			'xmlContent'        => '',
+			'pid'        => 'new',
+			'label'      => '',
+			'ownerId'    => '',
+			'format'     => 'info:fedora/fedora-system:FOXML-1.1',
+			'encoding'   => 'UTF-8',
+			'namespace'  => $this->namespace,
+			'logMessage' => '',
+			'ignoreMime' => false,
+			'xmlContent' => '',
 
 		);
 		$params = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
-		$xmlContent = $params['xmlContent'];
+		$xml_content = $params['xmlContent'];
 		unset( $params['xmlContent'] );
 
-		if ( empty( $xmlContent ) ) {
+		if ( empty( $xml_content ) ) {
 			return new WP_Error( 'missingArg', 'XML content is missing.' );
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
+		$request_args                            = $this->options['api-m'];
+		$request_args['method']                  = 'POST';
 		$request_args['headers']['Content-Type'] = 'text/xml';
-		$request_args['body'] = $xmlContent;
+		$request_args['body']                    = $xml_content;
 
 		$response = wp_remote_request( $url, $request_args );
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 201 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -964,27 +988,27 @@ class Humcore_Deposit_Fedora_Api {
 
 		$defaults = array(
 
-			'pid'               => '',
-			'dsID'              => '',
-			'dsLocation'        => '',
-			'altIDs'            => '',
-			'dsLabel'           => '',
-			'versionable'       => true,
-			'dsState'           => 'A',
-			'formatURI'         => '',
-			'checksumType'      => '',
-			'checksum'          => '',
-			'mimeType'          => false,
-			'logMessage'        => '',
-			'ignoreContent'     => false,
-			'lastModifiedDate'  => '',
-			'content'           => false,
+			'pid'              => '',
+			'dsID'             => '',
+			'dsLocation'       => '',
+			'altIDs'           => '',
+			'dsLabel'          => '',
+			'versionable'      => true,
+			'dsState'          => 'A',
+			'formatURI'        => '',
+			'checksumType'     => '',
+			'checksum'         => '',
+			'mimeType'         => false,
+			'logMessage'       => '',
+			'ignoreContent'    => false,
+			'lastModifiedDate' => '',
+			'content'          => false,
 		);
 		$params = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
-		$dsID = $params['dsID'];
+		$ds_id = $params['dsID'];
 		unset( $params['dsID'] );
 		$content = ( $params['content'] ) ? $params['content'] : '';
 		unset( $params['content'] );
@@ -993,32 +1017,34 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
 
-		if ( empty( $dsID ) ) {
+		if ( empty( $ds_id ) ) {
 			return new WP_Error( 'missingArg', 'Datastream ID is missing.' );
 		}
 
-		$mimeType = ( $params['mimeType'] ) ? $params['mimeType'] : '';
+		$mime_type = ( $params['mimeType'] ) ? $params['mimeType'] : '';
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->baseUrl, $pid, $dsID ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->base_url, $pid, $ds_id ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
-		$request_args['headers']['Content-Type'] = $mimeType;
+		$request_args                                      = $this->options['api-m'];
+		$request_args['method']                            = 'POST';
+		$request_args['headers']['Content-Type']           = $mime_type;
 		$request_args['headers']['X-HTTP-Method-Override'] = 'PUT';
-		$request_args['body'] = $content;
+		$request_args['body']                              = $content;
 
 		$response = wp_remote_request( $url, $request_args );
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -1042,12 +1068,12 @@ class Humcore_Deposit_Fedora_Api {
 
 		$defaults = array(
 
-			'pid'               => '',
-			'label'             => '',
-			'ownerId'           => '',
-			'state'             => 'A',
-			'logMessage'        => '',
-			'lastModifiedDate'  => '',
+			'pid'              => '',
+			'label'            => '',
+			'ownerId'          => '',
+			'state'            => 'A',
+			'logMessage'       => '',
+			'lastModifiedDate' => '',
 		);
 		$params = wp_parse_args( $args, $defaults );
 
@@ -1059,13 +1085,15 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
+		$request_args                                      = $this->options['api-m'];
+		$request_args['method']                            = 'POST';
 		$request_args['headers']['X-HTTP-Method-Override'] = 'PUT';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -1073,9 +1101,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -1098,35 +1126,37 @@ class Humcore_Deposit_Fedora_Api {
 	public function purge_datastream( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'dsID'              => '',
-			'startDT'           => '',
-			'endDT'             => '',
-			'logMessage'        => '',
+			'pid'        => '',
+			'dsID'       => '',
+			'startDT'    => '',
+			'endDT'      => '',
+			'logMessage' => '',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
-		$dsID = $params['dsID'];
+		$ds_id = $params['dsID'];
 		unset( $params['dsID'] );
 
 		if ( empty( $pid ) ) {
 			return new WP_Error( 'missingArg', 'PID is missing.' );
 		}
 
-		if ( empty( $dsID ) ) {
+		if ( empty( $ds_id ) ) {
 			return new WP_Error( 'missingArg', 'Datastream ID is missing.' );
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->baseUrl, $pid, $dsID ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/datastreams/%3$s', $this->base_url, $pid, $ds_id ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
+		$request_args                                      = $this->options['api-m'];
+		$request_args['method']                            = 'POST';
 		$request_args['headers']['X-HTTP-Method-Override'] = 'DELETE';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -1134,9 +1164,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -1160,10 +1190,10 @@ class Humcore_Deposit_Fedora_Api {
 	public function purge_object( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'logMessage'        => '',
+			'pid'        => '',
+			'logMessage' => '',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
@@ -1173,13 +1203,15 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
+		$request_args                                      = $this->options['api-m'];
+		$request_args['method']                            = 'POST';
 		$request_args['headers']['X-HTTP-Method-Override'] = 'DELETE';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -1187,9 +1219,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -1212,14 +1244,14 @@ class Humcore_Deposit_Fedora_Api {
 	public function purge_relationship( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'subject'           => '',
-			'predicate'         => '',
-			'object'            => '',
-			'isLiteral'         => true,
-			'datatype'          => '',
+			'pid'       => '',
+			'subject'   => '',
+			'predicate' => '',
+			'object'    => '',
+			'isLiteral' => true,
+			'datatype'  => '',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$pid = $params['pid'];
 		unset( $params['pid'] );
@@ -1241,13 +1273,15 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/relationships', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/relationships', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
+		$request_args                                      = $this->options['api-m'];
+		$request_args['method']                            = 'POST';
 		$request_args['headers']['X-HTTP-Method-Override'] = 'DELETE';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -1255,9 +1289,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -1294,8 +1328,8 @@ class Humcore_Deposit_Fedora_Api {
 	public function validate( $args ) {
 
 		$defaults = array(
-			'pid'               => '',
-			'asOfDateTime'      => '',
+			'pid'          => '',
+			'asOfDateTime' => '',
 		);
 
 		$params = wp_parse_args( $args, $defaults );
@@ -1308,12 +1342,14 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$query_string = http_build_query( array_filter( $params ), '', '&' );
-		$url = implode( '?', array(
-							sprintf( '%1$s/objects/%2$s/validate', $this->baseUrl, $pid ),
-							$query_string,
-						) );
+		$url          = implode(
+			'?', array(
+				sprintf( '%1$s/objects/%2$s/validate', $this->base_url, $pid ),
+				$query_string,
+			)
+		);
 
-		$request_args = $this->options['api-m'];
+		$request_args           = $this->options['api-m'];
 		$request_args['method'] = 'GET';
 
 		$response = wp_remote_request( $url, $request_args );
@@ -1321,19 +1357,19 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 200 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
 		}
 
-		$doc = new DOMDocument;
+		$doc               = new DOMDocument;
 		$doc->formatOutput = true;
 		$doc->loadXML( $response_body );
 
-/*
+		/*
 		$problems = array();
 		foreach ( $doc->getElementsByTagName( 'problems' ) as $eachProblem ) {
 			$problems[] = trim( $eachProblem->nodeValue );
@@ -1342,7 +1378,7 @@ class Humcore_Deposit_Fedora_Api {
 		foreach ( $doc->getElementsByTagName( 'datastreamProblems' ) as $eachProblem ) {
 			$problems[] = trim( $eachProblem->nodeValue );
 		}
-*/
+		*/
 		return $doc->saveXML();
 
 	}
@@ -1363,14 +1399,14 @@ class Humcore_Deposit_Fedora_Api {
 	 * @see curl_before_send_file()
 	 * @see wp_remote_request()
 	 */
-	public function upload ( $args ) {
+	public function upload( $args ) {
 
 		$defaults = array(
-			'file'              => '',
-			'filename'          => '',
-			'filetype'          => '',
+			'file'     => '',
+			'filename' => '',
+			'filetype' => '',
 		);
-		$params = wp_parse_args( $args, $defaults );
+		$params   = wp_parse_args( $args, $defaults );
 
 		$file = $params['file'];
 
@@ -1379,13 +1415,13 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		if ( ! file_exists( $file ) ) {
-			return new WP_Error( 'missingArg',  $file . ' does not exist.' );
+			return new WP_Error( 'missingArg', $file . ' does not exist.' );
 		}
 
-		$url = sprintf( '%1$s/upload', $this->baseUrl );
+		$url = sprintf( '%1$s/upload', $this->base_url );
 
-		$request_args = $this->options['api-m'];
-		$request_args['method'] = 'POST';
+		$request_args            = $this->options['api-m'];
+		$request_args['method']  = 'POST';
 		$request_args['timeout'] = 60;
 
 		// Handle the WP_HTTP inability to process file uploads by hooking curl settings.
@@ -1398,9 +1434,9 @@ class Humcore_Deposit_Fedora_Api {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
 
-		$response_code = wp_remote_retrieve_response_code( $response );
+		$response_code    = wp_remote_retrieve_response_code( $response );
 		$response_message = wp_remote_retrieve_response_message( $response );
-		$response_body = wp_remote_retrieve_body( $response );
+		$response_body    = wp_remote_retrieve_body( $response );
 
 		if ( 202 != $response_code ) {
 			return new WP_Error( $response_code, $response_message, $response_body );
@@ -1428,14 +1464,14 @@ class Humcore_Deposit_Fedora_Api {
 	 */
 	public function curl_before_send_file( &$curl, $r, $url ) {
 
-		$file = $this->upload_filehandle['file'];
+		$file     = $this->upload_filehandle['file'];
 		$filename = $this->upload_filehandle['filename'];
 		$filetype = $this->upload_filehandle['filetype'];
 
 		if ( function_exists( 'curl_file_create' ) ) {
 
 			// PHP 5.5 and later, create a CURLFile object.
-			$postData = curl_file_create( $file, $filetype, $filename );
+			$post_data = curl_file_create( $file, $filetype, $filename );
 
 		} else {
 
@@ -1444,7 +1480,7 @@ class Humcore_Deposit_Fedora_Api {
 			// Set file mimetype if available.
 			$mimetype = ( ! empty( $filetype ) ) ? ';type=' . $filetype : '';
 			// PHP 5.2 to 5.4, prefix the file name and location with @.
-			$postData = '@' . $file . $rename . $mimetype;
+			$post_data = '@' . $file . $rename . $mimetype;
 
 		}
 
@@ -1460,7 +1496,7 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		// Set the body.
-		curl_setopt( $curl, CURLOPT_POSTFIELDS, array( 'file' => $postData ) );
+		curl_setopt( $curl, CURLOPT_POSTFIELDS, array( 'file' => $post_data ) );
 
 	}
 

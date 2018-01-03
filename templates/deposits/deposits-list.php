@@ -21,11 +21,14 @@ Humcore_Theme_Compatibility::get_header(); ?>
 
 	<div id="deposits-stream" class="item-list">
 
-	<?php while ( humcore_deposits() ) : humcore_the_deposit(); ?>
+	<?php
+	while ( humcore_deposits() ) :
+		humcore_the_deposit();
+?>
 
 		<?php do_action( 'bp_before_deposit_item' ); ?>
 
-                <?php do_action( 'humcore_deposits_list_entry_content' ); ?>
+				<?php do_action( 'humcore_deposits_list_entry_content' ); ?>
 
 		<?php do_action( 'bp_after_deposit_item' ); ?>
 
@@ -35,10 +38,10 @@ Humcore_Theme_Compatibility::get_header(); ?>
 
 	<?php if ( humcore_deposit_has_more_items() ) : ?>
 
-	        <?php $page_url = sprintf( '%1$s/deposits/list/?dpage=%2$s', bp_get_root_domain(), humcore_get_deposit_page_number() + 1 ); ?>
+			<?php $page_url = sprintf( '%1$s/deposits/list/?dpage=%2$s', bp_get_root_domain(), humcore_get_deposit_page_number() + 1 ); ?>
 
 		<div id="pag-bottom" class="pagination">
-			<div id="deposits-loop-pag-bottom" class="pagination-links"><a href="<?php echo $page_url ?>">Next Page</a></div>
+			<div id="deposits-loop-pag-bottom" class="pagination-links"><a href="<?php echo $page_url; ?>">Next Page</a></div>
 		</div>
 
 	<?php endif; ?>
