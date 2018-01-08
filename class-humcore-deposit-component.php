@@ -47,9 +47,12 @@ class Humcore_Deposit_Component extends BP_Component {
 				'cssjs.php',
 				'deposit.php',
 				'deposit-edit.php',
+				'deposit-functions.php',
 				'functions.php',
+				'screen-functions.php',
 				'screens.php',
-				'template.php',
+				'class-humcore-deposit-search-results.php',
+				'template-functions.php',
 			)
 		);
 
