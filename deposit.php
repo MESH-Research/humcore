@@ -6,37 +6,37 @@
  * @subpackage Deposits
  */
 
-	/**
-	 * Process the uploaded file:
-	 * Check for duplicate entries.
-	 * Make a usable unique filename.
-	 * Generate a thumb if necessary.
-	 * For this uploaded file create 2 objects in Fedora, 1 document in Solr and 2 posts.
-	 * Get the next 2 object id values for Fedora.
-	 * Prepare the metadata sent to Fedora and Solr.
-	 * Mint and reserve a DOI.
-	 * Determine post date, status and necessary activity.
-	 * Create XML needed for the fedora objects.
-	 * Create the aggregator post so that we can reference the ID in the Solr document.
-	 * Set object terms for subjects.
-	 * Add any new keywords and set object terms for tags.
-	 * Add to metadata and store in post meta.
-	 * Prepare an array of post data for the resource post.
-	 * Insert the resource post.
-	 * Extract text first if small. If Tika errors out we'll index without full text.
-	 * Index the deposit content and metadata in Solr.
-	 * Create the aggregator Fedora object along with the DC and RELS-EXT datastreams.
-	 * Upload the MODS file to the Fedora server temp file storage.
-	 * Create the descMetadata datastream for the aggregator object.
-	 * Upload the deposited file to the Fedora server temp file storage.
-	 * Create the CONTENT datastream for the resource object.
-	 * Upload the thumb to the Fedora server temp file storage if necessary.
-	 * Create the THUMB datastream for the resource object if necessary.
-	 * Add the activity entry for the author.
-	 * Publish the reserved DOI.
-	 * Notify provisional deposit review group for HC member deposits.
-	 * Re-index larger text based deposits in the background.
-	 */
+/**
+ * Process the uploaded file:
+ * Check for duplicate entries.
+ * Make a usable unique filename.
+ * Generate a thumb if necessary.
+ * For this uploaded file create 2 objects in Fedora, 1 document in Solr and 2 posts.
+ * Get the next 2 object id values for Fedora.
+ * Prepare the metadata sent to Fedora and Solr.
+ * Mint and reserve a DOI.
+ * Determine post date, status and necessary activity.
+ * Create XML needed for the fedora objects.
+ * Create the aggregator post so that we can reference the ID in the Solr document.
+ * Set object terms for subjects.
+ * Add any new keywords and set object terms for tags.
+ * Add to metadata and store in post meta.
+ * Prepare an array of post data for the resource post.
+ * Insert the resource post.
+ * Extract text first if small. If Tika errors out we'll index without full text.
+ * Index the deposit content and metadata in Solr.
+ * Create the aggregator Fedora object along with the DC and RELS-EXT datastreams.
+ * Upload the MODS file to the Fedora server temp file storage.
+ * Create the descMetadata datastream for the aggregator object.
+ * Upload the deposited file to the Fedora server temp file storage.
+ * Create the CONTENT datastream for the resource object.
+ * Upload the thumb to the Fedora server temp file storage if necessary.
+ * Create the THUMB datastream for the resource object if necessary.
+ * Add the activity entry for the author.
+ * Publish the reserved DOI.
+ * Notify provisional deposit review group for HC member deposits.
+ * Re-index larger text based deposits in the background.
+ */
 function humcore_deposit_file() {
 
 	if ( empty( $_POST ) ) {
@@ -60,8 +60,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Check for duplicate entries.
-		 */
+	 * Check for duplicate entries.
+	 */
 	$title_check = wp_strip_all_tags( stripslashes( $_POST['deposit-title-unchanged'] ) );
 	$genre       = sanitize_text_field( $_POST['deposit-genre'] );
 	if ( 'yes' === $_POST['deposit-on-behalf-flag'] ) {
@@ -110,8 +110,8 @@ function humcore_deposit_file() {
 	$generated_thumb_name = '';
 
 	/**
-		 * Make a usable unique filename.
-		 */
+	 * Make a usable unique filename.
+	 */
 	if ( file_exists( $fileloc ) ) {
 		$file_rename_status = rename( $fileloc, $renamed_file );
 	}
@@ -144,9 +144,9 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * For this uploaded file create 2 objects in Fedora, 1 document in Solr and 2 posts.
-		 * Get the next 2 object id values for Fedora.
-		 */
+	 * For this uploaded file create 2 objects in Fedora, 1 document in Solr and 2 posts.
+	 * Get the next 2 object id values for Fedora.
+	 */
 	$next_pids = $fedora_api->get_next_pid(
 		array(
 			'numPIDs'   => '2',
@@ -160,8 +160,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Prepare the metadata to send to Fedore and Solr.
-		 */
+	 * Prepare the metadata to send to Fedore and Solr.
+	 */
 	$curr_val                          = $_POST;
 	$metadata                          = prepare_user_entered_metadata( $user, $curr_val );
 	$metadata['id']                    = $next_pids[0];
@@ -175,8 +175,8 @@ function humcore_deposit_file() {
 	$metadata['record_change_date']    = gmdate( 'Y-m-d\TH:i:s\Z' );
 
 	/**
-		 * Mint and reserve a DOI.
-		 */
+	 * Mint and reserve a DOI.
+	 */
 	$creators = array();
 	foreach ( $metadata['authors'] as $author ) {
 		if ( ( in_array( $author['role'], array( 'creator', 'author', 'editor', 'translator' ) ) ) && ! empty( $author['fullname'] ) ) {
@@ -202,8 +202,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Determine post date, status and necessary activity.
-		 */
+	 * Determine post date, status and necessary activity.
+	 */
 	$deposit_activity_needed = true;
 	$deposit_review_needed   = false;
 	$deposit_post_date       = ( new DateTime() )->format( 'Y-m-d H:i:s' );
@@ -218,8 +218,8 @@ function humcore_deposit_file() {
 				$deposit_post_status = 'publish';
 	}
 
-			//if in HC lookup user
-			//if HC only user send to provisional deposit review group
+	//if in HC lookup user
+	//if HC only user send to provisional deposit review group
 	if ( 'hc' === Humanities_Commons::$society_id && 'hcadmin' !== $user->user_login ) {
 		$query_args = array(
 			'post_parent' => 0,
@@ -236,15 +236,15 @@ function humcore_deposit_file() {
 		}
 	}
 
-			/**
-		 * Create XML needed for the fedora objects.
-		 */
-			$aggregator_xml = create_aggregator_xml(
-				array(
-					'pid'     => $next_pids[0],
-					'creator' => $metadata['creator'],
-				)
-			);
+	/**
+	 * Create XML needed for the fedora objects.
+	 */
+	$aggregator_xml = create_aggregator_xml(
+		array(
+			'pid'     => $next_pids[0],
+			'creator' => $metadata['creator'],
+		)
+	);
 
 	$aggregator_rdf = create_aggregator_rdf(
 		array(
@@ -288,8 +288,8 @@ function humcore_deposit_file() {
 			humcore_write_error_log( 'info', 'HumCORE deposit metadata complete' );
 
 	/**
-		 * Create the aggregator post now so that we can reference the ID in the Solr document.
-		 */
+	 * Create the aggregator post now so that we can reference the ID in the Solr document.
+	 */
 	$deposit_post_data = array(
 		'post_title'   => $metadata['title'],
 		'post_excerpt' => $metadata['abstract'],
@@ -304,8 +304,8 @@ function humcore_deposit_file() {
 	$metadata['record_identifier'] = get_current_blog_id() . '-' . $deposit_post_id;
 
 	/**
-		 * Set object terms for subjects.
-		 */
+	 * Set object terms for subjects.
+	 */
 	if ( ! empty( $metadata['subject'] ) ) {
 		$term_ids = array();
 		foreach ( $metadata['subject'] as $subject ) {
@@ -324,8 +324,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Add any new keywords and set object terms for tags.
-		 */
+	 * Add any new keywords and set object terms for tags.
+	 */
 	if ( ! empty( $metadata['keyword'] ) ) {
 		$term_ids = array();
 		foreach ( $metadata['keyword'] as $keyword ) {
@@ -354,8 +354,8 @@ function humcore_deposit_file() {
 			humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (1)', json_decode( $json_metadata, true ) );
 
 	/**
-		 * Add to metadata and store in post meta.
-		 */
+	 * Add to metadata and store in post meta.
+	 */
 	$post_metadata['files'][] = array(
 		'pid'                 => $next_pids[1],
 		'datastream_id'       => $datastream_id,
@@ -375,8 +375,8 @@ function humcore_deposit_file() {
 			humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', json_decode( $json_metadata, true ) );
 
 	/**
-		 * Prepare an array of post data for the resource post.
-		 */
+	 * Prepare an array of post data for the resource post.
+	 */
 	$resource_post_data = array(
 		'post_title'  => $filename,
 		'post_status' => 'publish',
@@ -387,18 +387,18 @@ function humcore_deposit_file() {
 	);
 
 	/**
-		 * Insert the resource post.
-		 */
+	 * Insert the resource post.
+	 */
 	$resource_post_id = wp_insert_post( $resource_post_data );
 
 	/**
-		 * Add POST variables needed for async tika extraction.
-		 */
+	 * Add POST variables needed for async tika extraction.
+	 */
 	$_POST['aggregator-post-id'] = $deposit_post_id;
 
 	/**
-		 * Extract text first if small. If Tika errors out we'll index without full text.
-		 */
+	 * Extract text first if small. If Tika errors out we'll index without full text.
+	 */
 	if ( ! preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) && (int) $filesize < 1000000 ) {
 
 		try {
@@ -412,8 +412,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Index the deposit content and metadata in Solr.
-		 */
+	 * Index the deposit content and metadata in Solr.
+	 */
 	try {
 		if ( preg_match( '~^audio/|^image/|^video/~', $check_filetype['type'] ) ) {
 			$s_result = $solr_client->create_humcore_document( '', $metadata );
@@ -442,8 +442,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Create the aggregator Fedora object along with the DC and RELS-EXT datastreams.
-		 */
+	 * Create the aggregator Fedora object along with the DC and RELS-EXT datastreams.
+	 */
 	$a_ingest = $fedora_api->ingest( array( 'xmlContent' => $aggregator_foxml ) );
 	if ( is_wp_error( $a_ingest ) ) {
 		echo 'Error - a_ingest : ' . esc_html( $a_ingest->get_error_message() );
@@ -452,8 +452,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Upload the MODS file to the Fedora server temp file storage.
-		 */
+	 * Upload the MODS file to the Fedora server temp file storage.
+	 */
 	$upload_mods = $fedora_api->upload( array( 'file' => $mods_file ) );
 	if ( is_wp_error( $upload_mods ) ) {
 		echo 'Error - upload_mods : ' . esc_html( $upload_mods->get_error_message() );
@@ -461,8 +461,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Create the descMetadata datastream for the aggregator object.
-		 */
+	 * Create the descMetadata datastream for the aggregator object.
+	 */
 	$m_content = $fedora_api->add_datastream(
 		array(
 			'pid'          => $next_pids[0],
@@ -488,8 +488,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Upload the deposited file to the Fedora server temp file storage.
-		 */
+	 * Upload the deposited file to the Fedora server temp file storage.
+	 */
 	$upload_url = $fedora_api->upload(
 		array(
 			'file'     => $renamed_file,
@@ -503,8 +503,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Create the CONTENT datastream for the resource object.
-		 */
+	 * Create the CONTENT datastream for the resource object.
+	 */
 	$r_content = $fedora_api->add_datastream(
 		array(
 			'pid'          => $next_pids[1],
@@ -524,8 +524,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Upload the thumb to the Fedora server temp file storage if necessary.
-		 */
+	 * Upload the thumb to the Fedora server temp file storage if necessary.
+	 */
 	//TODO fix thumbs if ( preg_match( '~^image/|/pdf$~', $check_filetype['type'] ) && ! empty( $generated_thumb_path ) ) {
 	if ( preg_match( '~^image/$~', $check_filetype['type'] ) && ! empty( $generated_thumb_path ) ) {
 
@@ -542,8 +542,8 @@ function humcore_deposit_file() {
 		}
 
 		/**
-			 * Create the THUMB datastream for the resource object if necessary.
-			 */
+		 * Create the THUMB datastream for the resource object if necessary.
+		 */
 		$t_content = $fedora_api->add_datastream(
 			array(
 				'pid'          => $next_pids[1],
@@ -562,21 +562,22 @@ function humcore_deposit_file() {
 			humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - t_content : %1$s-%2$s', $t_content->get_error_code(), $t_content->get_error_message() ) );
 		}
 	}
-			humcore_write_error_log( 'info', 'HumCORE deposit fedora/solr writes complete' );
+
+	humcore_write_error_log( 'info', 'HumCORE deposit fedora/solr writes complete' );
 
 	//DOI's are taking too long to resolve, put the permalink in the activity records.
 	$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $next_pids[0] );
 
 	/**
-		 * Add the activity entry for the author.
-		 */
+	 * Add the activity entry for the author.
+	 */
 	if ( $deposit_activity_needed ) {
 		$activity_id = humcore_new_deposit_activity( $deposit_post_id, $metadata['abstract'], $local_link, $user->ID );
 	}
 
 	/**
-		 * Publish the reserved DOI.
-		 */
+	 * Publish the reserved DOI.
+	 */
 	if ( ! empty( $metadata['deposit_doi'] ) ) {
 		$e_status = humcore_publish_handle( $metadata['deposit_doi'] );
 		if ( false === $e_status ) {
@@ -586,8 +587,8 @@ function humcore_deposit_file() {
 	}
 
 	/**
-		 * Notify provisional deposit review group for HC member deposits.
-		 */
+	 * Notify provisional deposit review group for HC member deposits.
+	 */
 	if ( $deposit_review_needed ) {
 		$bp                          = buddypress();
 					$review_group_id = BP_Groups_Group::get_id_from_slug( 'provisional-deposit-review' );
@@ -610,15 +611,15 @@ function humcore_deposit_file() {
 				)
 			);
 		}
-					//$review_group = groups_get_group( array( 'group_id' => $review_group_id ) );
+		//$review_group = groups_get_group( array( 'group_id' => $review_group_id ) );
 		//$group_activity_ids[] = humcore_new_group_deposit_activity( $metadata['record_identifier'], $review_group_id, $metadata['abstract'], $local_link );
 		//$metadata['group'][] = $review_group->name;
 		//$metadata['group_ids'][] = $review_group_id;
 	}
 
 	/**
-		 * Re-index larger text based deposits in the background.
-		 */
+	 * Re-index larger text based deposits in the background.
+	 */
 	if ( ! preg_match( '~^audio/|^image/|^video/~', $check_resource_filetype['type'] ) && (int) $filesize >= 1000000 ) {
 		do_action( 'humcore_tika_text_extraction' );
 	}
@@ -637,18 +638,18 @@ function humcore_deposit_file() {
 
 }
 
-	/**
-	 * Prepare the metadata sent to Fedora and Solr from $_POST input.
-	 *
-	 * @param string $user deposit user
-	 * @param array $curr_val array of $_POST entries.
-	 * @return array metadata content
-	 */
+/**
+ * Prepare the metadata sent to Fedora and Solr from $_POST input.
+ *
+ * @param string $user deposit user
+ * @param array $curr_val array of $_POST entries.
+ * @return array metadata content
+ */
 function prepare_user_entered_metadata( $user, $curr_val ) {
 
 	/**
-		 * Prepare the metadata to be sent to Fedora and Solr.
-		 */
+	 * Prepare the metadata to be sent to Fedora and Solr.
+	 */
 	$metadata                       = array();
 	$metadata['title']              = wp_strip_all_tags( stripslashes( $curr_val['deposit-title-unchanged'] ) );
 	$metadata['title_unchanged']    = wp_kses(
@@ -677,8 +678,8 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 	}
 
 	/**
-		 * Get committee or author metadata.
-		 */
+	 * Get committee or author metadata.
+	 */
 
 	if ( 'yes' === $metadata['committee_deposit'] ) {
 		$committee                = groups_get_group( array( 'group_id' => $metadata['committee_id'] ) );
@@ -765,8 +766,8 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 	);
 
 	/**
-		 * Format author info for solr.
-		 */
+	 * Format author info for solr.
+	 */
 	$metadata['author_info'] = humcore_deposits_format_author_info( $metadata['authors'] );
 
 	if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis', 'White paper' ) ) &&
@@ -993,54 +994,54 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 
 }
 
-	/**
-	 * Get the year from the date entered.
-	 *
-	 * @param string $date Date entered
-	 * @return string Date in YYYY format
-	 */
+/**
+ * Get the year from the date entered.
+ *
+ * @param string $date Date entered
+ * @return string Date in YYYY format
+ */
 function get_year_issued( $date_entered ) {
 
 	// The strtotime function will handle a wide variety of entries. First address some cases it will not handle.
-			$temp_date_entered = preg_replace(
-				'~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i',
-				'Jan $2',
-				$date_entered
-			); // Custom publication date format.
+	$temp_date_entered = preg_replace(
+		'~^(winter(?:/|)|spring(?:/|)|summer(?:/|)|fall(?:/|)|autumn(?:/|))+\s(\d{4})$~i',
+		'Jan $2',
+		$date_entered
+	); // Custom publication date format.
 
-			$temp_date_entered = preg_replace(
-				'/^(\d{4})$/',
-				'Jan $1',
-				$temp_date_entered
-			); // Workaround for when only YYYY is entered.
+	$temp_date_entered = preg_replace(
+		'/^(\d{4})$/',
+		'Jan $1',
+		$temp_date_entered
+	); // Workaround for when only YYYY is entered.
 
-			$ambiguous_date = preg_match( '~^(\d{2})-(\d{2})-(\d{2}(?:\d{2})?)(?:\s.*?|)$~', $temp_date_entered, $matches );
+	$ambiguous_date = preg_match( '~^(\d{2})-(\d{2})-(\d{2}(?:\d{2})?)(?:\s.*?|)$~', $temp_date_entered, $matches );
 	if ( 1 === $ambiguous_date ) { // Just deal with slashes.
 			$temp_date_entered = sprintf( '%1$s/%2$s/%3$s', $matches[1], $matches[2], $matches[3] );
 	}
 
-			$ambiguous_date = preg_match( '~^(\d{2})/(\d{2})/(\d{2}(?:\d{2})?)(?:\s.*?|)$~', $temp_date_entered, $matches );
+	$ambiguous_date = preg_match( '~^(\d{2})/(\d{2})/(\d{2}(?:\d{2})?)(?:\s.*?|)$~', $temp_date_entered, $matches );
 	if ( 1 === $ambiguous_date && $matches[1] > 12 ) { // European date in d/m/y format will fail for dd > 12.
 		$temp_date_entered = sprintf( '%1$s/%2$s/%3$s', $matches[2], $matches[1], $matches[3] );
 	}
 
-			$date_value = strtotime( $temp_date_entered );
+	$date_value = strtotime( $temp_date_entered );
 
 	if ( false === $date_value ) {
 		return date( 'Y', strtotime( 'today' ) ); //TODO Real date edit message, kick back to user to fix. Meanwhile, this year is better than nothing.
 	}
 
-			return date( 'Y', $date_value );
+	return date( 'Y', $date_value );
 
 }
 
-	/**
-	 * Format the xml used to create the DC datastream for the aggregator object.
-	 *
-	 * @param array $args Array of arguments.
-	 * @return WP_Error|string xml content
-	 * @see wp_parse_args()
-	 */
+/**
+ * Format the xml used to create the DC datastream for the aggregator object.
+ *
+ * @param array $args Array of arguments.
+ * @return WP_Error|string xml content
+ * @see wp_parse_args()
+ */
 function create_aggregator_xml( $args ) {
 
 	$defaults = array(
@@ -1072,13 +1073,13 @@ function create_aggregator_xml( $args ) {
 
 }
 
-	/**
-	 * Format the rdf used to create the RELS-EXT datastream for the aggregator object.
-	 *
-	 * @param array $args Array of arguments.
-	 * @return WP_Error|string rdf content
-	 * @see wp_parse_args()
-	 */
+/**
+ * Format the rdf used to create the RELS-EXT datastream for the aggregator object.
+ *
+ * @param array $args Array of arguments.
+ * @return WP_Error|string rdf content
+ * @see wp_parse_args()
+ */
 function create_aggregator_rdf( $args ) {
 
 	$defaults = array(
@@ -1124,13 +1125,13 @@ function create_aggregator_rdf( $args ) {
 
 }
 
-	/**
-	 * Format the xml used to create the DC datastream for the resource object.
-	 *
-	 * @param array $args Array of arguments.
-	 * @return WP_Error|string xml content
-	 * @see wp_parse_args()
-	 */
+/**
+ * Format the xml used to create the DC datastream for the resource object.
+ *
+ * @param array $args Array of arguments.
+ * @return WP_Error|string xml content
+ * @see wp_parse_args()
+ */
 function create_resource_xml( $metadata, $filetype = '' ) {
 
 	if ( empty( $metadata ) ) {
@@ -1168,10 +1169,10 @@ function create_resource_xml( $metadata, $filetype = '' ) {
 		$date = '';
 	}
 
-			return '<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
-			xmlns:dc="http://purl.org/dc/elements/1.1/"
-			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
+	return '<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/"
+		xmlns:dc="http://purl.org/dc/elements/1.1/"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd">
 		  <dc:identifier>' . $pid . '</dc:identifier>
 		  ' . $creator_list . '
 		  ' . $date . '
@@ -1185,13 +1186,13 @@ function create_resource_xml( $metadata, $filetype = '' ) {
 
 }
 
-	/**
-	 * Format the rdf used to create the RELS-EXT datastream for the aggregator object.
-	 *
-	 * @param array $args Array of arguments.
-	 * @return WP_Error|string rdf content
-	 * @see wp_parse_args()
-	 */
+/**
+ * Format the rdf used to create the RELS-EXT datastream for the aggregator object.
+ *
+ * @param array $args Array of arguments.
+ * @return WP_Error|string rdf content
+ * @see wp_parse_args()
+ */
 function create_resource_rdf( $args ) {
 
 	$defaults = array(
@@ -1235,13 +1236,13 @@ function create_resource_rdf( $args ) {
 
 }
 
-	/**
-	 * Format the foxml used to create Fedora aggregator and resource objects.
-	 *
-	 * @param array $args Array of arguments.
-	 * @return WP_Error|string foxml content
-	 * @see wp_parse_args()
-	 */
+/**
+ * Format the foxml used to create Fedora aggregator and resource objects.
+ *
+ * @param array $args Array of arguments.
+ * @return WP_Error|string foxml content
+ * @see wp_parse_args()
+ */
 function create_foxml( $args ) {
 
 	$defaults = array(
@@ -1272,51 +1273,51 @@ function create_foxml( $args ) {
 	}
 
 	$output = '<?xml version="1.0" encoding="UTF-8"?>
-					<foxml:digitalObject VERSION="1.1" PID="' . $pid . '"
-						xmlns:foxml="info:fedora/fedora-system:def/foxml#"
-						xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-						xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
-						<foxml:objectProperties>
-							<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="' . $state . '"/>
-							<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="' . $label . '"/>
-						</foxml:objectProperties>
-						<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
-							<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object"
-									CREATED="' . gmdate( 'Y-m-d\TH:i:s\Z' ) . '" MIMETYPE="text/xml"
-									FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="' . strlen( $xml_content ) . '">
-								<foxml:xmlContent>' . $xml_content . '</foxml:xmlContent>
-							</foxml:datastreamVersion>
-						</foxml:datastream>
-						<foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
-							<foxml:datastreamVersion ID="RELS-EXT1.0" LABEL="RDF Statements about this object"
-									CREATED="' . gmdate( 'Y-m-d\TH:i:s\Z' ) . '" MIMETYPE="application/rdf+xml"
-									FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="' . strlen( $rdf_content ) . '">
-								<foxml:xmlContent>' . $rdf_content . '</foxml:xmlContent>
-							</foxml:datastreamVersion>
-						</foxml:datastream>
-					</foxml:digitalObject>';
+		<foxml:digitalObject VERSION="1.1" PID="' . $pid . '"
+			xmlns:foxml="info:fedora/fedora-system:def/foxml#"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd">
+			<foxml:objectProperties>
+				<foxml:property NAME="info:fedora/fedora-system:def/model#state" VALUE="' . $state . '"/>
+				<foxml:property NAME="info:fedora/fedora-system:def/model#label" VALUE="' . $label . '"/>
+			</foxml:objectProperties>
+			<foxml:datastream ID="DC" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+				<foxml:datastreamVersion ID="DC1.0" LABEL="Dublin Core Record for this object"
+						CREATED="' . gmdate( 'Y-m-d\TH:i:s\Z' ) . '" MIMETYPE="text/xml"
+						FORMAT_URI="http://www.openarchives.org/OAI/2.0/oai_dc/" SIZE="' . strlen( $xml_content ) . '">
+					<foxml:xmlContent>' . $xml_content . '</foxml:xmlContent>
+				</foxml:datastreamVersion>
+			</foxml:datastream>
+			<foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
+				<foxml:datastreamVersion ID="RELS-EXT1.0" LABEL="RDF Statements about this object"
+						CREATED="' . gmdate( 'Y-m-d\TH:i:s\Z' ) . '" MIMETYPE="application/rdf+xml"
+						FORMAT_URI="info:fedora/fedora-system:FedoraRELSExt-1.0" SIZE="' . strlen( $rdf_content ) . '">
+					<foxml:xmlContent>' . $rdf_content . '</foxml:xmlContent>
+				</foxml:datastreamVersion>
+			</foxml:datastream>
+		</foxml:digitalObject>';
 
 	$dom                     = new DOMDocument;
-	$dom->preserveWhiteSpace = false;
+	$dom->preserveWhiteSpace = false; // @codingStandardsIgnoreLine camelCase
 	if ( false === $dom->loadXML( $output ) ) {
 		humcore_write_error_log( 'error', '*****HumCORE Error - bad xml content*****' . var_export( $pid, true ) );
 	}
-	$dom->formatOutput = true;
+	$dom->formatOutput = true; // @codingStandardsIgnoreLine camelCase
 	return $dom->saveXML();
 
 }
 
-	/**
-	 * Format the xml used to create the CONTENT datastream for the MODS metadata object.
-	 *
-	 * @param array $metadata
-	 * @return WP_Error|string mods xml content
-	 */
+/**
+ * Format the xml used to create the CONTENT datastream for the MODS metadata object.
+ *
+ * @param array $metadata
+ * @return WP_Error|string mods xml content
+ */
 function create_mods_xml( $metadata ) {
 
 	/**
-		 * Format MODS xml fragment for one or more authors.
-		 */
+	 * Format MODS xml fragment for one or more authors.
+	 */
 	$author_mods = '';
 	foreach ( $metadata['authors'] as $author ) {
 
@@ -1368,8 +1369,8 @@ function create_mods_xml( $metadata ) {
 	}
 
 	/**
-		 * Format MODS xml fragment for organization affiliation.
-		 */
+	 * Format MODS xml fragment for organization affiliation.
+	 */
 	$org_mods = '';
 	if ( ! empty( $metadata['genre'] ) && in_array( $metadata['genre'], array( 'Dissertation', 'Technical report', 'Thesis', 'White paper' ) ) &&
 		! empty( $metadata['institution'] ) ) {
@@ -1385,8 +1386,8 @@ function create_mods_xml( $metadata ) {
 	}
 
 	/**
-		 * Format MODS xml fragment for date issued.
-		 */
+	 * Format MODS xml fragment for date issued.
+	 */
 	$date_issued_mods = '';
 	if ( ! empty( $metadata['date_issued'] ) ) {
 		$date_issued_mods = '
@@ -1396,8 +1397,8 @@ function create_mods_xml( $metadata ) {
 	}
 
 	/**
-		 * Format MODS xml fragment for resource type.
-		 */
+	 * Format MODS xml fragment for resource type.
+	 */
 	$resource_type_mods = '';
 	if ( ! empty( $metadata['type_of_resource'] ) ) {
 		$resource_type_mods = '
@@ -1405,8 +1406,8 @@ function create_mods_xml( $metadata ) {
 	}
 
 	/**
-		 * Format MODS xml fragment for language.
-		 */
+	 * Format MODS xml fragment for language.
+	 */
 	$language_mods = '';
 	if ( ! empty( $metadata['language'] ) ) {
 		$term          = wpmn_get_term_by( 'name', $metadata['language'], 'humcore_deposit_language' );
@@ -1417,8 +1418,8 @@ function create_mods_xml( $metadata ) {
 	}
 
 	/**
-		 * Format MODS xml fragment for genre.
-		 */
+	 * Format MODS xml fragment for genre.
+	 */
 	$genre_mods = '';
 	if ( ! empty( $metadata['genre'] ) ) {
 		$genre_mods = '
@@ -1426,8 +1427,8 @@ function create_mods_xml( $metadata ) {
 	}
 
 	/**
-		 * Format MODS xml fragment for one or more subjects.
-		 */
+	 * Format MODS xml fragment for one or more subjects.
+	 */
 	$full_subject_list = $metadata['subject'];
 	$subject_mods      = '';
 	foreach ( $full_subject_list as $subject ) {
@@ -1593,8 +1594,8 @@ function create_mods_xml( $metadata ) {
 	}
 
 	/**
-		 * Format the xml used to create the CONTENT datastream for the MODS metadata object.
-		 */
+	 * Format the xml used to create the CONTENT datastream for the MODS metadata object.
+	 */
 	$metadata_mods = '<mods xmlns="http://www.loc.gov/mods/v3"
 		  xmlns:xlink="http://www.w3.org/1999/xlink"
 		  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -1623,18 +1624,18 @@ function create_mods_xml( $metadata ) {
 
 }
 
-	/**
-	 * Format and ingest the foxml used to create a Fedora collection object.
-	 * Really only needed once per install.
-	 *
-	 * Example usage:
-	 * $cStatus = create_collection_object();
-	 * var_export( $cStatus, true );
-	 *
-	 * @global object $fedora_api {@link Humcore_Deposit_Fedora_Api}
-	 * @return WP_Error|string status
-	 * @see wp_parse_args()
-	 */
+/**
+ * Format and ingest the foxml used to create a Fedora collection object.
+ * Really only needed once per install.
+ *
+ * Example usage:
+ * $c_status = create_collection_object();
+ * var_export( $c_status, true );
+ *
+ * @global object $fedora_api {@link Humcore_Deposit_Fedora_Api}
+ * @return WP_Error|string status
+ * @see wp_parse_args()
+ */
 function create_collection_object() {
 
 	global $fedora_api;

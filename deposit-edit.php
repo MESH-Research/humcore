@@ -6,33 +6,33 @@
  * @subpackage Deposits
  */
 
-		/**
-		 * Check for matching pid and post.
-		 * Determine if file changed.
-		 * Make a usable unique filename.
-		 * Generate a thumb if necessary.
-		 * Change 2 objects in Fedora, 1 document in Solr and 2 posts.
-		 * Prepare the metadata sent to Fedora and Solr.
-		 * Determine post date, status and necessary activity.
-		 * Create XML needed for the fedora objects.
-		 * Set object terms for subjects.
-		 * Add any new keywords and set object terms for tags.
-		 * Extract text first if small. If Tika errors out we'll index without full text.
-		 * Index the deposit content and metadata in Solr.
-		 * Update the aggregator post.
-		 * Add to metadata and store in post meta.
-		 * Prepare an array of post data for the resource post.
-		 * Update the resource post.
-		 * Upload the MODS file to the Fedora server temp file storage.
-		 * Update the descMetadata datastream for the aggregator object.
-		 * Upload the deposited file to the Fedora server temp file storage.
-		 * Update the CONTENT datastream for the resource object.
-		 * Modify the resource object metadata datastream.
-		 * Upload the thumb to the Fedora server temp file storage if necessary.
-		 * Update the THUMB datastream for the resource object if necessary.
-		 * Handle doi metadata changes.
-		 * Re-index larger text based deposits in the background.
-		 */
+/**
+ * Check for matching pid and post.
+ * Determine if file changed.
+ * Make a usable unique filename.
+ * Generate a thumb if necessary.
+ * Change 2 objects in Fedora, 1 document in Solr and 2 posts.
+ * Prepare the metadata sent to Fedora and Solr.
+ * Determine post date, status and necessary activity.
+ * Create XML needed for the fedora objects.
+ * Set object terms for subjects.
+ * Add any new keywords and set object terms for tags.
+ * Extract text first if small. If Tika errors out we'll index without full text.
+ * Index the deposit content and metadata in Solr.
+ * Update the aggregator post.
+ * Add to metadata and store in post meta.
+ * Prepare an array of post data for the resource post.
+ * Update the resource post.
+ * Upload the MODS file to the Fedora server temp file storage.
+ * Update the descMetadata datastream for the aggregator object.
+ * Upload the deposited file to the Fedora server temp file storage.
+ * Update the CONTENT datastream for the resource object.
+ * Modify the resource object metadata datastream.
+ * Upload the thumb to the Fedora server temp file storage if necessary.
+ * Update the THUMB datastream for the resource object if necessary.
+ * Handle doi metadata changes.
+ * Re-index larger text based deposits in the background.
+ */
 function humcore_deposit_edit_file() {
 
 	if ( empty( $_POST ) ) {
@@ -196,8 +196,8 @@ function humcore_deposit_edit_file() {
 	humcore_write_error_log( 'info', 'HumCORE Deposit Edit metadata complete' );
 
 	/**
-		 * Set object terms for subjects.
-		 */
+	 * Set object terms for subjects.
+	 */
 	if ( ! empty( $metadata['subject'] ) ) {
 		$term_ids = array();
 		foreach ( $metadata['subject'] as $subject ) {
@@ -219,8 +219,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Add any new keywords and set object terms for tags.
-		 */
+	 * Add any new keywords and set object terms for tags.
+	 */
 	if ( ! empty( $metadata['keyword'] ) ) {
 		$term_ids = array();
 		foreach ( $metadata['keyword'] as $keyword ) {
@@ -245,8 +245,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Extract text first if small. If Tika errors out we'll index without full text.
-		 */
+	 * Extract text first if small. If Tika errors out we'll index without full text.
+	 */
 	if ( ! preg_match( '~^audio/|^image/|^video/~', $filetype ) && (int) $filesize < 1000000 ) {
 		try {
 			$tika_text = $tika_client->getText( $renamed_file );
@@ -270,8 +270,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Index the deposit content and metadata in Solr.
-		 */
+	 * Index the deposit content and metadata in Solr.
+	 */
 	try {
 		if ( preg_match( '~^audio/|^image/|^video/~', $filetype ) ) {
 			$s_result = $solr_client->create_humcore_document( '', $metadata );
@@ -313,8 +313,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Update the aggregator post
-		 */
+	 * Update the aggregator post
+	 */
 	$deposit_post_data = array(
 		'ID'           => $deposit_post_id,
 		'post_title'   => $metadata['title'],
@@ -336,8 +336,8 @@ function humcore_deposit_edit_file() {
 	humcore_write_error_log( 'info', 'HumCORE Deposit Edit - postmeta (1)', json_decode( $json_metadata, true ) );
 
 	/**
-		 * Update the resource post.
-		 */
+	 * Update the resource post.
+	 */
 	$resource_post_data          = array(
 		'ID'         => $resource_post[0]->ID,
 		'post_title' => $filename,
@@ -345,8 +345,8 @@ function humcore_deposit_edit_file() {
 	$resource_post_update_status = wp_update_post( $resource_post_data );
 
 	/**
-		 * Update metadata and store in post meta.
-		 */
+	 * Update metadata and store in post meta.
+	 */
 	if ( $file_changed ) {
 		$file_metadata['files'][0]['filename']            = $filename;
 		$file_metadata['files'][0]['filetype']            = $filetype;
@@ -367,8 +367,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Bust cache for this deposit.
-		 */
+	 * Bust cache for this deposit.
+	 */
 	$old_author_unis = array_map(
 		function( $element ) {
 				return urlencode( $element['uni'] );
@@ -384,8 +384,8 @@ function humcore_deposit_edit_file() {
 	humcore_delete_cache_keys( 'author_uni', $author_uni_keys );
 
 	/**
-		 * Upload the MODS file to the Fedora server temp file storage.
-		 */
+	 * Upload the MODS file to the Fedora server temp file storage.
+	 */
 	$upload_mods = $fedora_api->upload( array( 'file' => $mods_file ) );
 	if ( is_wp_error( $upload_mods ) ) {
 		echo 'Error - upload_mods : ' . esc_html( $upload_mods->get_error_message() );
@@ -398,8 +398,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Update the descMetadata datastream for the aggregator object.
-		 */
+	 * Update the descMetadata datastream for the aggregator object.
+	 */
 	$m_content = $fedora_api->modify_datastream(
 		array(
 			'pid'        => $next_pids[0],
@@ -421,8 +421,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Upload the deposit to the Fedora server temp file storage.
-		 */
+	 * Upload the deposit to the Fedora server temp file storage.
+	 */
 	if ( $file_changed ) {
 		$upload_url = $fedora_api->upload(
 			array(
@@ -443,8 +443,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Update the CONTENT datastream for the resource object.
-		 */
+	 * Update the CONTENT datastream for the resource object.
+	 */
 	if ( $file_changed ) {
 		$r_content = $fedora_api->modify_datastream(
 			array(
@@ -478,8 +478,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Modify the resource object metadata datastream.
-		 */
+	 * Modify the resource object metadata datastream.
+	 */
 	$r_dc_content = $fedora_api->modify_datastream(
 		array(
 			'pid'      => $next_pids[1],
@@ -499,8 +499,8 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Upload the thumb to the Fedora server temp file storage if necessary.
-		 */
+	 * Upload the thumb to the Fedora server temp file storage if necessary.
+	 */
 	if ( $file_changed ) {
 		//TODO fix thumbs if ( preg_match( '~^image/|/pdf$~', $filetype ) && ! empty( $generated_thumb_path ) ) {
 		if ( preg_match( '~^image/$~', $filetype ) && ! empty( $generated_thumb_path ) ) {
@@ -523,8 +523,8 @@ function humcore_deposit_edit_file() {
 			}
 
 			/**
-				 * Update the THUMB datastream for the resource object if necessary.
-				 */
+			 * Update the THUMB datastream for the resource object if necessary.
+			 */
 			$t_content = $fedora_api->modify_datastream(
 				array(
 					'pid'          => $next_pids[1],
@@ -553,8 +553,8 @@ function humcore_deposit_edit_file() {
 	humcore_write_error_log( 'info', 'HumCORE Deposit Edit fedora/solr writes complete' );
 
 	/**
-		 * Add the activity entry for the author.
-		 */
+	 * Add the activity entry for the author.
+	 */
 	/* not needed for update
 	if ( $deposit_activity_needed ) {
 		$activity_ID = humcore_new_deposit_activity( $deposit_post_id, $metadata['abstract'], $local_link, $user->ID );
@@ -562,8 +562,8 @@ function humcore_deposit_edit_file() {
 	*/
 
 	/**
-		 * Handle doi metadata changes.
-		 */
+	 * Handle doi metadata changes.
+	 */
 	if ( ! empty( $metadata['deposit_doi'] ) ) {
 		$creators = array();
 		foreach ( $metadata['authors'] as $author ) {
@@ -588,13 +588,13 @@ function humcore_deposit_edit_file() {
 	}
 
 	/**
-		 * Add POST variables needed for async tika extraction
-		 */
+	 * Add POST variables needed for async tika extraction
+	 */
 	$_POST['aggregator-post-id'] = $deposit_post_id;
 
 	/**
-		 * Re-index larger text based deposits in the background.
-		 */
+	 * Re-index larger text based deposits in the background.
+	 */
 	if ( ! preg_match( '~^audio/|^image/|^video/~', $filetype ) && (int) $filesize >= 1000000 ) {
 		do_action( 'humcore_tika_text_extraction' );
 	}
@@ -605,12 +605,12 @@ function humcore_deposit_edit_file() {
 
 }
 
-		/**
-		 * Prepare metadata for the edit screen from existing post metadata.
-		 *
-		 * @param array $curr_val array of existing metadata entries.
-		 * @return array metadata content
-		 */
+/**
+ * Prepare metadata for the edit screen from existing post metadata.
+ *
+ * @param array $curr_val array of existing metadata entries.
+ * @return array metadata content
+ */
 function humcore_prepare_edit_page_metadata( $curr_val ) {
 
 	$metadata['submitter'] = $curr_val['submitter'];

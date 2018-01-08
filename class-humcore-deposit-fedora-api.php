@@ -803,7 +803,7 @@ class Humcore_Deposit_Fedora_Api {
 
 		$pids = array();
 		foreach ( $doc->getElementsByTagName( 'pid' ) as $each_pid ) {
-			$pids[] = $each_pid->nodeValue;
+			$pids[] = $each_pid->nodeValue; // @codingStandardsIgnoreLine camelCase
 		}
 
 		return $pids;
@@ -847,7 +847,7 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 				$doc               = new DOMDocument;
-				$doc->formatOutput = true;
+				$doc->formatOutput = true; // @codingStandardsIgnoreLine camelCase
 				$doc->loadXML( $response_body );
 
 				return $doc->saveXML();
@@ -1366,7 +1366,7 @@ class Humcore_Deposit_Fedora_Api {
 		}
 
 		$doc               = new DOMDocument;
-		$doc->formatOutput = true;
+		$doc->formatOutput = true; // @codingStandardsIgnoreLine camelCase
 		$doc->loadXML( $response_body );
 
 		/*

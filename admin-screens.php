@@ -924,14 +924,14 @@ function humcore_deposit_metabox_save( $post_id ) {
 			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - r_content : %1$s-%2$s', $r_content->get_error_code(), $r_content->get_error_message() ) );
 		}
 
-				/**
-				 * Add POST variables needed for async tika extraction
-				 */
-				$_POST['aggregator-post-id'] = $post_id;
+		/**
+		 * Add POST variables needed for async tika extraction
+		 */
+		$_POST['aggregator-post-id'] = $post_id;
 
-				/**
-				 * Extract text first if small. If Tika errors out we'll index without full text.
-				 */
+		/**
+		 * Extract text first if small. If Tika errors out we'll index without full text.
+		 */
 		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int) $resource_filesize < 1000000 ) {
 
 			try {
@@ -944,9 +944,9 @@ function humcore_deposit_metabox_save( $post_id ) {
 			}
 		}
 
-				/**
-				 * Index the deposit content and metadata in Solr.
-				 */
+		/**
+		 * Index the deposit content and metadata in Solr.
+		 */
 		try {
 			if ( preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) ) {
 				$s_result = $solr_client->create_humcore_document( '', $aggregator_metadata );
