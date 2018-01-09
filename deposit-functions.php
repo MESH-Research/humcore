@@ -1161,12 +1161,12 @@ function humcore_prepare_edit_page_metadata( $curr_val ) {
 		$metadata['deposit-podcast-volume']       = $curr_val['volume'];
 		$metadata['deposit-podcast-url']          = $curr_val['url'];
 	} elseif ( 'proceedings-article' == $curr_val['publication-type'] ) {
-		$metadata['deposit-proceedings-article-publisher']    = $curr_val['publisher'];
-		$metadata['deposit-proceedings-article-publish-date'] = $curr_val['date'];
-		$metadata['deposit-proceedings-article-title']        = $curr_val['book_journal_title'];
-		$metadata['deposit-proceedings-article-start-page']   = $curr_val['start_page'];
-		$metadata['deposit-proceedings-article-end-page']     = $curr_val['end_page'];
-		$metadata['deposit-proceedings-article-doi']          = $curr_val['doi'];
+		$metadata['deposit-proceeding-publisher']    = $curr_val['publisher'];
+		$metadata['deposit-proceeding-publish-date'] = $curr_val['date'];
+		$metadata['deposit-proceeding-title']        = $curr_val['book_journal_title'];
+		$metadata['deposit-proceeding-start-page']   = $curr_val['start_page'];
+		$metadata['deposit-proceeding-end-page']     = $curr_val['end_page'];
+		$metadata['deposit-proceeding-doi']          = $curr_val['doi'];
 	} elseif ( 'none' == $curr_val['publication-type'] ) {
 		$metadata['deposit-non-published-date'] = $curr_val['date'];
 	}
