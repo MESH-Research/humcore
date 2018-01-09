@@ -11,10 +11,12 @@
 		<?php
 			do_action( 'bp_before_deposits_page_content' );
 			do_action( 'bp_before_deposits_page' );
-		?>	
+		?>
+
 		<?php
 			bp_get_template_part( 'deposits/page', 'content' );
-		?>	
+		?>
+
 <div id="core-terms-entry-form">
 <form id="core-terms-acceptance-form" class="standard-form" method="post" action="">
 	<?php wp_nonce_field( 'accept_core_terms', 'accept_core_terms_nonce' ); ?>
@@ -36,6 +38,6 @@
 	</div><!-- .page-full-width -->
 
 <?php
-	Humcore_Theme_Compatibility::get_footer(); 
+	Humcore_Theme_Compatibility::get_footer();
 
 ?>

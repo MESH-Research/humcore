@@ -18,52 +18,55 @@
 	<div class="page-full-width network-profile">
 	<div id="primary" class="site-content">
 	<div id="content">
-		<div id="buddypress">
+	<div id="buddypress">
 
-        <?php if ( bp_has_members( 'max=1' ) ) : while ( bp_members() ) : bp_the_member(); ?>
+		<?php
+		if ( bp_has_members( 'max=1' ) ) :
+			while ( bp_members() ) :
+				bp_the_member();
+				do_action( 'bp_before_user_deposits_content' );
+				?>
 
-        <?php do_action( 'bp_before_user_deposits_content' ); ?>
+						<div id="item-header">
 
+							<?php bp_locate_template( array( 'members/single/member-header.php' ), true ); ?>
 
-			<div id="item-header">
+						</div><!-- #item-header -->
 
-				<?php bp_locate_template( array( 'members/single/member-header.php' ), true ); ?>
+						<div class="full-width">
+						<div id="item-main-content">
+						<div id="item-nav">
+								<div class="item-list-tabs no-ajax" id="object-nav" role="navigation">
+										<ul id="nav-bar-filter" class="horizontal-responsive-menu">
 
-			</div><!-- #item-header -->
+												<?php bp_get_displayed_user_nav(); ?>
+												<?php do_action( 'bp_user_deposits_options_nav' ); ?>
 
-                        <div class="full-width">
-                        <div id="item-main-content">
-                        <div id="item-nav">
-                                <div class="item-list-tabs no-ajax" id="object-nav" role="navigation">
-                                        <ul id="nav-bar-filter" class="horizontal-responsive-menu">
+										</ul>
+								</div>
+						</div><!-- #item-nav -->
 
-                                                <?php bp_get_displayed_user_nav(); ?>
-                                                <?php do_action( 'bp_user_deposits_options_nav' ); ?>
+						<div id="item-body" role="main">
 
+							<?php do_action( 'bp_before_user_deposits_body' ); ?>
 
-                                        </ul>
-                                </div>
-                        </div><!-- #item-nav -->
+							<?php
 
-			<div id="item-body" role="main">
+							$displayed_user_fullname = bp_get_displayed_user_fullname();
 
-				<?php do_action( 'bp_before_user_deposits_body' ); ?>
+							if ( ( ! empty( $displayed_user_fullname ) && bp_get_loggedin_user_fullname() == $displayed_user_fullname )
+									&& is_user_logged_in() ) {
+								echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work" style="float: right;">Upload Your Work</a><p />';
+							}
+							?>
 
-				<?php
+							<div class="item-list-tabs" id="subnav">
+								<ul>
+								<li class="current selected" id="deposits-personal"><a href="#">My Deposits</a></li>
 
-				$displayed_user_fullname = bp_get_displayed_user_fullname();
+								<li id="deposits-order-select" class="last filter">
 
-				if ( ( ! empty( $displayed_user_fullname ) && $displayed_user_fullname == bp_get_loggedin_user_fullname() ) && is_user_logged_in() ) {
-					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work" style="float: right;">Upload Your Work</a><p />';
-				} ?>
-
-				<div class="item-list-tabs" id="subnav">
-					<ul>
-					<li class="current selected" id="deposits-personal"><a href="#">My Deposits</a></li>
-
-					<li id="deposits-order-select" class="last filter">
-
-						<label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
+									<label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
 						<select id="deposits-order-by">
 							<option value="date"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
 							<!-- <option value="author"><?php _e( 'Primary Author', 'humcore_domain' ); ?></option> -->
@@ -86,14 +89,17 @@
 
 				<?php do_action( 'bp_after_user_deposits_body' ); ?>
 
-			</div><!-- #item-body -->
-			</div><!-- .item-main-content -->
-			</div><!-- #full-width -->
+						</div><!-- #item-body -->
+						</div><!-- .item-main-content -->
+						</div><!-- #full-width -->
 
-		<?php do_action( 'bp_after_user_deposits_content' ); ?>
-        <?php endwhile; endif; ?>
+					<?php do_action( 'bp_after_user_deposits_content' ); ?>
+					<?php
+		endwhile;
+endif;
+?>
 
-		</div><!-- #buddypress -->
+	</div><!-- #buddypress -->
 	</div><!-- #content -->
 	</div><!-- #primary -->
 

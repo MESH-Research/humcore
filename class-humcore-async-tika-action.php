@@ -19,12 +19,12 @@ class Humcore_Async_Tika_Action extends WP_Async_Task {
 
 		//humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract prepare data %1$s', $_POST['aggregator-post-id'] ) );
 
-/*
+		/*
 		// Check to make sure Buddypress is turned on
 		if ( false === function_exists( 'buddypress' ) ) {
 			throw new Exception( 'BuddyPress not active' );
 		}
-*/
+		*/
 
 		if ( empty( $_POST['aggregator-post-id'] ) ) {
 			throw new Exception( 'HUMCORE - No deposit to post to' );
@@ -32,14 +32,14 @@ class Humcore_Async_Tika_Action extends WP_Async_Task {
 		}
 
 		// Nonce check
-/*
+		/*
 		if ( ! isset( $_POST['bp_multiple_forum_post'] )
 				|| ! wp_verify_nonce( $_POST['bp_multiple_forum_post'], 'post_to_multiple_forums' ) ) {
 			throw new Exception( 'HUMCORE - Nonce failure' );
 		}
-*/
+		*/
 		return array(
-			'aggregator-post-id'        => $_POST['aggregator-post-id'],
+			'aggregator-post-id' => $_POST['aggregator-post-id'],
 		);
 	}
 
@@ -55,9 +55,9 @@ class Humcore_Async_Tika_Action extends WP_Async_Task {
 
 		//humcore_write_error_log( 'info', sprintf( '*****HumCORE Deposit***** - Tika text extract run action %1$s', $_POST['aggregator-post-id'] ) );
 
-		$args = array();
-		$args['aggregator-post-id']        = $_POST['aggregator-post-id'];
- 
+		$args                       = array();
+		$args['aggregator-post-id'] = $_POST['aggregator-post-id'];
+
 		do_action( 'wp_async_' . $this->action, $args );
 	}
 }

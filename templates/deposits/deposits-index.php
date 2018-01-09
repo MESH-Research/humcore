@@ -7,7 +7,7 @@ Humcore_Theme_Compatibility::get_header(); ?>
 
 <?php do_action( 'bp_before_directory_deposits_page' ); ?>
 
-        <div class="page-right-sidebar">
+		<div class="page-right-sidebar">
 	<div id="primary" class="site-content">
 	<div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
 		<div id="buddypress">
@@ -15,44 +15,44 @@ Humcore_Theme_Compatibility::get_header(); ?>
 		<?php do_action( 'bp_before_directory_deposits' ); ?>
 
 		<header class="deposits-header page-header">
-		<h3 class="entry-title main-title"><?php printf( __( '%sCORE%s Deposits', 'humcore_domain' ), '<em>', '</em>' ); ?>
+		<h3 class="entry-title main-title"><?php printf( __( '%1$sCORE%2$s Deposits', 'humcore_domain' ), '<em>', '</em>' ); ?>
 		<?php do_action( 'bp_before_directory_deposits_content' ); ?></h3>
 		</header>
 
-    <div class="filters">
-        <div class="row">
-            <div class="col-12">
-                <div class="item-list-tabs" role="navigation">
-                        <?php do_action( 'humcore_deposits_directory_deposit_sub_types' ); ?>
-                        <div class="filter-type sort">
+	<div class="filters">
+		<div class="row">
+			<div class="col-12">
+				<div class="item-list-tabs" role="navigation">
+						<?php do_action( 'humcore_deposits_directory_deposit_sub_types' ); ?>
+						<div class="filter-type sort">
 
-                            <label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
+							<label for="deposits-order-by"><?php _e( 'Order By:', 'humcore_domain' ); ?></label>
 
-                            <select id="deposits-order-by">
-                                <option value="newest" selected="selected"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
-                                <option value="alphabetical"><?php _e( 'Alphabetical', 'humcore_domain' ); ?></option>
+							<select id="deposits-order-by">
+								<option value="newest" selected="selected"><?php _e( 'Newest Deposits', 'humcore_domain' ); ?></option>
+								<option value="alphabetical"><?php _e( 'Alphabetical', 'humcore_domain' ); ?></option>
 
-                                <?php do_action( 'humcore_deposits_directory_order_options' ); ?>
-                            </select>
-                        </div>
-                        <div class="filter-type search">
+								<?php do_action( 'humcore_deposits_directory_order_options' ); ?>
+							</select>
+						</div>
+						<div class="filter-type search">
 
-                            <label for="search-deposits-field"><?php _e( 'Search Field:', 'humcore_domain' ); ?></label>
+							<label for="search-deposits-field"><?php _e( 'Search Field:', 'humcore_domain' ); ?></label>
 
-                            <select id="search-deposits-field">
-                                <option value="all" selected="selected">All Fields</option>
-                                <option value="author">Author/Contributor</option>
-                                <option value="subject">Subject</option>
-                                <option value="tag">Tag</option>
-                                <option value="title">Title</option>
+							<select id="search-deposits-field">
+								<option value="all" selected="selected">All Fields</option>
+								<option value="author">Author/Contributor</option>
+								<option value="subject">Subject</option>
+								<option value="tag">Tag</option>
+								<option value="title">Title</option>
 
-                            </select>
-                        </div>
-                    <?php humcore_deposits_search_form(); ?>
-                </div><!-- .item-list-tabs -->
-            </div><!-- .col-12 -->
-        </div><!-- .row -->
-    </div><!-- .filters -->
+							</select>
+						</div>
+					<?php humcore_deposits_search_form(); ?>
+				</div><!-- .item-list-tabs -->
+			</div><!-- .col-12 -->
+		</div><!-- .row -->
+	</div><!-- .filters -->
 
 		<form action="" method="post" id="deposits-directory-form" class="dir-form">
 

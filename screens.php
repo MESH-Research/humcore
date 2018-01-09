@@ -8,20 +8,19 @@
 
 /**
  * Output the deposits search form.
- *
- * @return string html output
  */
 function humcore_deposits_search_form() {
 
 	$default_search_value = bp_get_search_default_text( 'humcore_deposits' );
-	$search_value = '';
-	if ( ! empty( $_REQUEST['s'] ) ) { $search_value = stripslashes( $_REQUEST['s'] ); }
+	$search_value         = '';
+	if ( ! empty( $_REQUEST['s'] ) ) {
+		$search_value = stripslashes( $_REQUEST['s'] ); }
 
 	$search_form_html = '
 <div id="deposits-dir-search" class="dir-search" role="search">
   <form action="" method="post" id="search-deposits-form">
 	<label>
-	<input type="text" name="s" id="search-deposits-term" value="' . esc_attr( $search_value ) . '" placeholder="'. esc_attr( $default_search_value ) .'" />
+	<input type="text" name="s" id="search-deposits-term" value="' . esc_attr( $search_value ) . '" placeholder="' . esc_attr( $default_search_value ) . '" />
 	</label>
 	<input type="hidden" name="facets" id="search-deposits-facets" />
 	<input type="hidden" name="field" id="search-deposits-field" />
@@ -34,7 +33,7 @@ function humcore_deposits_search_form() {
 }
 
 /**
- * Render the content for deposits/item/new.
+ * Prepare the content for deposits/item/new.
  */
 function humcore_new_deposit_form() {
 
@@ -42,8 +41,8 @@ function humcore_new_deposit_form() {
 		//check nonce
 		$deposit_id = humcore_deposit_file();
 		if ( $deposit_id ) {
-                	$review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
-                	wp_redirect( $review_url );
+					$review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
+					wp_redirect( $review_url );
 			exit();
 		}
 	}
@@ -66,11 +65,11 @@ function humcore_new_deposit_form() {
 		$current_group_id = BP_Groups_Group::get_id_from_slug( $slug_match[1] );
 	}
 
-	$user_id = bp_loggedin_user_id();
-	$user_login = get_the_author_meta( 'user_login', $user_id );
+	$user_id        = bp_loggedin_user_id();
+	$user_login     = get_the_author_meta( 'user_login', $user_id );
 	$user_firstname = get_the_author_meta( 'first_name', $user_id );
-	$user_lastname = get_the_author_meta( 'last_name', $user_id );
-	$prev_val = array();
+	$user_lastname  = get_the_author_meta( 'last_name', $user_id );
+	$prev_val       = array();
 	if ( ! empty( $_POST ) ) {
 		$prev_val = $_POST;
 	} else {
@@ -81,85 +80,88 @@ function humcore_new_deposit_form() {
 }
 
 /**
- * Render the content for deposits/item/edit.
+ * Prepare the content for deposits/item/edit.
  */
 function humcore_edit_deposit_form() {
 
 	global $solr_client, $wp;
 
-        if ( ! empty( $_POST ) ) {
+	if ( ! empty( $_POST ) ) {
 		//check nonce
-                $deposit_id = humcore_deposit_edit_file();
-                if ( $deposit_id ) {
-                        $review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
-                        wp_redirect( $review_url );
-                        exit();
-                }
-        }
+			$deposit_id = humcore_deposit_edit_file();
+		if ( $deposit_id ) {
+				$review_url = sprintf( '/deposits/item/%1$s/review/', $deposit_id );
+				wp_redirect( $review_url );
+				exit();
+		}
+	}
 
-        ob_end_flush(); // We've been capturing output.
-        if ( ! humcore_check_externals() ) {
-                echo '<h3>Edit <em>CORE</em> Deposit</h3>';
-                echo "<p>We're so sorry, but one of the components of <em>CORE</em> is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to edit your work) so please come back and try again later.</p>";
-                $wp_referer = wp_get_referer();
-                printf(
-                        '<a href="%1$s" class="button white" style="line-height: 1.2em;">Go Back</a>',
-                        ( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/edit' ) ) ? $wp_referer : '/deposits/'
-                );
-                return;
-        }
+		ob_end_flush(); // We've been capturing output.
+	if ( ! humcore_check_externals() ) {
+			echo '<h3>Edit <em>CORE</em> Deposit</h3>';
+			echo "<p>We're so sorry, but one of the components of <em>CORE</em> is currently down and it can't accept deposits just now. We're working on it (and we're delighted that you want to edit your work) so please come back and try again later.</p>";
+			$wp_referer = wp_get_referer();
+			printf(
+				'<a href="%1$s" class="button white" style="line-height: 1.2em;">Go Back</a>',
+				( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/edit' ) ) ? $wp_referer : '/deposits/'
+			);
+			return;
+	}
 
-        $current_group_id = '';
-        preg_match( '~.*?/groups/(.*[^/]?)/deposits/~i', wp_get_referer(), $slug_match );
-        if ( ! empty( $slug_match ) ) {
-                $current_group_id = BP_Groups_Group::get_id_from_slug( $slug_match[1] );
-        }
+		$current_group_id = '';
+		preg_match( '~.*?/groups/(.*[^/]?)/deposits/~i', wp_get_referer(), $slug_match );
+	if ( ! empty( $slug_match ) ) {
+			$current_group_id = BP_Groups_Group::get_id_from_slug( $slug_match[1] );
+	}
 
 	$deposit_id = $wp->query_vars['deposits_item'];
-        $item_found = humcore_has_deposits( 'include=' . $deposit_id );
+	$item_found = humcore_has_deposits( 'include=' . $deposit_id );
 	humcore_the_deposit();
 	$record_identifier = humcore_get_deposit_record_identifier();
-	$record_location = explode( '-', $record_identifier );
+	$record_location   = explode( '-', $record_identifier );
 	// handle legacy MLA Commons value
 	if ( $record_location[0] === $record_identifier ) {
 		$record_location[0] = '1';
 		$record_location[1] = $record_identifier;
 	}
 	//Switch blog not needed here, current blog already checked.
-	$post_data = get_post( $record_location[1] );
-	$post_metadata = json_decode( get_post_meta( $record_location[1], '_deposit_metadata', true ), true );
-	$prev_val = humcore_prepare_edit_page_metadata( $post_metadata );
-	$file_metadata = json_decode( get_post_meta( $record_location[1], '_deposit_file_metadata', true ), true );
-	$full_tempname = pathinfo( $file_metadata['files'][0]['fileloc'], PATHINFO_BASENAME );
-	$tempname = str_replace( '.' . $file_metadata['files'][0]['filename'], '', $full_tempname );
-	$prev_val['selected_temp_name'] =  $tempname;
-	$prev_val['selected_file_name'] =  $file_metadata['files'][0]['filename'];
-	$prev_val['selected_file_type'] =  $file_metadata['files'][0]['filetype'];
-	$prev_val['selected_file_size'] =  $file_metadata['files'][0]['filesize'];
+	$post_data                      = get_post( $record_location[1] );
+	$post_metadata                  = json_decode( get_post_meta( $record_location[1], '_deposit_metadata', true ), true );
+	$prev_val                       = humcore_prepare_edit_page_metadata( $post_metadata );
+	$file_metadata                  = json_decode( get_post_meta( $record_location[1], '_deposit_file_metadata', true ), true );
+	$full_tempname                  = pathinfo( $file_metadata['files'][0]['fileloc'], PATHINFO_BASENAME );
+	$tempname                       = str_replace( '.' . $file_metadata['files'][0]['filename'], '', $full_tempname );
+	$prev_val['selected_temp_name'] = $tempname;
+	$prev_val['selected_file_name'] = $file_metadata['files'][0]['filename'];
+	$prev_val['selected_file_type'] = $file_metadata['files'][0]['filetype'];
+	$prev_val['selected_file_size'] = $file_metadata['files'][0]['filesize'];
 	if ( 'yes' == $prev_val['deposit-on-behalf-flag'] ) {
 		$user = get_user_by( 'ID', sanitize_text_field( $prev_val['submitter'] ) );
 	} else {
 		$user = get_user_by( 'login', $prev_val['deposit-author-uni'] );
 	}
-        $user_id = $user->ID;
-        $user_login = $prev_val['deposit-author-uni'];
-        $user_firstname = $prev_val['deposit-author-first-name'];
-        $user_lastname = $prev_val['deposit-author-last-name'];
+		$user_id        = $user->ID;
+		$user_login     = $prev_val['deposit-author-uni'];
+		$user_firstname = $prev_val['deposit-author-first-name'];
+		$user_lastname  = $prev_val['deposit-author-last-name'];
 
 	/*
-	maybe get file data and load prev_val
-	in deposit check for type and if found we need to do edit - maybe a whole new file shoud be used.
-	*/
-        if ( ! empty( $_POST ) ) {
-                $prev_val = $_POST;
-        }
-        humcore_display_deposit_form( $current_group_id, $user_id, $user_login, $user_firstname, $user_lastname, $prev_val, 'edit' );
+	 * Maybe get file data and load prev_val
+	 * in deposit check for type and if found we need to do edit - maybe a whole new file shoud be used.
+	 */
+	if ( ! empty( $_POST ) ) {
+			$prev_val = $_POST;
+	}
+		humcore_display_deposit_form( $current_group_id, $user_id, $user_login, $user_firstname, $user_lastname, $prev_val, 'edit' );
 
 }
 
+/**
+ * Render the content for deposits/item/new and deposits/item/edit.
+ */
 function humcore_display_deposit_form( $current_group_id, $user_id, $user_login, $user_firstname, $user_lastname, $prev_val, $form_type ) {
 
-$deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
+	$deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 ?>
 
 <script type="text/javascript">
@@ -178,20 +180,51 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 	<input type="hidden" name="action" id="action" value="deposit_file" />
 	<?php wp_nonce_field( 'new_core_deposit', 'new_core_deposit_nonce' ); ?>
 
-        <input type="hidden" name="selected_temp_name" id="selected_temp_name" value="<?php if ( ! empty( $prev_val['selected_temp_name'] ) ) { echo sanitize_text_field( $prev_val['selected_temp_name'] ); } ?>" />
-        <input type="hidden" name="selected_file_name" id="selected_file_name" value="<?php if ( ! empty( $prev_val['selected_file_name'] ) ) { echo sanitize_text_field( $prev_val['selected_file_name'] ); } ?>" />
-        <input type="hidden" name="selected_file_type" id="selected_file_type" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_type'] ); } ?>" />
-        <input type="hidden" name="selected_file_size" id="selected_file_size" value="<?php if ( ! empty( $prev_val['selected_file_type'] ) ) { echo sanitize_text_field( $prev_val['selected_file_size'] ); } ?>" />
-        <input type="hidden" name="deposit-form-type" id="deposit-form-type" value="<?php echo $form_type; ?>" />
-        <input type="hidden" name="deposit_blog_id" id="deposit_blog_id" value="<?php if ( ! empty( $prev_val['deposit_blog_id'] ) ) { echo sanitize_text_field( $prev_val['deposit_blog_id'] ); } ?>" />
-        <input type="hidden" name="deposit_post_id" id="deposit_post_id" value="<?php if ( ! empty( $prev_val['deposit_post_id'] ) ) { echo sanitize_text_field( $prev_val['deposit_post_id'] ); } ?>" />
+		<input type="hidden" name="selected_temp_name" id="selected_temp_name"
+		<?php
+		if ( ! empty( $prev_val['selected_temp_name'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['selected_temp_name'] ) . '" '; }
+?>
+/>
+		<input type="hidden" name="selected_file_name" id="selected_file_name"
+		<?php
+		if ( ! empty( $prev_val['selected_file_name'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['selected_file_name'] ) . '" '; }
+?>
+/>
+		<input type="hidden" name="selected_file_type" id="selected_file_type"
+		<?php
+		if ( ! empty( $prev_val['selected_file_type'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['selected_file_type'] ) . '" '; }
+?>
+/>
+		<input type="hidden" name="selected_file_size" id="selected_file_size"
+		<?php
+		if ( ! empty( $prev_val['selected_file_type'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['selected_file_size'] ) . '" '; }
+?>
+/>
+		<input type="hidden" name="deposit-form-type" id="deposit-form-type" value="<?php echo $form_type; ?>" />
+		<input type="hidden" name="deposit_blog_id" id="deposit_blog_id"
+		<?php
+		if ( ! empty( $prev_val['deposit_blog_id'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit_blog_id'] ) . '" '; }
+?>
+/>
+		<input type="hidden" name="deposit_post_id" id="deposit_post_id"
+		<?php
+		if ( ! empty( $prev_val['deposit_post_id'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit_post_id'] ) . '" '; }
+?>
+/>
 
-        <div id="deposit-file-entry">
+		<div id="deposit-file-entry">
 <br />
-                <label for="deposit-file">Select the file you wish to upload and deposit. *</label>
+				<label for="deposit-file">Select the file you wish to upload and deposit. *</label>
 		<div id="container">
 			<button id="pickfile">Select File</button> 
-	<?php $wp_referer = wp_get_referer();
+	<?php
+	$wp_referer = wp_get_referer();
 		printf(
 			'<a href="%1$s" class="button white" style="line-height: 1.2em;">Cancel</a>',
 			( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/'
@@ -207,17 +240,29 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 		<div id="console"></div>
 	</div>
 
-        <div id="deposit-published-entry">
-                <label for="deposit-published">Has this item been previously published?</label>
-                        <input type="radio" name="deposit-published" value="published" <?php if ( ! empty( $prev_val['deposit-published'] ) ) { checked( sanitize_text_field( $prev_val['deposit-published'] ), 'published' ); } ?>>Published &nbsp;
-                        <input type="radio" name="deposit-published" value="not-published" <?php if ( ! empty( $prev_val['deposit-published'] ) ) { checked( sanitize_text_field( $prev_val['deposit-published'] ), 'not-published' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;
-        </div>
+		<div id="deposit-published-entry">
+				<label for="deposit-published">Has this item been previously published?</label>
+						<input type="radio" name="deposit-published" value="published"
+						<?php
+						if ( ! empty( $prev_val['deposit-published'] ) ) {
+							checked( sanitize_text_field( $prev_val['deposit-published'] ), 'published' ); }
+?>
+>Published &nbsp;
+						<input type="radio" name="deposit-published" value="not-published"
+						<?php
+						if ( ! empty( $prev_val['deposit-published'] ) ) {
+							checked( sanitize_text_field( $prev_val['deposit-published'] ), 'not-published' );
+						} else {
+							echo 'checked="checked"'; }
+?>
+>Not published &nbsp;
+		</div>
 
 	<div id="deposit-metadata-entries">
 	<div id="lookup-doi-entry">
 <br />
 		<label for="lookup-doi">Retrieve information</label>
-                <span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
+				<span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
 		<span class="description">Enter a publisher DOI to automatically retrieve information about your item.</span> <br />
 		<input type="text" id="lookup-doi" name="lookup-doi" class="long" value="" placeholder="Enter the publisher DOI for this item." />
 		<button onClick="javascript:retrieveDOI(); return false;">Retrieve</button>
@@ -227,7 +272,18 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 	<div id="deposit-title-entry">
 <br />
 		<label for="deposit-title">Title</label>
-		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-title-unchanged'] ) ) {  echo wp_kses( stripslashes( $prev_val['deposit-title-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?>" />
+		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" class="long"
+		<?php
+		if ( ! empty( $prev_val['deposit-title-unchanged'] ) ) {
+			echo ' value="' . wp_kses(
+				stripslashes( $prev_val['deposit-title-unchanged'] ), array(
+					'b'      => array(),
+					'em'     => array(),
+					'strong' => array(),
+				)
+			) . '" '; }
+?>
+/>
 		<span class="description">*</span>
 	</div>
 	<label for="deposit-genre">Item Type</label>
@@ -235,18 +291,19 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 		<select name="deposit-genre" id="deposit-genre" class="js-basic-single-required" data-placeholder="Select an item type">
 			<option class="level-0" value=""></option>
 <?php
-	$genre_list = humcore_deposits_genre_list();
+	$genre_list   = humcore_deposits_genre_list();
 	$posted_genre = '';
-	if ( ! empty( $prev_val['deposit-genre'] ) ) {
-		$posted_genre = sanitize_text_field( $prev_val['deposit-genre'] );
-	}
-	foreach ( $genre_list as $genre_key => $genre_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $genre_key == $posted_genre ) ? 'selected="selected"' : '',
-			$genre_key,
-			$genre_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-genre'] ) ) {
+	$posted_genre = sanitize_text_field( $prev_val['deposit-genre'] );
+}
+foreach ( $genre_list as $genre_key => $genre_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $genre_key == $posted_genre ) ? 'selected="selected"' : '',
+		$genre_key,
+		$genre_value
+	);
+}
 ?>
 		</select>
 		<span class="description">*</span>
@@ -254,79 +311,148 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 	<div id="deposit-conference-entries">
 	<div id="deposit-conference-title-entry">
 		<label for="deposit-conference-title-entry-list">Conference Title</label>
-		<input type="text" name="deposit-conference-title" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-title'] ); } ?>" />
+		<input type="text" name="deposit-conference-title" size="75" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-conference-title'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-conference-title'] ) . '" '; }
+?>
+/>
 	</div>
 
 	<div id="deposit-conference-organization-entry">
 		<label for="deposit-conference-organization-entry-list">Conference Host Organization</label>
-		<input type="text" name="deposit-conference-organization" size="60" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-organization'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-organization'] ); } ?>" />
+		<input type="text" name="deposit-conference-organization" size="60" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-conference-organization'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-conference-organization'] ) . '" '; }
+?>
+/>
 	</div>
 
 	<div id="deposit-conference-location-entry">
 		<label for="deposit-conference-location-entry-list">Conference Location</label>
-		<input type="text" name="deposit-conference-location" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-location'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-location'] ); } ?>" />
+		<input type="text" name="deposit-conference-location" size="75" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-conference-location'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-conference-location'] ) . '" '; }
+?>
+/>
 	</div>
 
 	<div id="deposit-conference-date-entry">
 		<label for="deposit-conference-date-entry-list">Conference Date</label>
-		<input type="text" name="deposit-conference-date" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-conference-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-conference-date'] ); } ?>" />
+		<input type="text" name="deposit-conference-date" size="75" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-conference-date'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-conference-date'] ) . '" '; }
+?>
+/>
 	</div>
 	</div>
 
 	<div id="deposit-meeting-entries">
 	<div id="deposit-meeting-title-entry">
 		<label for="deposit-meeting-title-entry-list">Meeting Title</label>
-		<input type="text" name="deposit-meeting-title" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-title'] ); } ?>" />
+		<input type="text" name="deposit-meeting-title" size="75" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-meeting-title'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-meeting-title'] ) . '" '; }
+?>
+/>
 	</div>
 
 	<div id="deposit-meeting-organization-entry">
 		<label for="deposit-meeting-organization-entry-list">Meeting Host Organization</label>
-		<input type="text" name="deposit-meeting-organization" size="60" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-organization'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-organization'] ); } ?>" />
+		<input type="text" name="deposit-meeting-organization" size="60" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-meeting-organization'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-meeting-organization'] ) . '" '; }
+?>
+/>
 	</div>
 
 	<div id="deposit-meeting-location-entry">
 		<label for="deposit-meeting-location-entry-list">Meeting Location</label>
-		<input type="text" name="deposit-meeting-location" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-location'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-location'] ); } ?>" />
+		<input type="text" name="deposit-meeting-location" size="75" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-meeting-location'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-meeting-location'] ) . '" '; }
+?>
+/>
 	</div>
 
 	<div id="deposit-meeting-date-entry">
 		<label for="deposit-meeting-date-entry-list">Meeting Date</label>
-		<input type="text" name="deposit-meeting-date" size="75" class="text" value="<?php if ( ! empty( $prev_val['deposit-meeting-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-meeting-date'] ); } ?>" />
+		<input type="text" name="deposit-meeting-date" size="75" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-meeting-date'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-meeting-date'] ) . '" '; }
+?>
+/>
 	</div>
 	</div>
 
 	<div id="deposit-institution-entries">
 	<div id="deposit-institution-entry">
 		<label for="deposit-institution-entry-list">Name of Institution</label>
-		<input type="text" name="deposit-institution" size="60" class="text" value="<?php if ( ! empty( $prev_val['deposit-institution'] ) ) { echo sanitize_text_field( $prev_val['deposit-institution'] ); } ?>" />
+		<input type="text" name="deposit-institution" size="60" class="text"
+		<?php
+		if ( ! empty( $prev_val['deposit-institution'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-institution'] ) . '" '; }
+?>
+/>
 	</div>
 	</div>
 
 	<div id="deposit-abstract-entry">
 		<label for="deposit-abstract">Description or Abstract</label>
-		<textarea class="abstract_area" rows="12" autocomplete="off" cols="80" name="deposit-abstract-unchanged" id="deposit-abstract-unchanged"><?php if ( ! empty( $prev_val['deposit-abstract-unchanged'] ) ) { echo wp_kses( stripslashes( $prev_val['deposit-abstract-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
+		<textarea class="abstract_area" rows="12" autocomplete="off" cols="80" name="deposit-abstract-unchanged" id="deposit-abstract-unchanged">
+<?php
+if ( ! empty( $prev_val['deposit-abstract-unchanged'] ) ) {
+	echo wp_kses(
+		stripslashes( $prev_val['deposit-abstract-unchanged'] ), array(
+			'b'      => array(),
+			'em'     => array(),
+			'strong' => array(),
+		)
+	); }
+?>
+</textarea>
 		<span class="description">*</span>
 	<div class="character-count"></div>
 	</div>
 	<div id="deposit-on-behalf-flag-entry">
 <?php
-        $committee_list = humcore_deposits_user_committee_list( $user_id );
-        if ( empty( $committee_list ) ) {
+		$committee_list = humcore_deposits_user_committee_list( $user_id );
+if ( empty( $committee_list ) ) {
 ?>
-        <input type="hidden" name="deposit-on-behalf-flag" id="deposit-on-behalf-flag" value="" />
-<?php   } else { ?>
+<input type="hidden" name="deposit-on-behalf-flag" id="deposit-on-behalf-flag" value="" />
+<?php } else { ?>
 		<label for="deposit-on-behalf-flag-list">Depositor</label>
 		<span class="description">Is this deposit being made on behalf of a group?</span>
-			<input type="radio" name="deposit-on-behalf-flag" value="yes" <?php if ( ! empty( $prev_val['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-on-behalf-flag'] ), 'yes' ); } ?>>Yes &nbsp;
-			<input type="radio" name="deposit-on-behalf-flag" value="no" <?php if ( ! empty( $prev_val['deposit-on-behalf-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-on-behalf-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
+			<input type="radio" name="deposit-on-behalf-flag" value="yes"
+			<?php
+			if ( ! empty( $prev_val['deposit-on-behalf-flag'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-on-behalf-flag'] ), 'yes' ); }
+?>
+>Yes &nbsp;
+			<input type="radio" name="deposit-on-behalf-flag" value="no"
+			<?php
+			if ( ! empty( $prev_val['deposit-on-behalf-flag'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-on-behalf-flag'] ), 'no' );
+			} else {
+				echo 'checked="checked"'; }
+?>
+>No &nbsp;
 <?php
-	} ?>
+}
+	?>
 	</div>
 	<div id="deposit-committee-entry">
 <?php
-	if ( empty( $committee_list ) ) {
+if ( empty( $committee_list ) ) {
 ?>
-	<input type="hidden" name="deposit-committee" id="deposit-committee" value="" />
+<input type="hidden" name="deposit-committee" id="deposit-committee" value="" />
 <?php	} else { ?>
 
 		<label for="deposit-committee">Deposit Group</label>
@@ -334,18 +460,21 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 			<option class="level-0" selected value=""></option>
 <?php
 	$posted_committee = '';
-	if ( ! empty( $prev_val['deposit-committee'] ) ) { $posted_committee = sanitize_text_field( $prev_val['deposit-committee'] ); }
-	foreach ( $committee_list as $committee_key => $committee_value ) {
-		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $committee_key == $posted_committee ) ? 'selected="selected"' : '',
-			$committee_key,
-			$committee_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-committee'] ) ) {
+	$posted_committee = sanitize_text_field( $prev_val['deposit-committee'] ); }
+foreach ( $committee_list as $committee_key => $committee_value ) {
+	printf(
+		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $committee_key == $posted_committee ) ? 'selected="selected"' : '',
+		$committee_key,
+		$committee_value
+	);
+}
 ?>
 		</select>
 <?php
-	} ?>
+}
+	?>
 	</div>
 	<div id="deposit-other-authors-entry">
 		<label for="deposit-other-authors-entry-list">Contributors</label>
@@ -368,54 +497,94 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 		<?php echo esc_html( $user_lastname ); ?>
 		<input type="hidden" name="deposit-author-last-name" id="deposit-author-last-name" value="<?php echo esc_html( $user_lastname ); ?>" />
 		</td><td class="borderTop" style="width:230px;">
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="author" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'author' ); } ?>>Author &nbsp;</span>
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="editor" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'editor' ); } ?>>Editor &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="author"
+		<?php
+		if ( ! empty( $prev_val['deposit-author-role'] ) ) {
+			checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'author' ); }
+?>
+>Author &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="editor"
+		<?php
+		if ( ! empty( $prev_val['deposit-author-role'] ) ) {
+			checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'editor' ); }
+?>
+>Editor &nbsp;</span>
 		<?php if ( is_super_admin() ) : ?>
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="submitter" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'submitter' ); } ?>>Submitter &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="submitter"
+		<?php
+		if ( ! empty( $prev_val['deposit-author-role'] ) ) {
+			checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'submitter' ); }
+?>
+>Submitter &nbsp;</span>
 		<?php endif; ?>
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="translator" <?php if ( ! empty( $prev_val['deposit-author-role'] ) ) { checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
-		<input type="hidden" name="deposit-author-uni" id="deposit-author-uni" value="<?php
-			if ( 'new' === $form_type ) {
-				echo $user_login;
-			} else if ( ! empty( $prev_val['deposit-author-uni'] ) ) {
-				echo sanitize_text_field( $prev_val['deposit-author-uni'] );
-			} ?>" />
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="translator"
+		<?php
+		if ( ! empty( $prev_val['deposit-author-role'] ) ) {
+			checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'translator' ); }
+?>
+>Translator &nbsp;</span>
+		<input type="hidden" name="deposit-author-uni" id="deposit-author-uni"
+		<?php
+		if ( 'new' === $form_type ) {
+			echo $user_login;
+		} elseif ( ! empty( $prev_val['deposit-author-uni'] ) ) {
+			echo ' value="' . sanitize_text_field( $prev_val['deposit-author-uni'] ) . '" ';
+		}
+			?>
+			/>
 		</td><td class="borderTop">
 		</td></tr>
 
 <?php
-	if ( ! empty( $prev_val['deposit-other-authors-first-name'] ) && ! empty( $prev_val['deposit-other-authors-last-name'] ) ) {
-		$other_authors = array_map(
-			function ( $first_name, $last_name, $role, $uni ) {
-				return array( 'first_name' => sanitize_text_field( $first_name ),
-					'last_name' => sanitize_text_field( $last_name ),
-					'role' => sanitize_text_field( $role ),
-					'uni' => sanitize_text_field( $uni ) ); },
-			$prev_val['deposit-other-authors-first-name'],
-			$prev_val['deposit-other-authors-last-name'],
-			$prev_val['deposit-other-authors-role'],
-			$prev_val['deposit-other-authors-uni']
-		);
-		$row_counter = 0;
-		foreach ( $other_authors as $author_array ) {
-			if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
+if ( ! empty( $prev_val['deposit-other-authors-first-name'] ) && ! empty( $prev_val['deposit-other-authors-last-name'] ) ) {
+	$other_authors = array_map(
+		function ( $first_name, $last_name, $role, $uni ) {
+			return array(
+				'first_name' => sanitize_text_field( $first_name ),
+				'last_name'  => sanitize_text_field( $last_name ),
+				'role'       => sanitize_text_field( $role ),
+				'uni'        => sanitize_text_field( $uni ),
+			); },
+		$prev_val['deposit-other-authors-first-name'],
+		$prev_val['deposit-other-authors-last-name'],
+		$prev_val['deposit-other-authors-role'],
+		$prev_val['deposit-other-authors-uni']
+	);
+	$row_counter = 0;
+	foreach ( $other_authors as $author_array ) {
+		if ( ! empty( $author_array['first_name'] ) && ! empty( $author_array['last_name'] ) ) {
 ?>
-		<tr><td class="borderTop" style="width:205px;">
-		<input type="text" name="deposit-other-authors-first-name[<?php echo $row_counter; ?>]" class="text" value="<?php echo $author_array['first_name']; ?>" />
-		</td><td class="borderTop" style="width:205px;">
-		<input type="text" name="deposit-other-authors-last-name[<?php echo $row_counter; ?>]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
-		</td><td class="borderTop" style="width:230px; vertical-align: top;">
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="author" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'author' ); } ?>>Author &nbsp;</span>
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="editor" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'editor' ); } ?>>Editor &nbsp;</span>
-		<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="translator" <?php if ( ! empty( $author_array['role'] ) ) { checked( sanitize_text_field( $author_array['role'] ), 'translator' ); } ?>>Translator &nbsp;</span>
-		<input type="hidden" name="deposit-other-authors-uni[<?php echo $row_counter; ?>]" value="<?php echo $author_array['uni']; ?>" />
-		</td><td class="borderTop">
-		</td></tr>
+	<tr><td class="borderTop" style="width:205px;">
+	<input type="text" name="deposit-other-authors-first-name[<?php echo $row_counter; ?>]" class="text" value="<?php echo $author_array['first_name']; ?>" />
+	</td><td class="borderTop" style="width:205px;">
+	<input type="text" name="deposit-other-authors-last-name[<?php echo $row_counter; ?>]" class="text deposit-other-authors-last-name" value="<?php echo $author_array['last_name']; ?>" />
+	</td><td class="borderTop" style="width:230px; vertical-align: top;">
+	<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="author"
+					<?php
+					if ( ! empty( $author_array['role'] ) ) {
+						checked( sanitize_text_field( $author_array['role'] ), 'author' ); }
+?>
+>Author &nbsp;</span>
+	<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="editor"
+					<?php
+					if ( ! empty( $author_array['role'] ) ) {
+						checked( sanitize_text_field( $author_array['role'] ), 'editor' ); }
+?>
+>Editor &nbsp;</span>
+	<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="translator"
+					<?php
+					if ( ! empty( $author_array['role'] ) ) {
+						checked( sanitize_text_field( $author_array['role'] ), 'translator' ); }
+?>
+>Translator &nbsp;</span>
+	<input type="hidden" name="deposit-other-authors-uni[<?php echo $row_counter; ?>]" value="<?php echo $author_array['uni']; ?>" />
+	</td><td class="borderTop">
+	</td></tr>
 <?php
-			}
-			$row_counter++;
 		}
+		$row_counter++;
 	}
+}
 ?>
 		</tbody></table>
 		</div>
@@ -425,36 +594,38 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 		<span class="description">Share this item with up to five groups that you are a member of.<br />Selecting a group will notify members of that group about your deposit.</span><br />
 		<select name="deposit-group[]" id="deposit-group[]" class="js-basic-multiple" multiple="multiple" data-placeholder="Select groups">
 <?php
-	$group_list = humcore_deposits_group_list( $user_id );
+	$group_list        = humcore_deposits_group_list( $user_id );
 	$posted_group_list = array();
-	if ( ! empty( $prev_val['deposit-group'] ) ) { $posted_group_list = array_map( 'sanitize_text_field', $prev_val['deposit-group'] ); }
-	foreach ( $group_list as $group_key => $group_value ) {
-		printf( '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $current_group_id == $group_key || in_array( $group_key, $posted_group_list ) ) ? 'selected="selected"' : '',
-			$group_key,
-			$group_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-group'] ) ) {
+	$posted_group_list = array_map( 'sanitize_text_field', $prev_val['deposit-group'] ); }
+foreach ( $group_list as $group_key => $group_value ) {
+	printf(
+		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $current_group_id == $group_key || in_array( $group_key, $posted_group_list ) ) ? 'selected="selected"' : '',
+		$group_key,
+		$group_value
+	);
+}
 ?>
 		</select>
 	</div>
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
-		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:core@hcommons.org?subject=CORE" target="_blank">suggest additional subject
- fields</a>.</span><br />
+		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:core@hcommons.org?subject=CORE" target="_blank">suggest additional subject fields</a>.</span><br />
 		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple-subjects" multiple="multiple" data-placeholder="Select subjects">
 <?php
 	$posted_subject_list = array();
-	if ( ! empty( $prev_val['deposit-subject'] ) ) {
-		$posted_subject_list = array_map( 'sanitize_text_field', $prev_val['deposit-subject'] );
-	}
-	foreach ( $posted_subject_list as $subject_value ) {
-		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			'selected="selected"',
-			$subject_value,
-			$subject_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-subject'] ) ) {
+	$posted_subject_list = array_map( 'sanitize_text_field', $prev_val['deposit-subject'] );
+}
+foreach ( $posted_subject_list as $subject_value ) {
+	printf(
+		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+		'selected="selected"',
+		$subject_value,
+		$subject_value
+	);
+}
 ?>
 		</select>
 	</div>
@@ -464,16 +635,17 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-keywords" multiple="multiple" data-placeholder="Enter tags">
 <?php
 	$posted_keyword_list = array();
-	if ( ! empty( $prev_val['deposit-keyword'] ) ) {
-		$posted_keyword_list = array_map( 'sanitize_text_field', $prev_val['deposit-keyword'] );
-	}
-	foreach ( $posted_keyword_list as $keyword_value ) {
-		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			'selected="selected"',
-			$keyword_value,
-			$keyword_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-keyword'] ) ) {
+	$posted_keyword_list = array_map( 'sanitize_text_field', $prev_val['deposit-keyword'] );
+}
+foreach ( $posted_keyword_list as $keyword_value ) {
+	printf(
+		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+		'selected="selected"',
+		$keyword_value,
+		$keyword_value
+	);
+}
 ?>
 		</select>
 	</div>
@@ -483,18 +655,19 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 			<option class="level-0" selected="selected" value=""></option>
 
 <?php
-	$resource_type_list = humcore_deposits_resource_type_list();
+	$resource_type_list   = humcore_deposits_resource_type_list();
 	$posted_resource_type = '';
-	if ( ! empty( $prev_val['deposit-resource-type'] ) ) {
-		$posted_resource_type = sanitize_text_field( $prev_val['deposit-resource-type'] );
-	}
-	foreach ( $resource_type_list as $resource_key => $resource_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $resource_key == $posted_resource_type ) ? 'selected="selected"' : '',
-			$resource_key,
-			$resource_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-resource-type'] ) ) {
+	$posted_resource_type = sanitize_text_field( $prev_val['deposit-resource-type'] );
+}
+foreach ( $resource_type_list as $resource_key => $resource_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $resource_key == $posted_resource_type ) ? 'selected="selected"' : '',
+		$resource_key,
+		$resource_value
+	);
+}
 ?>
 		</select>
 	</div>
@@ -504,42 +677,116 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 			<option class="level-0" selected="selected" value=""></option>
 
 <?php
-	$language_list = humcore_deposits_language_list();
+	$language_list   = humcore_deposits_language_list();
 	$posted_language = '';
-	if ( ! empty( $prev_val['deposit-language'] ) ) {
-		$posted_language = sanitize_text_field( $prev_val['deposit-language'] );
-	}
-	foreach ( $language_list as $language_key => $language_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $language_key == $posted_language ) ? 'selected="selected"' : '',
-			$language_key,
-			$language_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-language'] ) ) {
+	$posted_language = sanitize_text_field( $prev_val['deposit-language'] );
+}
+foreach ( $language_list as $language_key => $language_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $language_key == $posted_language ) ? 'selected="selected"' : '',
+		$language_key,
+		$language_value
+	);
+}
 ?>
 		</select>
 	</div>
 	<div id="deposit-notes-entry">
 		<label for="deposit-notes">Notes or Background</label>
 		<span class="description">Any additional information about your item?</span><br />
-		<textarea name="deposit-notes-unchanged" class="the-notes" id="deposit-notes-unchanged"><?php if ( ! empty( $prev_val['deposit-notes-unchanged'] ) ) { echo wp_kses( stripslashes( $prev_val['deposit-notes-unchanged'] ) , array( 'b' => array(), 'em' => array(), 'strong' => array() ) ); } ?></textarea>
+		<textarea name="deposit-notes-unchanged" class="the-notes" id="deposit-notes-unchanged">
+<?php
+if ( ! empty( $prev_val['deposit-notes-unchanged'] ) ) {
+	echo wp_kses(
+		stripslashes( $prev_val['deposit-notes-unchanged'] ), array(
+			'b'      => array(),
+			'em'     => array(),
+			'strong' => array(),
+		)
+	); }
+?>
+</textarea>
 	<div class="character-count"></div>
 	</div>
 	<div id="deposit-publication-type-entry">
 		<label for="deposit-publication-type">Publication Type</label>
 		<div id="deposit-publication-type-entries">
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book' ); } ?>>Book &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-chapter" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-review" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-review' ); } ?>>Book review &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-section" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-section' ); } ?>>Book section &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="proceedings-article" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'proceedings-article' ); } ?>>Conference proceeding &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="journal-article" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'journal-article' ); } ?>>Journal article &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="magazine-section" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'magazine-section' ); } ?>>Magazine section &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="monograph" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'monograph' ); } ?>>Monograph &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="newspaper-article" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'newspaper-article' ); } ?>>Newspaper article &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="online-publication" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'online-publication' ); } ?>>Online publication &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="podcast" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'podcast' ); } ?>>Podcast &nbsp;</span>
-			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="none" <?php if ( ! empty( $prev_val['deposit-publication-type'] ) ) { checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'none' ); } else { echo 'checked="checked"'; } ?>>Not published &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book' ); }
+?>
+>Book &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-chapter"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-chapter' ); }
+?>
+>Book chapter &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-review"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-review' ); }
+?>
+>Book review &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="book-section"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'book-section' ); }
+?>
+>Book section &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="proceedings-article"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'proceedings-article' ); }
+?>
+>Conference proceeding &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="journal-article"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'journal-article' ); }
+?>
+>Journal article &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="magazine-section"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'magazine-section' ); }
+?>
+>Magazine section &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="monograph"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'monograph' ); }
+?>
+>Monograph &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="newspaper-article"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'newspaper-article' ); }
+?>
+>Newspaper article &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="online-publication"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'online-publication' ); }
+?>
+>Online publication &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="podcast"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'podcast' ); }
+?>
+>Podcast &nbsp;</span>
+			<span style="white-space:nowrap;"><input type="radio" name="deposit-publication-type" value="none"
+			<?php
+			if ( ! empty( $prev_val['deposit-publication-type'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-publication-type'] ), 'none' );
+			} else {
+				echo 'checked="checked"'; }
+?>
+>Not published &nbsp;</span>
 	</div>
 	</div>
 <br />
@@ -558,7 +805,12 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 
 		<div id="deposit-non-published-date-entry">
 			<label for="deposit-non-published-date">Date of Creation</label>
-			<input type="text" id="deposit-non-published-date" name="deposit-non-published-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-non-published-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-non-published-date'] ); } ?>" />
+			<input type="text" id="deposit-non-published-date" name="deposit-non-published-date" class="text"
+			<?php
+			if ( ! empty( $prev_val['deposit-non-published-date'] ) ) {
+				echo ' value="' . sanitize_text_field( $prev_val['deposit-non-published-date'] ) . '" '; }
+?>
+/>
 		</div>
 
 	</div>
@@ -567,57 +819,72 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 		<span class="description">By default, and in accordance with section 2 of the <em>Commons</em> terms of service, no one may reuse this content in any way. Should you wish to allow others to distribute, display, modify, or otherwise reuse your content, please attribute it with the appropriate Creative Commons license from the drop-down menu below. See <a onclick="target='_blank'" href="http://creativecommons.org/licenses/">this page</a> for more information about the different types of Creative Commons licenses.</span><br /><br />
 		<select name="deposit-license-type" id="deposit-license-type" class="js-basic-single-required">
 <?php
-	$license_type_list = humcore_deposits_license_type_list();
+	$license_type_list   = humcore_deposits_license_type_list();
 	$posted_license_type = '';
-	if ( ! empty( $prev_val['deposit-license-type'] ) ) {
-		$posted_license_type = sanitize_text_field( $prev_val['deposit-license-type'] );
-	}
-	foreach ( $license_type_list as $license_key => $license_value ) {
-		printf('			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
-			$license_key,
-			$license_value
-		);
-	}
+if ( ! empty( $prev_val['deposit-license-type'] ) ) {
+	$posted_license_type = sanitize_text_field( $prev_val['deposit-license-type'] );
+}
+foreach ( $license_type_list as $license_key => $license_value ) {
+	printf(
+		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
+		$license_key,
+		$license_value
+	);
+}
 ?>
 		</select>
 		<span class="description">*</span>
 	</div>
-        <div id="deposit-embargoed-entry">
-                <label for="deposit-embargoed-flag">Embargo this deposit?</label>
-                        <input type="radio" name="deposit-embargoed-flag" value="yes" <?php if ( ! empty( $prev_val['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-embargoed-flag'] ), 'yes' ); } ?>>Yes &nbsp;
-                        <input type="radio" name="deposit-embargoed-flag" value="no" <?php if ( ! empty( $prev_val['deposit-embargoed-flag'] ) ) { checked( sanitize_text_field( $prev_val['deposit-embargoed-flag'] ), 'no' ); } else { echo 'checked="checked"'; } ?>>No &nbsp;
-        </div>
+		<div id="deposit-embargoed-entry">
+				<label for="deposit-embargoed-flag">Embargo this deposit?</label>
+						<input type="radio" name="deposit-embargoed-flag" value="yes"
+						<?php
+						if ( ! empty( $prev_val['deposit-embargoed-flag'] ) ) {
+							checked( sanitize_text_field( $prev_val['deposit-embargoed-flag'] ), 'yes' ); }
+?>
+>Yes &nbsp;
+						<input type="radio" name="deposit-embargoed-flag" value="no"
+						<?php
+						if ( ! empty( $prev_val['deposit-embargoed-flag'] ) ) {
+							checked( sanitize_text_field( $prev_val['deposit-embargoed-flag'] ), 'no' );
+						} else {
+							echo 'checked="checked"'; }
+?>
+>No &nbsp;
+		</div>
 
 	<div id="deposit-embargoed-entries">
-        <label for="deposit-embargo-length">Embargo Length</label>
-        <div id="deposit-embargo-length-entry">
-                <span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
+		<label for="deposit-embargo-length">Embargo Length</label>
+		<div id="deposit-embargo-length-entry">
+				<span class="description">Use <a onclick="target='_blank'" href="http://www.sherpa.ac.uk/romeo/">SHERPA/RoMEO</a> to check a journal’s open access policies.</span><br />
 		<span class="description">Enter the length of time (up to two years from now) after which this item should become available.</span> <br />
-                <select name="deposit-embargo-length" id="deposit-embargo-length" class="js-basic-single-required" data-placeholder="Select the embargo length." data-allowClear="true">
-                        <option class="level-0" selected="selected" value=""></option>
+				<select name="deposit-embargo-length" id="deposit-embargo-length" class="js-basic-single-required" data-placeholder="Select the embargo length." data-allowClear="true">
+						<option class="level-0" selected="selected" value=""></option>
 
 <?php
-        $embargo_length_list = humcore_deposits_embargo_length_list();
-        $posted_embargo_length = '';
-        if ( ! empty( $prev_val['deposit-embargo-length'] ) ) {
-                $posted_embargo_length = sanitize_text_field( $prev_val['deposit-embargo-length'] );
-        }
-        foreach ( $embargo_length_list as $embargo_key => $embargo_value ) {
-                printf('                        <option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-                        ( $embargo_key == $posted_embargo_length ) ? 'selected="selected"' : '',
-                        $embargo_key,
-                        $embargo_value
-                );
-        }
+		$embargo_length_list   = humcore_deposits_embargo_length_list();
+		$posted_embargo_length = '';
+if ( ! empty( $prev_val['deposit-embargo-length'] ) ) {
+		$posted_embargo_length = sanitize_text_field( $prev_val['deposit-embargo-length'] );
+}
+foreach ( $embargo_length_list as $embargo_key => $embargo_value ) {
+		printf(
+			'                        <option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+			( $embargo_key == $posted_embargo_length ) ? 'selected="selected"' : '',
+			$embargo_key,
+			$embargo_value
+		);
+}
 ?>
-                </select>
+				</select>
 		<span class="description">*</span>
-        </div>
+		</div>
 	</div>
 <br />
 	<input id="deposit-submit" name="deposit-submit" type="submit" value="<?php echo ucfirst( $deposit_button_label ); ?>" />
-	<?php $wp_referer = wp_get_referer();
+	<?php
+	$wp_referer = wp_get_referer();
 		printf(
 			'<a id="deposit-cancel" href="%1$s" class="button white">Cancel</a>',
 			( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/'
@@ -638,442 +905,14 @@ $deposit_button_label = ( 'new' === $form_type ) ? 'Deposit' : 'Update';
 
 }
 
-function format_book_input( $prev_val ) { ?>
-
-	<div id="deposit-book-entries">
-
-		<div id="deposit-book-doi-entry">
-			<label for="deposit-book-doi">Publisher DOI</label>
-			<input type="text" id="deposit-book-doi" name="deposit-book-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-publisher-entry">
-			<label for="deposit-book-publisher">Publisher</label>
-			<input type="text" id="deposit-book-publisher" name="deposit-book-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-publish-date-entry">
-			<label for="deposit-book-publish-date">Pub Date</label>
-			<input type="text" id="deposit-book-publish-date" name="deposit-book-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-edition-entry">
-			<label for="deposit-book-edition">Version</label>
-			<input type="text" id="deposit-book-edition" name="deposit-book-edition" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-edition'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-edition'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-volume-entry">
-			<label for="deposit-book-volume">Volume</label>
-			<input type="text" id="deposit-book-volume" name="deposit-book-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-volume'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-isbn-entry">
-			<label for="deposit-book-isbn">ISBN</label>
-			<input type="text" id="deposit-book-isbn" name="deposit-book-isbn" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-isbn'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-isbn'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_book_chapter_input( $prev_val ) { ?>
-
-	<div id="deposit-book-chapter-entries">
-
-		<div id="deposit-book-chapter-doi-entry">
-			<label for="deposit-book-chapter-doi">Publisher DOI</label>
-			<input type="text" id="deposit-book-chapter-doi" name="deposit-book-chapter-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-publisher-entry">
-			<label for="deposit-book-chapter-publisher">Publisher</label>
-			<input type="text" id="deposit-book-chapter-publisher" name="deposit-book-chapter-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-publish-date-entry">
-			<label for="deposit-book-chapter-publish-date">Pub Date</label>
-			<input type="text" id="deposit-book-chapter-publish-date" name="deposit-book-chapter-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-title-entry">
-			<label for="deposit-book-chapter-title">Book Title</label>
-			<input type="text" id="deposit-book-chapter-title" name="deposit-book-chapter-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-author-entry">
-			<label for="deposit-book-chapter-author">Book Author or Editor</label>
-			<input type="text" id="deposit-book-chapter-author" name="deposit-book-chapter-author" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-author'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-author'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-chapter-entry">
-			<label for="deposit-book-chapter-chapter">Chapter</label>
-			<input type="text" id="deposit-book-chapter-chapter" name="deposit-book-chapter-chapter" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-chapter'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-chapter'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-pages-entry">
-			<label for="deposit-book-chapter-start-page">Start Page</label>
-			<input type="text" id="deposit-book-chapter-start-page" name="deposit-book-chapter-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-start-page'] ); } ?>" />
-			<label for="deposit-book-chapter-end-page">End Page</label>
-			<input type="text" id="deposit-book-chapter-end-page" name="deposit-book-chapter-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-end-page'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-chapter-isbn-entry">
-			<label for="deposit-book-chapter-isbn">ISBN</label>
-			<input type="text" id="deposit-book-chapter-isbn" name="deposit-book-chapter-isbn" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-chapter-isbn'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-chapter-isbn'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_book_review_input( $prev_val ) { ?>
-
-	<div id="deposit-book-review-entries">
-
-		<div id="deposit-book-review-doi-entry">
-			<label for="deposit-book-review-doi">Publisher DOI</label>
-			<input type="text" id="deposit-book-review-doi" name="deposit-book-review-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-review-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-review-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-review-publisher-entry">
-			<label for="deposit-book-review-publisher">Publisher</label>
-			<input type="text" id="deposit-book-review-publisher" name="deposit-book-review-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-review-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-review-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-review-publish-date-entry">
-			<label for="deposit-book-review-publish-date">Pub Date</label>
-			<input type="text" id="deposit-book-review-publish-date" name="deposit-book-review-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-review-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-review-publish-date'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_book_section_input( $prev_val ) { ?>
-
-	<div id="deposit-book-section-entries">
-
-		<div id="deposit-book-section-doi-entry">
-			<label for="deposit-book-section-doi">Publisher DOI</label>
-			<input type="text" id="deposit-book-section-doi" name="deposit-book-section-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-section-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-section-publisher-entry">
-			<label for="deposit-book-section-publisher">Publisher</label>
-			<input type="text" id="deposit-book-section-publisher" name="deposit-book-section-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-section-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-section-publish-date-entry">
-			<label for="deposit-book-section-publish-date">Pub Date</label>
-			<input type="text" id="deposit-book-section-publish-date" name="deposit-book-section-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-section-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-section-title-entry">
-			<label for="deposit-book-section-title">Book Title</label>
-			<input type="text" id="deposit-book-section-title" name="deposit-book-section-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-section-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-section-author-entry">
-			<label for="deposit-book-section-author">Book Author or Editor</label>
-			<input type="text" id="deposit-book-section-author" name="deposit-book-section-author" class="long" value="<?php if ( ! empty( $prev_val['deposit-book-section-author'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-author'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-section-edition-entry">
-			<label for="deposit-book-section-edition">Version</label>
-			<input type="text" id="deposit-book-section-edition" name="deposit-book-section-edition" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-section-edition'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-edition'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-section-pages-entry">
-			<label for="deposit-book-section-start-page">Start Page</label>
-			<input type="text" id="deposit-book-section-start-page" name="deposit-book-section-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-section-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-start-page'] ); } ?>" />
-			<label for="deposit-book-section-end-page">End Page</label>
-			<input type="text" id="deposit-book-section-end-page" name="deposit-book-section-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-section-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-end-page'] ); } ?>" />
-		</div>
-
-		<div id="deposit-book-section-isbn-entry">
-			<label for="deposit-book-section-isbn">ISBN</label>
-			<input type="text" id="deposit-book-section-isbn" name="deposit-book-section-isbn" class="text" value="<?php if ( ! empty( $prev_val['deposit-book-section-isbn'] ) ) { echo sanitize_text_field( $prev_val['deposit-book-section-isbn'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_journal_article_input( $prev_val ) { ?>
-
-	<div id="deposit-journal-entries">
-
-		<div id="deposit-journal-doi-entry">
-			<label for="deposit-journal-doi">Publisher DOI</label>
-			<input type="text" id="deposit-journal-doi" name="deposit-journal-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-publisher-entry">
-			<label for="deposit-journal-publisher">Publisher</label>
-			<input type="text" id="deposit-journal-publisher" name="deposit-journal-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-publish-date-entry">
-			<label for="deposit-journal-publish-date">Pub Date</label>
-			<input type="text" id="deposit-journal-publish-date" name="deposit-journal-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-title-entry">
-			<label for="deposit-journal-title">Journal Title</label>
-			<input type="text" id="deposit-journal-title" name="deposit-journal-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-journal-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-volume-entry">
-			<label for="deposit-journal-volume"><span>Volume</span>
-			<input type="text" id="deposit-journal-volume" name="deposit-journal-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-volume'] ); } ?>" />
-			</label>
-			<label for="deposit-journal-issue"><span>Issue</span>
-			<input type="text" id="deposit-journal-issue" name="deposit-journal-issue" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-issue'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-issue'] ); } ?>" />
-			</label>
-			<br style='clear:both'>
-		</div>
-
-		<div id="deposit-journal-pages-entry">
-			<label for="deposit-journal-start-page">Start Page</label>
-			<input type="text" id="deposit-journal-start-page" name="deposit-journal-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-start-page'] ); } ?>" />
-			<label for="deposit-journal-end-page">End Page</label>
-			<input type="text" id="deposit-journal-end-page" name="deposit-journal-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-end-page'] ); } ?>" />
-		</div>
-
-		<div id="deposit-journal-issn-entry">
-			<label for="deposit-journal-issn">ISSN</label>
-			<input type="text" id="deposit-journal-issn" name="deposit-journal-issn" class="text" value="<?php if ( ! empty( $prev_val['deposit-journal-issn'] ) ) { echo sanitize_text_field( $prev_val['deposit-journal-issn'] ); } ?>" />
-		</div>
-
-	</div>
-
-<?php
-
-}
-
-function format_magazine_section_input( $prev_val ) { ?>
-
-	<div id="deposit-magazine-section-entries">
-
-		<div id="deposit-magazine-section-url-entry">
-			<label for="deposit-magazine-section-url">URL</label>
-			<input type="text" id="deposit-magazine-section-url" name="deposit-magazine-section-url" class="text" value="<?php if ( ! empty( $prev_val['deposit-magazine-section-url'] ) ) { echo sanitize_text_field( $prev_val['deposit-magazine-section-url'] ); } ?>" />
-		</div>
-
-		<div id="deposit-magazine-section-publish-date-entry">
-			<label for="deposit-magazine-section-publish-date">Pub Date</label>
-			<input type="text" id="deposit-magazine-section-publish-date" name="deposit-magazine-section-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-magazine-section-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-magazine-section-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-magazine-section-title-entry">
-			<label for="deposit-magazine-section-title">Magazine</label>
-			<input type="text" id="deposit-magazine-section-title" name="deposit-magazine-section-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-magazine-section-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-magazine-section-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-magazine-section-volume-entry">
-			<label for="deposit-magazine-section-volume">Volume</label>
-			<input type="text" id="deposit-magazine-section-volume" name="deposit-magazine-section-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-magazine-section-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-magazine-section-volume'] ); } ?>" />
-		</div>
-
-		<div id="deposit-magazine-section-pages-entry">
-			<label for="deposit-magazine-section-start-page">Start Page</label>
-			<input type="text" id="deposit-magazine-section-start-page" name="deposit-magazine-section-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-magazine-section-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-magazine-section-start-page'] ); } ?>" />
-			<label for="deposit-magazine-section-end-page">End Page</label>
-			<input type="text" id="deposit-magazine-section-end-page" name="deposit-magazine-section-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-magazine-section-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-magazine-section-end-page'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_monograph_input( $prev_val ) { ?>
-
-	<div id="deposit-monograph-entries">
-
-		<div id="deposit-monograph-doi-entry">
-			<label for="deposit-monograph-doi">Publisher DOI</label>
-			<input type="text" id="deposit-monograph-doi" name="deposit-monograph-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-monograph-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-monograph-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-monograph-publisher-entry">
-			<label for="deposit-monograph-publisher">Publisher</label>
-			<input type="text" id="deposit-monograph-publisher" name="deposit-monograph-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-monograph-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-monograph-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-monograph-publish-date-entry">
-			<label for="deposit-monograph-publish-date">Pub Date</label>
-			<input type="text" id="deposit-monograph-publish-date" name="deposit-monograph-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-monograph-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-monograph-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-monograph-isbn-entry">
-			<label for="deposit-monograph-isbn">ISBN</label>
-			<input type="text" id="deposit-monograph-isbn" name="deposit-monograph-isbn" class="text" value="<?php if ( ! empty( $prev_val['deposit-monograph-isbn'] ) ) { echo sanitize_text_field( $prev_val['deposit-monograph-isbn'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_newspaper_article_input( $prev_val ) { ?>
-
-	<div id="deposit-newspaper-article-entries">
-
-		<div id="deposit-newspaper-article-url-entry">
-			<label for="deposit-newspaper-article-url">URL</label>
-			<input type="text" id="deposit-newspaper-article-url" name="deposit-newspaper-article-url" class="text" value="<?php if ( ! empty( $prev_val['deposit-newspaper-article-url'] ) ) { echo sanitize_text_field( $prev_val['deposit-newspaper-article-url'] ); } ?>" />
-		</div>
-
-		<div id="deposit-newspaper-article-publish-date-entry">
-			<label for="deposit-newspaper-article-publish-date">Pub Date</label>
-			<input type="text" id="deposit-newspaper-article-publish-date" name="deposit-newspaper-article-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-newspaper-article-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-newspaper-article-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-newspaper-article-title-entry">
-			<label for="deposit-newspaper-article-title">Newspaper</label>
-			<input type="text" id="deposit-newspaper-article-title" name="deposit-newspaper-article-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-newspaper-article-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-newspaper-article-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-newspaper-article-edition-entry">
-			<label for="deposit-newspaper-article-edition">Edition</label>
-			<input type="text" id="deposit-newspaper-article-edition" name="deposit-newspaper-article-edition" class="text" value="<?php if ( ! empty( $prev_val['deposit-newspaper-article-edition'] ) ) { echo sanitize_text_field( $prev_val['deposit-newspaper-article-edition'] ); } ?>" />
-		</div>
-
-		<div id="deposit-newspaper-article-volume-entry">
-			<label for="deposit-newspaper-article-volume">Section</label>
-			<input type="text" id="deposit-newspaper-article-volume" name="deposit-newspaper-article-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-newspaper-article-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-newspaper-article-volume'] ); } ?>" />
-		</div>
-
-		<div id="deposit-newspaper-article-pages-entry">
-			<label for="deposit-newspaper-article-start-page">Start Page</label>
-			<input type="text" id="deposit-newspaper-article-start-page" name="deposit-newspaper-article-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-newspaper-article-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-newspaper-article-start-page'] ); } ?>" />
-			<label for="deposit-newspaper-article-end-page">End Page</label>
-			<input type="text" id="deposit-newspaper-article-end-page" name="deposit-newspaper-article-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-newspaper-article-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-newspaper-article-end-page'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_online_publication_input( $prev_val ) { ?>
-
-	<div id="deposit-online-publication-entries">
-
-		<div id="deposit-online-publication-url-entry">
-			<label for="deposit-online-publication-url">URL</label>
-			<input type="text" id="deposit-online-publication-url" name="deposit-online-publication-url" class="text" value="<?php if ( ! empty( $prev_val['deposit-online-publication-url'] ) ) { echo sanitize_text_field( $prev_val['deposit-online-publication-url'] ); } ?>" />
-		</div>
-
-		<div id="deposit-online-publication-publisher-entry">
-			<label for="deposit-online-publication-publisher">Publisher</label>
-			<input type="text" id="deposit-online-publication-publisher" name="deposit-online-publication-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-online-publication-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-online-publication-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-online-publication-publish-date-entry">
-			<label for="deposit-online-publication-publish-date">Pub Date</label>
-			<input type="text" id="deposit-online-publication-publish-date" name="deposit-online-publication-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-online-publication-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-online-publication-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-online-publication-title-entry">
-			<label for="deposit-online-publication-title">Web site</label>
-			<input type="text" id="deposit-online-publication-title" name="deposit-online-publication-title" size="60" class="long" value="<?php if ( ! empty( $prev_val['deposit-online-publication-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-online-publication-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-online-publication-edition-entry">
-			<label for="deposit-online-publication-edition">Version</label>
-			<input type="text" id="deposit-online-publication-edition" name="deposit-online-publication-edition" class="text" value="<?php if ( ! empty( $prev_val['deposit-online-publication-edition'] ) ) { echo sanitize_text_field( $prev_val['deposit-online-publication-edition'] ); } ?>" />
-		</div>
-
-		<div id="deposit-online-publication-volume-entry">
-			<label for="deposit-online-publication-volume">Section</label>
-			<input type="text" id="deposit-online-publication-volume" name="deposit-online-publication-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-online-publication-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-online-publication-volume'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_podcast_input( $prev_val ) { ?>
-
-	<div id="deposit-podcast-entries">
-
-		<div id="deposit-podcast-url-entry">
-			<label for="deposit-podcast-url">URL</label>
-			<input type="text" id="deposit-podcast-url" name="deposit-podcast-url" class="long" value="<?php if ( ! empty( $prev_val['deposit-podcast-url'] ) ) { echo sanitize_text_field( $prev_val['deposit-podcast-url'] ); } ?>" />
-		</div>
-
-		<div id="deposit-podcast-publisher-entry">
-			<label for="deposit-podcast-publisher">Publisher</label>
-			<input type="text" id="deposit-podcast-publisher" name="deposit-podcast-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-podcast-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-podcast-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-podcast-publish-date-entry">
-			<label for="deposit-podcast-publish-date">Pub Date</label>
-			<input type="text" id="deposit-podcast-publish-date" name="deposit-podcast-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-podcast-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-podcast-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-podcast-volume-entry">
-			<label for="deposit-podcast-volume">Episode</label>
-			<input type="text" id="deposit-podcast-volume" name="deposit-podcast-volume" class="text" value="<?php if ( ! empty( $prev_val['deposit-podcast-volume'] ) ) { echo sanitize_text_field( $prev_val['deposit-podcast-volume'] ); } ?>" />
-		</div>
-
-	</div>
-<?php
-
-}
-
-function format_proceedings_article_input( $prev_val ) { ?>
-
-	<div id="deposit-proceedings-entries">
-
-		<div id="deposit-proceeding-doi-entry">
-			<label for="deposit-proceeding-doi">Publisher DOI</label>
-			<input type="text" id="deposit-proceeding-doi" name="deposit-proceeding-doi" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-doi'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-doi'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-publisher-entry">
-			<label for="deposit-proceeding-publisher">Publisher</label>
-			<input type="text" id="deposit-proceeding-publisher" name="deposit-proceeding-publisher" size="40" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publisher'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publisher'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-publish-date-entry">
-			<label for="deposit-proceeding-publish-date">Pub Date</label>
-			<input type="text" id="deposit-proceeding-publish-date" name="deposit-proceeding-publish-date" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-publish-date'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-publish-date'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-title-entry">
-			<label for="deposit-proceeding-title">Proceeding Title</label>
-			<input type="text" id="deposit-proceeding-title" name="deposit-proceeding-title" size="75" class="long" value="<?php if ( ! empty( $prev_val['deposit-proceeding-title'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-title'] ); } ?>" />
-		</div>
-
-		<div id="deposit-proceeding-pages-entry">
-			<label for="deposit-proceeding-start-page">Start Page</label>
-			<input type="text" id="deposit-proceeding-start-page" name="deposit-proceeding-start-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-start-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-start-page'] ); } ?>" />
-			<label for="deposit-proceeding-end-page">End Page</label>
-			<input type="text" id="deposit-proceeding-end-page" name="deposit-proceeding-end-page" size="5" class="text" value="<?php if ( ! empty( $prev_val['deposit-proceeding-end-page'] ) ) { echo sanitize_text_field( $prev_val['deposit-proceeding-end-page'] ); } ?>" />
-		</div>
-
-	</div>
-
-<?php
-
-}
-
 /**
  * Output deposits list entry html.
  */
 function humcore_deposits_list_entry_content() {
 
-	$metadata = (array) humcore_get_current_deposit();
-        $authors = array_filter( $metadata['authors'] );
-        $authors_list = implode( ', ', $authors );
+	$metadata         = (array) humcore_get_current_deposit();
+		$authors      = array_filter( $metadata['authors'] );
+		$authors_list = implode( ', ', $authors );
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 ?>
@@ -1106,19 +945,19 @@ function humcore_deposits_feed_item_content() {
 
 	$metadata = (array) humcore_get_current_deposit();
 
-        $contributors = array_filter( $metadata['authors'] );
-        $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-        $contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-        $contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
-        $authors_list = array();
-        $authors_list = '';
-        foreach( $contributors_list as $contributor ) {
-                if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
+		$contributors      = array_filter( $metadata['authors'] );
+		$contributor_uni   = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+		$contributor_type  = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+		$contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+		$authors_list      = array();
+		$authors_list      = '';
+	foreach ( $contributors_list as $contributor ) {
+		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 			$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $contributor[0], ENT_QUOTES ) );
-                }
-        }
+		}
+	}
 
-        foreach ( $authors as $author ) {
+	foreach ( $authors as $author ) {
 	}
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
@@ -1153,31 +992,31 @@ function humcore_deposits_entry_content() {
 	if ( ! empty( $subjects ) ) {
 		$subject_list = implode( ', ', array_map( 'humcore_linkify_subject', $subjects ) );
 	}
-        if ( ! empty( $metadata['keyword'] ) ) {
-                $keywords = array_filter( $metadata['keyword'] );
-                $keyword_display_values = array_filter( explode( ', ', $metadata['keyword_display'] ) );
-        }
-        if ( ! empty( $keywords ) ) {
-                $keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
-        }
+	if ( ! empty( $metadata['keyword'] ) ) {
+			$keywords               = array_filter( $metadata['keyword'] );
+			$keyword_display_values = array_filter( explode( ', ', $metadata['keyword_display'] ) );
+	}
+	if ( ! empty( $keywords ) ) {
+			$keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
+	}
 
-	$contributors = array_filter( $metadata['authors'] );
-	$contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-	$contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-	$contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
-	$authors_list = array();
-	$editors_list = array();
-	$translators_list = array();
+	$contributors           = array_filter( $metadata['authors'] );
+	$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	$authors_list           = array();
+	$editors_list           = array();
+	$translators_list       = array();
 	$project_directors_list = array();
-	foreach( $contributors_list as $contributor ) {
+	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 			$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-		} else if ( 'editor' === $contributor[2] ) {
-                        $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-		} else if ( 'project director' === $contributor[2] ) {
-                        $project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-		} else if ( 'translator' === $contributor[2] ) {
-                        $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'editor' === $contributor[2] ) {
+						$editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'project director' === $contributor[2] ) {
+						$project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'translator' === $contributor[2] ) {
+						$translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		}
 	}
 	//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
@@ -1227,18 +1066,21 @@ function humcore_deposits_entry_content() {
 <!-- <dd><a href="<?php echo esc_attr( $item_url ); ?>"><?php echo esc_html( $metadata['handle'] ); ?></a></dd> -->
 <?php
 $highlights = $metadata['highlights'];
-if ( ! empty( $highlights ) ) { ?>
+if ( ! empty( $highlights ) ) {
+?>
 <dt>Search term matches:</dt><dd></dd>
-<?php    foreach ( $highlights as $field => $highlight ) {
-        echo '<dt>' . $field . '</dt>';
-        echo '<dd>... ' . implode( ' ( ... ) ', $highlight ) . ' ...</dd>';
-    }
+<?php
+foreach ( $highlights as $field => $highlight ) {
+	echo '<dt>' . $field . '</dt>';
+	echo '<dd>... ' . implode( ' ( ... ) ', $highlight ) . ' ...</dd>';
+}
 }
 ?>
 </dl>
 </div>
 <br style='clear:both'>
-<?php }
+<?php
+}
 
 /**
  * Output deposits single item html.
@@ -1259,86 +1101,90 @@ function humcore_deposit_item_content() {
 	if ( ! empty( $subjects ) ) {
 		$subject_list = implode( ', ', array_map( 'humcore_linkify_subject', $subjects ) );
 	}
-        if ( ! empty( $metadata['keyword'] ) ) {
-                $keywords = array_filter( $metadata['keyword'] );
-                $keyword_display_values = array_filter( explode( ', ', $metadata['keyword_display'] ) );
-        }
-        if ( ! empty( $keywords ) ) {
-                $keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
-        }
+	if ( ! empty( $metadata['keyword'] ) ) {
+			$keywords               = array_filter( $metadata['keyword'] );
+			$keyword_display_values = array_filter( explode( ', ', $metadata['keyword_display'] ) );
+	}
+	if ( ! empty( $keywords ) ) {
+			$keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
+	}
 
-        $contributors = array_filter( $metadata['authors'] );
-        $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-        $contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-        $contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
-        $authors_list = array();
-        $editors_list = array();
-        $translators_list = array();
-        $project_directors_list = array();
-        foreach( $contributors_list as $contributor ) {
-                if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
-                        $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                } else if ( 'editor' === $contributor[2] ) {
-                        $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                } else if ( 'project director' === $contributor[2] ) {
-                        $project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                } else if ( 'translator' === $contributor[2] ) {
-                        $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                }
-        }
+		$contributors           = array_filter( $metadata['authors'] );
+		$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+		$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+		$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
+		$authors_list           = array();
+		$editors_list           = array();
+		$translators_list       = array();
+		$project_directors_list = array();
+	foreach ( $contributors_list as $contributor ) {
+		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
+				$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'editor' === $contributor[2] ) {
+				$editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'project director' === $contributor[2] ) {
+				$project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'translator' === $contributor[2] ) {
+				$translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		}
+	}
 
-        $wpmn_record_identifier = array();
-        $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+		$wpmn_record_identifier = array();
+		$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
 	// handle legacy MLA value
 	if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
 		$wpmn_record_identifier[0] = '1';
 		$wpmn_record_identifier[1] = $metadata['record_identifier'];
 	}
-        $switched = false;
-        if ( $wpmn_record_identifier[0] != get_current_blog_id() ) {
-                switch_to_blog( $wpmn_record_identifier[0] );
-                $switched = true;
-        }
+		$switched = false;
+	if ( get_current_blog_id() != $wpmn_record_identifier[0] ) {
+			switch_to_blog( $wpmn_record_identifier[0] );
+			$switched = true;
+	}
 
-	$site_url = get_option( 'siteurl' );
+	$site_url        = get_option( 'siteurl' );
 	$deposit_post_id = $wpmn_record_identifier[1];
-	$post_data = get_post( $deposit_post_id );
-	$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
+	$post_data       = get_post( $deposit_post_id );
+	$post_metadata   = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
 	$update_time = '';
 	if ( ! empty( $metadata['record_change_date'] ) ) {
 		$update_time = human_time_diff( strtotime( $metadata['record_change_date'] ) );
 	}
-	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
+	$file_metadata              = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
 	$content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
-	$total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
-	$content_views_meta_key = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
-	$total_content_views = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
-	$views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
-	$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
-	if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
-		$post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
+	$total_content_downloads    = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
+	$content_views_meta_key     = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+	$total_content_views        = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
+	$views_meta_key             = sprintf( '_total_views_%s', $metadata['pid'] );
+	$total_views                = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
+	if ( bp_loggedin_user_id() != $post_data->post_author && ! humcore_is_bot_user_agent() ) {
+		$post_meta_id = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 	}
-	$download_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+	$download_url   = sprintf(
+		'%s/deposits/download/%s/%s/%s/',
 		$site_url,
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],
 		$file_metadata['files'][0]['filename']
 	);
-	$view_url = sprintf( '%s/deposits/view/%s/%s/%s/',
+	$view_url       = sprintf(
+		'%s/deposits/view/%s/%s/%s/',
 		$site_url,
 		$file_metadata['files'][0]['pid'],
 		$file_metadata['files'][0]['datastream_id'],
 		$file_metadata['files'][0]['filename']
 	);
-	$metadata_url = sprintf( '%s/deposits/download/%s/%s/%s/',
+	$metadata_url   = sprintf(
+		'%s/deposits/download/%s/%s/%s/',
 		$site_url,
 		$metadata['pid'],
 		'descMetadata',
 		'xml'
 	);
 	$file_type_data = wp_check_filetype( $file_metadata['files'][0]['filename'], wp_get_mime_types() );
-	$file_type_icon = sprintf( '<img class="deposit-icon" src="%s" alt="%s" />',
+	$file_type_icon = sprintf(
+		'<img class="deposit-icon" src="%s" alt="%s" />',
 		plugins_url( 'assets/' . esc_attr( $file_type_data['ext'] ) . '-icon-48x48.png', __FILE__ ),
 		esc_attr( $file_type_data['ext'] )
 	);
@@ -1350,7 +1196,8 @@ function humcore_deposit_item_content() {
 	}
 
 	if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
-		$thumb_url = sprintf( '<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
+		$thumb_url = sprintf(
+			'<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
 			$site_url,
 			$file_metadata['files'][0]['pid'],
 			$file_metadata['files'][0]['thumb_datastream_id'],
@@ -1360,9 +1207,9 @@ function humcore_deposit_item_content() {
 	} else {
 		$thumb_url = '';
 	}
-        if ( $switched ) {
-                restore_current_blog();
-        }
+	if ( $switched ) {
+			restore_current_blog();
+	}
 	//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 	$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
 	$edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
@@ -1437,8 +1284,10 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
-		 'White paper' == $metadata['genre'] ) : ?>
+<?php
+elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
+		'White paper' == $metadata['genre'] ) :
+			?>
 <?php if ( ! empty( $metadata['institution'] ) ) : ?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
@@ -1460,29 +1309,31 @@ function humcore_deposit_item_content() {
 <?php endif; ?>
 <dt><?php _e( 'Metadata:', 'humcore_domain' ); ?></dt>
 <dd><a onclick="target='_blank'" class="bp-deposits-metadata" title="MODS Metadata" rel="nofollow" href="<?php echo esc_url( $metadata_url ); ?>">xml</a></dd>
-<?php if ( 'book' == $post_metadata['publication-type'] ) :
-        humcore_display_book_pub_metadata( $metadata );
+<?php
+if ( 'book' == $post_metadata['publication-type'] ) :
+		humcore_display_book_pub_metadata( $metadata );
 elseif ( 'book-chapter' == $post_metadata['publication-type'] ) :
-        humcore_display_book_chapter_pub_metadata( $metadata );
+		humcore_display_book_chapter_pub_metadata( $metadata );
 elseif ( 'book-review' == $post_metadata['publication-type'] ) :
-        humcore_display_book_review_pub_metadata( $metadata );
+		humcore_display_book_review_pub_metadata( $metadata );
 elseif ( 'book-section' == $post_metadata['publication-type'] ) :
-        humcore_display_book_section_pub_metadata( $metadata );
+		humcore_display_book_section_pub_metadata( $metadata );
 elseif ( 'journal-article' == $post_metadata['publication-type'] ) :
-        humcore_display_journal_article_pub_metadata( $metadata );
+		humcore_display_journal_article_pub_metadata( $metadata );
 elseif ( 'magazine-section' == $post_metadata['publication-type'] ) :
-        humcore_display_magazine_section_pub_metadata( $metadata );
+		humcore_display_magazine_section_pub_metadata( $metadata );
 elseif ( 'monograph' == $post_metadata['publication-type'] ) :
-        humcore_display_monograph_pub_metadata( $metadata );
+		humcore_display_monograph_pub_metadata( $metadata );
 elseif ( 'newspaper-article' == $post_metadata['publication-type'] ) :
-        humcore_display_newspaper_article_pub_metadata( $metadata );
+		humcore_display_newspaper_article_pub_metadata( $metadata );
 elseif ( 'online-publication' == $post_metadata['publication-type'] ) :
-        humcore_display_online_publication_pub_metadata( $metadata );
+		humcore_display_online_publication_pub_metadata( $metadata );
 elseif ( 'podcast' == $post_metadata['publication-type'] ) :
-        humcore_display_podcast_pub_metadata( $metadata );
+		humcore_display_podcast_pub_metadata( $metadata );
 elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) :
-        humcore_display_proceedings_article_pub_metadata( $metadata );
-endif; ?>
+		humcore_display_proceedings_article_pub_metadata( $metadata );
+endif;
+?>
 <dt><?php _e( 'Status:', 'humcore_domain' ); ?></dt> 
 <?php if ( 'draft' === $post_data->post_status ) : ?>
 <dd><?php echo '<strong>Provisional</strong>'; ?>
@@ -1494,7 +1345,7 @@ endif; ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
 <?php if ( humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
- &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
+&nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
 <?php if ( ! empty( $update_time ) ) : ?>
@@ -1529,7 +1380,7 @@ There is a problem retrieving some of the data for this item. This error has bee
 		<td class="prompt">&nbsp;</td>
 		<td class="value"><a class="bp-deposits-download button" title="Download" rel="nofollow" href="<?php echo esc_url( $download_url ); ?>"><?php _e( 'Download', 'humcore_domain' ); ?></a>
 <?php if ( $content_viewable ) : ?>
-	 	<a onclick="target='_blank'" class="bp-deposits-view button" title="View" rel="nofollow" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View in browser', 'humcore_domain' ); ?></a>
+		<a onclick="target='_blank'" class="bp-deposits-view button" title="View" rel="nofollow" href="<?php echo esc_url( $view_url ); ?>"><?php _e( 'View in browser', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 		</td>
 	</tr>
@@ -1539,7 +1390,12 @@ There is a problem retrieving some of the data for this item. This error has bee
 	<table class="view_statistics">
 	<tr>
 		<td class="prompt">Activity:</td>
-		<td class="value"><?php _e( 'Downloads:', 'humcore_domain' ); echo ' ' . esc_html( $total_content_downloads + $total_content_views ); ?></td>
+		<td class="value">
+		<?php
+		_e( 'Downloads:', 'humcore_domain' );
+		echo ' ' . esc_html( $total_content_downloads + $total_content_views );
+?>
+</td>
 	</tr>
 	</table>
 </div>
@@ -1556,120 +1412,125 @@ There is a problem retrieving some of the data for this item. This error has bee
  */
 function humcore_deposit_item_review_content() {
 
-        $metadata = (array) humcore_get_current_deposit();
-        if ( ! empty( $metadata['group'] ) ) {
-                $groups = array_filter( $metadata['group'] );
-        }
-        if ( ! empty( $groups ) ) {
-                $group_list = implode( ', ', array_map( 'esc_html', $groups ) );
-        }
-        if ( ! empty( $metadata['subject'] ) ) {
-                $subjects = array_filter( $metadata['subject'] );
-        }
-        if ( ! empty( $subjects ) ) {
-                $subject_list = implode( ', ', array_map( 'esc_html', $subjects ) );
-        }
-        if ( ! empty( $metadata['keyword'] ) ) {
-                $keywords = array_filter( $metadata['keyword'] );
-                $keyword_display_values = explode( ', ', array_filter( $metadata['keyword_display'] ) );
-        }
-        if ( ! empty( $keywords ) ) {
-                $keyword_list = implode( ', ', array_map( 'esc_html', $keywords, $keyword_display_values ) );
-        }
+		$metadata = (array) humcore_get_current_deposit();
+	if ( ! empty( $metadata['group'] ) ) {
+			$groups = array_filter( $metadata['group'] );
+	}
+	if ( ! empty( $groups ) ) {
+			$group_list = implode( ', ', array_map( 'esc_html', $groups ) );
+	}
+	if ( ! empty( $metadata['subject'] ) ) {
+			$subjects = array_filter( $metadata['subject'] );
+	}
+	if ( ! empty( $subjects ) ) {
+			$subject_list = implode( ', ', array_map( 'esc_html', $subjects ) );
+	}
+	if ( ! empty( $metadata['keyword'] ) ) {
+			$keywords               = array_filter( $metadata['keyword'] );
+			$keyword_display_values = explode( ', ', array_filter( $metadata['keyword_display'] ) );
+	}
+	if ( ! empty( $keywords ) ) {
+			$keyword_list = implode( ', ', array_map( 'esc_html', $keywords, $keyword_display_values ) );
+	}
 
-        $contributors = array_filter( $metadata['authors'] );
-        $contributor_uni = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-        $contributor_type = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-        $contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
-        $authors_list = array();
-        $editors_list = array();
-        $translators_list = array();
-        $project_directors_list = array();
-        foreach( $contributors_list as $contributor ) {
-                if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
-                        $authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                } else if ( 'editor' === $contributor[2] ) {
-                        $editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                } else if ( 'project director' === $contributor[2] ) {
-                        $project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                } else if ( 'translator' === $contributor[2] ) {
-                        $translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
-                }
-        }
+		$contributors           = array_filter( $metadata['authors'] );
+		$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+		$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+		$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
+		$authors_list           = array();
+		$editors_list           = array();
+		$translators_list       = array();
+		$project_directors_list = array();
+	foreach ( $contributors_list as $contributor ) {
+		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
+				$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'editor' === $contributor[2] ) {
+				$editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'project director' === $contributor[2] ) {
+				$project_directors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'translator' === $contributor[2] ) {
+				$translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		}
+	}
 
-        //$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
-        $item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
-        $edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
+		//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+		$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
+		$edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
 
-        $wpmn_record_identifier = array();
-        $wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
-        // handle legacy MLA value
-        if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
-                $wpmn_record_identifier[0] = '1';
-                $wpmn_record_identifier[1] = $metadata['record_identifier'];
-        }
-        $switched = false;
-        if ( $wpmn_record_identifier[0] !== get_current_blog_id() ) {
-                switch_to_blog( $wpmn_record_identifier[0] );
-                $switched = true;
-        }
+		$wpmn_record_identifier = array();
+		$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+		// handle legacy MLA value
+	if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
+			$wpmn_record_identifier[0] = '1';
+			$wpmn_record_identifier[1] = $metadata['record_identifier'];
+	}
+		$switched = false;
+	if ( get_current_blog_id() != $wpmn_record_identifier[0] ) {
+			switch_to_blog( $wpmn_record_identifier[0] );
+			$switched = true;
+	}
 
-	$site_url = get_option( 'siteurl' );
-        $deposit_post_id = $wpmn_record_identifier[1];
-        $post_data = get_post( $deposit_post_id );
-        $post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
+	$site_url            = get_option( 'siteurl' );
+		$deposit_post_id = $wpmn_record_identifier[1];
+		$post_data       = get_post( $deposit_post_id );
+		$post_metadata   = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 
 	$update_time = '';
-	if ( ! empty( $metadata['record_change_date'] ) ) { 
+	if ( ! empty( $metadata['record_change_date'] ) ) {
 		$update_time = human_time_diff( strtotime( $metadata['record_change_date'] ) );
 	}
-	$file_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
-        $content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
-        $total_content_downloads = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
-        $content_views_meta_key = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
-        $total_content_views = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
-        $views_meta_key = sprintf( '_total_views_%s', $metadata['pid'] );
-        $total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
-        if ( $post_data->post_author != bp_loggedin_user_id() && ! humcore_is_bot_user_agent() ) {
-                $post_meta_ID = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
-        }
-        $download_url = sprintf( '%s/deposits/download/%s/%s/%s/',
-		$site_url,
-                $file_metadata['files'][0]['pid'],
-                $file_metadata['files'][0]['datastream_id'],
-                $file_metadata['files'][0]['filename']
-        );
-        $view_url = sprintf( '%s/deposits/view/%s/%s/%s/',
-		$site_url,
-                $file_metadata['files'][0]['pid'],
-                $file_metadata['files'][0]['datastream_id'],
-                $file_metadata['files'][0]['filename']
-        );
-        $metadata_url = sprintf( '%s/deposits/download/%s/%s/%s/',
-		$site_url,
-                $metadata['pid'],
-                'descMetadata',
-                'xml'
-        );
-        $file_type_data = wp_check_filetype( $file_metadata['files'][0]['filename'], wp_get_mime_types() );
-        $file_type_icon = sprintf( '<img class="deposit-icon" src="%s" alt="%s" />',
-                plugins_url( 'assets/' . esc_attr( $file_type_data['ext'] ) . '-icon-48x48.png', __FILE__ ),
-                esc_attr( $file_type_data['ext'] )
-        );
-        if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
-                $thumb_url = sprintf( '<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
+	$file_metadata                  = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
+		$content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+		$total_content_downloads    = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
+		$content_views_meta_key     = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+		$total_content_views        = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
+		$views_meta_key             = sprintf( '_total_views_%s', $metadata['pid'] );
+		$total_views                = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
+	if ( bp_loggedin_user_id() != $post_data->post_author && ! humcore_is_bot_user_agent() ) {
+		$post_meta_id = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
+	}
+		$download_url   = sprintf(
+			'%s/deposits/download/%s/%s/%s/',
 			$site_url,
-                        $file_metadata['files'][0]['pid'],
-                        $file_metadata['files'][0]['thumb_datastream_id'],
-                        $file_metadata['files'][0]['thumb_filename'],
-                        'thumbnail'
-                );
-        } else {
-                $thumb_url = '';
-        }
-        if ( $switched ) {
-                restore_current_blog();
-        }
+			$file_metadata['files'][0]['pid'],
+			$file_metadata['files'][0]['datastream_id'],
+			$file_metadata['files'][0]['filename']
+		);
+		$view_url       = sprintf(
+			'%s/deposits/view/%s/%s/%s/',
+			$site_url,
+			$file_metadata['files'][0]['pid'],
+			$file_metadata['files'][0]['datastream_id'],
+			$file_metadata['files'][0]['filename']
+		);
+		$metadata_url   = sprintf(
+			'%s/deposits/download/%s/%s/%s/',
+			$site_url,
+			$metadata['pid'],
+			'descMetadata',
+			'xml'
+		);
+		$file_type_data = wp_check_filetype( $file_metadata['files'][0]['filename'], wp_get_mime_types() );
+		$file_type_icon = sprintf(
+			'<img class="deposit-icon" src="%s" alt="%s" />',
+			plugins_url( 'assets/' . esc_attr( $file_type_data['ext'] ) . '-icon-48x48.png', __FILE__ ),
+			esc_attr( $file_type_data['ext'] )
+		);
+	if ( ! empty( $file_metadata['files'][0]['thumb_filename'] ) ) {
+			$thumb_url = sprintf(
+				'<img class="deposit-thumb" src="%s/deposits/view/%s/%s/%s/" alt="%s" />',
+				$site_url,
+				$file_metadata['files'][0]['pid'],
+				$file_metadata['files'][0]['thumb_datastream_id'],
+				$file_metadata['files'][0]['thumb_filename'],
+				'thumbnail'
+			);
+	} else {
+			$thumb_url = '';
+	}
+	if ( $switched ) {
+			restore_current_blog();
+	}
 ?>
 
 <div class="bp-group-documents-meta">
@@ -1713,8 +1574,10 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'Meeting Date:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['meeting_date']; // XSS OK. ?></span></dd>
 <?php endif; ?>
-<?php elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
-                 'White paper' == $metadata['genre'] ) : ?>
+<?php
+elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata['genre'] || 'Thesis' == $metadata['genre'] ||
+				'White paper' == $metadata['genre'] ) :
+					?>
 <dt><?php _e( 'Institution:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['institution'] ) ) : ?>
 <dd><span><?php echo $metadata['institution']; // XSS OK. ?></span></dd>
@@ -1770,31 +1633,33 @@ function humcore_deposit_item_review_content() {
 <?php else : ?>
 <dd>( None )</dd>
 <?php endif; ?>
-<?php if ( 'book' == $post_metadata['publication-type'] ) :
-        humcore_display_book_pub_metadata( $metadata );
+<?php
+if ( 'book' == $post_metadata['publication-type'] ) :
+		humcore_display_book_pub_metadata( $metadata );
 elseif ( 'book-chapter' == $post_metadata['publication-type'] ) :
-        humcore_display_book_chapter_pub_metadata( $metadata );
+		humcore_display_book_chapter_pub_metadata( $metadata );
 elseif ( 'book-review' == $post_metadata['publication-type'] ) :
-        humcore_display_book_review_pub_metadata( $metadata );
+		humcore_display_book_review_pub_metadata( $metadata );
 elseif ( 'book-section' == $post_metadata['publication-type'] ) :
-        humcore_display_book_section_pub_metadata( $metadata );
+		humcore_display_book_section_pub_metadata( $metadata );
 elseif ( 'journal-article' == $post_metadata['publication-type'] ) :
-        humcore_display_journal_article_pub_metadata( $metadata );
+		humcore_display_journal_article_pub_metadata( $metadata );
 elseif ( 'magazine-section' == $post_metadata['publication-type'] ) :
-        humcore_display_magazine_section_pub_metadata( $metadata );
+		humcore_display_magazine_section_pub_metadata( $metadata );
 elseif ( 'monograph' == $post_metadata['publication-type'] ) :
-        humcore_display_monograph_pub_metadata( $metadata );
+		humcore_display_monograph_pub_metadata( $metadata );
 elseif ( 'newspaper-article' == $post_metadata['publication-type'] ) :
-        humcore_display_newspaper_article_pub_metadata( $metadata );
+		humcore_display_newspaper_article_pub_metadata( $metadata );
 elseif ( 'online-publication' == $post_metadata['publication-type'] ) :
-        humcore_display_online_publication_pub_metadata( $metadata );
+		humcore_display_online_publication_pub_metadata( $metadata );
 elseif ( 'podcast' == $post_metadata['publication-type'] ) :
-        humcore_display_podcast_pub_metadata( $metadata );
+		humcore_display_podcast_pub_metadata( $metadata );
 elseif ( 'proceedings-article' == $post_metadata['publication-type'] ) :
-        humcore_display_proceedings_article_pub_metadata( $metadata );
+		humcore_display_proceedings_article_pub_metadata( $metadata );
 elseif ( empty( $post_metadata['publication-type'] ) || 'none' == $post_metadata['publication-type'] ) :
 	humcore_display_non_published_metadata( $metadata );
-endif; ?>
+endif;
+?>
 <?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
@@ -1810,7 +1675,7 @@ endif; ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
 <?php if ( humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
- &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
+&nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
 <?php if ( ! empty( $update_time ) ) : ?>
@@ -1832,7 +1697,7 @@ endif; ?>
 <dt><?php _e( 'File Name:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $file_metadata['files'][0]['filename'] ); ?></dd>
 <dt><?php _e( 'File Size:', 'humcore_domain' ); ?></dt>
-<dd><?php echo number_format( $file_metadata['files'][0]['filesize'] ), " bytes"; ?></dd>
+<dd><?php echo number_format( $file_metadata['files'][0]['filesize'] ), ' bytes'; ?></dd>
 </dl>
 </div>
 <br style='clear:both'>
@@ -1841,435 +1706,72 @@ endif; ?>
 
 }
 
-function humcore_display_book_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Book', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['edition'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Version:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['edition']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['volume'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Volume:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['isbn'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_book_chapter_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Book chapter', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_author'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Author/Editor:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_author']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['chapter'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Chapter:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['chapter']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Page Range:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page'] . ' - ' . $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['isbn'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_book_review_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Book review', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_book_section_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Book section', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Book Title:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_author'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_author']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['edition'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Version:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['edition']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Page Range:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page'] . ' - ' . $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['isbn'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_journal_article_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Journal article', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Journal:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['volume'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Volume:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['issue'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Issue:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['issue']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Page Range:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page'] . ' - ' . $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['issn'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'ISSN:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['issn']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_magazine_section_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Magazine section', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['url'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. URL:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['url']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Magazine:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['volume'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Section:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Page Range:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page'] . ' - ' . $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_monograph_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Monograph', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['isbn'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'ISBN:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['isbn']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_newspaper_article_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Newspaper article', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['url'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. URL:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['url']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Newspaper:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['edition'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Edition:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['edition']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['volume'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Section:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Page Range:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page'] . ' - ' . $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_online_publication_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Online publication', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['url'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. URL:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['url']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Website:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['edition'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Version:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['edition']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['volume'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Section:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_podcast_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Podcast', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['url'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. URL:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['url']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['volume'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Episode:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['volume']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_proceedings_article_pub_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published as:', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'Conference proceeding', 'humcore_domain' ); // XSS OK. ?></span> &nbsp; &nbsp;
-<span class="pub-metadata-display-button button white right">Show details</span>
-</dd>
-<div class="deposit-item-pub-metadata hide-details">
-<?php if ( ! empty( $metadata['doi'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. DOI:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['doi']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['publisher'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Publisher:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['publisher']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['date'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Pub. Date:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['date']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['book_journal_title'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Proceeding:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['book_journal_title']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-<?php if ( ! empty( $metadata['start_page'] ) || humcore_is_deposit_item_review() ) : ?>
-<dt><?php _e( 'Page Range:', 'humcore_domain' ); ?></dt>
-<dd><span><?php echo $metadata['start_page'] . ' - ' . $metadata['end_page']; // XSS OK. ?></span></dd>
-<?php endif; ?>
-</div>
-<?php }
-
-function humcore_display_non_published_metadata( $metadata ) { ?>
-
-<dt><?php _e( 'Published?', 'humcore_domain' ); ?></dt>
-<dd><span><?php _e( 'No', 'humcore_domain' ); // XSS OK. ?></span></dd>
-<dt><?php _e( 'Creation Date:', 'humcore_domain' ); ?></dt>
-<?php if ( ! empty( $metadata['date'] ) ) : ?>
-<dd><?php echo esc_html( $metadata['date'] ); ?></dd>
-<?php else : ?>
-<dd>( None entered )</dd>
-<?php endif;
-}
-
 /**
  * Output the search sidebar facet list content.
  */
 function humcore_search_sidebar_content() {
 
 	$extended_query_string = humcore_get_search_request_querystring();
-	$facet_display_counts = humcore_get_facet_counts();
-	$facet_display_titles = humcore_get_facet_titles();
-	$query_args = wp_parse_args( $extended_query_string ); ?>
-	<ul class="facet-set"><?php
+	$facet_display_counts  = humcore_get_facet_counts();
+	$facet_display_titles  = humcore_get_facet_titles();
+	$query_args            = wp_parse_args( $extended_query_string );
+	?>
+	<ul class="facet-set">
+	<?php
 	foreach ( $facet_display_counts as $facet_key => $facet_values ) {
 		$facet_list_count = 0;
-		if ( ! empty( $facet_display_titles[ $facet_key ] ) ) : ?>
+		if ( ! empty( $facet_display_titles[ $facet_key ] ) ) :
+		?>
 		<li class="facet-set-item"><h5><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
-			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
-			$sorted_counts = $facet_values['counts'];
-			if ( "pub_date_facet" === $facet_key ) {
-				arsort( $sorted_counts );
-			}
-			foreach ( $sorted_counts as $facet_value_counts ) {
-				if ( ! empty( $facet_value_counts[0] ) ) {
-					$facet_list_item_selected = false;
-					if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
-						if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
-							$facet_list_item_selected = true;
-						}
-					}
-					$display_count = sprintf( '<span class="count facet-list-item-count"%1$s>%2$s</span>',
-						( $facet_list_item_selected ) ? ' style="display: none;"' : '',
-						$facet_value_counts[1]
-					);
-					$display_selected = sprintf( '<span class="iconify facet-list-item-control%1$s"%2$s>%3$s</span>',
-						( $facet_list_item_selected ) ? ' selected' : '',
-						( $facet_list_item_selected ) ? '' : ' style="display: none !important;"',
-						'X'
-					);
-					echo sprintf( '<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
-						( $facet_list_count < 2 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
-						trim( $facet_key ),
-						urlencode( trim( $facet_value_counts[0] ) ),
-						trim( $facet_value_counts[0] ),
-						$display_count,
-						$display_selected
-					); // XSS OK.
-					$facet_list_count++;
-				}
-			}
-			if ( 2 < $facet_list_count ) {
-				echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
-			} ?>
+			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list">
+								<?php
+								$sorted_counts = $facet_values['counts'];
+								if ( 'pub_date_facet' === $facet_key ) {
+									arsort( $sorted_counts );
+								}
+								foreach ( $sorted_counts as $facet_value_counts ) {
+									if ( ! empty( $facet_value_counts[0] ) ) {
+										$facet_list_item_selected = false;
+										if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
+											if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
+												$facet_list_item_selected = true;
+											}
+										}
+										$display_count    = sprintf(
+											'<span class="count facet-list-item-count"%1$s>%2$s</span>',
+											( $facet_list_item_selected ) ? ' style="display: none;"' : '',
+											$facet_value_counts[1]
+										);
+										$display_selected = sprintf(
+											'<span class="iconify facet-list-item-control%1$s"%2$s>%3$s</span>',
+											( $facet_list_item_selected ) ? ' selected' : '',
+											( $facet_list_item_selected ) ? '' : ' style="display: none !important;"',
+											'X'
+										);
+										echo sprintf(
+											'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
+											( $facet_list_count < 2 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
+											trim( $facet_key ),
+											urlencode( trim( $facet_value_counts[0] ) ),
+											trim( $facet_value_counts[0] ),
+											$display_count,
+											$display_selected
+										); // XSS OK.
+										$facet_list_count++;
+									}
+								}
+								if ( 2 < $facet_list_count ) {
+									echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
+								}
+			?>
 			</ul>
-		</li><?php
+		</li>
+		<?php
 		endif;
-	} ?>
-	</ul><?php
+	}
+	?>
+	</ul>
+	<?php
 
 }
 
@@ -2282,45 +1784,53 @@ function humcore_directory_sidebar_content() {
 	humcore_has_deposits( $extended_query_string );
 	$facet_display_counts = humcore_get_facet_counts();
 	$facet_display_titles = humcore_get_facet_titles();
-	$query_args = wp_parse_args( $extended_query_string ); ?>
-	<ul class="facet-set"><?php
+	$query_args           = wp_parse_args( $extended_query_string );
+	?>
+	<ul class="facet-set">
+	<?php
 	foreach ( $facet_display_counts as $facet_key => $facet_values ) {
-		if ( ! in_array( $facet_key, array( 'genre_facet', 'subject_facet', 'pub_date_facet' ) ) ) { continue; }
-		$facet_list_count = 0; ?>
+		if ( ! in_array( $facet_key, array( 'genre_facet', 'subject_facet', 'pub_date_facet' ) ) ) {
+			continue; }
+		$facet_list_count = 0;
+		?>
 		<li class="facet-set-item"><h5>Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
-		<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list"><?php
-		$sorted_counts = $facet_values['counts'];
-		if ( "pub_date_facet" === $facet_key ) {
-			arsort( $sorted_counts );
-		}
-		foreach ( $sorted_counts as $facet_value_counts ) {
-			if ( ! empty( $facet_value_counts[0] ) ) {
-				$facet_list_item_selected = false;
-				if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
-					if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
-						$facet_list_item_selected = true;
-					}
-				}
-				$display_count = sprintf( '<span class="count facet-list-item-count"%1$s>%2$s</span>',
-					( $facet_list_item_selected ) ? ' style="display: none;"' : '',
-					$facet_value_counts[1]
-				);
-				echo sprintf( '<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
-					( $facet_list_count < 4 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
-					trim( $facet_key ),
-					urlencode( trim( $facet_value_counts[0] ) ),
-					trim( $facet_value_counts[0] ),
-					$display_count
-				); // XSS OK.
-				$facet_list_count++;
-			}
-		}
-		if ( 4 < $facet_list_count ) {
-			echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
-		} ?>
+		<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list">
+							<?php
+							$sorted_counts = $facet_values['counts'];
+							if ( 'pub_date_facet' === $facet_key ) {
+								arsort( $sorted_counts );
+							}
+							foreach ( $sorted_counts as $facet_value_counts ) {
+								if ( ! empty( $facet_value_counts[0] ) ) {
+									$facet_list_item_selected = false;
+									if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
+										if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
+											$facet_list_item_selected = true;
+										}
+									}
+									$display_count = sprintf(
+										'<span class="count facet-list-item-count"%1$s>%2$s</span>',
+										( $facet_list_item_selected ) ? ' style="display: none;"' : '',
+										$facet_value_counts[1]
+									);
+									echo sprintf(
+										'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
+										( $facet_list_count < 4 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
+										trim( $facet_key ),
+										urlencode( trim( $facet_value_counts[0] ) ),
+										trim( $facet_value_counts[0] ),
+										$display_count
+									); // XSS OK.
+									$facet_list_count++;
+								}
+							}
+							if ( 4 < $facet_list_count ) {
+								echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
+							}
+		?>
 			</ul>
 		</li>
-	<?php }?>
+	<?php } ?>
 	</ul>
 <?php
 

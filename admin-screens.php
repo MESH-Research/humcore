@@ -79,18 +79,19 @@ function humcore_deposit_metabox( $post ) {
 			<select name="aggregator_genre">
 			<option class="level-0" selected value=""></option>
 <?php
-	$genre_list = humcore_deposits_genre_list();
+	$genre_list   = humcore_deposits_genre_list();
 	$posted_genre = '';
-	if ( ! empty( $aggregator_metadata['genre'] ) ) {
-		$posted_genre = esc_attr( $aggregator_metadata['genre'] );
-	}
-	foreach ( $genre_list as $genre_key => $genre_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $genre_key == $posted_genre ) ? 'selected="selected"' : '',
-			$genre_key,
-			$genre_value
-		);
-	}
+if ( ! empty( $aggregator_metadata['genre'] ) ) {
+	$posted_genre = esc_attr( $aggregator_metadata['genre'] );
+}
+foreach ( $genre_list as $genre_key => $genre_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $genre_key == $posted_genre ) ? 'selected="selected"' : '',
+		$genre_key,
+		$genre_value
+	);
+}
 ?>
 			</select>
 			</label>
@@ -215,22 +216,23 @@ function humcore_deposit_metabox( $post ) {
 			<select name="aggregator_group[]" multiple size="10">
 			<option class="level-0" value="">(No groups)</option>
 <?php
-	$group_list = humcore_deposits_group_list();
+	$group_list        = humcore_deposits_group_list();
 	$posted_group_list = array();
-	if ( ! empty( $aggregator_metadata['group'] ) ) {
-		foreach ( $aggregator_metadata['group_ids'] as $group_id ) {
-			if ( ! empty( $group_id ) ) {
-				$posted_group_list[] = $group_id;
-			}
+if ( ! empty( $aggregator_metadata['group'] ) ) {
+	foreach ( $aggregator_metadata['group_ids'] as $group_id ) {
+		if ( ! empty( $group_id ) ) {
+			$posted_group_list[] = $group_id;
 		}
 	}
-	foreach ( $group_list as $group_key => $group_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( in_array( $group_key, $posted_group_list ) ) ? 'selected="selected"' : '',
-			$group_key,
-			$group_value
-		);
-	}
+}
+foreach ( $group_list as $group_key => $group_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( in_array( $group_key, $posted_group_list ) ) ? 'selected="selected"' : '',
+		$group_key,
+		$group_value
+	);
+}
 ?>
 			</select>
 			</label>
@@ -240,21 +242,22 @@ function humcore_deposit_metabox( $post ) {
 			<select name="aggregator_subject[]" multiple size="10">
 			<option class="level-0" value="">(No subjects)</option>
 <?php
-	$subject_list = humcore_deposits_subject_list();
+	$subject_list        = humcore_deposits_subject_list();
 	$posted_subject_list = array();
-	if ( ! empty( $aggregator_metadata['subject'] ) ) {
-                foreach ( $aggregator_metadata['subject_ids'] as $subject_id ) {
-                        $term = wpmn_get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
-                        $posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
-                }
+if ( ! empty( $aggregator_metadata['subject'] ) ) {
+	foreach ( $aggregator_metadata['subject_ids'] as $subject_id ) {
+			$term                  = wpmn_get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
+			$posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
 	}
-	foreach ( $subject_list as $subject_key => $subject_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( in_array( $subject_key, $posted_subject_list ) ) ? 'selected="selected"' : '',
-			$subject_key,
-			$subject_value
-		);
-	}
+}
+foreach ( $subject_list as $subject_key => $subject_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( in_array( $subject_key, $posted_subject_list ) ) ? 'selected="selected"' : '',
+		$subject_key,
+		$subject_value
+	);
+}
 ?>
 			</select>
 			</label>
@@ -264,21 +267,22 @@ function humcore_deposit_metabox( $post ) {
 			<select name="aggregator_keyword[]" multiple size="10">
 			<option class="level-0" value="">(No keywords)</option>
 <?php
-	$keyword_list = humcore_deposits_keyword_list();
+	$keyword_list        = humcore_deposits_keyword_list();
 	$posted_keyword_list = array();
-	if ( ! empty( $aggregator_metadata['keyword'] ) ) {
-                foreach ( $aggregator_metadata['keyword_ids'] as $keyword_id ) {
-			$term = wpmn_get_term_by( 'term_taxonomy_id', $keyword_id, 'humcore_deposit_tag' );
-                        $posted_keyword_list[] = sanitize_text_field( stripslashes( $term->name ) );
-                }
+if ( ! empty( $aggregator_metadata['keyword'] ) ) {
+	foreach ( $aggregator_metadata['keyword_ids'] as $keyword_id ) {
+		$term                      = wpmn_get_term_by( 'term_taxonomy_id', $keyword_id, 'humcore_deposit_tag' );
+			$posted_keyword_list[] = sanitize_text_field( stripslashes( $term->name ) );
 	}
-	foreach ( $keyword_list as $keyword_key => $keyword_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( in_array( $keyword_key, $posted_keyword_list ) ) ? 'selected="selected"' : '',
-			$keyword_key,
-			$keyword_value
-		);
-	}
+}
+foreach ( $keyword_list as $keyword_key => $keyword_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( in_array( $keyword_key, $posted_keyword_list ) ) ? 'selected="selected"' : '',
+		$keyword_key,
+		$keyword_value
+	);
+}
 ?>
 			</select>
 			</label>
@@ -288,18 +292,19 @@ function humcore_deposit_metabox( $post ) {
 			<select name="aggregator_type_of_resource">
 			<option class="level-0" selected value=""></option>
 <?php
-	$resource_type_list = humcore_deposits_resource_type_list();
+	$resource_type_list   = humcore_deposits_resource_type_list();
 	$posted_resource_type = '';
-	if ( ! empty( $aggregator_metadata['type_of_resource'] ) ) {
-		$posted_resource_type = esc_attr( $aggregator_metadata['type_of_resource'] );
-	}
-	foreach ( $resource_type_list as $resource_key => $resource_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $resource_key == $posted_resource_type ) ? 'selected="selected"' : '',
-			$resource_key,
-			$resource_value
-		);
-	}
+if ( ! empty( $aggregator_metadata['type_of_resource'] ) ) {
+	$posted_resource_type = esc_attr( $aggregator_metadata['type_of_resource'] );
+}
+foreach ( $resource_type_list as $resource_key => $resource_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $resource_key == $posted_resource_type ) ? 'selected="selected"' : '',
+		$resource_key,
+		$resource_value
+	);
+}
 ?>
 			</select>
 			</label>
@@ -309,18 +314,19 @@ function humcore_deposit_metabox( $post ) {
 			<select name="aggregator_language">
 			<option class="level-0" selected value=""></option>
 <?php
-	$language_list = humcore_deposits_language_list();
+	$language_list   = humcore_deposits_language_list();
 	$posted_language = '';
-	if ( ! empty( $aggregator_metadata['language'] ) ) {
-		$posted_language = esc_attr( $aggregator_metadata['language'] );
-	}
-	foreach ( $language_list as $language_key => $language_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $language_key == $posted_language ) ? 'selected="selected"' : '',
-			$language_key,
-			$language_value
-		);
-	}
+if ( ! empty( $aggregator_metadata['language'] ) ) {
+	$posted_language = esc_attr( $aggregator_metadata['language'] );
+}
+foreach ( $language_list as $language_key => $language_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $language_key == $posted_language ) ? 'selected="selected"' : '',
+		$language_key,
+		$language_value
+	);
+}
 ?>
 			</select>
 			</label>
@@ -356,18 +362,78 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Publication Type<br>
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="book" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book' ); } ?>>Book &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="book-chapter" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book-chapter' ); } ?>>Book chapter &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="book-review" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book-review' ); } ?>>Book review &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="book-section" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book-section' ); } ?>>Book section &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="journal-article" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'journal-article' ); } ?>>Journal article &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="magazine-section" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'magazine-section' ); } ?>>Magazine section &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="monograph" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'monograph' ); } ?>>Monograph &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="newspaper-article" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'newspaper-article' ); } ?>>Newspaper article &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="online-publication" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'online-publication' ); } ?>>Online publication &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="podcast" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'podcast' ); } ?>>Podcast &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="proceedings-article" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'proceedings-article' ); } ?>>Conference proceeding &nbsp;
-			<input type="radio" name="aggregator_publication-type" class="widefat" value="none" <?php if ( ! empty( $aggregator_metadata['publication-type'] ) ) { checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'none' ); } ?>>Not published &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="book" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book' ); }
+?>
+>Book &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="book-chapter" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book-chapter' ); }
+?>
+>Book chapter &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="book-review" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book-review' ); }
+?>
+>Book review &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="book-section" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'book-section' ); }
+?>
+>Book section &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="journal-article" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'journal-article' ); }
+?>
+>Journal article &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="magazine-section" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'magazine-section' ); }
+?>
+>Magazine section &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="monograph" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'monograph' ); }
+?>
+>Monograph &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="newspaper-article" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'newspaper-article' ); }
+?>
+>Newspaper article &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="online-publication" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'online-publication' ); }
+?>
+>Online publication &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="podcast" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'podcast' ); }
+?>
+>Podcast &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="proceedings-article" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'proceedings-article' ); }
+?>
+>Conference proceeding &nbsp;
+			<input type="radio" name="aggregator_publication-type" class="widefat" value="none" 
+			<?php
+			if ( ! empty( $aggregator_metadata['publication-type'] ) ) {
+				checked( sanitize_text_field( $aggregator_metadata['publication-type'] ), 'none' ); }
+?>
+>Not published &nbsp;
 			</label>
 		</p>
 		<p>
@@ -471,18 +537,19 @@ function humcore_deposit_metabox( $post ) {
 			<label>Creative Commons License<br>
 			<select name="aggregator_type_of_license">
 <?php
-	$license_type_list = humcore_deposits_license_type_list();
+	$license_type_list   = humcore_deposits_license_type_list();
 	$posted_license_type = '';
-	if ( ! empty( $aggregator_metadata['type_of_license'] ) ) {
-		$posted_license_type = esc_attr( $aggregator_metadata['type_of_license'] );
-	}
-	foreach ( $license_type_list as $license_key => $license_value ) {
-		printf('			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-			( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
-			$license_key,
-			$license_value
-		);
-	}
+if ( ! empty( $aggregator_metadata['type_of_license'] ) ) {
+	$posted_license_type = esc_attr( $aggregator_metadata['type_of_license'] );
+}
+foreach ( $license_type_list as $license_key => $license_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		( $license_key == $posted_license_type ) ? 'selected="selected"' : '',
+		$license_key,
+		$license_value
+	);
+}
 ?>
 			</select>
 			</label>
@@ -498,7 +565,7 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 
-	 </div>
+	</div>
 <?php
 	}
 
@@ -506,12 +573,12 @@ function humcore_deposit_metabox( $post ) {
 	$resource_file_metadata = json_decode( get_post_meta( $post->ID, '_deposit_file_metadata', true ), true );
 
 	if ( ! empty( $resource_file_metadata ) ) {
-		$resource_pid = $resource_file_metadata['files'][0]['pid'];
+		$resource_pid           = $resource_file_metadata['files'][0]['pid'];
 		$resource_datastream_id = $resource_file_metadata['files'][0]['datastream_id'];
-		$resource_filename = $resource_file_metadata['files'][0]['filename'];
-		$resource_filetype = $resource_file_metadata['files'][0]['filetype'];
-		$resource_filesize = $resource_file_metadata['files'][0]['filesize'];
-		$resource_fileloc = $resource_file_metadata['files'][0]['fileloc'];
+		$resource_filename      = $resource_file_metadata['files'][0]['filename'];
+		$resource_filetype      = $resource_file_metadata['files'][0]['filetype'];
+		$resource_filesize      = $resource_file_metadata['files'][0]['filesize'];
+		$resource_fileloc       = $resource_file_metadata['files'][0]['fileloc'];
 
 		// Echo out the fields.
 	?>
@@ -538,7 +605,7 @@ function humcore_deposit_metabox( $post ) {
 			</label>
 		</p>
 		<p><label>Mime Type<br>
-				 <input type="text" name="resource_filetype" class="widefat" disabled="disabled" value="<?php echo esc_attr( $resource_filetype ); ?>">
+				<input type="text" name="resource_filetype" class="widefat" disabled="disabled" value="<?php echo esc_attr( $resource_filetype ); ?>">
 			</label>
 		</p>
 		<p><label>File Size<br>
@@ -600,16 +667,15 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	global $fedora_api, $solr_client;
 	//$tika_client = \Vaites\ApacheTika\Client::make('localhost', 9998);
-	$tika_client = \Vaites\ApacheTika\Client::make('/srv/www/commons/current/vendor/tika/tika-app-1.16.jar');     // app mode 
-
+	$tika_client = \Vaites\ApacheTika\Client::make( '/srv/www/commons/current/vendor/tika/tika-app-1.16.jar' );     // app mode
 
 	$aggregator_metadata = json_decode( get_post_meta( $post_id, '_deposit_metadata', true ), true );
-	$current_authors = $aggregator_metadata['authors'];
-	$current_groups = $aggregator_metadata['group'];
-	$current_group_ids = $aggregator_metadata['group_ids'];
-	$current_subjects = $aggregator_metadata['subject'];
+	$current_authors     = $aggregator_metadata['authors'];
+	$current_groups      = $aggregator_metadata['group'];
+	$current_group_ids   = $aggregator_metadata['group_ids'];
+	$current_subjects    = $aggregator_metadata['subject'];
 	$current_subject_ids = $aggregator_metadata['subject_ids'];
-	$current_keywords = $aggregator_metadata['keyword'];
+	$current_keywords    = $aggregator_metadata['keyword'];
 	$current_keyword_ids = $aggregator_metadata['keyword_ids'];
 
 	// No changes allowed.
@@ -618,28 +684,36 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// $aggregator_metadata['creator'] = sanitize_text_field( $_POST['aggregator_creator'] );
 
 	// Sanitize user input.
-	$aggregator_metadata['published'] = sanitize_text_field( stripslashes( $_POST['aggregator_published'] ) );
-	$aggregator_metadata['title'] = sanitize_text_field( stripslashes( $_POST['aggregator_title_unchanged'] ) );
-        $aggregator_metadata['title_unchanged'] = wp_kses( 
-                        stripslashes( $_POST['aggregator_title_unchanged'] ),
-                        array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
-                );
-	$aggregator_metadata['abstract'] = sanitize_text_field( stripslashes( $_POST['aggregator_abstract_unchanged'] ) );
-        $aggregator_metadata['abstract_unchanged'] = wp_kses( 
-                        stripslashes( $_POST['aggregator_abstract_unchanged'] ),
-                        array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
-                );
-	$aggregator_metadata['genre'] = sanitize_text_field( $_POST['aggregator_genre'] );
-	$aggregator_metadata['organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_organization'] ) );
-	$aggregator_metadata['institution'] = sanitize_text_field( stripslashes( $_POST['aggregator_institution'] ) );
-	$aggregator_metadata['conference_title'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_title'] ) );
+	$aggregator_metadata['published']               = sanitize_text_field( stripslashes( $_POST['aggregator_published'] ) );
+	$aggregator_metadata['title']                   = sanitize_text_field( stripslashes( $_POST['aggregator_title_unchanged'] ) );
+		$aggregator_metadata['title_unchanged']     = wp_kses(
+			stripslashes( $_POST['aggregator_title_unchanged'] ),
+			array(
+				'b'      => array(),
+				'em'     => array(),
+				'strong' => array(),
+			)
+		);
+	$aggregator_metadata['abstract']                = sanitize_text_field( stripslashes( $_POST['aggregator_abstract_unchanged'] ) );
+		$aggregator_metadata['abstract_unchanged']  = wp_kses(
+			stripslashes( $_POST['aggregator_abstract_unchanged'] ),
+			array(
+				'b'      => array(),
+				'em'     => array(),
+				'strong' => array(),
+			)
+		);
+	$aggregator_metadata['genre']                   = sanitize_text_field( $_POST['aggregator_genre'] );
+	$aggregator_metadata['organization']            = sanitize_text_field( stripslashes( $_POST['aggregator_organization'] ) );
+	$aggregator_metadata['institution']             = sanitize_text_field( stripslashes( $_POST['aggregator_institution'] ) );
+	$aggregator_metadata['conference_title']        = sanitize_text_field( stripslashes( $_POST['aggregator_conference_title'] ) );
 	$aggregator_metadata['conference_organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_organization'] ) );
-	$aggregator_metadata['conference_location'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_location'] ) );
-	$aggregator_metadata['conference_date'] = sanitize_text_field( stripslashes( $_POST['aggregator_conference_date'] ) );
-	$aggregator_metadata['meeting_title'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_title'] ) );
-	$aggregator_metadata['meeting_organization'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_organization'] ) );
-	$aggregator_metadata['meeting_location'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_location'] ) );
-	$aggregator_metadata['meeting_date'] = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_date'] ) );
+	$aggregator_metadata['conference_location']     = sanitize_text_field( stripslashes( $_POST['aggregator_conference_location'] ) );
+	$aggregator_metadata['conference_date']         = sanitize_text_field( stripslashes( $_POST['aggregator_conference_date'] ) );
+	$aggregator_metadata['meeting_title']           = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_title'] ) );
+	$aggregator_metadata['meeting_organization']    = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_organization'] ) );
+	$aggregator_metadata['meeting_location']        = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_location'] ) );
+	$aggregator_metadata['meeting_date']            = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_date'] ) );
 
 	// No changes allowed.
 	//$aggregator_metadata['committee_deposit'] = sanitize_text_field( $_POST['aggregator_committee_deposit'] );
@@ -647,16 +721,17 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
 
 	$aggregator_metadata['authors'] = array();
-	$authors = array();
-	$authors = array_map( function ( $given, $family, $fullname, $uni, $role, $affiliation ) {
-		return array(
-			'given' => sanitize_text_field( stripslashes( $given ) ),
-			'family' => sanitize_text_field( stripslashes( $family ) ),
-			'fullname' => sanitize_text_field( stripslashes( $fullname ) ),
-			'uni' => sanitize_text_field( stripslashes( $uni ) ),
-			'role' => sanitize_text_field( stripslashes( $role ) ),
-			'affiliation' => sanitize_text_field( stripslashes( $affiliation ) ),
-		); },
+	$authors                        = array();
+	$authors                        = array_map(
+		function ( $given, $family, $fullname, $uni, $role, $affiliation ) {
+				return array(
+					'given'       => sanitize_text_field( stripslashes( $given ) ),
+					'family'      => sanitize_text_field( stripslashes( $family ) ),
+					'fullname'    => sanitize_text_field( stripslashes( $fullname ) ),
+					'uni'         => sanitize_text_field( stripslashes( $uni ) ),
+					'role'        => sanitize_text_field( stripslashes( $role ) ),
+					'affiliation' => sanitize_text_field( stripslashes( $affiliation ) ),
+				); },
 		$_POST['aggregator_author_given'],
 		$_POST['aggregator_author_family'],
 		$_POST['aggregator_author_fullname'],
@@ -672,13 +747,13 @@ function humcore_deposit_metabox_save( $post_id ) {
 	}
 	$aggregator_metadata['author_info'] = humcore_deposits_format_author_info( $aggregator_metadata['authors'] );
 
-	$aggregator_metadata['group'] = array();
+	$aggregator_metadata['group']     = array();
 	$aggregator_metadata['group_ids'] = array();
 	if ( ! empty( $_POST['aggregator_group'] ) ) {
 		foreach ( $_POST['aggregator_group'] as $group_id ) {
 			$group = groups_get_group( array( 'group_id' => sanitize_text_field( $group_id ) ) );
 			if ( ! empty( $group ) ) {
-				$aggregator_metadata['group'][] = $group->name;
+				$aggregator_metadata['group'][]     = $group->name;
 				$aggregator_metadata['group_ids'][] = $group_id;
 			}
 		}
@@ -686,11 +761,11 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 	$aggregator_metadata['subject'] = array();
 	if ( ! empty( $_POST['aggregator_subject'] ) ) {
-                foreach ( $_POST['aggregator_subject'] as $subject ) {
-                        $aggregator_metadata['subject'][] = sanitize_text_field( stripslashes( $subject ) );
-                }
+		foreach ( $_POST['aggregator_subject'] as $subject ) {
+				$aggregator_metadata['subject'][] = sanitize_text_field( stripslashes( $subject ) );
+		}
 		if ( $aggregator_metadata['subject'] != $current_subjects ) {
-			$term_ids = array();
+			$term_ids                           = array();
 			$aggregator_metadata['subject_ids'] = array();
 			foreach ( $_POST['aggregator_subject'] as $subject ) {
 				$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
@@ -701,19 +776,19 @@ function humcore_deposit_metabox_save( $post_id ) {
 				}
 			}
 			// Support add and remove.
-                        $term_object_id = str_replace( $fedora_api->namespace . ':', '', $aggregator_metadata['pid'] );
-			$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_subject' );
+						$term_object_id         = str_replace( $fedora_api->namespace . ':', '', $aggregator_metadata['pid'] );
+			$term_taxonomy_ids                  = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_subject' );
 			$aggregator_metadata['subject_ids'] = $term_taxonomy_ids;
 		}
 	}
 
 	$aggregator_metadata['keyword'] = array();
 	if ( ! empty( $_POST['aggregator_keyword'] ) ) {
-                foreach ( $_POST['aggregator_keyword'] as $keyword ) {
-                        $aggregator_metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
-                }
+		foreach ( $_POST['aggregator_keyword'] as $keyword ) {
+				$aggregator_metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
+		}
 		if ( $aggregator_metadata['keyword'] != $current_keywords ) {
-			$term_ids = array();
+			$term_ids                           = array();
 			$aggregator_metadata['keyword_ids'] = array();
 			foreach ( $_POST['aggregator_keyword'] as $keyword ) {
 				$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
@@ -727,20 +802,24 @@ function humcore_deposit_metabox_save( $post_id ) {
 				}
 			}
 			// Support add and remove.
-                        $term_object_id = str_replace( $fedora_api->namespace . ':', '', $aggregator_metadata['pid'] );
-			$term_taxonomy_ids = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
+						$term_object_id         = str_replace( $fedora_api->namespace . ':', '', $aggregator_metadata['pid'] );
+			$term_taxonomy_ids                  = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
 			$aggregator_metadata['keyword_ids'] = $term_taxonomy_ids;
 		}
 	}
 
-	$aggregator_metadata['type_of_resource'] = sanitize_text_field( $_POST['aggregator_type_of_resource'] );
-	$aggregator_metadata['language'] = sanitize_text_field( $_POST['aggregator_language'] );
-	$aggregator_metadata['notes'] = sanitize_text_field( stripslashes( $_POST['aggregator_notes'] ) );
-	$aggregator_metadata['notes_unchanged'] = sanitize_text_field( stripslashes( $_POST['aggregator_notes_unchanged'] ) );
-        $aggregator_metadata['notes_unchanged'] = wp_kses( 
-                        stripslashes( $_POST['aggregator_notes_unchanged'] ),
-                        array( 'b' => array(), 'em' => array(), 'strong' => array() ) 
-                );
+	$aggregator_metadata['type_of_resource']    = sanitize_text_field( $_POST['aggregator_type_of_resource'] );
+	$aggregator_metadata['language']            = sanitize_text_field( $_POST['aggregator_language'] );
+	$aggregator_metadata['notes']               = sanitize_text_field( stripslashes( $_POST['aggregator_notes'] ) );
+	$aggregator_metadata['notes_unchanged']     = sanitize_text_field( stripslashes( $_POST['aggregator_notes_unchanged'] ) );
+		$aggregator_metadata['notes_unchanged'] = wp_kses(
+			stripslashes( $_POST['aggregator_notes_unchanged'] ),
+			array(
+				'b'      => array(),
+				'em'     => array(),
+				'strong' => array(),
+			)
+		);
 
 	// No changes allowed.
 	// $aggregator_metadata['record_content_source'] = sanitize_text_field( $_POST['aggregator_record_content_source'] );
@@ -748,37 +827,37 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// $aggregator_metadata['member_of'] = sanitize_text_field( $_POST['aggregator_member_of'] );
 
 	$aggregator_metadata['record_change_date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
-	$aggregator_metadata['publication-type'] = sanitize_text_field( $_POST['aggregator_publication-type'] );
-	$aggregator_metadata['publisher'] = sanitize_text_field( stripslashes( $_POST['aggregator_publisher'] ) );
-	$aggregator_metadata['date'] = sanitize_text_field( $_POST['aggregator_date'] );
-	$aggregator_metadata['date_issued'] = sanitize_text_field( $_POST['aggregator_date_issued'] );
-	$aggregator_metadata['doi'] = sanitize_text_field( $_POST['aggregator_doi'] );
-	$aggregator_metadata['url'] = sanitize_text_field( $_POST['aggregator_url'] );
+	$aggregator_metadata['publication-type']   = sanitize_text_field( $_POST['aggregator_publication-type'] );
+	$aggregator_metadata['publisher']          = sanitize_text_field( stripslashes( $_POST['aggregator_publisher'] ) );
+	$aggregator_metadata['date']               = sanitize_text_field( $_POST['aggregator_date'] );
+	$aggregator_metadata['date_issued']        = sanitize_text_field( $_POST['aggregator_date_issued'] );
+	$aggregator_metadata['doi']                = sanitize_text_field( $_POST['aggregator_doi'] );
+	$aggregator_metadata['url']                = sanitize_text_field( $_POST['aggregator_url'] );
 	$aggregator_metadata['book_journal_title'] = sanitize_text_field( stripslashes( $_POST['aggregator_book_journal_title'] ) );
-	$aggregator_metadata['book_author'] = sanitize_text_field( stripslashes( $_POST['aggregator_book_author'] ) );
-	$aggregator_metadata['chapter'] = sanitize_text_field( $_POST['aggregator_chapter'] );
-	$aggregator_metadata['edition'] = sanitize_text_field( $_POST['aggregator_edition'] );
-	$aggregator_metadata['volume'] = sanitize_text_field( $_POST['aggregator_volume'] );
-	$aggregator_metadata['issue'] = sanitize_text_field( $_POST['aggregator_issue'] );
-	$aggregator_metadata['start_page'] = sanitize_text_field( $_POST['aggregator_start_page'] );
-	$aggregator_metadata['end_page'] = sanitize_text_field( $_POST['aggregator_end_page'] );
-	$aggregator_metadata['isbn'] = sanitize_text_field( $_POST['aggregator_isbn'] );
-	$aggregator_metadata['issn'] = sanitize_text_field( $_POST['aggregator_issn'] );
-	$aggregator_metadata['handle'] = sanitize_text_field( $_POST['aggregator_handle'] );
-	$aggregator_metadata['deposit_doi'] = sanitize_text_field( $_POST['aggregator_deposit_doi'] );
+	$aggregator_metadata['book_author']        = sanitize_text_field( stripslashes( $_POST['aggregator_book_author'] ) );
+	$aggregator_metadata['chapter']            = sanitize_text_field( $_POST['aggregator_chapter'] );
+	$aggregator_metadata['edition']            = sanitize_text_field( $_POST['aggregator_edition'] );
+	$aggregator_metadata['volume']             = sanitize_text_field( $_POST['aggregator_volume'] );
+	$aggregator_metadata['issue']              = sanitize_text_field( $_POST['aggregator_issue'] );
+	$aggregator_metadata['start_page']         = sanitize_text_field( $_POST['aggregator_start_page'] );
+	$aggregator_metadata['end_page']           = sanitize_text_field( $_POST['aggregator_end_page'] );
+	$aggregator_metadata['isbn']               = sanitize_text_field( $_POST['aggregator_isbn'] );
+	$aggregator_metadata['issn']               = sanitize_text_field( $_POST['aggregator_issn'] );
+	$aggregator_metadata['handle']             = sanitize_text_field( $_POST['aggregator_handle'] );
+	$aggregator_metadata['deposit_doi']        = sanitize_text_field( $_POST['aggregator_deposit_doi'] );
 
 	// No changes allowed.
 	// $aggregator_metadata['record_identifier'] = sanitize_text_field( $_POST['aggregator_record_identifier'] );
 	// $aggregator_metadata['society_id'] = sanitize_text_field( $_POST['aggregator_society_id'] );
 
-	$aggregator_metadata['type_of_license'] = sanitize_text_field( $_POST['aggregator_type_of_license'] );
-	$aggregator_metadata['embargoed'] = sanitize_text_field( stripslashes( $_POST['aggregator_embargoed'] ) );
+	$aggregator_metadata['type_of_license']  = sanitize_text_field( $_POST['aggregator_type_of_license'] );
+	$aggregator_metadata['embargoed']        = sanitize_text_field( stripslashes( $_POST['aggregator_embargoed'] ) );
 	$aggregator_metadata['embargo_end_date'] = sanitize_text_field( stripslashes( $_POST['aggregator_embargo_end_date'] ) );
 
 	$json_aggregator_metadata = json_encode( $aggregator_metadata, JSON_HEX_APOS );
 
 	// Update the meta field in the database.
-	$post_meta_ID = update_post_meta( $post_id, '_deposit_metadata', wp_slash( $json_aggregator_metadata ) );
+	$post_meta_id = update_post_meta( $post_id, '_deposit_metadata', wp_slash( $json_aggregator_metadata ) );
 	if ( defined( 'CORE_ERROR_LOG' ) && '' != CORE_ERROR_LOG ) {
 		humcore_write_error_log( 'info', 'WP Admin HumCORE Deposit Meta Update', json_decode( $json_aggregator_metadata, true ) );
 	}
@@ -786,125 +865,143 @@ function humcore_deposit_metabox_save( $post_id ) {
 	// Reindex solr doc.
 	$resource_file_metadata = json_decode( get_post_meta( $post_id, '_deposit_file_metadata', true ), true );
 	if ( ! empty( $resource_file_metadata ) ) {
-		$resource_pid = $resource_file_metadata['files'][0]['pid'];
-		$resource_datastream_id = $resource_file_metadata['files'][0]['datastream_id'];
-		$resource_filename = $resource_file_metadata['files'][0]['filename'];
-		$resource_filetype = $resource_file_metadata['files'][0]['filetype'];
-		$resource_filesize = $resource_file_metadata['files'][0]['filesize'];
-		$resource_fileloc = $resource_file_metadata['files'][0]['fileloc'];
+		$resource_pid            = $resource_file_metadata['files'][0]['pid'];
+		$resource_datastream_id  = $resource_file_metadata['files'][0]['datastream_id'];
+		$resource_filename       = $resource_file_metadata['files'][0]['filename'];
+		$resource_filetype       = $resource_file_metadata['files'][0]['filetype'];
+		$resource_filesize       = $resource_file_metadata['files'][0]['filesize'];
+		$resource_fileloc        = $resource_file_metadata['files'][0]['fileloc'];
 		$check_resource_filetype = wp_check_filetype( $resource_filename, wp_get_mime_types() );
-		$resource_file_prefix = str_replace( $resource_filename, '', $resource_fileloc );
-		$resource_MODS_file = $resource_file_prefix . 'MODS.' . $resource_filename . '.xml';
-		$thesePids = array( $aggregator_metadata['pid'], $resource_pid );
+		$resource_file_prefix    = str_replace( $resource_filename, '', $resource_fileloc );
+		$resource_mods_file      = $resource_file_prefix . 'MODS.' . $resource_filename . '.xml';
+		$these_pids              = array( $aggregator_metadata['pid'], $resource_pid );
 
-		$metadata_MODS = create_mods_xml( $aggregator_metadata );
-		$file_write_status = file_put_contents( $resource_MODS_file, $metadata_MODS );
-		$upload_MODS = $fedora_api->upload( array( 'file' => $resource_MODS_file ) );
-		if ( is_wp_error( $upload_MODS ) ) {
-			echo 'Error - uploadMODS : ' . esc_html( $upload_MODS->get_error_message() );
-			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',
-				$upload_MODS->get_error_code(), $upload_MODS->get_error_message() ) );
+		$metadata_mods     = create_mods_xml( $aggregator_metadata );
+		$file_write_status = file_put_contents( $resource_mods_file, $metadata_mods );
+		$upload_mods       = $fedora_api->upload( array( 'file' => $resource_mods_file ) );
+		if ( is_wp_error( $upload_mods ) ) {
+			echo 'Error - uploadMODS : ' . esc_html( $upload_mods->get_error_message() );
+			humcore_write_error_log(
+				'error', sprintf(
+					'*****WP Admin HumCORE Deposit Error***** - uploadMODS : %1$s-%2$s',
+					$upload_mods->get_error_code(), $upload_mods->get_error_message()
+				)
+			);
 		}
 
-		$mContent = $fedora_api->modify_datastream( array(
-						'pid' => $thesePids[0],
-						'dsID' => 'descMetadata',
-						'dsLocation' => $upload_MODS,
-						'dsLabel' => $aggregator_metadata['title'],
-						'mimeType' => 'text/xml',
-						'content' => false,
-					) );
-		if ( is_wp_error( $mContent ) ) {
-			echo esc_html( 'Error - mContent : ' . $mContent->get_error_message() );
-			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - mContent : %1$s-%2$s',
-				$mContent->get_error_code(), $mContent->get_error_message() ) );
+		$m_content = $fedora_api->modify_datastream(
+			array(
+				'pid'        => $these_pids[0],
+				'dsID'       => 'descMetadata',
+				'dsLocation' => $upload_mods,
+				'dsLabel'    => $aggregator_metadata['title'],
+				'mimeType'   => 'text/xml',
+				'content'    => false,
+			)
+		);
+		if ( is_wp_error( $m_content ) ) {
+			echo esc_html( 'Error - m_content : ' . $m_content->get_error_message() );
+			humcore_write_error_log(
+				'error', sprintf(
+					'*****WP Admin HumCORE Deposit Error***** - m_content : %1$s-%2$s',
+					$m_content->get_error_code(), $m_content->get_error_message()
+				)
+			);
 		}
 
-		$resource_Xml = create_resource_xml( $aggregator_metadata, $resource_filetype );
+		$resource_xml = create_resource_xml( $aggregator_metadata, $resource_filetype );
 
-		$rContent = $fedora_api->modify_datastream( array(
-			'pid' => $thesePids[1],
-			'dsID' => 'DC',
-			'mimeType' => 'text/xml',
-			'content' => $resource_Xml,
-		) );
-		if ( is_wp_error( $rContent ) ) {
-			echo 'Error - rContent : ' . esc_html( $rContent->get_error_message() );
-			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - rContent : %1$s-%2$s',  $rContent->get_error_code(), $rContent->get_error_message() ) );
+		$r_content = $fedora_api->modify_datastream(
+			array(
+				'pid'      => $these_pids[1],
+				'dsID'     => 'DC',
+				'mimeType' => 'text/xml',
+				'content'  => $resource_xml,
+			)
+		);
+		if ( is_wp_error( $r_content ) ) {
+			echo 'Error - r_content : ' . esc_html( $r_content->get_error_message() );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - r_content : %1$s-%2$s', $r_content->get_error_code(), $r_content->get_error_message() ) );
 		}
 
-                /**
-                 * Add POST variables needed for async tika extraction
-                 */
-                $_POST['aggregator-post-id'] = $post_id;
+		/**
+		 * Add POST variables needed for async tika extraction
+		 */
+		$_POST['aggregator-post-id'] = $post_id;
 
-                /**
-                 * Extract text first if small. If Tika errors out we'll index without full text.
-                 */
-		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filesize < 1000000 ) {
+		/**
+		 * Extract text first if small. If Tika errors out we'll index without full text.
+		 */
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int) $resource_filesize < 1000000 ) {
 
-                    try {
-                        $tika_text = $tika_client->getText( $resource_fileloc );
-                        $content = $tika_text;
-                    } catch ( Exception $e ) {
-                        humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $thesePids[0] ) );
-                        humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
-                        $content='';
-                    }
+			try {
+				$tika_text = $tika_client->getText( $resource_fileloc );
+				$content   = $tika_text;
+			} catch ( Exception $e ) {
+				humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - A Tika error occurred extracting text from the uploaded file. This deposit, %1$s, will be indexed using only the web form metadata.', $these_pids[0] ) );
+				humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - Tika error message: ' . $e->getMessage(), var_export( $e, true ) ) );
+				$content = '';
+			}
+		}
 
-                }
-
-                /**
-                 * Index the deposit content and metadata in Solr.
-                 */
+		/**
+		 * Index the deposit content and metadata in Solr.
+		 */
 		try {
 			if ( preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) ) {
-				$sResult = $solr_client->create_humcore_document( '', $aggregator_metadata );
+				$s_result = $solr_client->create_humcore_document( '', $aggregator_metadata );
 			} else {
-				//$sResult = $solr_client->create_humcore_extract( $resource_fileloc, $aggregator_metadata );
-				$sResult = $solr_client->create_humcore_document( $content, $aggregator_metadata );
+				//$s_result = $solr_client->create_humcore_extract( $resource_fileloc, $aggregator_metadata );
+				$s_result = $solr_client->create_humcore_document( $content, $aggregator_metadata );
 			}
 		} catch ( Exception $e ) {
 
 			echo '<h3>', __( 'An error occurred while depositing your file!', 'humcore_domain' ), '</h3>';
-			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - solr : %1$s-%2$s',  $e->getCode(), $e->getMessage() ) );
+			humcore_write_error_log( 'error', sprintf( '*****WP Admin HumCORE Deposit Error***** - solr : %1$s-%2$s', $e->getCode(), $e->getMessage() ) );
 			return  $post_id;
 		}
 
-		$old_author_unis = array_map( function( $element ) { return urlencode( $element['uni'] ); }, $current_authors );
-		$new_author_unis = array_map( function( $element ) { return urlencode( $element['uni'] ); }, $aggregator_metadata['authors'] );
+		$old_author_unis = array_map(
+			function( $element ) {
+					return urlencode( $element['uni'] );
+			}, $current_authors
+		);
+		$new_author_unis = array_map(
+			function( $element ) {
+					return urlencode( $element['uni'] );
+			}, $aggregator_metadata['authors']
+		);
 		$author_uni_keys = array_filter( array_unique( array_merge( $old_author_unis, $new_author_unis ) ) );
-		humcore_delete_cache_keys( 'item', urlencode( $thesePids[0] ) );
+		humcore_delete_cache_keys( 'item', urlencode( $these_pids[0] ) );
 		humcore_delete_cache_keys( 'author_uni', $author_uni_keys );
 
 		// Handle doi metadata changes.
 		if ( ! empty( $aggregator_metadata['deposit_doi'] ) ) {
-                	$creators = array();
-                	foreach ( $aggregator_metadata['authors'] as $author ) {
+					$creators = array();
+			foreach ( $aggregator_metadata['authors'] as $author ) {
 				if ( ( in_array( $author['role'], array( 'creator', 'author', 'editor', 'translator' ) ) ) &&
-					 ! empty( $author['fullname'] ) ) {
+				! empty( $author['fullname'] ) ) {
 					$creators[] = $author['fullname'];
 				}
-                	}
-                	$creator_list = implode( ',', $creators );
+			}
+					$creator_list = implode( ',', $creators );
 
-                	$eStatus = humcore_modify_handle(
-				$aggregator_metadata['deposit_doi'],	
-                                $aggregator_metadata['title'],
-                                $creator_list,
-                                $aggregator_metadata['genre'],
-                                $aggregator_metadata['date_issued'],
-                                $aggregator_metadata['publisher']
-                        );
-                        if ( false === $eStatus ) {
-                                echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
-                        }
+					$e_status = humcore_modify_handle(
+						$aggregator_metadata['deposit_doi'],
+						$aggregator_metadata['title'],
+						$creator_list,
+						$aggregator_metadata['genre'],
+						$aggregator_metadata['date_issued'],
+						$aggregator_metadata['publisher']
+					);
+			if ( false === $e_status ) {
+					echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
+			}
 		}
 
-		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int)$resource_filesize >= 1000000 ) {
-                        do_action( 'humcore_tika_text_extraction' );
+		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int) $resource_filesize >= 1000000 ) {
+						do_action( 'humcore_tika_text_extraction' );
 		}
-
 	}
 
 	return $post_id;
