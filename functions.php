@@ -821,7 +821,7 @@ function humcore_user_can_edit_deposit( $wpmn_record_identifier ) {
 		$global_super_admins     = explode( ',', $global_super_admin_list );
 	}
 
-	$post_data = get_post( $deposit_post_id );
+	$post_data = get_post( $wpmn_record_identifier[1] );
 	if ( ( 'publish' !== $post_data->post_status && bp_loggedin_user_id() == $post_data->post_author ) || is_super_admin() ||
 			in_array( bp_get_loggedin_user_username(), $global_super_admins ) ) {
 		return true;
