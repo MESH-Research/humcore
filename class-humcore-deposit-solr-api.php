@@ -56,7 +56,7 @@ class Humcore_Deposit_Solr_Api {
 		$solr_settings = get_option( 'humcore-deposits-solr-settings' );
 
 		if ( defined( 'CORE_SOLR_PROTOCOL' ) ) {
-				$solr_settings['scheme'] = preg_replace( '~://$~', '', CORE_SOLR_PROTOCOL );
+				$solr_settings['protocol'] = preg_replace( '~://$~', '', CORE_SOLR_PROTOCOL );
 		}
 		if ( defined( 'CORE_SOLR_HOST' ) ) {
 				$solr_settings['host'] = CORE_SOLR_HOST;
@@ -73,7 +73,7 @@ class Humcore_Deposit_Solr_Api {
 		$config = array(
 			'endpoint' => array(
 				'solrhost' => array(
-					'scheme'  => preg_replace( '~://$~', '', $solr_settings['scheme'] ),
+					'scheme'  => preg_replace( '~://$~', '', $solr_settings['protocol'] ),
 					'host'    => $solr_settings['host'],
 					'port'    => $solr_settings['port'],
 					'path'    => $solr_settings['path'] . '/',

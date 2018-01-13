@@ -262,15 +262,14 @@ function humcore_check_dependencies() {
 function humcore_release_provisional_fire() {
 
 	// TODO move the activity creation to an action - https://codex.wordpress.org/Post_Status_Transitions#transition_post_status_Hook
-	$group_activity_ids = array();
-		$query_args     = array(
-			'post_parent'    => 0,
-			'post_type'      => 'humcore_deposit',
-			'post_status'    => 'draft',
-			'posts_per_page' => -1,
-			'order'          => 'ASC',
-			'order_by'       => 'ID',
-		);
+	$query_args     = array(
+		'post_parent'    => 0,
+		'post_type'      => 'humcore_deposit',
+		'post_status'    => 'draft',
+		'posts_per_page' => -1,
+		'order'          => 'ASC',
+		'order_by'       => 'ID',
+	);
 
 	// echo "\n";
 	$deposit_posts = get_posts( $query_args );
@@ -278,7 +277,7 @@ function humcore_release_provisional_fire() {
 		$now         = time();
 		$metadata    = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
 		$local_link  = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
-		$local_link  = $metadata['handle']; // Let's try doi.
+		//$local_link  = $metadata['handle']; // Let's try doi.
 		$post_name   = str_replace( ':', '', $metadata['pid'] );
 		$diff        = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
 		$hours_since = round( $diff / HOUR_IN_SECONDS );
@@ -314,6 +313,7 @@ function humcore_release_provisional_fire() {
 						)
 					);
 					//echo "Notification ID ", $notification_id,"\n";
+					$group_activity_ids = array();
 					if ( ! empty( $metadata['group_ids'] ) ) {
 						foreach ( $metadata['group_ids'] as $group_id ) {
 							//echo "Group ID ", $group_id,"\n";
