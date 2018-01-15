@@ -910,11 +910,10 @@ foreach ( $embargo_length_list as $embargo_key => $embargo_value ) {
  */
 function humcore_deposits_list_entry_content() {
 
-	$metadata         = (array) humcore_get_current_deposit();
-		$authors      = array_filter( $metadata['authors'] );
-		$authors_list = implode( ', ', $authors );
-
-	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+	$metadata     = (array) humcore_get_current_deposit();
+	$authors      = array_filter( $metadata['authors'] );
+	$authors_list = implode( ', ', $authors );
+	$item_url     = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 ?>
 <ul class="deposits-item">
 <li>
@@ -945,12 +944,13 @@ function humcore_deposits_feed_item_content() {
 
 	$metadata = (array) humcore_get_current_deposit();
 
-		$contributors      = array_filter( $metadata['authors'] );
-		$contributor_uni   = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-		$contributor_type  = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-		$contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
-		$authors_list      = array();
-		$authors_list      = '';
+	$contributors      = array_filter( $metadata['authors'] );
+	$contributor_uni   = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$contributor_type  = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	$authors_list      = array();
+	$authors_list      = '';
+
 	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 			$authors_list .= "\t\t" . sprintf( '<dc:creator>%s</dc:creator>', htmlspecialchars( $contributor[0], ENT_QUOTES ) );
@@ -1109,14 +1109,15 @@ function humcore_deposit_item_content() {
 			$keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
 	}
 
-		$contributors           = array_filter( $metadata['authors'] );
-		$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-		$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-		$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
-		$authors_list           = array();
-		$editors_list           = array();
-		$translators_list       = array();
-		$project_directors_list = array();
+	$contributors           = array_filter( $metadata['authors'] );
+	$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	$authors_list           = array();
+	$editors_list           = array();
+	$translators_list       = array();
+	$project_directors_list = array();
+
 	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 				$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
@@ -1129,8 +1130,8 @@ function humcore_deposit_item_content() {
 		}
 	}
 
-		$wpmn_record_identifier = array();
-		$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+	$wpmn_record_identifier = array();
+	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
 	// handle legacy MLA value
 	if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
 		$wpmn_record_identifier[0] = '1';
@@ -1138,8 +1139,8 @@ function humcore_deposit_item_content() {
 	}
 		$switched = false;
 	if ( get_current_blog_id() != $wpmn_record_identifier[0] ) {
-			switch_to_blog( $wpmn_record_identifier[0] );
-			$switched = true;
+		switch_to_blog( $wpmn_record_identifier[0] );
+		$switched = true;
 	}
 
 	$site_url        = get_option( 'siteurl' );
@@ -1419,7 +1420,8 @@ There is a problem retrieving some of the data for this item. This error has bee
  */
 function humcore_deposit_item_review_content() {
 
-		$metadata = (array) humcore_get_current_deposit();
+	$metadata = (array) humcore_get_current_deposit();
+
 	if ( ! empty( $metadata['group'] ) ) {
 			$groups = array_filter( $metadata['group'] );
 	}
@@ -1440,14 +1442,15 @@ function humcore_deposit_item_review_content() {
 			$keyword_list = implode( ', ', array_map( 'esc_html', $keywords, $keyword_display_values ) );
 	}
 
-		$contributors           = array_filter( $metadata['authors'] );
-		$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-		$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-		$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
-		$authors_list           = array();
-		$editors_list           = array();
-		$translators_list       = array();
-		$project_directors_list = array();
+	$contributors           = array_filter( $metadata['authors'] );
+	$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	$authors_list           = array();
+	$editors_list           = array();
+	$translators_list       = array();
+	$project_directors_list = array();
+
 	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 				$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
@@ -1460,21 +1463,21 @@ function humcore_deposit_item_review_content() {
 		}
 	}
 
-		//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
-		$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
-		$edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
+	//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+	$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
+	$edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
 
-		$wpmn_record_identifier = array();
-		$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
-		// handle legacy MLA value
+	$wpmn_record_identifier = array();
+	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
+	// handle legacy MLA value
 	if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
 			$wpmn_record_identifier[0] = '1';
 			$wpmn_record_identifier[1] = $metadata['record_identifier'];
 	}
 		$switched = false;
 	if ( get_current_blog_id() != $wpmn_record_identifier[0] ) {
-			switch_to_blog( $wpmn_record_identifier[0] );
-			$switched = true;
+		switch_to_blog( $wpmn_record_identifier[0] );
+		$switched = true;
 	}
 
 	$site_url            = get_option( 'siteurl' );
@@ -1738,45 +1741,45 @@ function humcore_search_sidebar_content() {
 		?>
 		<li class="facet-set-item"><h5><?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
 			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list">
-								<?php
-								$sorted_counts = $facet_values['counts'];
-								if ( 'pub_date_facet' === $facet_key ) {
-									arsort( $sorted_counts );
-								}
-								foreach ( $sorted_counts as $facet_value_counts ) {
-									if ( ! empty( $facet_value_counts[0] ) ) {
-										$facet_list_item_selected = false;
-										if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
-											if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
-												$facet_list_item_selected = true;
-											}
-										}
-										$display_count    = sprintf(
-											'<span class="count facet-list-item-count"%1$s>%2$s</span>',
-											( $facet_list_item_selected ) ? ' style="display: none;"' : '',
-											$facet_value_counts[1]
-										);
-										$display_selected = sprintf(
-											'<span class="iconify facet-list-item-control%1$s"%2$s>%3$s</span>',
-											( $facet_list_item_selected ) ? ' selected' : '',
-											( $facet_list_item_selected ) ? '' : ' style="display: none !important;"',
-											'X'
-										);
-										echo sprintf(
-											'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
-											( $facet_list_count < 2 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
-											trim( $facet_key ),
-											urlencode( trim( $facet_value_counts[0] ) ),
-											trim( $facet_value_counts[0] ),
-											$display_count,
-											$display_selected
-										); // XSS OK.
-										$facet_list_count++;
-									}
-								}
-								if ( 2 < $facet_list_count ) {
-									echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
-								}
+			<?php
+			$sorted_counts = $facet_values['counts'];
+			if ( 'pub_date_facet' === $facet_key ) {
+				arsort( $sorted_counts );
+			}
+			foreach ( $sorted_counts as $facet_value_counts ) {
+				if ( ! empty( $facet_value_counts[0] ) ) {
+					$facet_list_item_selected = false;
+					if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
+						if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
+							$facet_list_item_selected = true;
+						}
+					}
+					$display_count    = sprintf(
+						'<span class="count facet-list-item-count"%1$s>%2$s</span>',
+						( $facet_list_item_selected ) ? ' style="display: none;"' : '',
+						$facet_value_counts[1]
+					);
+					$display_selected = sprintf(
+						'<span class="iconify facet-list-item-control%1$s"%2$s>%3$s</span>',
+						( $facet_list_item_selected ) ? ' selected' : '',
+						( $facet_list_item_selected ) ? '' : ' style="display: none !important;"',
+						'X'
+					);
+					echo sprintf(
+						'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
+						( $facet_list_count < 2 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
+						trim( $facet_key ),
+						urlencode( trim( $facet_value_counts[0] ) ),
+						trim( $facet_value_counts[0] ),
+						$display_count,
+						$display_selected
+					); // XSS OK.
+					$facet_list_count++;
+				}
+			}
+			if ( 2 < $facet_list_count ) {
+				echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
+			}
 			?>
 			</ul>
 		</li>
@@ -1808,39 +1811,39 @@ function humcore_directory_sidebar_content() {
 		$facet_list_count = 0;
 		?>
 		<li class="facet-set-item"><h5>Browse by <?php echo esc_html( trim( $facet_display_titles[ $facet_key ] ) ); ?></h5>
-		<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list">
-							<?php
-							$sorted_counts = $facet_values['counts'];
-							if ( 'pub_date_facet' === $facet_key ) {
-								arsort( $sorted_counts );
-							}
-							foreach ( $sorted_counts as $facet_value_counts ) {
-								if ( ! empty( $facet_value_counts[0] ) ) {
-									$facet_list_item_selected = false;
-									if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
-										if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
-											$facet_list_item_selected = true;
-										}
-									}
-									$display_count = sprintf(
-										'<span class="count facet-list-item-count"%1$s>%2$s</span>',
-										( $facet_list_item_selected ) ? ' style="display: none;"' : '',
-										$facet_value_counts[1]
-									);
-									echo sprintf(
-										'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
-										( $facet_list_count < 4 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
-										trim( $facet_key ),
-										urlencode( trim( $facet_value_counts[0] ) ),
-										trim( $facet_value_counts[0] ),
-										$display_count
-									); // XSS OK.
-									$facet_list_count++;
-								}
-							}
-							if ( 4 < $facet_list_count ) {
-								echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
-							}
+			<ul id="<?php echo sanitize_title_with_dashes( trim( $facet_key ) ); ?>-list" class="facet-list">
+			<?php
+			$sorted_counts = $facet_values['counts'];
+			if ( 'pub_date_facet' === $facet_key ) {
+				arsort( $sorted_counts );
+			}
+			foreach ( $sorted_counts as $facet_value_counts ) {
+				if ( ! empty( $facet_value_counts[0] ) ) {
+					$facet_list_item_selected = false;
+					if ( ! empty( $query_args['facets'][ $facet_key ] ) ) {
+						if ( in_array( $facet_value_counts[0], $query_args['facets'][ $facet_key ] ) ) {
+							$facet_list_item_selected = true;
+						}
+					}
+					$display_count = sprintf(
+						'<span class="count facet-list-item-count"%1$s>%2$s</span>',
+						( $facet_list_item_selected ) ? ' style="display: none;"' : '',
+						$facet_value_counts[1]
+					);
+					echo sprintf(
+						'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
+						( $facet_list_count < 4 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
+						trim( $facet_key ),
+						urlencode( trim( $facet_value_counts[0] ) ),
+						trim( $facet_value_counts[0] ),
+						$display_count
+					); // XSS OK.
+					$facet_list_count++;
+				}
+			}
+			if ( 4 < $facet_list_count ) {
+				echo '<div class="facet-display-button"><span class="show-more button white right">' . esc_attr__( 'more>>', 'humcore_domain' ) . '</span></div>';
+			}
 		?>
 			</ul>
 		</li>
