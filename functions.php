@@ -2123,3 +2123,38 @@ function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) 
 
 	return;
 }
+
+/**
+ * Format social sharing shortcode
+ *
+ * @param string $share_context
+ * @param array $metadata
+ * @return string shortcode or null
+ */
+function humcore_social_sharing_shortcode( $share_context, $metadata ) {
+
+	$share_command = '';
+
+        if ( ! is_array( $metadata ) || ! shortcode_exists( 'mashshare' ) ) {
+		return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
+	}
+
+	global $mashsb_options;
+
+	if ( empty( $mashsb_options['mashsharer_hashtag'] ) || empty( $metadata['handle'] ) ) {
+		return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
+	}
+
+	if ( 'deposit' === $share_context ) {
+		$share_text = esc_html( 'I just uploaded "' . $metadata['title'] . '" to @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
+	} else {
+		$share_text = esc_html( 'I just found "' . $metadata['title'] . '" on @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
+	}
+	$share_command = sprintf( "[mashshare text='%s' url='%s']",
+		$share_text,
+		$metadata['handle']
+	);
+
+	return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
+}
+

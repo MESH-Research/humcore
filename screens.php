@@ -1207,6 +1207,9 @@ function humcore_deposit_item_content() {
 	} else {
 		$thumb_url = '';
 	}
+
+	$share_command = humcore_social_sharing_shortcode( 'display', $metadata );
+
 	if ( $switched ) {
 			restore_current_blog();
 	}
@@ -1359,6 +1362,10 @@ endif;
 <?php if ( ! empty( $post_metadata['type_of_license'] ) ) : ?>
 <dt><?php _e( 'License:', 'humcore_domain' ); ?></dt>
 <dd><?php echo humcore_linkify_license( $post_metadata['type_of_license'] ); ?></dd>
+<?php endif; ?>
+<?php if ( in_array( $post_data->post_status, array( 'publish' ) ) && ! empty( $share_command ) ) : ?>
+<dt><?php _e( 'Share this:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo do_shortcode( $share_command ); ?></span></dd>
 <?php endif; ?>
 </dl>
 <?php if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) { ?>
@@ -1528,6 +1535,9 @@ function humcore_deposit_item_review_content() {
 	} else {
 			$thumb_url = '';
 	}
+
+	$share_command = humcore_social_sharing_shortcode( 'deposit', $metadata );
+
 	if ( $switched ) {
 			restore_current_blog();
 	}
@@ -1698,6 +1708,10 @@ endif;
 <dd><?php echo esc_html( $file_metadata['files'][0]['filename'] ); ?></dd>
 <dt><?php _e( 'File Size:', 'humcore_domain' ); ?></dt>
 <dd><?php echo number_format( $file_metadata['files'][0]['filesize'] ), ' bytes'; ?></dd>
+<?php if ( in_array( $post_data->post_status, array( 'draft', 'publish' ) ) && ! empty( $share_command ) ) : ?>
+<dt><?php _e( 'Share this:', 'humcore_domain' ); ?></dt>
+<dd><span><?php echo do_shortcode( $share_command ); ?></span></dd>
+<?php endif; ?>
 </dl>
 </div>
 <br style='clear:both'>
