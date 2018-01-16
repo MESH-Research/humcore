@@ -323,10 +323,10 @@ function humcore_release_provisional_fire() {
 							);
 							//echo "Group Activity ID ", $Group_activity_id,"\n";
 							$group_society_id = bp_groups_get_group_type( $group_id );
-							if ( Humanities_Commons::$society_id != $group_society_id ) {
+							if ( humcore_get_current_society_id() !== $group_society_id ) {
 								bp_activity_update_meta(
 									$group_activity_id, 'society_id', $group_society_id,
-									Humanities_Commons::$society_id
+									humcore_get_current_society_id()
 								);
 							}
 							$group_activity_ids[] = $group_activity_id;

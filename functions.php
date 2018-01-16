@@ -2158,3 +2158,38 @@ function humcore_social_sharing_shortcode( $share_context, $metadata ) {
 	return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
 }
 
+/**
+ * Return the current society_id
+ *
+ * @return string
+ */
+function humcore_get_current_society_id() {
+
+	if ( class_exists( 'Humanities_Commons' ) ) {
+		$society_id = Humanities_Commons::$society_id;
+	} else {
+		$society_id = '';
+	}
+
+	return apply_filters( 'humcore_get_current_society_id', $society_id );
+
+}
+
+/**
+ * Return the current user's societies
+ *
+ * @param string $user_id
+ * @return array
+ */
+function humcore_get_current_user_societies( $user_id ) {
+
+	if ( class_exists( 'Humanities_Commons' ) ) {
+		$societies = bp_get_member_type( $user_id, false );
+	} else {
+		$societies = '';
+	}
+
+	return apply_filters( 'humcore_get_current_user_societies', $societies );
+
+}
+
