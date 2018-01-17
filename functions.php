@@ -120,7 +120,7 @@ function humcore_format_activity_action_new_group_deposit( $action, $activity ) 
  * @return string $return Formatted notification display.
  */
 function humcore_format_deposit_review_notification( $action, $item_id, $secondary_item_id, $total_items, $format = 'string',
-		 $component_action_name, $component_name, $notification_id ) {
+		$component_action_name, $component_name, $notification_id ) {
 
 	if ( 'deposit_review' !== $component_action_name ) {
 		return $action;
@@ -178,7 +178,7 @@ add_filter( 'bp_notifications_get_notifications_for_user', 'humcore_format_depos
  * @return string $return Formatted notification display.
  */
 function humcore_format_deposit_published_notification( $action, $item_id, $secondary_item_id, $total_items, $format = 'string',
-				 $component_action_name, $component_name, $notification_id ) {
+		$component_action_name, $component_name, $notification_id ) {
 
 	if ( 'deposit_published' !== $component_action_name ) {
 			return $action;
@@ -2135,7 +2135,7 @@ function humcore_social_sharing_shortcode( $share_context, $metadata ) {
 
 	$share_command = '';
 
-        if ( ! is_array( $metadata ) || ! shortcode_exists( 'mashshare' ) ) {
+	if ( ! is_array( $metadata ) || ! shortcode_exists( 'mashshare' ) ) {
 		return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
 	}
 
@@ -2192,4 +2192,24 @@ function humcore_get_current_user_societies( $user_id ) {
 	return apply_filters( 'humcore_get_current_user_societies', $societies );
 
 }
+
+/**
+ * Deposits directory - set default scope to society
+ */
+function hcommons_set_default_scope_society() {
+
+	if ( bp_is_deposits_directory() && 'hc' !== humcore_get_current_society_id() ) {
+		$object_name = bp_current_component();
+		$cookie_name = 'bp-' . $object_name . '-scope';
+
+		if ( ! isset( $_COOKIE[ $cookie_name ] ) ) {
+			setcookie( $cookie_name, 'society', null, '/' );
+			// unless the $_COOKIE global is updated in addition to the actual cookie above,
+			// bp will not use the value for the first pageload.
+			$_COOKIE[ $cookie_name ] = 'society';
+		}
+	}
+}
+add_action( 'bp_init', 'humcore_set_default_scope_society' );
+
 

@@ -43,7 +43,7 @@ function humcore_deposits_front_cssjs() {
 		wp_enqueue_style( 'wp-jquery-ui-dialog' );
 
 	} else {
-		wp_register_script( 'humcore_search_js', plugins_url( 'js/search.js', __FILE__ ), array( 'jquery' ), '091317', true );
+		wp_register_script( 'humcore_search_js', plugins_url( 'js/search.js', __FILE__ ), array( 'jquery' ), '011718', true );
 		wp_enqueue_script( 'humcore_search_js' );
 	}
 

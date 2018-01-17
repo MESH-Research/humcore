@@ -3,6 +3,8 @@
  * Template Name: HumCORE Deposits Directory
  */
 
+$society_id = humcore_get_current_society_id();
+
 Humcore_Theme_Compatibility::get_header(); ?>
 
 <?php do_action( 'bp_before_directory_deposits_page' ); ?>
@@ -59,6 +61,10 @@ Humcore_Theme_Compatibility::get_header(); ?>
 			<div class="item-list-tabs main-tabs" role="navigation">
 				<ul>
 					<li class="selected" id="deposits-all"><a href="<?php echo esc_attr( trailingslashit( bp_get_root_domain() . '/' . 'deposits' ) ); ?>"><?php printf( __( 'All Deposits <span>%s</span>', 'humcore_domain' ), humcore_get_deposit_count() ); ?></a></li>
+
+					<?php if ( ! empty( $society_id ) && 'hc' !== $society_id ) : ?>
+						<li id="deposits-society"><a href="<?php echo esc_attr( trailingslashit( bp_get_root_domain() . '/' . 'deposits' ) ); ?>"><?php printf( __( '%s Deposits', 'humcore_domain' ), strtoupper( $society_id ) ); ?></a></li>
+					<?php endif; ?>
 
 					<?php do_action( 'humcore_deposits_directory_deposit_types' ); ?>
 
