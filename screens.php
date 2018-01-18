@@ -526,7 +526,7 @@ foreach ( $committee_list as $committee_key => $committee_value ) {
 		<input type="hidden" name="deposit-author-uni" id="deposit-author-uni"
 		<?php
 		if ( 'new' === $form_type ) {
-			echo $user_login;
+			echo ' value="' . $user_login . '" ';
 		} elseif ( ! empty( $prev_val['deposit-author-uni'] ) ) {
 			echo ' value="' . sanitize_text_field( $prev_val['deposit-author-uni'] ) . '" ';
 		}
