@@ -266,6 +266,10 @@ class Humcore_Deposit_Ezid_Api {
 	 * @see wp_remote_request()
 	 */
 	public function mint_identifier( array $args = array() ) {
+		// bypas this function if host = 'none'
+		if ( $this->ezid_settings['host'] == 'none' ) {
+			return trim( $this->ezid_settings['host'] );
+		}
 
 		$defaults = array(
 			'_status'      => 'reserved',
@@ -479,6 +483,11 @@ class Humcore_Deposit_Ezid_Api {
 	 * @see wp_remote_request()
 	 */
 	public function server_status( array $args = array() ) {
+		// bypas this function if host == 'none'
+		if ( $this->ezid_settings['host'] == 'none' ) {
+			return trim( $this->ezid_settings['host'] );
+		}
+
 
 		$params = wp_parse_args( $args, $defaults );
 
