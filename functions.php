@@ -2196,9 +2196,9 @@ function humcore_get_current_user_societies( $user_id ) {
 /**
  * Deposits directory - set default scope to society
  */
-function hcommons_set_default_scope_society() {
+function humcore_set_default_scope_society() {
 
-	if ( bp_is_deposits_directory() && 'hc' !== humcore_get_current_society_id() ) {
+	if ( humcore_is_deposit_directory() && 'hc' !== humcore_get_current_society_id() ) {
 		$object_name = bp_current_component();
 		$cookie_name = 'bp-' . $object_name . '-scope';
 
