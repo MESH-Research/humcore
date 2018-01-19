@@ -137,6 +137,10 @@ div.item-list-tabs ul#search-results-header li span {
 /*   width: 75% !important; */
 /*    float: right; */
 }
+.deposit-item .mashsb-container {
+	padding-top: 0px;
+	width: 50%;
+}
 /* deposit list styles */
 ul.deposits-item {
 	list-style-type: none;
