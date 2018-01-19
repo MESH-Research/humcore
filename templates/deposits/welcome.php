@@ -35,7 +35,6 @@
 								<?php endwhile; // end of the loop. ?>
 
 				<div class="pagination-below">
-										<?php buddyboss_pagination(); ?>
 				</div>
 
 						</div><!-- #content -->
