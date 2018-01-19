@@ -51,14 +51,14 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 
 	if ( 'yes' === $metadata['committee_deposit'] ) {
 		$committee                = groups_get_group( array( 'group_id' => $metadata['committee_id'] ) );
-		$metadata['organization'] = strtoupper( Humanities_Commons::$society_id );
+		$metadata['organization'] = strtoupper( humcore_get_current_society_id() );
 		$metadata['authors'][]    = array(
 			'fullname'    => $committee->name,
 			'given'       => '',
 			'family'      => '',
 			'uni'         => $committee->slug,
 			'role'        => 'creator',
-			'affiliation' => strtoupper( Humanities_Commons::$society_id ),
+			'affiliation' => strtoupper( humcore_get_current_society_id() ),
 		);
 	} elseif ( 'submitter' !== sanitize_text_field( $curr_val['deposit-author-role'] ) ) {
 		$user_id                  = $user->ID;

@@ -168,7 +168,7 @@ function humcore_deposit_file() {
 	$metadata['pid']                   = $next_pids[0];
 	$metadata['creator']               = 'HumCORE';
 	$metadata['submitter']             = $user->ID;
-	$metadata['society_id']            = Humanities_Commons::$society_id;
+	$metadata['society_id']            = humcore_get_current_society_id();
 	$metadata['member_of']             = $fedora_api->collection_pid;
 	$metadata['record_content_source'] = 'HumCORE';
 	$metadata['record_creation_date']  = gmdate( 'Y-m-d\TH:i:s\Z' );
@@ -220,7 +220,7 @@ function humcore_deposit_file() {
 
 	//if in HC lookup user
 	//if HC only user send to provisional deposit review group
-	if ( 'hc' === Humanities_Commons::$society_id && 'hcadmin' !== $user->user_login ) {
+	if ( 'hc' === humcore_get_current_society_id() && 'hcadmin' !== $user->user_login ) {
 		$query_args = array(
 			'post_parent' => 0,
 			'post_type'   => 'humcore_deposit',

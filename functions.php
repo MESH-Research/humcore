@@ -120,7 +120,7 @@ function humcore_format_activity_action_new_group_deposit( $action, $activity ) 
  * @return string $return Formatted notification display.
  */
 function humcore_format_deposit_review_notification( $action, $item_id, $secondary_item_id, $total_items, $format = 'string',
-		 $component_action_name, $component_name, $notification_id ) {
+		$component_action_name, $component_name, $notification_id ) {
 
 	if ( 'deposit_review' !== $component_action_name ) {
 		return $action;
@@ -178,7 +178,7 @@ add_filter( 'bp_notifications_get_notifications_for_user', 'humcore_format_depos
  * @return string $return Formatted notification display.
  */
 function humcore_format_deposit_published_notification( $action, $item_id, $secondary_item_id, $total_items, $format = 'string',
-				 $component_action_name, $component_name, $notification_id ) {
+		$component_action_name, $component_name, $notification_id ) {
 
 	if ( 'deposit_published' !== $component_action_name ) {
 			return $action;
@@ -821,7 +821,7 @@ function humcore_user_can_edit_deposit( $wpmn_record_identifier ) {
 		$global_super_admins     = explode( ',', $global_super_admin_list );
 	}
 
-	$post_data = get_post( $deposit_post_id );
+	$post_data = get_post( $wpmn_record_identifier[1] );
 	if ( ( 'publish' !== $post_data->post_status && bp_loggedin_user_id() == $post_data->post_author ) || is_super_admin() ||
 			in_array( bp_get_loggedin_user_username(), $global_super_admins ) ) {
 		return true;
@@ -2123,3 +2123,93 @@ function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) 
 
 	return;
 }
+
+/**
+ * Format social sharing shortcode
+ *
+ * @param string $share_context
+ * @param array $metadata
+ * @return string shortcode or null
+ */
+function humcore_social_sharing_shortcode( $share_context, $metadata ) {
+
+	$share_command = '';
+
+	if ( ! is_array( $metadata ) || ! shortcode_exists( 'mashshare' ) ) {
+		return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
+	}
+
+	global $mashsb_options;
+
+	if ( empty( $mashsb_options['mashsharer_hashtag'] ) || empty( $metadata['handle'] ) ) {
+		return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
+	}
+
+	if ( 'deposit' === $share_context ) {
+		$share_text = esc_html( 'I just uploaded "' . $metadata['title'] . '" to @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
+	} else {
+		$share_text = esc_html( 'I just found "' . $metadata['title'] . '" on @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
+	}
+	$share_command = sprintf( "[mashshare text='%s' url='%s']",
+		$share_text,
+		$metadata['handle']
+	);
+
+	return apply_filters( 'humcore_social_sharing_shortcode', $share_command, $share_context, $metadata );
+}
+
+/**
+ * Return the current society_id
+ *
+ * @return string
+ */
+function humcore_get_current_society_id() {
+
+	if ( class_exists( 'Humanities_Commons' ) ) {
+		$society_id = Humanities_Commons::$society_id;
+	} else {
+		$society_id = '';
+	}
+
+	return apply_filters( 'humcore_get_current_society_id', $society_id );
+
+}
+
+/**
+ * Return the current user's societies
+ *
+ * @param string $user_id
+ * @return array
+ */
+function humcore_get_current_user_societies( $user_id ) {
+
+	if ( class_exists( 'Humanities_Commons' ) ) {
+		$societies = bp_get_member_type( $user_id, false );
+	} else {
+		$societies = '';
+	}
+
+	return apply_filters( 'humcore_get_current_user_societies', $societies );
+
+}
+
+/**
+ * Deposits directory - set default scope to society
+ */
+function hcommons_set_default_scope_society() {
+
+	if ( bp_is_deposits_directory() && 'hc' !== humcore_get_current_society_id() ) {
+		$object_name = bp_current_component();
+		$cookie_name = 'bp-' . $object_name . '-scope';
+
+		if ( ! isset( $_COOKIE[ $cookie_name ] ) ) {
+			setcookie( $cookie_name, 'society', null, '/' );
+			// unless the $_COOKIE global is updated in addition to the actual cookie above,
+			// bp will not use the value for the first pageload.
+			$_COOKIE[ $cookie_name ] = 'society';
+		}
+	}
+}
+add_action( 'bp_init', 'humcore_set_default_scope_society' );
+
+

@@ -38,6 +38,14 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	$( 'a.facet-search-link' ).on('click', function() {
+		if ( $( "#deposits-society" ).length ) {
+			if ( $( '#deposits-society' ).hasClass( 'selected' ) ) {
+                        	var scope = 'society';
+			} else {
+                        	var scope = 'all';
+			}
+		}
+	 	$.cookie( 'bp-deposits-scope', scope, { path : '/' } );
 		var current_url = $( this ).attr( 'href' ).split( '?' );
 		var facet_value = current_url[1];
 		var cookie_value = $.cookie( 'bp-deposits-extras' );
@@ -83,7 +91,13 @@ jQuery( document ).ready( function( $ ) {
                 $( '#deposits-order-by' ).on( 'change', function() {
 
                         var object = 'deposits';
-                        var scope = 'all';
+			if ( $( "#deposits-society" ).length ) {
+				if ( $( '#deposits-society' ).hasClass( 'selected' ) ) {
+                        		var scope = 'society';
+				} else {
+                        		var scope = 'all';
+				}
+			}
                         var filter = $('select#deposits-order-by').val();
                         $.cookie('bp-deposits-filter',filter,{ path: '/' });
                         var search_field = $('#search-deposits-field').val();
@@ -108,7 +122,13 @@ jQuery( document ).ready( function( $ ) {
                 $( '#search-deposits-field' ).on( 'change', function() {
 
                         var object = 'deposits';
-                        var scope = 'all';
+			if ( $( "#deposits-society" ).length ) {
+				if ( $( '#deposits-society' ).hasClass( 'selected' ) ) {
+                        		var scope = 'society';
+				} else {
+                        		var scope = 'all';
+				}
+			}
                         var filter = $('select#deposits-order-by').val();
                         $.cookie('bp-deposits-filter',filter,{ path: '/' });
                         var search_field = $('#search-deposits-field').val();
@@ -130,7 +150,13 @@ jQuery( document ).ready( function( $ ) {
 	$( '.dir-search input#search-deposits-term' ).on( 'change', function() {
 
                         var object = 'deposits';
-                        var scope = 'all';
+			if ( $( "#deposits-society" ).length ) {
+				if ( $( '#deposits-society' ).hasClass( 'selected' ) ) {
+                        		var scope = 'society';
+				} else {
+                        		var scope = 'all';
+				}
+			}
                         var filter = $('select#deposits-order-by').val();
                         $.cookie('bp-deposits-filter',filter,{ path: '/' });
                         var search_field = $('#search-deposits-field').val();
@@ -151,7 +177,13 @@ jQuery( document ).ready( function( $ ) {
 	$( '.dir-search input#search-deposits-submit' ).on( 'click', function() {
 
                         var object = 'deposits';
-                        var scope = 'all';
+			if ( $( "#deposits-society" ).length ) {
+				if ( $( '#deposits-society' ).hasClass( 'selected' ) ) {
+                        		var scope = 'society';
+				} else {
+                        		var scope = 'all';
+				}
+			}
                         var filter = $('select#deposits-order-by').val();
                         $.cookie('bp-deposits-filter',filter,{ path: '/' });
                         var search_field = $('#search-deposits-field').val();
