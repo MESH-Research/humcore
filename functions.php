@@ -831,6 +831,26 @@ function humcore_user_can_edit_deposit( $wpmn_record_identifier ) {
 }
 
 /**
+ * Global super admin.
+ *
+ * @return bool True if the current user is a global super admin.
+ */
+function hcommons_is_global_super_admin( $wpmn_record_identifier ) {
+
+	$global_super_admins = array();
+	if ( defined( 'GLOBAL_SUPER_ADMINS' ) ) {
+		$global_super_admin_list = constant( 'GLOBAL_SUPER_ADMINS' );
+		$global_super_admins     = explode( ',', $global_super_admin_list );
+	}
+
+	if ( in_array( bp_get_loggedin_user_username(), $global_super_admins ) ) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+/**
  * Array of member groups that can author deposits.
  *
  * @return array Group ids.
