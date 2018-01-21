@@ -181,47 +181,47 @@ function humcore_format_deposit_published_notification( $action, $item_id, $seco
 		$component_action_name, $component_name, $notification_id ) {
 
 	if ( 'deposit_published' !== $component_action_name ) {
-			return $action;
+		return $action;
 	} else {
-			$society_id           = bp_notifications_get_meta( $notification_id, 'society_id', true );
-			$notification_blog_id = constant( strtoupper( $society_id ) . '_ROOT_BLOG_ID' );
-			$switched             = false;
+		$society_id           = bp_notifications_get_meta( $notification_id, 'society_id', true );
+		$notification_blog_id = constant( strtoupper( $society_id ) . '_ROOT_BLOG_ID' );
+		$switched             = false;
 		if ( get_current_blog_id() != $notification_blog_id ) {
-				switch_to_blog( $notification_blog_id );
-				$switched = true;
+			switch_to_blog( $notification_blog_id );
+			$switched = true;
 		}
 
-			$deposit_post  = get_post( $item_id );
-			$post_metadata = json_decode( get_post_meta( $item_id, '_deposit_metadata', true ), true );
-			$pid           = $post_metadata['pid'];
-			$pid           = $post_metadata['handle'];
+		$deposit_post  = get_post( $item_id );
+		$post_metadata = json_decode( get_post_meta( $item_id, '_deposit_metadata', true ), true );
+		$pid           = $post_metadata['pid'];
+		$pid           = $post_metadata['handle'];
 
-			$custom_title = 'Deposit published! Your recently deposited ' . $post_metadata['genre'] . ' has been published.';
-			$custom_link  = esc_url( $post_metadata['handle'] );
-			$custom_text  = 'Deposit published! We published your recently deposited ' . $post_metadata['genre'] . ' (' . $post_metadata['deposit_doi'] .
+		$custom_title = 'Deposit published! Your recently deposited ' . $post_metadata['genre'] . ' has been published.';
+		$custom_link  = esc_url( $post_metadata['handle'] );
+		$custom_text  = 'Deposit published! We published your recently deposited ' . $post_metadata['genre'] . ' (' . $post_metadata['deposit_doi'] .
 			')  titled: ' . $deposit_post->post_title;
-			// WordPress Toolbar
+		// WordPress Toolbar
 		if ( 'string' === $format ) {
-				$return = apply_filters(
-					'humcore_format_deposit_published_notification',
-					'<a href="' . esc_url( $custom_link ) . '" title="' . esc_attr( $custom_title ) . '">' . $custom_text . '</a>',
-					$custom_text, $custom_link
-				);
-			// Deprecated BuddyBar
+			$return = apply_filters(
+				'humcore_format_deposit_published_notification',
+				'<a href="' . esc_url( $custom_link ) . '" title="' . esc_attr( $custom_title ) . '">' . $custom_text . '</a>',
+				$custom_text, $custom_link
+			);
 		} else {
-				$return = apply_filters(
-					'humcore_format_deposit_published_notification', array(
-						'text' => $custom_text,
-						'link' => $custom_link,
-					), $custom_link, (int) $total_items, $custom_text, $custom_title
-				);
+			// Deprecated BuddyBar
+			$return = apply_filters(
+				'humcore_format_deposit_published_notification', array(
+					'text' => $custom_text,
+					'link' => $custom_link,
+				), $custom_link, (int) $total_items, $custom_text, $custom_title
+			);
 		}
 
 		if ( $switched ) {
-				restore_current_blog();
+			restore_current_blog();
 		}
 
-			return $return;
+		return $return;
 
 	}
 
@@ -234,7 +234,7 @@ add_filter( 'bp_notifications_get_notifications_for_user', 'humcore_format_depos
 function humcore_activity_action_group_deposit_dropdown() {
 ?>
 		<option value="new_group_deposit"><?php _e( 'New Group Deposits', 'humcore_domain' ); ?></option>
-													<?php
+<?php
 
 }
 add_action( 'bp_group_activity_filter_options', 'humcore_activity_action_group_deposit_dropdown' );
@@ -395,14 +395,14 @@ function humcore_deposit_item_search_meta() {
 
 	printf( '<meta property="og:title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
 	printf( '<meta property="og:description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
-		printf( '<meta property="og:url" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
+	printf( '<meta property="og:url" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
 
 	print( '<meta name="twitter:card" content="summary">' . "\n\r" );
 	printf( '<meta name="twitter:title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
 	printf( '<meta name="twitter:description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
-		printf( '<meta name="twitter:site" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
+	printf( '<meta name="twitter:site" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
 
-		printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
+	printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
 
 	printf( '<meta name="description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
 	printf( '<meta name="citation_title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
@@ -410,11 +410,11 @@ function humcore_deposit_item_search_meta() {
 	if ( ! empty( $metadata['publisher'] ) ) {
 		printf( '<meta name="citation_publisher" content="%1$s">' . "\n\r", htmlentities( $metadata['publisher'] ) );
 	}
-		$contributors      = array_filter( $metadata['authors'] );
-		$contributor_uni   = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-		$contributor_type  = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-		$contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
-		$authors_list      = array();
+	$contributors      = array_filter( $metadata['authors'] );
+	$contributor_uni   = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+	$contributor_type  = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+	$contributors_list = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	$authors_list      = array();
 	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 			printf( '<meta name="citation_author" content="%1$s">' . "\n\r", htmlentities( $contributor[0] ) );
@@ -472,13 +472,13 @@ function humcore_deposit_item_search_meta() {
 	$wpmn_record_identifier = explode( '-', $metadata['record_identifier'] );
 		// handle legacy MLA value
 	if ( $wpmn_record_identifier[0] === $metadata['record_identifier'] ) {
-			$wpmn_record_identifier[0] = '1';
-			$wpmn_record_identifier[1] = $metadata['record_identifier'];
+		$wpmn_record_identifier[0] = '1';
+		$wpmn_record_identifier[1] = $metadata['record_identifier'];
 	}
 	$switched = false;
 	if ( get_current_blog_id() != $wpmr_record_identifier[0] ) {
-				switch_to_blog( $wpmn_record_identifier[0] );
-				$switched = true;
+		switch_to_blog( $wpmn_record_identifier[0] );
+		$switched = true;
 	}
 
 	$site_url = HC_SITE_URL;
@@ -487,7 +487,7 @@ function humcore_deposit_item_search_meta() {
 	$post_metadata = json_decode( get_post_meta( $wpmn_record_identifier[1], '_deposit_metadata', true ), true );
 	if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
 		if ( $switched ) {
-				restore_current_blog();
+			restore_current_blog();
 		}
 		return;
 	} else {
@@ -500,7 +500,7 @@ function humcore_deposit_item_search_meta() {
 			htmlentities( $file_metadata['files'][0]['filename'] )
 		);
 		if ( $switched ) {
-				restore_current_blog();
+			restore_current_blog();
 		}
 	}
 }
@@ -865,7 +865,7 @@ function humcore_member_groups_with_authorship() {
  */
 function humcore_get_offline_content() {
 
-	$args        = array(
+	$args = array(
 		'name'             => 'deposits',
 		'posts_per_page'   => 1,
 		'offset'           => 0,
@@ -873,20 +873,22 @@ function humcore_get_offline_content() {
 		'post_status'      => 'publish',
 		'suppress_filters' => true,
 	);
+
 	$post_parent = get_posts( $args );
 	$parent_id   = $posts_parent[0]->ID;
 
-		$args         = array(
-			'name'             => 'offline',
-			'posts_per_page'   => 1,
-			'offset'           => 0,
-			'post_type'        => 'page',
-			'post_status'      => 'publish',
-			'post_parent'      => $post_parent,
-			'suppress_filters' => true,
-		);
-		$offline_page = get_posts( $args );
-	$offline_content  = apply_filters( 'the_content', $offline_page[0]->post_content );
+	$args = array(
+		'name'             => 'offline',
+		'posts_per_page'   => 1,
+		'offset'           => 0,
+		'post_type'        => 'page',
+		'post_status'      => 'publish',
+		'post_parent'      => $post_parent,
+		'suppress_filters' => true,
+	);
+
+	$offline_page    = get_posts( $args );
+	$offline_content = apply_filters( 'the_content', $offline_page[0]->post_content );
 
 	echo '<p />',$offline_content;
 
@@ -1126,8 +1128,8 @@ function humcore_deposits_search_screen() {
 	if ( humcore_is_deposit_search() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		if ( ! humcore_check_internal_status() ) {
-						wp_redirect( '/deposits/offline/' );
-						exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		add_filter( 'body_class', 'humcore_search_page_class_names' );
 		$extended_query_string = humcore_get_search_request_querystring( 'facets' );
@@ -1154,8 +1156,8 @@ function humcore_deposits_screen_index() {
 	if ( humcore_is_deposit_directory() ) {
 		bp_update_is_directory( true, 'humcore_deposits' );
 		if ( ! humcore_check_internal_status() ) {
-				wp_redirect( '/deposits/offline/' );
-				exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		add_filter( 'body_class', 'humcore_deposit_directory_page_class_names' );
 		setcookie( 'bp-deposits-extras', false, 0, '/' );
@@ -1185,8 +1187,8 @@ function humcore_deposits_list_screen() {
 	if ( humcore_is_deposit_list() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		if ( ! humcore_check_internal_status() ) {
-				wp_redirect( '/deposits/offline/' );
-				exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		bp_do_404();
 		exit();
@@ -1206,8 +1208,8 @@ function humcore_deposits_item_screen() {
 	if ( humcore_is_deposit_item() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		if ( ! humcore_check_internal_status() ) {
-				wp_redirect( '/deposits/offline/' );
-				exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		$deposit_id = $wp->query_vars['deposits_item'];
 		if ( empty( $deposit_id ) ) {
@@ -1242,8 +1244,8 @@ function humcore_deposits_item_review_screen() {
 		if ( ! is_user_logged_in() ) {
 			auth_redirect(); }
 		if ( ! humcore_check_internal_status() ) {
-				wp_redirect( '/deposits/offline/' );
-				exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		$deposit_id = $wp->query_vars['deposits_item'];
 		if ( empty( $deposit_id ) ) {
@@ -1274,8 +1276,8 @@ function humcore_deposits_new_item_screen() {
 		if ( ! is_user_logged_in() ) {
 			auth_redirect(); }
 		if ( ! humcore_check_internal_status() ) {
-						wp_redirect( '/deposits/offline/' );
-						exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		$user_id         = bp_loggedin_user_id();
 		$core_acceptance = get_the_author_meta( 'accepted_core_terms', $user_id );
@@ -1303,20 +1305,20 @@ function humcore_deposits_edit_item_screen() {
 		if ( ! is_user_logged_in() ) {
 			auth_redirect(); }
 		if ( ! humcore_check_internal_status() ) {
-						wp_redirect( '/deposits/offline/' );
-						exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
-		$user_id              = bp_loggedin_user_id();
-				$deposit_item = $wp->query_vars['deposits_item'];
+		$user_id      = bp_loggedin_user_id();
+		$deposit_item = $wp->query_vars['deposits_item'];
 		if ( empty( $deposit_item ) ) {
-				wp_redirect( '/deposits/' );
-				exit();
+			wp_redirect( '/deposits/' );
+			exit();
 		}
 		bp_update_is_directory( false, 'humcore_deposits' );
-				$item_found = humcore_has_deposits( 'include=' . $deposit_item );
+		$item_found = humcore_has_deposits( 'include=' . $deposit_item );
 		if ( ! $item_found ) {
-				wp_redirect( '/deposits/' );
-				exit();
+			wp_redirect( '/deposits/' );
+			exit();
 		}
 		humcore_the_deposit();
 		$record_identifier      = humcore_get_deposit_record_identifier();
@@ -1329,13 +1331,13 @@ function humcore_deposits_edit_item_screen() {
 
 		// Cannot edit from another network yet.
 		if ( get_current_blog_id() != $wpmn_record_identifier[0] ) {
-						wp_redirect( '/deposits/item/' . $deposit_item . '/' );
-						exit();
+			wp_redirect( '/deposits/item/' . $deposit_item . '/' );
+			exit();
 		}
 		//$post_data = get_post( $wpmn_record_identifier[1] );
 		if ( ! humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) {
-						wp_redirect( '/deposits/item/' . $deposit_item . '/' );
-						exit();
+			wp_redirect( '/deposits/item/' . $deposit_item . '/' );
+			exit();
 		}
 		//check post status when end user is editing
 		add_filter( 'body_class', 'humcore_deposit_edit_item_page_class_names' );
@@ -1361,8 +1363,8 @@ function humcore_deposits_download() {
 	if ( humcore_is_deposit_download() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		if ( ! humcore_check_internal_status() ) {
-				wp_redirect( '/deposits/offline/' );
-				exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		do_action( 'humcore_deposits_download' );
 		$deposit_id         = $wp->query_vars['deposits_item'];
@@ -1371,15 +1373,15 @@ function humcore_deposits_download() {
 			bp_do_404();
 			return;
 		}
-		$deposit_filename      = $wp->query_vars['deposits_filename'];
-		$download_param        = ( 'xml' == $deposit_filename ) ? '' : '?download=true';
-		$downloads_meta_key    = sprintf( '_total_downloads_%s_%s', $deposit_datastream, $deposit_id );
-		$deposit_post_id       = humcore_get_deposit_post_id( $deposit_id );
-			$post_data         = get_post( $deposit_post_id );
-				$post_metadata = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
+		$deposit_filename   = $wp->query_vars['deposits_filename'];
+		$download_param     = ( 'xml' == $deposit_filename ) ? '' : '?download=true';
+		$downloads_meta_key = sprintf( '_total_downloads_%s_%s', $deposit_datastream, $deposit_id );
+		$deposit_post_id    = humcore_get_deposit_post_id( $deposit_id );
+		$post_data          = get_post( $deposit_post_id );
+		$post_metadata      = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 		if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
-				bp_do_404();
-				return;
+			bp_do_404();
+			return;
 		}
 		$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true ) + 1; // Downloads counted at file level.
 		if ( bp_loggedin_user_id() != $post_data->post_author && ! humcore_is_bot_user_agent() ) {
@@ -1402,23 +1404,23 @@ function humcore_deposits_view() {
 	if ( humcore_is_deposit_view() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		if ( ! humcore_check_internal_status() ) {
-				wp_redirect( '/deposits/offline/' );
-				exit();
+			wp_redirect( '/deposits/offline/' );
+			exit();
 		}
 		do_action( 'humcore_deposits_view' );
 		$deposit_id         = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];
 		if ( empty( $deposit_id ) || empty( $deposit_datastream ) ) {
-				bp_do_404();
-				return;
+			bp_do_404();
+			return;
 		}
 		$deposit_filename = $wp->query_vars['deposits_filename'];
 		$views_meta_key   = sprintf( '_total_views_%s_%s', $deposit_datastream, $deposit_id );
 		$deposit_post_id  = humcore_get_deposit_post_id( $deposit_id );
-			$post_data    = get_post( $deposit_post_id );
+		$post_data        = get_post( $deposit_post_id );
 		$post_metadata    = json_decode( get_post_meta( $deposit_post_id, '_deposit_metadata', true ), true );
 		if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) {
-						bp_do_404();
+			bp_do_404();
 			return;
 		}
 		$total_views = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // views counted at file level
@@ -1439,13 +1441,14 @@ add_action( 'bp_screens', 'humcore_deposits_view' );
  * @return true If the group is a forum.
  */
 function humcore_is_group_forum( $group_id = 0 ) {
-		// use the current group if we're not passed one.
+
+	// use the current group if we're not passed one.
 	if ( 0 == $group_id ) {
 		$group_id = bp_get_current_group_id();
 	}
 
-		// if mla_oid starts with "M," it's a committee, if "D","G" it's a forum
-		return in_array( substr( groups_get_groupmeta( $group_id, 'mla_oid' ), 0, 1 ), array( 'D', 'G' ) );
+	// if mla_oid starts with "M," it's a committee, if "D","G" it's a forum
+	return in_array( substr( groups_get_groupmeta( $group_id, 'mla_oid' ), 0, 1 ), array( 'D', 'G' ) );
 }
 
 /**
@@ -1529,19 +1532,19 @@ function humcore_linkify_license( $license ) {
 
 	$license_link_list = array();
 
-		$license_link_list['All Rights Reserved']                     = '';
-		$license_link_list['Attribution']                             = 'https://creativecommons.org/licenses/by/4.0/';
-		$license_link_list['Attribution-NonCommercial']               = 'https://creativecommons.org/licenses/by-nc/4.0/';
-		$license_link_list['Attribution-ShareAlike']                  = 'https://creativecommons.org/licenses/by-sa/4.0/';
-		$license_link_list['Attribution-NonCommercial-ShareAlike']    = 'https://creativecommons.org/licenses/by-nc-sa/4.0/';
-		$license_link_list['Attribution-NoDerivatives']               = 'https://creativecommons.org/licenses/by-nd/4.0/';
-		$license_link_list['Attribution-NonCommercial-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nc-nd/4.0/';
-		$license_link_list['All-Rights-Granted']                      = 'https://creativecommons.org/publicdomain/zero/1.0/';
+	$license_link_list['All Rights Reserved']                     = '';
+	$license_link_list['Attribution']                             = 'https://creativecommons.org/licenses/by/4.0/';
+	$license_link_list['Attribution-NonCommercial']               = 'https://creativecommons.org/licenses/by-nc/4.0/';
+	$license_link_list['Attribution-ShareAlike']                  = 'https://creativecommons.org/licenses/by-sa/4.0/';
+	$license_link_list['Attribution-NonCommercial-ShareAlike']    = 'https://creativecommons.org/licenses/by-nc-sa/4.0/';
+	$license_link_list['Attribution-NoDerivatives']               = 'https://creativecommons.org/licenses/by-nd/4.0/';
+	$license_link_list['Attribution-NonCommercial-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nc-nd/4.0/';
+	$license_link_list['All-Rights-Granted']                      = 'https://creativecommons.org/publicdomain/zero/1.0/';
 
 	if ( ! empty( $license_link_list[ $license ] ) ) {
-			return sprintf( '<a onclick="target=' . "'" . '_blank' . "'" . '" href="%s">%s</a>', $license_link_list[ $license ], $license );
+		return sprintf( '<a onclick="target=' . "'" . '_blank' . "'" . '" href="%s">%s</a>', $license_link_list[ $license ], $license );
 	} else {
-			return $license;
+		return $license;
 	}
 
 }
@@ -1723,7 +1726,7 @@ function humcore_deposits_group_list( $user_id ) {
 function humcore_deposits_user_committee_list( $user_id ) {
 
 	$committees_list = array();
-		$society_id  = get_network_option( '', 'society_id' );
+	$society_id      = get_network_option( '', 'society_id' );
 
 	$args = array(
 		'user_id'    => $user_id,
@@ -1748,19 +1751,19 @@ function humcore_deposits_user_committee_list( $user_id ) {
 	*/
 
 	// Add special exceptions - certain committees where user is admin
-		$s_args = array(
-			'user_id'     => $user_id,
-			'type'        => 'alphabetical',
-			'include'     => humcore_member_groups_with_authorship(),
-			'show_hidden' => true,
-			'per_page'    => '500',
-		);
+	$s_args = array(
+		'user_id'     => $user_id,
+		'type'        => 'alphabetical',
+		'include'     => humcore_member_groups_with_authorship(),
+		'show_hidden' => true,
+		'per_page'    => '500',
+	);
 
-		$s_groups = groups_get_groups( $s_args );
+	$s_groups = groups_get_groups( $s_args );
 
 	foreach ( $s_groups['groups'] as $s_group ) {
 		if ( groups_is_user_admin( $user_id, $s_group->id ) ) {
-					$committees_list[ $s_group->id ] = strip_tags( stripslashes( $s_group->name ) );
+			$committees_list[ $s_group->id ] = strip_tags( stripslashes( $s_group->name ) );
 		}
 	}
 
@@ -2231,5 +2234,4 @@ function humcore_set_default_scope_society() {
 	}
 }
 add_action( 'bp_init', 'humcore_set_default_scope_society' );
-
 
