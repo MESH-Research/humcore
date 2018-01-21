@@ -400,10 +400,13 @@ function humcore_deposit_item_search_meta() {
 	print( '<meta name="twitter:card" content="summary">' . "\n\r" );
 	printf( '<meta name="twitter:title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
 	printf( '<meta name="twitter:description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
-	printf( '<meta name="twitter:site" content="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
+
+	$site_twitter_name = humcore_get_site_twitter_name();
+	if ( ! empty( $site_twitter_name ) ) {
+		printf( '<meta name="twitter:site" content="@%1$s">' . "\n\r", $site_twitter_name );
+	}
 
 	printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
-
 	printf( '<meta name="description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
 	printf( '<meta name="citation_title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
 	printf( '<meta name="citation_publication_date" content="%1$s">' . "\n\r", htmlentities( $metadata['date'] ) ); // Format date yyyy/mm/dd.
@@ -476,7 +479,7 @@ function humcore_deposit_item_search_meta() {
 		$wpmn_record_identifier[1] = $metadata['record_identifier'];
 	}
 	$switched = false;
-	if ( get_current_blog_id() != $wpmr_record_identifier[0] ) {
+	if ( get_current_blog_id() != $wpmn_record_identifier[0] ) {
 		switch_to_blog( $wpmn_record_identifier[0] );
 		$switched = true;
 	}
@@ -835,7 +838,7 @@ function humcore_user_can_edit_deposit( $wpmn_record_identifier ) {
  *
  * @return bool True if the current user is a global super admin.
  */
-function hcommons_is_global_super_admin( $wpmn_record_identifier ) {
+function hcommons_is_global_super_admin() {
 
 	$global_super_admins = array();
 	if ( defined( 'GLOBAL_SUPER_ADMINS' ) ) {
@@ -2148,9 +2151,33 @@ function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) 
 }
 
 /**
+ * Get site twitter name
+ *
+ * @return string twitter user name or null
+ */
+function humcore_get_site_twitter_name() {
+
+	$site_twitter_name = '';
+
+	if ( ! shortcode_exists( 'mashshare' ) ) {
+		return apply_filters( 'humcore_get_site_twitter_name', $site_twitter_name );
+	}
+
+	global $mashsb_options;
+
+	if ( empty( $mashsb_options['mashsharer_hashtag'] ) ) {
+		return apply_filters( 'humcore_get_site_twitter_name', $site_twitter_name );
+	}
+
+	$site_twitter_name = $mashsb_options['mashsharer_hashtag'];
+
+	return apply_filters( 'humcore_get_site_twitter_name', $site_twitter_name );
+}
+
+/**
  * Format social sharing shortcode
  *
- * @param string $share_context
+ * @param string $share_context deposit or else discovery
  * @param array $metadata
  * @return string shortcode or null
  */
