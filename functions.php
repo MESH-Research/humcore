@@ -2186,7 +2186,7 @@ function humcore_get_current_user_societies( $user_id ) {
 	if ( class_exists( 'Humanities_Commons' ) ) {
 		$societies = bp_get_member_type( $user_id, false );
 	} else {
-		$societies = '';
+		$societies = array();
 	}
 
 	return apply_filters( 'humcore_get_current_user_societies', $societies );

@@ -168,7 +168,7 @@ function humcore_deposit_file() {
 	$metadata['pid']                   = $next_pids[0];
 	$metadata['creator']               = 'HumCORE';
 	$metadata['submitter']             = $user->ID;
-	$metadata['society_id']            = humcore_get_current_society_id();
+	$metadata['society_id']            = humcore_get_current_user_societies( $user->ID );
 	$metadata['member_of']             = $fedora_api->collection_pid;
 	$metadata['record_content_source'] = 'HumCORE';
 	$metadata['record_creation_date']  = gmdate( 'Y-m-d\TH:i:s\Z' );
