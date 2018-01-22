@@ -1196,6 +1196,54 @@ function humcore_prepare_edit_page_metadata( $curr_val ) {
 }
 
 /**
+ * Reclassify subjects and keywords. Subjects must be known, keywords should not duplicate a subject.
+ *
+ * @param array $metadata
+ * @return array $metadata
+ */
+function humcore_reclassify_subjects_and_keywords( $metadata ) {
+
+	$current_subjects = $metadata['subject'];
+	$current_keywords = $metadata['keyword'];
+
+	/**
+	 * Move any unknown subjects to keywords.
+	 */
+	if ( ! empty( $current_subjects ) ) {
+		foreach ( $current_subjects as $subject ) {
+			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
+			if ( empty( $term_key ) ) {
+				$unknown_subject_key = array_search( $subject, $metadata['subject'] );
+				if ( false !==  $unknown_subject_key ) {
+					unset( $metadata['subject'][$unknown_subject_key] );
+				}
+				$metadata['keyword'][] = $subject;
+			}
+		}
+	}
+
+	/**
+	 * Move any keywords found in subjects to subjects.
+	 */
+	if ( ! empty( $current_keywords ) ) {
+		foreach ( $current_keywords as $keyword ) {
+			$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_subject' );
+			if ( ! empty( $term_key ) ) {
+				$term = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
+				$known_subject_key = array_search( $keyword, $metadata['keyword'] );
+				if ( false !==  $known_subject_key ) {
+					unset( $metadata['keyword'][$known_subject_key] );
+				}
+				$metadata['subject'][] = $term->name;
+			}
+		}
+	}
+
+	return $metadata;
+
+}
+
+/**
  * Format and ingest the foxml used to create a Fedora collection object.
  * Really only needed once per install.
  *

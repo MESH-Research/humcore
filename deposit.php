@@ -285,7 +285,9 @@ function humcore_deposit_file() {
 	);
 	// TODO handle file write error.
 	$file_write_status = file_put_contents( $mods_file, $metadata_mods );
-			humcore_write_error_log( 'info', 'HumCORE deposit metadata complete' );
+
+	$metadata = humcore_reclassify_subjects_and_keywords( $metadata );
+	humcore_write_error_log( 'info', 'HumCORE deposit metadata complete' );
 
 	/**
 	 * Create the aggregator post now so that we can reference the ID in the Solr document.
@@ -311,9 +313,14 @@ function humcore_deposit_file() {
 		foreach ( $metadata['subject'] as $subject ) {
 			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
+				$term = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
+				$current_subject_key = array_search( $subject, $metadata['subject'] );
+				if ( false !==  $current_subject_key ) {
+					$metadata['subject'][$current_subject_key] = $term->name;
+				}
 				$term_ids[] = intval( $term_key['term_id'] );
 			} else {
-				humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad subject*****' . var_export( $term_key, true ) );
+				humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad subject***** ' . $subject );
 			}
 		}
 		if ( ! empty( $term_ids ) ) {
