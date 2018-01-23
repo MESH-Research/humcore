@@ -187,15 +187,7 @@ function humcore_deposit_edit_file() {
 		$deposit_post_status          = 'draft';
 	}
 
-	$metadata_mods = create_mods_xml( $metadata );
-
-	$resource_xml = create_resource_xml( $metadata, $filetype );
-
-	// TODO handle file write error.
-	$file_write_status = file_put_contents( $mods_file, $metadata_mods );
-
 	$metadata = humcore_reclassify_subjects_and_keywords( $metadata );
-	humcore_write_error_log( 'info', 'HumCORE Deposit Edit metadata complete' );
 
 	/**
 	 * Set object terms for subjects.
@@ -249,6 +241,15 @@ function humcore_deposit_edit_file() {
 			$metadata['keyword_ids'] = $term_taxonomy_ids;
 		}
 	}
+
+	$metadata_mods = create_mods_xml( $metadata );
+
+	$resource_xml = create_resource_xml( $metadata, $filetype );
+
+	// TODO handle file write error.
+	$file_write_status = file_put_contents( $mods_file, $metadata_mods );
+
+	humcore_write_error_log( 'info', 'HumCORE Deposit Edit metadata complete' );
 
 	/**
 	 * Extract text first if small. If Tika errors out we'll index without full text.

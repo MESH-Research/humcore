@@ -236,6 +236,56 @@ function humcore_deposit_file() {
 		}
 	}
 
+	$metadata = humcore_reclassify_subjects_and_keywords( $metadata );
+
+	/**
+	 * Set object terms for subjects.
+	 */
+	if ( ! empty( $metadata['subject'] ) ) {
+		$term_ids = array();
+		foreach ( $metadata['subject'] as $subject ) {
+			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
+			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
+				$term = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
+				$current_subject_key = array_search( $subject, $metadata['subject'] );
+				if ( false !==  $current_subject_key ) {
+					$metadata['subject'][$current_subject_key] = $term->name;
+				}
+				$term_ids[] = intval( $term_key['term_id'] );
+			} else {
+				humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad subject***** ' . $subject );
+			}
+		}
+		if ( ! empty( $term_ids ) ) {
+			$term_object_id          = str_replace( $fedora_api->namespace . ':', '', $next_pids[0] );
+			$term_taxonomy_ids       = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_subject' );
+			$metadata['subject_ids'] = $term_taxonomy_ids;
+		}
+	}
+
+	/**
+	 * Add any new keywords and set object terms for tags.
+	 */
+	if ( ! empty( $metadata['keyword'] ) ) {
+		$term_ids = array();
+		foreach ( $metadata['keyword'] as $keyword ) {
+			$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
+			if ( empty( $term_key ) ) {
+				$term_key = wpmn_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
+			}
+			if ( ! is_wp_error( $term_key ) ) {
+				$term_ids[] = intval( $term_key['term_id'] );
+			} else {
+				humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad tag*****' . var_export( $term_key, true ) );
+			}
+		}
+		if ( ! empty( $term_ids ) ) {
+			$term_object_id          = str_replace( $fedora_api->namespace . ':', '', $next_pids[0] );
+			$term_taxonomy_ids       = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
+			$metadata['keyword_ids'] = $term_taxonomy_ids;
+		}
+	}
+
 	/**
 	 * Create XML needed for the fedora objects.
 	 */
@@ -286,7 +336,6 @@ function humcore_deposit_file() {
 	// TODO handle file write error.
 	$file_write_status = file_put_contents( $mods_file, $metadata_mods );
 
-	$metadata = humcore_reclassify_subjects_and_keywords( $metadata );
 	humcore_write_error_log( 'info', 'HumCORE deposit metadata complete' );
 
 	/**
@@ -304,54 +353,6 @@ function humcore_deposit_file() {
 
 	$deposit_post_id               = wp_insert_post( $deposit_post_data );
 	$metadata['record_identifier'] = get_current_blog_id() . '-' . $deposit_post_id;
-
-	/**
-	 * Set object terms for subjects.
-	 */
-	if ( ! empty( $metadata['subject'] ) ) {
-		$term_ids = array();
-		foreach ( $metadata['subject'] as $subject ) {
-			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
-			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
-				$term = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
-				$current_subject_key = array_search( $subject, $metadata['subject'] );
-				if ( false !==  $current_subject_key ) {
-					$metadata['subject'][$current_subject_key] = $term->name;
-				}
-				$term_ids[] = intval( $term_key['term_id'] );
-			} else {
-				humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad subject***** ' . $subject );
-			}
-		}
-		if ( ! empty( $term_ids ) ) {
-			$term_object_id          = str_replace( $fedora_api->namespace . ':', '', $next_pids[0] );
-			$term_taxonomy_ids       = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_subject' );
-			$metadata['subject_ids'] = $term_taxonomy_ids;
-		}
-	}
-
-	/**
-	 * Add any new keywords and set object terms for tags.
-	 */
-	if ( ! empty( $metadata['keyword'] ) ) {
-		$term_ids = array();
-		foreach ( $metadata['keyword'] as $keyword ) {
-			$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
-			if ( empty( $term_key ) ) {
-				$term_key = wpmn_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
-			}
-			if ( ! is_wp_error( $term_key ) ) {
-				$term_ids[] = intval( $term_key['term_id'] );
-			} else {
-				humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad tag*****' . var_export( $term_key, true ) );
-			}
-		}
-		if ( ! empty( $term_ids ) ) {
-			$term_object_id          = str_replace( $fedora_api->namespace . ':', '', $next_pids[0] );
-			$term_taxonomy_ids       = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
-			$metadata['keyword_ids'] = $term_taxonomy_ids;
-		}
-	}
 
 	$json_metadata = json_encode( $metadata, JSON_HEX_APOS );
 	if ( json_last_error() ) {

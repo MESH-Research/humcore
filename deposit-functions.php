@@ -1203,6 +1203,9 @@ function humcore_prepare_edit_page_metadata( $curr_val ) {
  */
 function humcore_reclassify_subjects_and_keywords( $metadata ) {
 
+	$metadata['subject'] = array_unique( $metadata['subject'] );
+	$metadata['keyword'] = array_unique( $metadata['keyword'] );
+
 	$current_subjects = $metadata['subject'];
 	$current_keywords = $metadata['keyword'];
 
@@ -1217,7 +1220,9 @@ function humcore_reclassify_subjects_and_keywords( $metadata ) {
 				if ( false !==  $unknown_subject_key ) {
 					unset( $metadata['subject'][$unknown_subject_key] );
 				}
-				$metadata['keyword'][] = $subject;
+				if ( ! in_array( strtolower( $subject ), array_map( 'strtolower', $metadata['keyword'] ) ) ) {
+					$metadata['keyword'][] = $subject;
+				}
 			}
 		}
 	}
@@ -1234,7 +1239,9 @@ function humcore_reclassify_subjects_and_keywords( $metadata ) {
 				if ( false !==  $known_subject_key ) {
 					unset( $metadata['keyword'][$known_subject_key] );
 				}
-				$metadata['subject'][] = $term->name;
+				if ( ! in_array( strtolower( $term->name ), array_map( 'strtolower', $metadata['subject'] ) ) ) {
+					$metadata['subject'][] = $term->name;
+				}
 			}
 		}
 	}
