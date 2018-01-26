@@ -406,6 +406,11 @@ function humcore_deposit_item_search_meta() {
 		printf( '<meta name="twitter:site" content="@%1$s">' . "\n\r", $site_twitter_name );
 	}
 
+	$site_facebook_app_id = humcore_get_site_facebook_app_id();
+	if ( ! empty( $site_facebook_app_id ) ) {
+		printf( '<meta name="fb:app_id" content="%1$s">' . "\n\r", $site_facebook_app_id );
+	}
+
 	printf( '<link rel="canonical" href="%1$s/deposits/item/%2$s/">' . "\n\r", HC_SITE_URL, htmlentities( $metadata['pid'] ) );
 	printf( '<meta name="description" content="%1$s">' . "\n\r", htmlentities( $metadata['abstract'] ) );
 	printf( '<meta name="citation_title" content="%1$s">' . "\n\r", htmlentities( $metadata['title'] ) );
@@ -2157,21 +2162,28 @@ function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) 
  */
 function humcore_get_site_twitter_name() {
 
-	$site_twitter_name = '';
-
-	if ( ! shortcode_exists( 'mashshare' ) ) {
-		return apply_filters( 'humcore_get_site_twitter_name', $site_twitter_name );
-	}
-
-	global $mashsb_options;
-
-	if ( empty( $mashsb_options['mashsharer_hashtag'] ) ) {
-		return apply_filters( 'humcore_get_site_twitter_name', $site_twitter_name );
-	}
-
-	$site_twitter_name = $mashsb_options['mashsharer_hashtag'];
+        if ( defined( 'TWITTER_USERNAME' ) ) {
+                $site_twitter_username = constant( 'TWITTER_USERNAME' );
+        } else {
+                $site_twitter_username = '';
+        }
 
 	return apply_filters( 'humcore_get_site_twitter_name', $site_twitter_name );
+}
+
+/**
+ * Get facebook app id
+ *
+ * @return string facebook app id or null
+ */
+function humcore_get_site_facebook_app_id() {
+
+        if ( defined( 'FACEBOOK_APP_ID' ) ) {
+                $site_facebook_app_id = constant( 'FACEBOOK_APP_ID' );
+        } else {
+                $site_facebook_app_id = '';
+        }
+	return apply_filters( 'humcore_get_site_facebook_app_id', $site_facebook_app_id );
 }
 
 /**
