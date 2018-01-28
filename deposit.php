@@ -183,16 +183,16 @@ function humcore_deposit_file() {
 							$creators[] = $author['fullname'];
 		}
 	}
-			$creator_list = implode( ',', $creators );
+	$creator_list = implode( ',', $creators );
 
-			$deposit_doi = humcore_create_handle(
-				$metadata['title'],
-				$next_pids[0],
-				$creator_list,
-				$metadata['genre'],
-				$metadata['date_issued'],
-				$metadata['publisher']
-			);
+	$deposit_doi = humcore_create_handle(
+		$metadata['title'],
+		$next_pids[0],
+		$creator_list,
+		$metadata['genre'],
+		$metadata['date_issued'],
+		$metadata['publisher']
+	);
 	if ( ! $deposit_doi ) {
 		$metadata['handle']      = sprintf( HC_SITE_URL . '/deposits/item/%s/', $next_pids[0] );
 		$metadata['deposit_doi'] = ''; // Not stored in solr.
@@ -246,10 +246,10 @@ function humcore_deposit_file() {
 		foreach ( $metadata['subject'] as $subject ) {
 			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
-				$term = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
+				$term                = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
 				$current_subject_key = array_search( $subject, $metadata['subject'] );
-				if ( false !==  $current_subject_key ) {
-					$metadata['subject'][$current_subject_key] = $term->name;
+				if ( false !== $current_subject_key ) {
+					$metadata['subject'][ $current_subject_key ] = $term->name;
 				}
 				$term_ids[] = intval( $term_key['term_id'] );
 			} else {
@@ -359,7 +359,7 @@ function humcore_deposit_file() {
 		humcore_write_error_log( 'error', '*****HumCORE Deposit Error***** Post Meta Encoding Error - Post ID: ' . $deposit_post_id . ' - ' . json_last_error_msg() );
 	}
 	$post_meta_id = update_post_meta( $deposit_post_id, '_deposit_metadata', wp_slash( $json_metadata ) );
-			humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (1)', json_decode( $json_metadata, true ) );
+	humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (1)', json_decode( $json_metadata, true ) );
 
 	/**
 	 * Add to metadata and store in post meta.
@@ -380,7 +380,7 @@ function humcore_deposit_file() {
 		humcore_write_error_log( 'error', '*****HumCORE Deposit Error***** File Post Meta Encoding Error - Post ID: ' . $deposit_post_id . ' - ' . json_last_error_msg() );
 	}
 	$post_meta_id = update_post_meta( $deposit_post_id, '_deposit_file_metadata', wp_slash( $json_metadata ) );
-			humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', json_decode( $json_metadata, true ) );
+	humcore_write_error_log( 'info', 'HumCORE deposit - postmeta (2)', json_decode( $json_metadata, true ) );
 
 	/**
 	 * Prepare an array of post data for the resource post.

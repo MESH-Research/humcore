@@ -160,8 +160,8 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 		$metadata['meeting_date']         = sanitize_text_field( $curr_val['deposit-meeting-date'] );
 	}
 
-	$metadata['group']      = array();
-			$deposit_groups = $curr_val['deposit-group'];
+	$metadata['group'] = array();
+	$deposit_groups    = $curr_val['deposit-group'];
 	if ( ! empty( $deposit_groups ) ) {
 		foreach ( $deposit_groups as $group_id ) {
 			$group                   = groups_get_group( array( 'group_id' => sanitize_text_field( $group_id ) ) );
@@ -170,8 +170,8 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 		}
 	}
 
-	$metadata['subject']      = array();
-			$deposit_subjects = $curr_val['deposit-subject'];
+	$metadata['subject'] = array();
+	$deposit_subjects    = $curr_val['deposit-subject'];
 	if ( ! empty( $deposit_subjects ) ) {
 		foreach ( $deposit_subjects as $subject ) {
 			$metadata['subject'][] = sanitize_text_field( stripslashes( $subject ) );
@@ -179,8 +179,8 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 		}
 	}
 
-	$metadata['keyword']      = array();
-			$deposit_keywords = $curr_val['deposit-keyword'];
+	$metadata['keyword'] = array();
+	$deposit_keywords    = $curr_val['deposit-keyword'];
 	if ( ! empty( $deposit_keywords ) ) {
 		foreach ( $deposit_keywords as $keyword ) {
 			$metadata['keyword'][] = sanitize_text_field( stripslashes( $keyword ) );
@@ -352,7 +352,7 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 		}
 	}
 
-			$metadata['embargoed'] = sanitize_text_field( $curr_val['deposit-embargoed-flag'] );
+	$metadata['embargoed'] = sanitize_text_field( $curr_val['deposit-embargoed-flag'] );
 
 	if ( 'yes' === $metadata['embargoed'] ) {
 			$metadata['embargo_end_date'] = date( 'm/d/Y', strtotime( '+' . sanitize_text_field( $curr_val['deposit-embargo-length'] ) ) );
@@ -1217,8 +1217,8 @@ function humcore_reclassify_subjects_and_keywords( $metadata ) {
 			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 			if ( empty( $term_key ) ) {
 				$unknown_subject_key = array_search( $subject, $metadata['subject'] );
-				if ( false !==  $unknown_subject_key ) {
-					unset( $metadata['subject'][$unknown_subject_key] );
+				if ( false !== $unknown_subject_key ) {
+					unset( $metadata['subject'][ $unknown_subject_key ] );
 				}
 				if ( ! in_array( strtolower( $subject ), array_map( 'strtolower', $metadata['keyword'] ) ) ) {
 					$metadata['keyword'][] = $subject;
@@ -1234,10 +1234,10 @@ function humcore_reclassify_subjects_and_keywords( $metadata ) {
 		foreach ( $current_keywords as $keyword ) {
 			$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_subject' );
 			if ( ! empty( $term_key ) ) {
-				$term = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
+				$term              = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
 				$known_subject_key = array_search( $keyword, $metadata['keyword'] );
-				if ( false !==  $known_subject_key ) {
-					unset( $metadata['keyword'][$known_subject_key] );
+				if ( false !== $known_subject_key ) {
+					unset( $metadata['keyword'][ $known_subject_key ] );
 				}
 				if ( ! in_array( strtolower( $term->name ), array_map( 'strtolower', $metadata['subject'] ) ) ) {
 					$metadata['subject'][] = $term->name;

@@ -182,7 +182,7 @@ class Humcore_Deposit_Search_Results {
 		global $fedora_api, $solr_client;
 
 		// Hardcode two collections during HC beta period, if we don't override via configuration.
-		if ( $fedora_api->collection_pid !== 'hccollection:1' ) {
+		if ( 'hccollection:1' !== $fedora_api->collection_pid ) {
 			$query_collection = 'member_of:' . str_replace( ':', '\:', $fedora_api->collection_pid );
 		} else {
 			$query_collection = '( member_of:' . str_replace( ':', '\:', 'hccollection:1' ) .

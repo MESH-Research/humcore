@@ -197,10 +197,10 @@ function humcore_deposit_edit_file() {
 		foreach ( $metadata['subject'] as $subject ) {
 			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
-				$term = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
+				$term                = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
 				$current_subject_key = array_search( $subject, $metadata['subject'] );
-				if ( false !==  $current_subject_key ) {
-					$metadata['subject'][$current_subject_key] = $term->name;
+				if ( false !== $current_subject_key ) {
+					$metadata['subject'][ $current_subject_key ] = $term->name;
 				}
 				$term_ids[] = intval( $term_key['term_id'] );
 			} else {

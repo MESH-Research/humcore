@@ -62,7 +62,7 @@ class Solr_Command extends WP_CLI_Command {
 		} else {
 
 			// Print a success message
-			WP_CLI::success( sprintf( 'Solr  status : %1$s', $s_status["status"] ) );
+			WP_CLI::success( sprintf( 'Solr status : %1$s', $s_status['status'] ) );
 		}
 	}
 
@@ -93,7 +93,7 @@ class Solr_Command extends WP_CLI_Command {
 		} else {
 
 			// Print a success message
-			WP_CLI::success( sprintf( 'Document for pid : %1$s: %2$s:', $id, var_dump($s_status) ) );
+			WP_CLI::success( sprintf( 'Document for pid : %1$s: %2$s:', $id, var_dump( $s_status ) ) );
 		}
 	}
 }

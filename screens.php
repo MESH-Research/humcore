@@ -1215,8 +1215,8 @@ function humcore_deposit_item_content() {
 			restore_current_blog();
 	}
 	//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
-	$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
-	$edit_url = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
+	$item_url  = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
+	$edit_url  = sprintf( '/deposits/item/%1$s/edit/', $metadata['pid'] );
 	$admin_url = sprintf( '%1$s/wp-admin/post.php?post=%2$s&action=edit', $site_url, $wpmn_record_identifier[1] );
 
 ?>

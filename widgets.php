@@ -1,4 +1,5 @@
 <?php
+// phpcs:ignoreFile -- this file will be refactored
 /**
  * HumCore Widgets.
  *
