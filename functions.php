@@ -865,7 +865,7 @@ function hcommons_is_global_super_admin() {
  */
 function humcore_member_groups_with_authorship() {
 
-	return array( 296, 378, 444 );
+	return apply_filters( 'humcore_member_groups_with_authorship' );
 }
 
 /**
@@ -1691,18 +1691,13 @@ function humcore_deposits_genre_list() {
 }
 
 /**
- * Return the group list.
+ * Return the group list the user can share a deposit with.
  *
  * @return array
  */
 function humcore_deposits_group_list( $user_id ) {
 
-	/**
-	 * Groups meta_query with NOT EXISTS does not seem to work correctly. Remove committees from results.
-	 */
-	$groups_list    = array();
-		$society_id = get_network_option( '', 'society_id' );
-	$society_id     = '';
+	$groups_list = array();
 
 	$args = array(
 		'user_id'  => $user_id,
@@ -1713,10 +1708,8 @@ function humcore_deposits_group_list( $user_id ) {
 	$d_groups = groups_get_groups( $args );
 
 	foreach ( $d_groups['groups'] as $group ) {
-		if ( ! mla_is_group_committee( $group->id ) ) {
-			$group_type                = bp_groups_get_group_type( $group->id );
-			$groups_list[ $group->id ] = htmlspecialchars( stripslashes( $group->name . ' (' . strtoupper( $group_type ) . ')' ) );
-		}
+		$group_type                = bp_groups_get_group_type( $group->id );
+		$groups_list[ $group->id ] = htmlspecialchars( stripslashes( $group->name . ' (' . strtoupper( $group_type ) . ')' ) );
 	}
 
 	natcasesort( $groups_list );
@@ -1726,7 +1719,7 @@ function humcore_deposits_group_list( $user_id ) {
 }
 
 /**
- * Return the committee list the user is a member of.
+ * Return the committee list (and other special groups) the user is an admin of.
  *
  * @param string $user_id User ID.
  * @return array
@@ -1734,31 +1727,7 @@ function humcore_deposits_group_list( $user_id ) {
 function humcore_deposits_user_committee_list( $user_id ) {
 
 	$committees_list = array();
-	$society_id      = get_network_option( '', 'society_id' );
 
-	$args = array(
-		'user_id'    => $user_id,
-		'type'       => 'alphabetical',
-		'group_type' => $society_id,
-		'meta_query' => array(
-			array(
-				'key'     => 'mla_oid',
-				'value'   => 'M',
-				'compare' => 'LIKE',
-			),
-		),
-		'per_page'   => '500',
-	);
-
-	/* Special case for now - remove committees.
-	$m_groups = groups_get_groups( $args );
-
-	foreach ( $m_groups['groups'] as $group ) {
-		$committees_list[ $group->id ] = strip_tags( stripslashes( $group->name ) );
-	}
-	*/
-
-	// Add special exceptions - certain committees where user is admin
 	$s_args = array(
 		'user_id'     => $user_id,
 		'type'        => 'alphabetical',
@@ -2162,11 +2131,11 @@ function humcore_delete_cache_keys( $key_type = '', $key_parameters = array() ) 
  */
 function humcore_get_site_twitter_name() {
 
-        if ( defined( 'TWITTER_USERNAME' ) ) {
-                $site_twitter_username = constant( 'TWITTER_USERNAME' );
-        } else {
-                $site_twitter_username = '';
-        }
+	if ( defined( 'TWITTER_USERNAME' ) ) {
+		$site_twitter_username = constant( 'TWITTER_USERNAME' );
+	} else {
+		$site_twitter_username = '';
+	}
 
 	return apply_filters( 'humcore_get_site_twitter_name', $site_twitter_name );
 }
@@ -2178,11 +2147,12 @@ function humcore_get_site_twitter_name() {
  */
 function humcore_get_site_facebook_app_id() {
 
-        if ( defined( 'FACEBOOK_APP_ID' ) ) {
-                $site_facebook_app_id = constant( 'FACEBOOK_APP_ID' );
-        } else {
-                $site_facebook_app_id = '';
-        }
+	if ( defined( 'FACEBOOK_APP_ID' ) ) {
+		$site_facebook_app_id = constant( 'FACEBOOK_APP_ID' );
+	} else {
+		$site_facebook_app_id = '';
+	}
+
 	return apply_filters( 'humcore_get_site_facebook_app_id', $site_facebook_app_id );
 }
 
@@ -2230,7 +2200,7 @@ function humcore_get_current_society_id() {
 	if ( class_exists( 'Humanities_Commons' ) ) {
 		$society_id = Humanities_Commons::$society_id;
 	} else {
-		$society_id = '';
+		$society_id = get_network_option( '', 'society_id' );
 	}
 
 	return apply_filters( 'humcore_get_current_society_id', $society_id );

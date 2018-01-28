@@ -229,7 +229,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_get_group_deposit_count() {
 
-		if ( mla_is_group_committee() || in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) {
+		if ( in_array( bp_get_current_group_id(), humcore_member_groups_with_authorship() ) ) {
 			humcore_has_deposits( sprintf( 'facets[author_facet][]=%s', urlencode( bp_get_current_group_name() ) ) );
 		} else {
 			humcore_has_deposits( sprintf( 'facets[group_facet][]=%s', urlencode( bp_get_current_group_name() ) ) );
