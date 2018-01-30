@@ -20,11 +20,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Creates the namespace next used
+require_once dirname( __FILE__ ) . '/class-logger.php';
+
 use MLA\Commons\Plugin\Logging\Logger;
 
 global $humcore_logger;
 $humcore_logger = new Logger( 'humcore_error' );
 $humcore_logger->createLog( 'humcore_error' );
+
+// Wrapper around wp taxonomy functions for multi-sites, from 'humanities-commons'
+require_once dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php';
 
 /**
  * Register the humcore_deposit custom post type.
@@ -262,7 +268,7 @@ function humcore_check_dependencies() {
 function humcore_release_provisional_fire() {
 
 	// TODO move the activity creation to an action - https://codex.wordpress.org/Post_Status_Transitions#transition_post_status_Hook
-	$query_args     = array(
+	$query_args = array(
 		'post_parent'    => 0,
 		'post_type'      => 'humcore_deposit',
 		'post_status'    => 'draft',
@@ -274,9 +280,9 @@ function humcore_release_provisional_fire() {
 	// echo "\n";
 	$deposit_posts = get_posts( $query_args );
 	foreach ( $deposit_posts as $deposit_post ) {
-		$now         = time();
-		$metadata    = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
-		$local_link  = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
+		$now        = time();
+		$metadata   = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
+		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
 		//$local_link  = $metadata['handle']; // Let's try doi.
 		$post_name   = str_replace( ':', '', $metadata['pid'] );
 		$diff        = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
@@ -323,10 +329,10 @@ function humcore_release_provisional_fire() {
 							);
 							//echo "Group Activity ID ", $Group_activity_id,"\n";
 							$group_society_id = bp_groups_get_group_type( $group_id );
-							if ( Humanities_Commons::$society_id != $group_society_id ) {
+							if ( humcore_get_current_society_id() !== $group_society_id ) {
 								bp_activity_update_meta(
 									$group_activity_id, 'society_id', $group_society_id,
-									Humanities_Commons::$society_id
+									humcore_get_current_society_id()
 								);
 							}
 							$group_activity_ids[] = $group_activity_id;

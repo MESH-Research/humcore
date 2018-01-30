@@ -14,7 +14,12 @@ function humcore_ajax_querystring_filter( $query ) {
 	if ( ! empty( $_POST['action'] ) ) {
 		if ( 'deposits_filter' == $_POST['action'] ) {
 
-			$search_params       = array();
+			$search_params = array();
+			$scope_cookie  = $_COOKIE['bp-deposits-scope'];
+			if ( ! empty( $scope_cookie ) and 'society' === $scope_cookie ) {
+				$search_params[] = 'facets[society_facet][]=' . humcore_get_current_society_id();
+			}
+
 			$search_field_cookie = $_COOKIE['bp-deposits-field'];
 			if ( ! empty( $search_field_cookie ) and 'all' !== $search_field_cookie ) {
 				$search_field = $search_field_cookie;
@@ -188,12 +193,19 @@ function humcore_has_deposits( $args = '' ) {
 		$params['search_title_exact'] = $_REQUEST['title_exact'];
 	}
 
-	if ( empty( $params['search_facets'] ) && ! empty( $params['facets'] ) ) {
-		$params['search_facets'] = $params['facets'];
+	$scope_cookie = $_COOKIE['bp-deposits-scope'];
+	if ( ! empty( $scope_cookie ) and 'society' === $scope_cookie ) {
+		$params['facets']['society_facet'][] = humcore_get_current_society_id();
 	}
 
-	if ( empty( $params['search_facets'] ) && ! empty( $_REQUEST['facets'] ) ) {
-		$params['search_facets'] = $_REQUEST['facets'];
+	// TODO rework the logic for the other search fields
+	if ( ! empty( $params['search_facets'] ) ) {
+		$params['search_facets'] = array_merge( $params['search_facets'], $params['facets'] );
+	} else {
+		$params['search_facets'] = $params['facets'];
+	}
+	if ( ! empty( $_REQUEST['facets'] ) ) {
+		$params['search_facets'] = array_merge( $params['search_facets'], $_REQUEST['facets'] );
 	}
 
 	if ( ! empty( $_REQUEST['sort'] ) ) {

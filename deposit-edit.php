@@ -187,13 +187,7 @@ function humcore_deposit_edit_file() {
 		$deposit_post_status          = 'draft';
 	}
 
-	$metadata_mods = create_mods_xml( $metadata );
-
-	$resource_xml = create_resource_xml( $metadata, $filetype );
-
-	// TODO handle file write error.
-	$file_write_status = file_put_contents( $mods_file, $metadata_mods );
-	humcore_write_error_log( 'info', 'HumCORE Deposit Edit metadata complete' );
+	$metadata = humcore_reclassify_subjects_and_keywords( $metadata );
 
 	/**
 	 * Set object terms for subjects.
@@ -203,11 +197,15 @@ function humcore_deposit_edit_file() {
 		foreach ( $metadata['subject'] as $subject ) {
 			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
 			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
+				$term                = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
+				$current_subject_key = array_search( $subject, $metadata['subject'] );
+				if ( false !== $current_subject_key ) {
+					$metadata['subject'][ $current_subject_key ] = $term->name;
+				}
 				$term_ids[] = intval( $term_key['term_id'] );
 			} else {
 				humcore_write_error_log(
-					'error', '*****HumCORE Deposit Edit Error - bad subject*****' .
-					var_export( $term_key, true )
+					'error', '*****HumCORE Deposit Edit Error - bad subject***** ' . $subject
 				);
 			}
 		}
@@ -243,6 +241,15 @@ function humcore_deposit_edit_file() {
 			$metadata['keyword_ids'] = $term_taxonomy_ids;
 		}
 	}
+
+	$metadata_mods = create_mods_xml( $metadata );
+
+	$resource_xml = create_resource_xml( $metadata, $filetype );
+
+	// TODO handle file write error.
+	$file_write_status = file_put_contents( $mods_file, $metadata_mods );
+
+	humcore_write_error_log( 'info', 'HumCORE Deposit Edit metadata complete' );
 
 	/**
 	 * Extract text first if small. If Tika errors out we'll index without full text.

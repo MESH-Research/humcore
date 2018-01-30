@@ -530,7 +530,14 @@ foreach ( $language_list as $language_key => $language_value ) {
 		<p>
 			<label>Society ID<br>
 				<input type="hidden" name="aggregator_society_id" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['society_id'] ); ?>">
-				<input type="text" name="aggregator_society_id_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['society_id'] ); ?>">
+	<?php
+	if ( ! empty( $aggregator_metadata['society_id'] ) && is_array( $aggregator_metadata['society_id'] ) ) {
+		$society_list = implode( ', ', $aggregator_metadata['society_id'] );
+	} else {
+		$society_list = $aggregator_metadata['society_id'];
+	}
+	?>
+				<input type="text" name="aggregator_society_id_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $society_list ); ?>">
 			</label>
 		</p>
 		<p>

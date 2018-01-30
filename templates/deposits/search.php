@@ -3,7 +3,11 @@
  * Template Name: HumCORE Search Results
  */
 
-Humcore_Theme_Compatibility::get_header(); ?>
+$society_id   = humcore_get_current_society_id();
+$scope_cookie = $_COOKIE['bp-deposits-scope'];
+
+Humcore_Theme_Compatibility::get_header();
+?>
 
 <?php do_action( 'bp_before_deposits_results_page' ); ?>
 
@@ -58,14 +62,18 @@ Humcore_Theme_Compatibility::get_header(); ?>
 
 		<form action="" method="post" id="deposits-directory-form" class="dir-form">
 
-						<div class="item-list-tabs main-tabs" role="navigation">
-								<ul>
-										<li class="selected" id="deposits-all"><a href="<?php echo esc_attr( trailingslashit( bp_get_root_domain() . '/' . 'deposits' ) ); ?>"><?php printf( __( 'All Deposits <span>%s</span>', 'humcore_domain' ), humcore_get_deposit_count() ); ?></a></li>
+			<div class="item-list-tabs main-tabs" role="navigation">
+				<ul>
+					<li <?php echo ( 'all' === $scope_cookie ) ? 'class="selected"' : ''; ?> id="deposits-all"><a href="<?php echo esc_attr( trailingslashit( bp_get_root_domain() . '/' . 'deposits' ) ); ?>"><?php printf( __( 'All Deposits <span>%s</span>', 'humcore_domain' ), humcore_get_deposit_count() ); ?></a></li>
 
-										<?php do_action( 'humcore_deposits_directory_deposit_types' ); ?>
+					<?php if ( ! empty( $society_id ) && 'hc' !== $society_id ) : ?>
+						<li <?php echo ( 'society' === $scope_cookie ) ? 'class="selected"' : ''; ?> id="deposits-society"><a href="<?php echo esc_attr( trailingslashit( bp_get_root_domain() . '/' . 'deposits' ) ); ?>"><?php printf( __( '%s Deposits', 'humcore_domain' ), strtoupper( $society_id ) ); ?></a></li>
+					<?php endif; ?>
 
-								</ul>
-						</div><!-- .item-list-tabs -->
+					<?php do_action( 'humcore_deposits_directory_deposit_types' ); ?>
+
+				</ul>
+			</div><!-- .item-list-tabs -->
 
 			<div id="deposits-dir-list" class="deposits dir-list">
 
