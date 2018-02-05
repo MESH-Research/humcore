@@ -200,12 +200,12 @@ function humcore_has_deposits( $args = '' ) {
 
 	// TODO rework the logic for the other search fields
 	if ( ! empty( $params['search_facets'] ) ) {
-		$params['search_facets'] = array_merge( $params['search_facets'], $params['facets'] );
+		$params['search_facets'] = array_merge( $params['search_facets'], (array)$params['facets'] );
 	} else {
 		$params['search_facets'] = $params['facets'];
 	}
 	if ( ! empty( $_REQUEST['facets'] ) ) {
-		$params['search_facets'] = array_merge( $params['search_facets'], $_REQUEST['facets'] );
+		$params['search_facets'] = array_merge( (array)$params['search_facets'], $_REQUEST['facets'] );
 	}
 
 	if ( ! empty( $_REQUEST['sort'] ) ) {
