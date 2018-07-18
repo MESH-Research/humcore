@@ -907,7 +907,7 @@ function humcore_get_offline_content() {
  */
 function humcore_check_internal_status() {
 
-	global $ezid_api, $fedora_api, $solr_client;
+	global $doi_api, $fedora_api, $solr_client;
 
 	if ( 'down' === $solr_client->service_status ) {
 		return false;
@@ -922,7 +922,7 @@ function humcore_check_internal_status() {
  */
 function humcore_check_externals() {
 
-	global $ezid_api, $fedora_api, $solr_client;
+	global $doi_api, $fedora_api, $solr_client;
 
 	$s_status = $solr_client->get_solr_status();
 	if ( is_wp_error( $s_status ) ) {
@@ -936,9 +936,9 @@ function humcore_check_externals() {
 		return false;
 	}
 
-	$e_status = $ezid_api->server_status();
+	$e_status = $doi_api->server_status();
 	if ( is_wp_error( $e_status ) ) {
-		humcore_write_error_log( 'error', sprintf( '*****HumCORE Status Error***** - ezid server status :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Status Error***** - DOI server status :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
 		return false;
 	}
 
@@ -947,26 +947,46 @@ function humcore_check_externals() {
 }
 
 /**
- * Reserve a DOI using EZID API.
- */
-function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher ) {
+ * Reserve a DOI using DOI API.
+function humcore_reserve_doi() {
 
-	global $ezid_api;
+	global $doi_api;
 
-	$e_status = $ezid_api->mint_identifier(
-		array(
-			'dc.title'     => $title,
-			'_target'      => sprintf( HC_SITE_URL . '/deposits/item/%s/', $pid ),
-			'dc.creator'   => $creator,
-			'dc.type'      => $type,
-			'dc.date'      => $date,
-			'dc.publisher' => $publisher,
-		)
-	);
+	$e_status = $doi_api->reserve_identifier();
 
 	if ( is_wp_error( $e_status ) ) {
-		echo 'Error - ezid mint doi : ' . esc_html( $e_status->get_error_code() ) . '-' . esc_html( $e_status->get_error_message() );
-		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - ezid mint doi :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
+		echo 'Error - DOI reserve doi : ' . esc_html( $e_status->get_error_code() ) . '-' . esc_html( $e_status->get_error_message() );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - DOI reserve doi :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
+		return false;
+	}
+
+	return $e_status;
+
+}
+ */
+
+/**
+ * Create the DOI metadata using the DOI API.
+ */
+function humcore_reserve_doi( $metadata ) {
+
+	global $doi_api;
+
+	$doi_xml = $doi_api->prepare_doi_metadata( $metadata );
+
+	$e_status = $doi_api->reserve_identifier(
+		array(
+			'_target'     => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
+			'datacite'   => $doi_xml
+		)
+	);
+humcore_write_error_log( 'info', 'create doi metadata - ' . var_export( $e_status, true ) );
+humcore_write_error_log( 'info', 'doi metadata - ' . var_export( $doi_xml, true ) );
+
+	if ( is_wp_error( $e_status ) ) {
+		echo 'Error - DOI create doi metadata : ' . esc_html( $e_status->get_error_code() ) . '-' . esc_html( $e_status->get_error_message() );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - DOI create doi metadata :  %1$s-%2$s', $e_status->get_error_code(),
+			$e_status->get_error_message() ) );
 		return false;
 	}
 
@@ -975,23 +995,24 @@ function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher
 }
 
 /**
- * Publish a DOI using EZID API.
+ * Publish a DOI using DOI API.
  */
-function humcore_publish_handle( $humcore_doi ) {
+function humcore_publish_doi( $humcore_doi ) {
 
-	global $ezid_api;
+	global $doi_api;
 
-	$e_status = $ezid_api->modify_identifier(
+	$e_status = $doi_api->modify_identifier(
 		array(
 			'doi'     => $humcore_doi,
 			'_status' => 'public',
 			'_export' => 'yes',
 		)
 	);
+humcore_write_error_log( 'info', 'publish - ' . var_export( $e_status, true ) );
 
 	if ( is_wp_error( $e_status ) ) {
-		echo 'Error - ezid publish : ' . esc_html( $e_status->get_error_code() ) . '-' . esc_html( $e_status->get_error_message() );
-		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - ezid publish :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
+		echo 'Error - DOI publish : ' . esc_html( $e_status->get_error_code() ) . '-' . esc_html( $e_status->get_error_message() );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - DOI publish :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
 		return false;
 	}
 
@@ -1000,13 +1021,13 @@ function humcore_publish_handle( $humcore_doi ) {
 }
 
 /**
- * Modify DOI metdata using EZID API.
+ * Modify DOI metdata using DOI API.
  */
 function humcore_modify_handle( $humcore_doi, $title, $creator, $type, $date, $publisher ) {
 
-	global $ezid_api;
+	global $doi_api;
 
-	$e_status = $ezid_api->modify_identifier(
+	$e_status = $doi_api->modify_identifier(
 		array(
 			'doi'          => $humcore_doi,
 			'dc.title'     => $title,
@@ -1018,8 +1039,8 @@ function humcore_modify_handle( $humcore_doi, $title, $creator, $type, $date, $p
 	);
 
 	if ( is_wp_error( $e_status ) ) {
-		echo 'Error - ezid modify : ' . esc_html( $e_status->get_error_code() ) . '-' . esc_html( $e_status->get_error_message() );
-		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - ezid modify :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
+		echo 'Error - DOI modify : ' . esc_html( $e_status->get_error_code() ) . '-' . esc_html( $e_status->get_error_message() );
+		humcore_write_error_log( 'error', sprintf( '*****HumCORE Deposit Error***** - DOI modify :  %1$s-%2$s', $e_status->get_error_code(), $e_status->get_error_message() ) );
 		return false;
 	}
 

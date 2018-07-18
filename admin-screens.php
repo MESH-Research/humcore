@@ -1002,7 +1002,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 						$aggregator_metadata['publisher']
 					);
 			if ( false === $e_status ) {
-					echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
+					echo '<h3>', __( 'There was an DOI API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
 			}
 		}
 

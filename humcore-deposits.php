@@ -485,11 +485,11 @@ function humcore_deposit_upload_mimes( $existing_mimes ) {
  */
 function humcore_deposit_api_classes_init() {
 
-	global $ezid_api, $fedora_api, $solr_client;
+	global $doi_api, $fedora_api, $solr_client;
 
-	// Create an ezid client instance.
-	require_once dirname( __FILE__ ) . '/class-humcore-deposit-ezid-api.php';
-	$ezid_api = new Humcore_Deposit_Ezid_Api;
+	// Create an doi client instance.
+	require_once dirname( __FILE__ ) . '/class-humcore-deposit-doi-api.php';
+	$doi_api = new Humcore_Deposit_Doi_Api;
 
 	// Create a fedora client instance.
 	require_once dirname( __FILE__ ) . '/class-humcore-deposit-fedora-api.php';
@@ -666,7 +666,7 @@ add_action(
  */
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	require_once dirname( __FILE__ ) . '/class-ezid-command.php';
+	require_once dirname( __FILE__ ) . '/class-doi-command.php';
 	require_once dirname( __FILE__ ) . '/class-fedora-command.php';
 	/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
 	require_once dirname( __FILE__ ) . '/class-solr-command.php';

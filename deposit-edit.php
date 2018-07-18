@@ -590,7 +590,7 @@ function humcore_deposit_edit_file() {
 			$metadata['publisher']
 		);
 		if ( false === $e_status ) {
-			humcore_write_error_log( 'error', 'There was an EZID API error, the DOI was not sucessfully modified.' );
+			humcore_write_error_log( 'error', 'There was an DOI API error, the DOI was not sucessfully modified.' );
 		}
 	}
 
