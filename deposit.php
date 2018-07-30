@@ -175,33 +175,6 @@ function humcore_deposit_file() {
 	$metadata['record_change_date']    = gmdate( 'Y-m-d\TH:i:s\Z' );
 
 	/**
-	 * Mint and reserve a DOI.
-	 */
-	$creators = array();
-	foreach ( $metadata['authors'] as $author ) {
-		if ( ( in_array( $author['role'], array( 'creator', 'author', 'editor', 'translator' ) ) ) && ! empty( $author['fullname'] ) ) {
-							$creators[] = $author['fullname'];
-		}
-	}
-	$creator_list = implode( ',', $creators );
-
-	$deposit_doi = humcore_create_handle(
-		$metadata['title'],
-		$next_pids[0],
-		$creator_list,
-		$metadata['genre'],
-		$metadata['date_issued'],
-		$metadata['publisher']
-	);
-	if ( ! $deposit_doi ) {
-		$metadata['handle']      = sprintf( HC_SITE_URL . '/deposits/item/%s/', $next_pids[0] );
-		$metadata['deposit_doi'] = ''; // Not stored in solr.
-	} else {
-		$metadata['handle']      = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );
-		$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
-	}
-
-	/**
 	 * Determine post date, status and necessary activity.
 	 */
 	$deposit_activity_needed = true;
@@ -284,6 +257,20 @@ function humcore_deposit_file() {
 			$term_taxonomy_ids       = wpmn_set_object_terms( $term_object_id, $term_ids, 'humcore_deposit_tag' );
 			$metadata['keyword_ids'] = $term_taxonomy_ids;
 		}
+	}
+
+	/**
+	 * Mint and reserve a DOI.
+	 */
+	$deposit_doi = humcore_create_handle(
+		$metadata
+	);
+	if ( ! $deposit_doi ) {
+		$metadata['handle']      = sprintf( HC_SITE_URL . '/deposits/item/%s/', $next_pids[0] );
+		$metadata['deposit_doi'] = ''; // Not stored in solr.
+	} else {
+		$metadata['handle']      = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );
+		$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
 	}
 
 	/**
@@ -587,7 +574,7 @@ function humcore_deposit_file() {
 	 * Publish the reserved DOI.
 	 */
 	if ( ! empty( $metadata['deposit_doi'] ) ) {
-		$e_status = humcore_publish_handle( $metadata['deposit_doi'] );
+		$e_status = humcore_publish_handle( $metadata );
 		if ( false === $e_status ) {
 			echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
 		}

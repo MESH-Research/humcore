@@ -970,12 +970,12 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 		$old_author_unis = array_map(
 			function( $element ) {
-					return urlencode( $element['uni'] );
+				return urlencode( $element['uni'] );
 			}, $current_authors
 		);
 		$new_author_unis = array_map(
 			function( $element ) {
-					return urlencode( $element['uni'] );
+				return urlencode( $element['uni'] );
 			}, $aggregator_metadata['authors']
 		);
 		$author_uni_keys = array_filter( array_unique( array_merge( $old_author_unis, $new_author_unis ) ) );
@@ -984,30 +984,14 @@ function humcore_deposit_metabox_save( $post_id ) {
 
 		// Handle doi metadata changes.
 		if ( ! empty( $aggregator_metadata['deposit_doi'] ) ) {
-					$creators = array();
-			foreach ( $aggregator_metadata['authors'] as $author ) {
-				if ( ( in_array( $author['role'], array( 'creator', 'author', 'editor', 'translator' ) ) ) &&
-				! empty( $author['fullname'] ) ) {
-					$creators[] = $author['fullname'];
-				}
-			}
-					$creator_list = implode( ',', $creators );
-
-					$e_status = humcore_modify_handle(
-						$aggregator_metadata['deposit_doi'],
-						$aggregator_metadata['title'],
-						$creator_list,
-						$aggregator_metadata['genre'],
-						$aggregator_metadata['date_issued'],
-						$aggregator_metadata['publisher']
-					);
+			$e_status = humcore_modify_handle( $aggregator_metadata );
 			if ( false === $e_status ) {
-					echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
+				echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
 			}
 		}
 
 		if ( ! preg_match( '~^audio/|^image/|^video/~', $resource_filetype ) && (int) $resource_filesize >= 1000000 ) {
-						do_action( 'humcore_tika_text_extraction' );
+			do_action( 'humcore_tika_text_extraction' );
 		}
 	}
 

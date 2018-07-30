@@ -949,18 +949,17 @@ function humcore_check_externals() {
 /**
  * Reserve a DOI using EZID API.
  */
-function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher ) {
+function humcore_create_handle( $metadata ) {
 
 	global $ezid_api;
 
+	$doi_xml = $ezid_api->prepare_doi_metadata( $metadata );
+
 	$e_status = $ezid_api->mint_identifier(
 		array(
-			'dc.title'     => $title,
-			'_target'      => sprintf( HC_SITE_URL . '/deposits/item/%s/', $pid ),
-			'dc.creator'   => $creator,
-			'dc.type'      => $type,
-			'dc.date'      => $date,
-			'dc.publisher' => $publisher,
+			'_target'  => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
+			'_profile' => 'datacite',
+			'datacite' => $doi_xml,
 		)
 	);
 
@@ -977,13 +976,15 @@ function humcore_create_handle( $title, $pid, $creator, $type, $date, $publisher
 /**
  * Publish a DOI using EZID API.
  */
-function humcore_publish_handle( $humcore_doi ) {
+function humcore_publish_handle( $metadata ) {
 
 	global $ezid_api;
 
+	$deposit_doi = $metadata['deposit_doi'];
+
 	$e_status = $ezid_api->modify_identifier(
 		array(
-			'doi'     => $humcore_doi,
+			'doi'     => $deposit_doi,
 			'_status' => 'public',
 			'_export' => 'yes',
 		)
@@ -1002,19 +1003,19 @@ function humcore_publish_handle( $humcore_doi ) {
 /**
  * Modify DOI metdata using EZID API.
  */
-function humcore_modify_handle( $humcore_doi, $title, $creator, $type, $date, $publisher ) {
+function humcore_modify_handle( $metadata ) {
 
 	global $ezid_api;
 
+        $doi_xml = $ezid_api->prepare_doi_metadata( $metadata );
+
 	$e_status = $ezid_api->modify_identifier(
-		array(
-			'doi'          => $humcore_doi,
-			'dc.title'     => $title,
-			'dc.creator'   => $creator,
-			'dc.type'      => $type,
-			'dc.date'      => $date,
-			'dc.publisher' => $publisher,
-		)
+                array(
+			'doi'          => $metadata['deposit_doi'],
+                        '_target'  => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
+                        '_profile' => 'datacite',
+                        'datacite' => $doi_xml,
+                )
 	);
 
 	if ( is_wp_error( $e_status ) ) {
