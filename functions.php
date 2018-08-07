@@ -1007,15 +1007,15 @@ function humcore_modify_handle( $metadata ) {
 
 	global $ezid_api;
 
-        $doi_xml = $ezid_api->prepare_doi_metadata( $metadata );
+	$doi_xml = $ezid_api->prepare_doi_metadata( $metadata );
 
 	$e_status = $ezid_api->modify_identifier(
-                array(
-			'doi'          => $metadata['deposit_doi'],
-                        '_target'  => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
-                        '_profile' => 'datacite',
-                        'datacite' => $doi_xml,
-                )
+		array(
+			'doi'      => $metadata['deposit_doi'],
+			'_target'  => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
+			'_profile' => 'datacite',
+			'datacite' => $doi_xml,
+		)
 	);
 
 	if ( is_wp_error( $e_status ) ) {
