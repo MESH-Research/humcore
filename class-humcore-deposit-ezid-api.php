@@ -266,41 +266,24 @@ class Humcore_Deposit_Ezid_Api {
 	 * @see wp_remote_request()
 	 */
 	public function mint_identifier( array $args = array() ) {
-		// bypas this function if host = 'none'
+
+		// bypass this function if host = 'none'
 		if ( 'none' === $this->ezid_settings['host'] ) {
 			return trim( $this->ezid_settings['host'] );
 		}
 
 		$defaults = array(
-			'_status'      => 'reserved',
-			'_export'      => 'no',
-			'_profile'     => 'dc',
-			'dc.publisher' => '',
-			'_target'      => '',
-			'dc.type'      => '',
-			'dc.date'      => '',
-			'dc.creator'   => '',
-			'dc.title'     => '',
+			'_status'  => 'reserved',
+			'_export'  => 'no',
+			'_profile' => 'datacite',
+			'_target'  => '',
+			'datacite' => '',
 		);
-		$params   = wp_parse_args( $args, $defaults );
 
-		if ( empty( $params['dc.publisher'] ) ) {
-			$params['dc.publisher'] = 'Not provided.';
-		}
+		$params = wp_parse_args( $args, $defaults );
+
 		if ( empty( $params['_target'] ) ) {
 			return new WP_Error( 'missingArg', 'Target URL is missing.' );
-		}
-		if ( empty( $params['dc.type'] ) ) {
-			return new WP_Error( 'missingArg', 'Type is missing.' );
-		}
-		if ( empty( $params['dc.date'] ) ) {
-			return new WP_Error( 'missingArg', 'Date is missing.' );
-		}
-		if ( empty( $params['dc.creator'] ) ) {
-			return new WP_Error( 'missingArg', 'Creator is missing.' );
-		}
-		if ( empty( $params['dc.title'] ) ) {
-			return new WP_Error( 'missingArg', 'Title is missing.' );
 		}
 
 		$url = sprintf( '%1$s/shoulder/%2$s', $this->base_url, $this->ezid_prefix );
@@ -317,8 +300,11 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'POST';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
+		humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
 
 		$response = wp_remote_request( $url, $request_args );
+		humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
@@ -357,18 +343,14 @@ class Humcore_Deposit_Ezid_Api {
 	public function modify_identifier( array $args = array() ) {
 
 		$defaults = array(
-			'doi'          => '',
-			'_status'      => '',
-			'_export'      => '',
-			'_profile'     => '',
-			'dc.publisher' => '',
-			'_target'      => '',
-			'dc.type'      => '',
-			'dc.date'      => '',
-			'dc.creator'   => '',
-			'dc.title'     => '',
+			'doi'      => '',
+			'_status'  => '',
+			'_export'  => '',
+			'_profile' => 'datacite',
+			'datacite' => '',
 		);
-		$params   = wp_parse_args( $args, $defaults );
+
+		$params = wp_parse_args( $args, $defaults );
 
 		$doi = $params['doi'];
 		unset( $params['doi'] ); // Leave out of the body.
@@ -394,8 +376,11 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'POST';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
+		humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
 
 		$response = wp_remote_request( $url, $request_args );
+		humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
@@ -472,6 +457,183 @@ class Humcore_Deposit_Ezid_Api {
 
 	}
 
+	/**
+	 * Prepare doi metadata.
+	 *
+	 * @return WP_Error|string body of the Response object
+	 * @see wp_remote_request()
+	 */
+	public function prepare_doi_metadata( $metadata ) {
+		/*
+		$metadata['title'],
+		$metadata['pid'],
+		$metadata['authors'],
+		$metadata['type_of_resource'],
+		$metadata['date_issued'],
+		$metadata['publisher'],
+		$metadata['subject'],
+		$metadata['abstract'],
+		$metadata['genre'],
+		$metadata['language'],
+		$metadata['license']
+		*/
+		$resource_type_map = array();
+
+		$resource_type_map['Audio']          = 'Sound';
+		$resource_type_map['Image']          = 'Image';
+		$resource_type_map['Mixed material'] = 'Other';
+		$resource_type_map['Software']       = 'Software';
+		$resource_type_map['Text']           = 'Text';
+		$resource_type_map['Video']          = 'Audiovisual';
+
+		$datacite_language_map = array();
+
+		$datacite_language_map['Arabic']           = 'ar';
+		$datacite_language_map['Catalan']          = 'ca';
+		$datacite_language_map['Chinese']          = 'zh';
+		$datacite_language_map['Croatian']         = 'hr';
+		$datacite_language_map['Czech']            = 'cs';
+		$datacite_language_map['Dutch']            = 'nl';
+		$datacite_language_map['Egyptian Arabic']  = 'ar';
+		$datacite_language_map['English']          = 'en';
+		$datacite_language_map['Filipino']         = 'fl';
+		$datacite_language_map['Finnish']          = 'fi';
+		$datacite_language_map['Frenc']            = 'fr';
+		$datacite_language_map['German']           = 'de';
+		$datacite_language_map['Greek']            = 'el';
+		$datacite_language_map['Hebrew']           = 'he';
+		$datacite_language_map['Hindi']            = 'hi';
+		$datacite_language_map['Hungarian']        = 'hu';
+		$datacite_language_map['Indonesian']       = 'id';
+		$datacite_language_map['Iranian Persian']  = 'fa';
+		$datacite_language_map['Irish']            = 'ga';
+		$datacite_language_map['Italian']          = 'it';
+		$datacite_language_map['Japanese']         = 'ja';
+		$datacite_language_map['Korean']           = 'ko';
+		$datacite_language_map['Kurdish']          = 'ku';
+		$datacite_language_map['Lao']              = 'lo';
+		$datacite_language_map['Mandarin Chinese'] = 'zh';
+		$datacite_language_map['Norwegian']        = 'no';
+		$datacite_language_map['Persian']          = 'fa';
+		$datacite_language_map['Polish']           = 'pl';
+		$datacite_language_map['Portuguese']       = 'pt';
+		$datacite_language_map['Romanian']         = 'ro';
+		$datacite_language_map['Russian']          = 'ru';
+		$datacite_language_map['Serbian']          = 'sr';
+		$datacite_language_map['Spanish']          = 'es';
+		$datacite_language_map['Swahili']          = 'sw';
+		$datacite_language_map['Swedish']          = 'sv';
+		$datacite_language_map['Tagalog']          = 'tl';
+		$datacite_language_map['Thai']             = 'th';
+		$datacite_language_map['Tibetan']          = 'bo';
+		$datacite_language_map['Turkish']          = 'tr';
+		$datacite_language_map['Ukrainian']        = 'uk';
+		$datacite_language_map['Urdu']             = 'ur';
+		$datacite_language_map['Wolof']            = 'wo';
+		$datacite_language_map['Yiddish']          = 'yi';
+
+		$resource_type_general = $resource_type_map[ $metadata['type_of_resource'] ];
+		if ( empty( $resource_type_general ) ) {
+			$resource_type_general = 'Other';
+		}
+
+		$doi_metadata = new SimpleXMLElement( '<?xml version="1.0" encoding="UTF-8" ?>
+		 <resource></resource>'
+		);
+
+		$doi_metadata->addAttribute( 'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance' );
+		$doi_metadata->addAttribute( 'xmlns', 'http://datacite.org/schema/kernel-4' );
+		$doi_metadata->addAttribute( 'xsi:schemaLocation', 'http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.1/metadata.xsd' );
+
+		if ( empty( $metadata['deposit_doi'] ) ) {
+			$deposit_doi = '(:tba)';
+		} else {
+			$deposit_doi = $metadata['deposit_doi'];
+		}
+		$doi_identifier = $doi_metadata->addChild( 'identifier', $deposit_doi );
+		$doi_identifier->addAttribute( 'identifierType', 'DOI' );
+		$doi_titles    = $doi_metadata->addChild( 'titles' );
+		$doi_title     = $doi_titles->addChild( 'title', htmlspecialchars( $metadata['title'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+		$doi_publisher = $doi_metadata->addChild( 'publisher', 'Humanities Commons' );
+		if ( 'yes' === $metadata['embargoed'] ) {
+			$doi_publication_year = $doi_metadata->addChild( 'publicationYear', substr( $metadata['embargo_end_date'], 6, 4 ) );
+		} else {
+			$doi_publication_year = $doi_metadata->addChild( 'publicationYear', $metadata['date_issued'] );
+		}
+		/*
+			<dates>
+				<date dateType="Created">2018-07-09</date>
+				<date dateType="Updated">2018-07-09</date>
+			</dates>
+		*/
+		if ( ! empty( $metadata['authors'] ) ) {
+			$doi_creators = $doi_metadata->addChild( 'creators' );
+			foreach ( $metadata['authors'] as $creator ) {
+				if ( in_array( $creator['role'], array( 'creator', 'author' ) ) && ! empty( $creator['fullname'] ) ) {
+					$doi_creator      = $doi_creators->addChild( 'creator' );
+					$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['family'] . ', ' . $creator['given'] );
+					if ( 'author' === $creator['role'] ) {
+						$doi_creator->addAttribute( 'nameType', 'Personal' );
+						if ( ! empty( $creator['given'] ) ) {
+							$doi_creator_given = $doi_creator->addChild( 'givenName', $creator['given'] );
+						}
+						if ( ! empty( $creator['family'] ) ) {
+							$doi_creator_family = $doi_creator->addChild( 'familyName', $creator['family'] );
+						}
+						if ( ! empty( $creator['affiliation'] ) ) {
+							$doi_creator_affiliation = $doi_creator->addChild( 'affiliation', $creator['affiliation'] );
+						}
+					} else {
+						$doi_creator->addAttribute( 'nameType', 'Organizational' );
+					}
+				}
+			}
+			$doi_contributors = $doi_metadata->addChild( 'contributors' );
+			foreach ( $metadata['authors'] as $contributor ) {
+				if ( in_array( $contributor['role'], array( 'editor', 'translator' ) ) && ! empty( $contributor['fullname'] ) ) {
+					$doi_contributor = $doi_contributors->addChild( 'contributor' );
+					if ( 'editor' === $contributor['role'] ) {
+						$doi_contributor->addAttribute( 'contributorType', 'Editor' );
+					} else {
+						$doi_contributor->addAttribute( 'contributorType', 'Other' );
+					}
+					$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['family'] . ', ' . $contributor['given'] );
+					if ( in_array( $contributor['role'], array( 'editor', 'translator' ) ) ) {
+						$doi_contributor_name->addAttribute( 'nameType', 'Personal' );
+						if ( ! empty( $contributor['given'] ) ) {
+							$doi_contributor_given = $doi_contributor->addChild( 'givenName', $contributor['given'] );
+						}
+						if ( ! empty( $contributor['family'] ) ) {
+							$doi_contributor_family = $doi_contributor->addChild( 'familyName', $contributor['family'] );
+						}
+						if ( ! empty( $contributor['affiliation'] ) ) {
+							$doi_contributor_affiliation = $doi_contributor->addChild( 'affiliation', $contributor['affiliation'] );
+						}
+					}
+				}
+			}
+		}
+
+		if ( ! empty( $metadata['subject'] ) ) {
+			$doi_subjects = $doi_metadata->addChild( 'subjects' );
+			foreach ( $metadata['subject'] as $subject ) {
+				$doi_subject = $doi_subjects->addChild( 'subject', htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+			}
+		}
+
+		$doi_resource_type = $doi_metadata->addChild( 'resourceType', htmlspecialchars( $metadata['genre'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+		$doi_resource_type->addAttribute( 'resourceTypeGeneral', $resource_type_general );
+		$datacite_language = $datacite_language_map[ $metadata['language'] ];
+		if ( ! empty( $datacite_language ) ) {
+			$doi_language = $doi_metadata->addChild( 'language', $datacite_language );
+		}
+		$doi_descriptions = $doi_metadata->addChild( 'descriptions' );
+		$doi_description  = $doi_descriptions->addChild( 'description', htmlspecialchars( str_replace( "\n", ' ', $metadata['abstract'] ), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+		$doi_description->addAttribute( 'descriptionType', 'Abstract' );
+
+		return str_replace( "\n", '', $doi_metadata->asXML() );
+		return trim( $doi_metadata->asXML() );
+	}
 
 	/**
 	 * Get the EZID server status

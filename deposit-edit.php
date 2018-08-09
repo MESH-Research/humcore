@@ -572,23 +572,7 @@ function humcore_deposit_edit_file() {
 	 * Handle doi metadata changes.
 	 */
 	if ( ! empty( $metadata['deposit_doi'] ) ) {
-		$creators = array();
-		foreach ( $metadata['authors'] as $author ) {
-			if ( ( in_array( $author['role'], array( 'creator', 'author', 'editor', 'translator' ) ) ) &&
-				! empty( $author['fullname'] ) ) {
-				$creators[] = $author['fullname'];
-			}
-		}
-		$creator_list = implode( ',', $creators );
-
-		$e_status = humcore_modify_handle(
-			$metadata['deposit_doi'],
-			$metadata['title'],
-			$creator_list,
-			$metadata['genre'],
-			$metadata['date_issued'],
-			$metadata['publisher']
-		);
+		$e_status = humcore_modify_handle( $metadata );
 		if ( false === $e_status ) {
 			humcore_write_error_log( 'error', 'There was an EZID API error, the DOI was not sucessfully modified.' );
 		}
