@@ -477,6 +477,7 @@ class Humcore_Deposit_Ezid_Api {
 		$metadata['language'],
 		$metadata['license']
 		*/
+
 		$resource_type_map = array();
 
 		$resource_type_map['Audio']          = 'Sound';
@@ -485,6 +486,17 @@ class Humcore_Deposit_Ezid_Api {
 		$resource_type_map['Software']       = 'Software';
 		$resource_type_map['Text']           = 'Text';
 		$resource_type_map['Video']          = 'Audiovisual';
+
+		$license_link_list = array();
+
+		$license_link_list['All Rights Reserved']                     = '';
+		$license_link_list['Attribution']                             = 'https://creativecommons.org/licenses/by/4.0/';
+		$license_link_list['Attribution-NonCommercial']               = 'https://creativecommons.org/licenses/by-nc/4.0/';
+		$license_link_list['Attribution-ShareAlike']                  = 'https://creativecommons.org/licenses/by-sa/4.0/';
+		$license_link_list['Attribution-NonCommercial-ShareAlike']    = 'https://creativecommons.org/licenses/by-nc-sa/4.0/';
+		$license_link_list['Attribution-NoDerivatives']               = 'https://creativecommons.org/licenses/by-nd/4.0/';
+		$license_link_list['Attribution-NonCommercial-NoDerivatives'] = 'https://creativecommons.org/licenses/by-nc-nd/4.0/';
+		$license_link_list['All-Rights-Granted']                      = 'https://creativecommons.org/publicdomain/zero/1.0/';
 
 		$datacite_language_map = array();
 
@@ -560,12 +572,15 @@ class Humcore_Deposit_Ezid_Api {
 		} else {
 			$doi_publication_year = $doi_metadata->addChild( 'publicationYear', $metadata['date_issued'] );
 		}
-		/*
-			<dates>
-				<date dateType="Created">2018-07-09</date>
-				<date dateType="Updated">2018-07-09</date>
-			</dates>
-		*/
+
+		$doi_dates = $doi_metadata->addChild( 'dates' );
+
+		$doi_date_c = $doi_dates->addChild( 'date', $metadata['record_creation_date'] );
+		$doi_date_c->addAttribute( 'dateType', 'Created' );
+
+		$doi_date_u = $doi_dates->addChild( 'date', $metadata['record_change_date'] );
+		$doi_date_u->addAttribute( 'dateType', 'Updated' );
+
 		if ( ! empty( $metadata['authors'] ) ) {
 			$doi_creators = $doi_metadata->addChild( 'creators' );
 			foreach ( $metadata['authors'] as $creator ) {
@@ -627,6 +642,22 @@ class Humcore_Deposit_Ezid_Api {
 		if ( ! empty( $datacite_language ) ) {
 			$doi_language = $doi_metadata->addChild( 'language', $datacite_language );
 		}
+		/* Let's see if we want this
+		$doi_alternate_identifiers = $doi_metadata->addChild( 'alternateIdentifiers' );
+		$doi_alternate_identifier  = $doi_alternate_identifiers->addChild(
+			'alternateIdentifier',
+			htmlspecialchars( sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false )
+		);
+		$doi_alternate_identifier->addAttribute( 'alternateIdentifierType', 'URL' );
+		*/
+		if ( ! empty( $metadata['type_of_license'] ) ) {
+			$doi_rights = $doi_metadata->addChild( 'rightsList' );
+			$doi_right  = $doi_rights->addChild( 'rights', $metadata['type_of_license'] );
+			if ( 'All Rights Reserved' !== $metadata['type_of_license'] ) {
+				$doi_right->addAttribute( 'rightsURI', htmlspecialchars( $license_link_list[ $metadata['type_of_license'] ], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+			}
+		}
+
 		$doi_descriptions = $doi_metadata->addChild( 'descriptions' );
 		$doi_description  = $doi_descriptions->addChild( 'description', htmlspecialchars( str_replace( "\n", ' ', $metadata['abstract'] ), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 		$doi_description->addAttribute( 'descriptionType', 'Abstract' );
