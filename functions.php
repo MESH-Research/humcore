@@ -960,6 +960,8 @@ function humcore_create_handle( $metadata ) {
 			'_target'  => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
 			'_profile' => 'datacite',
 			'datacite' => $doi_xml,
+			'_status' => 'reserved',
+			'_export' => 'no',
 		)
 	);
 
@@ -980,11 +982,10 @@ function humcore_publish_handle( $metadata ) {
 
 	global $ezid_api;
 
-	$deposit_doi = $metadata['deposit_doi'];
-
 	$e_status = $ezid_api->modify_identifier(
 		array(
-			'doi'     => $deposit_doi,
+			'doi'     => $metadata['deposit_doi'],
+			'_target' => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
 			'_status' => 'public',
 			'_export' => 'yes',
 		)
