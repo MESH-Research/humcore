@@ -178,41 +178,21 @@ class Humcore_Deposit_Ezid_Api {
 
 		$defaults = array(
 			'doi'          => '',
-			'_status'      => 'reserved',
-			'_export'      => 'no',
-			'_profile'     => 'dc',
-			'dc.publisher' => '',
+			'_status'      => '',
+			'_export'      => '',
+			'_profile'     => '',
 			'_target'      => '',
-			'dc.type'      => '',
-			'dc.date'      => '',
-			'dc.creator'   => '',
-			'dc.title'     => '',
 		);
 		$params   = wp_parse_args( $args, $defaults );
 
 		$doi = $params['doi'];
-		unset( $params['doi'] ); // Leave out of the body.
 
 		if ( empty( $doi ) ) {
 			return new WP_Error( 'missingArg', 'DOI is missing.' );
 		}
-		if ( empty( $params['dc.publisher'] ) ) {
-				$params['dc.publisher'] = 'Not provided.';
-		}
+
 		if ( empty( $params['_target'] ) ) {
 				return new WP_Error( 'missingArg', 'Target URL is missing.' );
-		}
-		if ( empty( $params['dc.type'] ) ) {
-				return new WP_Error( 'missingArg', 'Type is missing.' );
-		}
-		if ( empty( $params['dc.date'] ) ) {
-				return new WP_Error( 'missingArg', 'Date is missing.' );
-		}
-		if ( empty( $params['dc.creator'] ) ) {
-				return new WP_Error( 'missingArg', 'Creator is missing.' );
-		}
-		if ( empty( $params['dc.title'] ) ) {
-				return new WP_Error( 'missingArg', 'Title is missing.' );
 		}
 
 		$url = sprintf( '%1$s/id/%2$s%3$s', $this->base_url, $this->ezid_prefix, $doi );
@@ -229,8 +209,13 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'PUT';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
+		//humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		//humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		//humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
 
 		$response = wp_remote_request( $url, $request_args );
+		//humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
+
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
 		}
@@ -273,9 +258,9 @@ class Humcore_Deposit_Ezid_Api {
 		}
 
 		$defaults = array(
-			'_status'  => 'reserved',
-			'_export'  => 'no',
-			'_profile' => 'datacite',
+			'_status'  => '',
+			'_export'  => '',
+			'_profile' => '',
 			'_target'  => '',
 			'datacite' => '',
 		);
@@ -300,11 +285,12 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'POST';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
-		humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
-		humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		//humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		//humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		//humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
 
 		$response = wp_remote_request( $url, $request_args );
-		humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
+		//humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
@@ -346,7 +332,7 @@ class Humcore_Deposit_Ezid_Api {
 			'doi'      => '',
 			'_status'  => '',
 			'_export'  => '',
-			'_profile' => 'datacite',
+			'_profile' => '',
 			'datacite' => '',
 		);
 
@@ -376,11 +362,12 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'POST';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
-		humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
-		humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		//humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		//humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		//humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
 
 		$response = wp_remote_request( $url, $request_args );
-		humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
+		//humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
@@ -550,12 +537,8 @@ class Humcore_Deposit_Ezid_Api {
 		}
 
 		$doi_metadata = new SimpleXMLElement( '<?xml version="1.0" encoding="UTF-8" ?>
-		 <resource></resource>'
+		 <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.1/metadata.xsd"></resource>'
 		);
-
-		$doi_metadata->addAttribute( 'xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance' );
-		$doi_metadata->addAttribute( 'xmlns', 'http://datacite.org/schema/kernel-4' );
-		$doi_metadata->addAttribute( 'xsi:schemaLocation', 'http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.1/metadata.xsd' );
 
 		if ( empty( $metadata['deposit_doi'] ) ) {
 			$deposit_doi = '(:tba)';
@@ -588,7 +571,6 @@ class Humcore_Deposit_Ezid_Api {
 					$doi_creator      = $doi_creators->addChild( 'creator' );
 					$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['family'] . ', ' . $creator['given'] );
 					if ( 'author' === $creator['role'] ) {
-						$doi_creator->addAttribute( 'nameType', 'Personal' );
 						if ( ! empty( $creator['given'] ) ) {
 							$doi_creator_given = $doi_creator->addChild( 'givenName', $creator['given'] );
 						}
@@ -598,8 +580,11 @@ class Humcore_Deposit_Ezid_Api {
 						if ( ! empty( $creator['affiliation'] ) ) {
 							$doi_creator_affiliation = $doi_creator->addChild( 'affiliation', $creator['affiliation'] );
 						}
+/*
+						$doi_creator_name->addAttribute( 'nameType', 'Personal' );
 					} else {
-						$doi_creator->addAttribute( 'nameType', 'Organizational' );
+						$doi_creator_name->addAttribute( 'nameType', 'Organizational' );
+*/
 					}
 				}
 			}
@@ -614,7 +599,6 @@ class Humcore_Deposit_Ezid_Api {
 					}
 					$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['family'] . ', ' . $contributor['given'] );
 					if ( in_array( $contributor['role'], array( 'editor', 'translator' ) ) ) {
-						$doi_contributor_name->addAttribute( 'nameType', 'Personal' );
 						if ( ! empty( $contributor['given'] ) ) {
 							$doi_contributor_given = $doi_contributor->addChild( 'givenName', $contributor['given'] );
 						}
@@ -624,6 +608,11 @@ class Humcore_Deposit_Ezid_Api {
 						if ( ! empty( $contributor['affiliation'] ) ) {
 							$doi_contributor_affiliation = $doi_contributor->addChild( 'affiliation', $contributor['affiliation'] );
 						}
+/*
+						$doi_contributor_name->addAttribute( 'nameType', 'Personal' );
+					} else {
+						$doi_contributor_name->addAttribute( 'nameType', 'Organizational' );
+*/
 					}
 				}
 			}
@@ -662,8 +651,7 @@ class Humcore_Deposit_Ezid_Api {
 		$doi_description  = $doi_descriptions->addChild( 'description', htmlspecialchars( str_replace( "\n", ' ', $metadata['abstract'] ), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 		$doi_description->addAttribute( 'descriptionType', 'Abstract' );
 
-		return str_replace( "\n", '', $doi_metadata->asXML() );
-		return trim( $doi_metadata->asXML() );
+		return trim( str_replace( "\n", '', $doi_metadata->asXML() ) );
 	}
 
 	/**
