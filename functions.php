@@ -865,7 +865,7 @@ function hcommons_is_global_super_admin() {
  */
 function humcore_member_groups_with_authorship() {
 
-	return apply_filters( 'humcore_member_groups_with_authorship' );
+	return apply_filters( 'humcore_member_groups_with_authorship', array() );
 }
 
 /**
