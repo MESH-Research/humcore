@@ -957,8 +957,10 @@ function humcore_deposits_feed_item_content() {
 		}
 	}
 
+/*
 	foreach ( $authors as $author ) {
 	}
+*/
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 	$pub_date = DateTime::createFromFormat( 'Y-m-d\TH:i:s\Z', $metadata['record_creation_date'] );
