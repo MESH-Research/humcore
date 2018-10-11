@@ -564,10 +564,12 @@ class Humcore_Deposit_Ezid_Api {
 		$doi_date_u = $doi_dates->addChild( 'date', $metadata['record_change_date'] );
 		$doi_date_u->addAttribute( 'dateType', 'Updated' );
 
+		$creator_found = false;
 		if ( ! empty( $metadata['authors'] ) ) {
 			$doi_creators = $doi_metadata->addChild( 'creators' );
 			foreach ( $metadata['authors'] as $creator ) {
 				if ( in_array( $creator['role'], array( 'creator', 'author' ) ) && ! empty( $creator['fullname'] ) ) {
+					$creator_found = true;
 					$doi_creator      = $doi_creators->addChild( 'creator' );
 					$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['family'] . ', ' . $creator['given'] );
 					if ( 'author' === $creator['role'] ) {
@@ -587,6 +589,10 @@ class Humcore_Deposit_Ezid_Api {
 */
 					}
 				}
+			}
+			if ( ! $creator_found ) {
+				$doi_creator      = $doi_creators->addChild( 'creator' );
+				$doi_creator_name = $doi_creator->addChild( 'creatorName', 'HC User ' );
 			}
 			$doi_contributors = $doi_metadata->addChild( 'contributors' );
 			foreach ( $metadata['authors'] as $contributor ) {
