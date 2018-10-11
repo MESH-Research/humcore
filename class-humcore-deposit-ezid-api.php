@@ -570,8 +570,12 @@ class Humcore_Deposit_Ezid_Api {
 			foreach ( $metadata['authors'] as $creator ) {
 				if ( in_array( $creator['role'], array( 'creator', 'author' ) ) && ! empty( $creator['fullname'] ) ) {
 					$creator_found = true;
-					$doi_creator      = $doi_creators->addChild( 'creator' );
-					$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['family'] . ', ' . $creator['given'] );
+					$doi_creator   = $doi_creators->addChild( 'creator' );
+					if ( empty( $creator['given'] ) ) {
+						$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['fullname'] );
+					} else {
+						$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['family'] . ', ' . $creator['given'] );
+					}
 					if ( 'author' === $creator['role'] ) {
 						if ( ! empty( $creator['given'] ) ) {
 							$doi_creator_given = $doi_creator->addChild( 'givenName', $creator['given'] );
@@ -603,7 +607,11 @@ class Humcore_Deposit_Ezid_Api {
 					} else {
 						$doi_contributor->addAttribute( 'contributorType', 'Other' );
 					}
-					$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['family'] . ', ' . $contributor['given'] );
+					if ( empty( $contributor['given'] ) ) {
+						$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['fullname'] );
+					} else {
+						$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['family'] . ', ' . $contributor['given'] );
+					}
 					if ( in_array( $contributor['role'], array( 'editor', 'translator' ) ) ) {
 						if ( ! empty( $contributor['given'] ) ) {
 							$doi_contributor_given = $doi_contributor->addChild( 'givenName', $contributor['given'] );
