@@ -572,7 +572,7 @@ class Humcore_Deposit_Ezid_Api {
 					$creator_found = true;
 					$doi_creator   = $doi_creators->addChild( 'creator' );
 					if ( empty( $creator['given'] ) ) {
-						$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['fullname'] );
+						$doi_creator_name = $doi_creator->addChild( 'creatorName', htmlspecialchars( $metadata['fullname'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 					} else {
 						$doi_creator_name = $doi_creator->addChild( 'creatorName', $creator['family'] . ', ' . $creator['given'] );
 					}
@@ -584,7 +584,7 @@ class Humcore_Deposit_Ezid_Api {
 							$doi_creator_family = $doi_creator->addChild( 'familyName', $creator['family'] );
 						}
 						if ( ! empty( $creator['affiliation'] ) ) {
-							$doi_creator_affiliation = $doi_creator->addChild( 'affiliation', $creator['affiliation'] );
+							$doi_creator_affiliation = $doi_creator->addChild( 'affiliation', htmlspecialchars( $metadata['affiliation'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 						}
 /*
 						$doi_creator_name->addAttribute( 'nameType', 'Personal' );
@@ -608,7 +608,7 @@ class Humcore_Deposit_Ezid_Api {
 						$doi_contributor->addAttribute( 'contributorType', 'Other' );
 					}
 					if ( empty( $contributor['given'] ) ) {
-						$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['fullname'] );
+						$doi_contributor_name = $doi_contributor->addChild( 'contributorName', htmlspecialchars( $metadata['fullname'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 					} else {
 						$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['family'] . ', ' . $contributor['given'] );
 					}
@@ -620,7 +620,7 @@ class Humcore_Deposit_Ezid_Api {
 							$doi_contributor_family = $doi_contributor->addChild( 'familyName', $contributor['family'] );
 						}
 						if ( ! empty( $contributor['affiliation'] ) ) {
-							$doi_contributor_affiliation = $doi_contributor->addChild( 'affiliation', $contributor['affiliation'] );
+							$doi_contributor_affiliation = $doi_contributor->addChild( 'affiliation', htmlspecialchars( $metadata['affiliation'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
 						}
 /*
 						$doi_contributor_name->addAttribute( 'nameType', 'Personal' );
