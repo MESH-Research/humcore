@@ -66,7 +66,7 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 		$user_lastname            = get_the_author_meta( 'last_name', $user_id );
 		$user_affiliation         = bp_get_profile_field_data(
 			array(
-				'field'   => 2,
+				'field'   => 'Institutional or Other Affiliation',
 				'user_id' => $user_id,
 			)
 		);
@@ -103,7 +103,7 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 					$author_lastname    = get_the_author_meta( 'last_name', $mla_userid );
 					$author_affiliation = bp_get_profile_field_data(
 						array(
-							'field'   => 2,
+							'field'   => 'Institutional or Other Affiliation',
 							'user_id' => $mla_userid,
 						)
 					);
