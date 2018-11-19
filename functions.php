@@ -955,7 +955,7 @@ function humcore_create_handle( $metadata ) {
 
 	$doi_xml = $ezid_api->prepare_doi_metadata( $metadata );
 
-	$e_status = $ezid_api->mint_identifier(
+	$e_status = $ezid_api->reserve_identifier(
 		array(
 			'_target'  => sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] ),
 			'_profile' => 'datacite',
