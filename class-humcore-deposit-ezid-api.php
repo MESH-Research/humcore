@@ -209,12 +209,12 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'PUT';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
-		//humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
-		//humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
-		//humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
+		humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
 
 		$response = wp_remote_request( $url, $request_args );
-		//humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
+		humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
@@ -285,12 +285,12 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'POST';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
-		//humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
-		//humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
-		//humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
+		humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
 
 		$response = wp_remote_request( $url, $request_args );
-		//humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
+		humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
@@ -371,12 +371,12 @@ class Humcore_Deposit_Ezid_Api {
 		$request_args['method']                  = 'POST';
 		$request_args['headers']['Content-Type'] = 'text/plain';
 		$request_args['body']                    = $content;
-		//humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
-		//humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
-		//humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
+		humcore_write_error_log( 'info', 'URL ', array( 'url' => $url ) );
+		humcore_write_error_log( 'info', 'Request Args ', array( 'request_args' => $request_args ) );
+		humcore_write_error_log( 'info', 'XML ', array( 'xml' => $params['datacite'] ) );
 
 		$response = wp_remote_request( $url, $request_args );
-		//humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
+		humcore_write_error_log( 'info', 'Response  ', array( 'response' => $response ) );
 
 		if ( is_wp_error( $response ) ) {
 			return new WP_Error( $response->get_error_code(), $response->get_error_message(), $response->get_error_data( $response->get_error_code() ) );
@@ -546,7 +546,7 @@ class Humcore_Deposit_Ezid_Api {
 		}
 
 		$doi_metadata = new SimpleXMLElement( '<?xml version="1.0" encoding="UTF-8" ?>
-		 <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.1/metadata.xsd"></resource>'
+		 <resource xmlns="http://datacite.org/schema/kernel-4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd"></resource>'
 		);
 
 		if ( empty( $metadata['deposit_doi'] ) ) {
