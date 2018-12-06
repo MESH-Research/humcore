@@ -957,10 +957,8 @@ function humcore_deposits_feed_item_content() {
 		}
 	}
 
-/*
 	foreach ( $authors as $author ) {
 	}
-*/
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 	$pub_date = DateTime::createFromFormat( 'Y-m-d\TH:i:s\Z', $metadata['record_creation_date'] );
@@ -1418,6 +1416,10 @@ There is a problem retrieving some of the data for this item. This error has bee
 <?php } ?>
 </div>
 <br style='clear:both'>
+<?php //echo do_shortcode( '[pdfjs-viewer url="' . $view_url . '" viewer_height="640px;" print="false" download="false"]' ); ?>
+<?php //echo do_shortcode( '[embeddoc url="' . $view_url . '" width="550px" height="700px" viewer="google"]' ); ?>
+<?php //echo apply_filters( 'the_content', rtrim( $view_url, '/' ) ); ?>
+<?php humcore_embed_resource( $item_url, $file_metadata ); ?>
 <?php
 
 }
