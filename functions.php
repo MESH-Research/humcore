@@ -800,6 +800,10 @@ function humcore_is_bot_user_agent() {
 		'socscibot',
 		'coccoc',
 		'browsershots',
+		'httrack',
+		'linkcheck',
+		'SemanticScholarBot',
+		'The Knowledge AI',
 	);
 
 	foreach ( $bot_agents as $bot_agent ) {
