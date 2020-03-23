@@ -1257,3 +1257,78 @@ function humcore_display_non_published_metadata( $metadata ) {
 endif;
 }
 
+/**
+ * Output deposit resourceembed
+ */
+function humcore_embed_resource( $deposit_url, $file_metadata = array(), $width = "60%", $height = "400px;" ) {
+
+	preg_match( '/^(\/deposits\/item)\/([^\/]+)\/?$/', $deposit_url, $url_matches );
+	$deposit_pid = $url_matches[2];
+
+	if ( empty( $file_metadata ) ) {
+        	$deposit_id = $deposit_pid;
+        	$item_found = humcore_has_deposits( 'include=' . $deposit_id );
+        	humcore_the_deposit();
+        	$record_identifier = humcore_get_deposit_record_identifier();
+        	$record_location   = explode( '-', $record_identifier );
+        	// handle legacy MLA Commons value
+        	if ( $record_location[0] === $record_identifier ) {
+                	$record_location[0] = '1';
+                	$record_location[1] = $record_identifier;
+        	}
+                $switched = false;
+        	if ( get_current_blog_id() != $record_location[0] ) {
+                	switch_to_blog( $record_location[0] );
+                	$switched = true;
+        	}
+
+        	$post_data     = get_post( $record_location[1] );
+        	$file_metadata = json_decode( get_post_meta( $record_location[1], '_deposit_file_metadata', true ), true );
+	}
+
+        if ( $switched ) {
+                restore_current_blog();
+        }
+
+	if ( empty( $file_metadata ) ) {
+		return;
+	}
+
+	$site_url = get_option( 'siteurl' );
+        $view_url = sprintf(
+                '%s/deposits/view/%s/%s/%s/',
+                $site_url,
+                $file_metadata['files'][0]['pid'],
+                $file_metadata['files'][0]['datastream_id'],
+                $file_metadata['files'][0]['filename']
+        );
+
+
+        if ( in_array( $file_metadata['files'][0]['filetype'], array( 'application/pdf', 'text/html', 'text/plain' ) ) ) { 
+		$embed = sprintf(
+			'<iframe width="%s" height="%s" src="%s/app/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.php?file=%s&download=false&print=false&openfile=false"></iframe>',
+			$width,
+			$height,
+			$site_url,
+			$view_url
+		);
+        } else if ( in_array( strstr( $file_metadata['files'][0]['filetype'], '/', true ), array( 'audio', 'image', 'video' ) ) ) {
+                $embed = sprintf(
+                        '<iframe width="%s" height="%s" src="%s"></iframe>',
+			$width,
+			$height,
+                        $view_url
+                );
+        } else {
+                $embed = sprintf(
+			'<iframe src="https://docs.google.com/viewer?url=%s&embedded=true" style="width:%s height:%s" frameborder="0"></iframe>',
+                        $view_url,
+			$width,
+			$height
+                );
+        }
+
+	echo $embed;
+	return;
+
+}
