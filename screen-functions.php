@@ -1306,11 +1306,11 @@ function humcore_embed_resource( $deposit_url, $file_metadata = array(), $width 
 
         if ( in_array( $file_metadata['files'][0]['filetype'], array( 'application/pdf', 'text/html', 'text/plain' ) ) ) { 
 		$embed = sprintf(
-			'<iframe width="%s" height="%s" src="%s/app/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.php?file=%s&download=false&print=false&openfile=false"></iframe>',
+			'<iframe width="%s" height="%s" src="%s/app/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.html?file=%s&download=false&print=false&openfile=false"></iframe>',
 			$width,
 			$height,
 			$site_url,
-			$view_url
+			urlencode( $view_url )
 		);
         } else if ( in_array( strstr( $file_metadata['files'][0]['filetype'], '/', true ), array( 'audio', 'image', 'video' ) ) ) {
                 $embed = sprintf(

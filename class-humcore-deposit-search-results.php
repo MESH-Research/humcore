@@ -263,13 +263,16 @@ class Humcore_Deposit_Search_Results {
 		}
 
 		if ( ! $max || $max >= (int) $results['total'] ) {
-			$this->total_deposit_count = (int) $results['total'];
+			//$this->total_deposit_count = (int) $results['total'];
+			$this->total_deposit_count = isset($results['total']) ? (int) $results['total']:0;
 		} else {
 			$this->total_deposit_count = (int) $max;
 		}
 
-		$this->facet_counts = $results['facets'];
-		$this->deposits     = $results['documents'];
+		//$this->facet_counts = $results['facets'];
+		//$this->deposits     = $results['documents'];
+		$this->facet_counts = isset($results['facets'])?$results['facets']:0;
+		$this->deposits     = isset($results['documents'])?$results['documents']:false;
 
 		if ( $max ) {
 			if ( $max >= count( $this->deposits ) ) { // TODO count must be changed.

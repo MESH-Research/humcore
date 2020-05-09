@@ -375,6 +375,10 @@ function humcore_get_deposit_post_id( $post_name ) {
 
 	$deposit_post = get_posts( $args );
 
+	if ( empty( $deposit_post ) ) {
+		return false;
+	}
+
 	if ( 0 == $deposit_post[0]->post_parent ) {
 		return $deposit_post[0]->ID;
 	} else {
@@ -621,8 +625,8 @@ function humcore_is_deposit_item() {
 	global $wp;
 	if ( ! empty( $wp->query_vars['pagename'] ) ) {
 		if ( 'deposits/item' == $wp->query_vars['pagename'] ) {
-			if ( 'new' != $wp->query_vars['deposits_item'] && 'review' !== $wp->query_vars['deposits_command'] &&
-				'edit' !== $wp->query_vars['deposits_command'] ) {
+			if ( 'new' != $wp->query_vars['deposits_item'] &&
+					! in_array( $wp->query_vars['deposits_command'], array( 'edit', 'embed', 'review' ) ) ) {
 				return true;
 			}
 		}
@@ -659,6 +663,24 @@ function humcore_is_deposit_item_edit() {
 	if ( ! empty( $wp->query_vars['pagename'] ) ) {
 		if ( 'deposits/item' === $wp->query_vars['pagename'] ) {
 			if ( 'new' !== $wp->query_vars['deposits_item'] && 'edit' === $wp->query_vars['deposits_command'] ) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * Is the current page the deposit item embed?
+ *
+ * @return true If the current page is a deposit item embed page.
+ */
+function humcore_is_deposit_item_embed() {
+
+	global $wp;
+	if ( ! empty( $wp->query_vars['pagename'] ) ) {
+		if ( 'deposits/item' === $wp->query_vars['pagename'] ) {
+			if ( 'new' !== $wp->query_vars['deposits_item'] && 'embed' === $wp->query_vars['deposits_command'] ) {
 				return true;
 			}
 		}
@@ -1444,6 +1466,41 @@ function humcore_deposits_view() {
 	}
 }
 add_action( 'bp_screens', 'humcore_deposits_view' );
+
+/**
+ * Load the Deposits item embed template.
+ */
+function humcore_deposits_item_embed_screen() {
+
+	global $wp;
+	if ( humcore_is_deposit_item_embed() ) {
+		bp_update_is_directory( false, 'humcore_deposits' );
+		if ( ! humcore_check_internal_status() ) {
+			wp_redirect( '/deposits/offline/' ); //TODO offline embed template
+			exit();
+		}
+		$deposit_id = $wp->query_vars['deposits_item'];
+		if ( empty( $deposit_id ) ) {
+			bp_do_404(); //TODO not found embed template
+			//bp_get_template_part( apply_filters( 'humcore_deposits_item_screen', 'deposits/404' ) );
+			return;
+		}
+		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
+		if ( $item_found ) {
+			//add_filter( 'body_class', 'humcore_deposit_item_page_class_names' );
+			do_action( 'humcore_deposits_item_embed_screen' );
+			remove_action( 'wp_head', 'wp_shortlink_wp_head', 10, 0 );
+			remove_action( 'wp_head', 'rel_canonical' );
+			//add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
+error_log('HCHCHCHCHCHCHCHCHC'.var_export($wp->query_vars,true));
+			bp_get_template_part( apply_filters( 'humcore_deposits_item_embed_screen', 'deposits/assets/embed' ) );
+		} else {
+			//bp_get_template_part( apply_filters( 'humcore_deposits_item_embed_screen', 'deposits/404' ) );
+			bp_do_404();
+		}
+	}
+}
+add_action( 'bp_screens', 'humcore_deposits_item_embed_screen' );
 
 /**
  * Is this group a forum?
