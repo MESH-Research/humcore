@@ -31,12 +31,9 @@ class Humcore_Deposit_oEmbed_Extension extends BP_Core_oEmbed_Extension {
 	 */
 	protected function custom_hooks() {
 		add_action( 'oembed_dataparse',   array( $this, 'use_custom_iframe_sandbox_attribute' ), 20, 3 );
-//		add_action( 'embed_content_meta', array( $this, 'embed_comments_button' ), 5 );
 		add_action( 'get_template_part_assets/embeds/header', array( $this, 'on_deposit_header' ), 10, 2 );
-		add_filter( 'embed_html', array( $this, 'filter_embed_html' ) );
 		add_filter( 'embed_html', array( $this, 'humcore_filter_embed_html' ), 10, 4 );
 		add_filter( 'humcore_deposit_embed_html', array( $this, 'modify_iframe' ) );
-		add_filter( 'embed_handler_html', array( $this, 'debug_handler' ), 10, 3 );
 		wp_embed_register_handler( 'deposit', '#^https?://.+?/deposits/item/([^/]+)/?$#i', array( $this, 'deposit_embed_handler' ) );
 		add_filter( 'oembed_request_post_id', array( $this, 'humcore_oembed_request_post_id' ), 10, 2 );
 		add_filter( 'post_embed_url', array( $this, 'humcore_post_embed_url' ), 10, 2 );
@@ -104,7 +101,7 @@ echo "CONTENT";
 	 */
 	protected function validate_url_to_item_id( $url ) {
 		$domain = bp_get_root_domain();
-error_log('WWWWWWWWWWWWWWW111validate_url_to_item_id'.$domain.'#########'.$url);
+
 		// Check the URL to see if this is a single deposit URL.
 		if ( 0 !== strpos( $url, $domain ) ) {
 			return false;
@@ -116,15 +113,6 @@ error_log('WWWWWWWWWWWWWWW111validate_url_to_item_id'.$domain.'#########'.$url);
 		}
 
 		$deposit_pid = $matches[2];
-		// Do more checks.
-		//$url = trim( untrailingslashit( $url ) );
-
-		// Grab the deposit PID.
-	//	$deposit_pid = substr(
-	//		$url,
-	//		strrpos( $url, '/' ) + 1
-	//	);
-error_log('WWWWWWWWWWWWWWW222validate_url_to_item_id'.$deposit_pid);
 
 		if ( ! empty( $deposit_pid ) ) {
 			return $deposit_pid;
@@ -143,7 +131,6 @@ error_log('WWWWWWWWWWWWWWW222validate_url_to_item_id'.$deposit_pid);
 	 */
 	protected function set_oembed_response_data( $item_id ) {
 
-error_log('BBBBBBBBBBBBB111set_oembed_response_data'.var_export($item_id,true).'-'.var_export(get_current_blog_id(),true));
 		$post_name = str_replace( ':', '', $item_id );
 		$args = array(
 			'name'           => $post_name,
@@ -151,10 +138,8 @@ error_log('BBBBBBBBBBBBB111set_oembed_response_data'.var_export($item_id,true).'
 			'post_status'    => 'publish',
 			'posts_per_page' => 1,
 		);
-error_log('BBBBBBBBBBBBB1.1set_oembed_response_data'.var_export($args,true));
 
 		$deposit_post = get_posts( $args );
-error_log('BBBBBBBBBBBBB1.2set_oembed_response_data'.var_export($deposit_post,true));
 
 		if ( empty( $deposit_post ) ) {
 			return false;
@@ -165,7 +150,6 @@ error_log('BBBBBBBBBBBBB1.2set_oembed_response_data'.var_export($deposit_post,tr
 		} else {
 			$post_id = $deposit_post[0]->post_parent;
 		}
-error_log('BBBBBBBBBBBBB222set_oembed_response_data'.$post_id);
 
 		$post_data     = get_post( $post_id );
 		$post_metadata = json_decode( get_post_meta( $post_data->ID, '_deposit_metadata', true ), true );
@@ -191,7 +175,7 @@ error_log('BBBBBBBBBBBBB222set_oembed_response_data'.$post_id);
 			'x_humcore_blog' => get_current_blog_id(),
 			'x_buddypress'   => 'deposits'
 		);
-error_log('BBBBBBBBBBBBB333set_oembed_response_data'.var_export($data,true));
+
 		return $data;
 	}
 
@@ -214,7 +198,6 @@ error_log('BBBBBBBBBBBBB333set_oembed_response_data'.var_export($data,true));
 		);
 
 		$deposit_post = get_posts( $args );
-error_log('NNNNNNNNNNNNN111set_fallback_html'.var_export($deposit_post,true));
 
 		if ( empty( $deposit_post ) ) {
 			return false;
@@ -225,7 +208,6 @@ error_log('NNNNNNNNNNNNN111set_fallback_html'.var_export($deposit_post,true));
 		} else {
 			$post_id = $deposit_post[0]->post_parent;
 		}
-error_log('NNNNNNNNNNNNN222set_fallback_html'.$post_id);
 
 		$post_data     = get_post( $post_id );
 		$post_metadata = json_decode( get_post_meta( $post_data->ID, '_deposit_metadata', true ), true );
@@ -249,7 +231,6 @@ error_log('NNNNNNNNNNNNN222set_fallback_html'.$post_id);
 			'- ' . $author_name,
 			'<a href="' . esc_url( $permalink ) . '">' . '</a>'
 		);
-error_log('NNNNNNNNNNNNN333set_fallback_html'.$blockquote);
 
 		/**
 		 * TODO Filters the fallback HTML used when embedding a HumCORE deposit item.
@@ -367,14 +348,13 @@ error_log('NNNNNNNNNNNNN333set_fallback_html'.$blockquote);
             'title'         => ucfirst( $this->slug_endpoint ),
             'type'          => 'rich',
         ) );
-error_log('CCCCCCCCCCCCCCCC111get_oembed_response_data'.var_export($data,true));
  
         /** This filter is documented in /wp-includes/embed.php */
         $min_max_width = apply_filters( 'oembed_min_max_width', array(
             'min' => 200,
-            'max' => 600
+            'max' => 800
         ) );
-//TODO get deposit content 
+//TODO get deposit content ?
         $width  = min( max( $min_max_width['min'], $width ), $min_max_width['max'] );
         $height = max( ceil( $width / 16 * 9 ), 200 );
  
@@ -392,10 +372,6 @@ error_log('CCCCCCCCCCCCCCCC111get_oembed_response_data'.var_export($data,true));
             $data['html'] = get_post_embed_html( $data['width'], $data['height'], $post );
         }
 */
- 
-        // Remove temporary parameters.
-//        unset( $data['content'] );
-error_log('CCCCCCCCCCCCCCCC222get_oembed_response_data'.var_export($data,true));
  
         return $data;
     }
@@ -440,11 +416,12 @@ error_log('CCCCCCCCCCCCCCCC222get_oembed_response_data'.var_export($data,true));
  
             // Grab custom oEmbed response data.
             $item = $this->set_oembed_response_data( $item_id );
-error_log('OOOOOOOOOOOOOOOOOOOOOOOOOOget_item'.var_export($item,true)); 
             // Set oEmbed response data.
             $data = $this->get_oembed_response_data( $item, $request['maxwidth'] );
         }
- 
+	unset( $data['x_humcore_post'] ); 
+	unset( $data['x_humcore_blog'] ); 
+
         if ( ! $data ) {
             return new WP_Error( 'oembed_invalid_url', get_status_header_desc( 404 ), array( 'status' => 404 ) );
         }
@@ -463,7 +440,9 @@ error_log('OOOOOOOOOOOOOOOOOOOOOOOOOOget_item'.var_export($item,true));
          * @return string
          */
         public function filter_embed_url( $retval ) {
-error_log('HERE');
+//TODO remove function?
+return $retval;
+
                 if ( false === isset( buddypress()->{$this->slug_endpoint}->embedurl_in_progress ) && ! $this->is_page() ) {
                         return $retval;
                 }
@@ -483,7 +462,6 @@ error_log('HERE');
                                 }
                         }
                 }
-error_log('THERE'.$url);
 
                 return $url;
         }
@@ -497,7 +475,8 @@ error_log('THERE'.$url);
          * @return string
          */
         public function filter_embed_html( $retval ) {
-error_log('YYYYYYYYYYYYYYYYYYYYYYYYY111filter_embed_html'); //.var_export($retval,true));
+//TODO remove function?
+return $retval;
                 if ( false === isset( buddypress()->{$this->slug_endpoint}->embedurl_in_progress ) && ! $this->is_page() ) {
                         return $retval;
                 }
@@ -527,7 +506,6 @@ error_log('YYYYYYYYYYYYYYYYYYYYYYYYY111filter_embed_html'); //.var_export($retva
                 // Set up new fallback HTML
                 // @todo Maybe use KSES?
                 $fallback_html = $this->set_fallback_html( $item_id );
-error_log('YYYYYYYYYYYYYYYYYYYYYYYYY222filter_embed_html'); //.var_export($retval,true));
 
                 /**
                  * Dynamic filter to return BP oEmbed HTML.
@@ -550,10 +528,12 @@ error_log('YYYYYYYYYYYYYYYYYYYYYYYYY222filter_embed_html'); //.var_export($retva
 	 */
 	public function humcore_filter_embed_html( $output, $post, $width, $height ) {
 
+		if ( 'humcore_deposit' !== $post->post_type ) {
+			return $output;
+		}
 		$deposit_pid = preg_replace( '/(.+?)(\d+)/i', '${1}:${2}', $post->post_name );
 		$output = preg_replace( '~humcore_deposit/.+?\d+?/(embed/)?~i', 'deposits/item/' . $deposit_pid . '/${1}' , $output );
 
-error_log('JJJJJJJJJJJJJJJ222humcore_filter_embed_html'.var_export($output,true));
 		return $output;
 	}
 
@@ -566,12 +546,16 @@ error_log('JJJJJJJJJJJJJJJ222humcore_filter_embed_html'.var_export($output,true)
 	 */
 	public function humcore_post_embed_url( $url, $post ) {
 
+		if ( 'humcore_deposit' !== $post->post_type ) {
+			return $url;
+		}
+
 		$deposit_pid = preg_replace( '/(.+?)(\d+)/i', '${1}:${2}', $post->post_name );
 		$site_url = get_option( 'siteurl' );
 		$url = sprintf( '%s/deposits/item/%s/', $site_url, $deposit_pid );
 
-error_log('ZZZZZZZZZZZZZZZZZZhumcore_post_embed_url'.var_export($url,true));
 		return $url;
+
 	}
 
 	/**
@@ -592,17 +576,8 @@ error_log('ZZZZZZZZZZZZZZZZZZhumcore_post_embed_url'.var_export($url,true));
 		//TODO remove_filter( 'bp_get_activity_action', 'wpautop' );
 	}
 
-	public function debug_handler( $return, $url, $attr ) {
-		error_log('DEBUG1111111111111'.var_export($return,true));
-		error_log('DEBUG2222222222222'.var_export($url,true));
-		error_log('DEBUG3333333333333'.var_export($attr,true));
-		return $return;
-
-	}
-
 	public function humcore_oembed_request_post_id( $post_id, $url ) {
 
-error_log('GGGGGGGGGGGGG111humcore_oembed_request_post_id'.var_export($post_id,true));
 		// Check for deposit item slug.
 		if ( ! preg_match( '~(deposits/item)/([^/]+)/?(\?(embed[^\&]+))?\&?~i', $url, $matches ) ) {
 			return $post_id;
@@ -618,8 +593,6 @@ error_log('GGGGGGGGGGGGG111humcore_oembed_request_post_id'.var_export($post_id,t
 		$site_query = get_sites( array( 'domain' => $humcore_domain['host'], 'number' => 1 ) );
 		$humcore_site = reset( $site_query );
 
-error_log('GGGGGGGGGGGGG222humcore_oembed_request_post_id'.$deposit_pid.'---'.get_current_blog_id().'---'.$humcore_site->blog_id.'!!!');
-
 		$switched = false;
 		if ( get_current_blog_id() != $humcore_site->blog_id ) {
 			switch_to_blog( $humcore_site->blog_id );
@@ -634,7 +607,6 @@ error_log('GGGGGGGGGGGGG222humcore_oembed_request_post_id'.$deposit_pid.'---'.ge
 			'posts_per_page' => 1,
 		);
 		$deposit_post = get_posts( $args );
-//error_log('GGGGGGGGGGGGG2.5humcore_oembed_request_post_id'.var_export($deposit_post,true));
 
 		if ( $switched ) {
 			restore_current_blog();
@@ -648,7 +620,6 @@ error_log('GGGGGGGGGGGGG222humcore_oembed_request_post_id'.$deposit_pid.'---'.ge
 			$post_id = $deposit_post[0]->post_parent;
 		}
 
-error_log('GGGGGGGGGGGGG333humcore_oembed_request_post_id'.var_export($post_id,true));
 		return $post_id;
 
 	}
@@ -658,18 +629,17 @@ error_log('GGGGGGGGGGGGG333humcore_oembed_request_post_id'.var_export($post_id,t
 	 */
 	public function deposit_embed_handler($matches, $attr, $url, $rawattr) {
 
-		error_log('AAAAAAAAAAAAA111deposit_embed_handler'.var_export($url,true));
+		$wp_referer = wp_get_referer();
+
 		// Check for deposit item slug.
 		 if ( ! preg_match( '~(deposits/item)/([^/]+)/?(\?(embed[^\&]+))?\&?~i', $url, $matches ) ) {
 			return false;
 		}
-		error_log('AAAAAAAAAAAAA1.1deposit_embed_handler'.var_export($matches,true));
 
 		$deposit_pid = $matches[2];
 		if ( empty( $deposit_pid ) ) {
 			return false;
 		}
-		error_log('AAAAAAAAAAAAA1.2deposit_embed_handler'.var_export($deposit_pid,true));
 
 		//figure out network of deposit
 		$humcore_domain = parse_url( $url );
@@ -684,47 +654,17 @@ error_log('GGGGGGGGGGGGG333humcore_oembed_request_post_id'.var_export($post_id,t
 
 		// Grab custom oEmbed response data.
 		$item = $this->set_oembed_response_data( $deposit_pid );
-		error_log('AAAAAAAAAAAAA1.3deposit_embed_handler'.var_export($item,true));
+
 		if ( ! $item ) {
 			return false;
 		}
-		error_log('AAAAAAAAAAAAA2.2deposit_embed_handler'.var_export($deposit_pid,true));
+
 		// Set oEmbed response data.
 		//$data = $this->get_oembed_response_data( $item, $request['maxwidth'] );
-		$data = $this->get_oembed_response_data( $item, '600' );
+		$data = $this->get_oembed_response_data( $item, '800' );
 		if ( ! $data ) {
 			return false;
 		}
-
-get_post_embed_html( '600', '400', $data['x_humcore_post'] );
-		return $data;
-
-
-
-
-/*
-                $post_name = str_replace( ':', '', $deposit_pid );
-        $args = array(
-                'name'           => $post_name,
-                'post_type'      => 'humcore_deposit',
-                'post_status'    => 'publish',
-                'posts_per_page' => 1,
-        );
-
-        $deposit_post = get_posts( $args );
-error_log('AAAAAAAAAAAAA2.5deposit_embed_handler'.var_export($deposit_post,true));
-
-        if ( empty( $deposit_post ) ) {
-                return false;
-        }
-
-        if ( 0 == $deposit_post[0]->post_parent ) {
-                $post_id = $deposit_post[0]->ID;
-        } else {
-               $post_id = $deposit_post[0]->post_parent;
-        }
-*/
-error_log('AAAAAAAAAAAAA333deposit_embed_handler');
 
 		$post_data     = get_post( $data['x_humcore_post'] );
 		$file_metadata = json_decode( get_post_meta( $post_data->ID, '_deposit_file_metadata', true ), true );
@@ -732,6 +672,12 @@ error_log('AAAAAAAAAAAAA333deposit_embed_handler');
 		if ( empty( $file_metadata ) ) {
 			return;
 		}
+
+		$embeds_meta_key = sprintf( '_total_embeds_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
+                $total_embeds = get_post_meta( $post_data->ID, $embeds_meta_key, true ) + 1; // Downloads counted at file level.
+                if ( get_current_user_id() != $post_data->post_author && /* ! humcore_is_bot_user_agent() && */ false === $wp_referer ) {
+                        $post_meta_id = update_post_meta( $post_data->ID, $embeds_meta_key, $total_embeds );
+                }
 
 		$site_url = get_option( 'siteurl' );
 		$view_url = sprintf(
@@ -742,9 +688,15 @@ error_log('AAAAAAAAAAAAA333deposit_embed_handler');
 			$file_metadata['files'][0]['filename']
 		);
 
+		$view_url = sprintf(
+			'%1$s/deposits/objects/%2$s/datastreams/CONTENT/content',
+			$site_url,
+			$file_metadata['files'][0]['pid']
+		);
+
 		if ( in_array( $file_metadata['files'][0]['filetype'], array( 'application/pdf', 'text/html', 'text/plain' ) ) ) { 
 			$embed = sprintf(
-				'<iframe width="%s" height="%s" src="%s/app/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.html?file=%s&download=false&print=false&openfile=false"></iframe>',
+				'<iframe width="%s" height="%s" src="%s/app/plugins/humcore/pdf-viewer/web/viewer.html?file=%s&download=false&print=false&openfile=false"></iframe>',
 				$data['width'],
 				$data['height'],
 				$site_url,
@@ -769,10 +721,8 @@ error_log('AAAAAAAAAAAAA333deposit_embed_handler');
                 if ( $switched ) {
                         restore_current_blog();
                 }
-error_log('AAAAAAAAAAAAA444deposit_embed_handler................'.$embed.'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
 
-		echo $embed;
-		return;
+		return $embed;
 
 	}
 

@@ -503,6 +503,12 @@ foreach ( $committee_list as $committee_key => $committee_value ) {
 			checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'author' ); }
 ?>
 >Author &nbsp;</span>
+		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="contributor"
+		<?php
+		if ( ! empty( $prev_val['deposit-author-role'] ) ) {
+			checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'contributor' ); }
+?>
+>Contributor &nbsp;</span>
 		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="editor"
 		<?php
 		if ( ! empty( $prev_val['deposit-author-role'] ) ) {
@@ -565,6 +571,12 @@ if ( ! empty( $prev_val['deposit-other-authors-first-name'] ) && ! empty( $prev_
 						checked( sanitize_text_field( $author_array['role'] ), 'author' ); }
 ?>
 >Author &nbsp;</span>
+	<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="contributor"
+					<?php
+					if ( ! empty( $author_array['role'] ) ) {
+						checked( sanitize_text_field( $author_array['role'] ), 'contributor' ); }
+?>
+>Contributor &nbsp;</span>
 	<span style="white-space: nowrap;"><input type="radio" name="deposit-other-authors-role[<?php echo $row_counter; ?>]" class="styled" style="margin-top: 12px;" value="editor"
 					<?php
 					if ( ! empty( $author_array['role'] ) ) {
@@ -1005,12 +1017,15 @@ function humcore_deposits_entry_content() {
 	$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
 	$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
 	$authors_list           = array();
+	$contribs_list          = array();
 	$editors_list           = array();
 	$translators_list       = array();
 	$project_directors_list = array();
 	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 			$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'contributor' === $contributor[2] ) {
+						$contribs_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} elseif ( 'editor' === $contributor[2] ) {
 						$editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} elseif ( 'project director' === $contributor[2] ) {
@@ -1032,6 +1047,10 @@ function humcore_deposits_entry_content() {
 <?php if ( ! empty( $authors_list ) ) : ?>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo implode( ', ', $authors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $contirbs_list ) ) : ?>
+<dt><?php _e( 'Contributor(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $editors_list ); // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $editors_list ) ) : ?>
 <dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>
@@ -1114,6 +1133,7 @@ function humcore_deposit_item_content() {
 	$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
 	$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
 	$authors_list           = array();
+	$contribs_list          = array();
 	$editors_list           = array();
 	$translators_list       = array();
 	$project_directors_list = array();
@@ -1121,6 +1141,8 @@ function humcore_deposit_item_content() {
 	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 				$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'contributor' === $contributor[2] ) {
+				$contribs_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} elseif ( 'editor' === $contributor[2] ) {
 				$editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} elseif ( 'project director' === $contributor[2] ) {
@@ -1231,6 +1253,10 @@ function humcore_deposit_item_content() {
 <?php if ( ! empty( $authors_list ) ) : ?>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo implode( ', ', $authors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $contribs_list ) ) : ?>
+<dt><?php _e( 'Contributor(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $editors_list ); // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $editors_list ) ) : ?>
 <dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>
@@ -1419,7 +1445,7 @@ There is a problem retrieving some of the data for this item. This error has bee
 <?php //echo do_shortcode( '[pdfjs-viewer url="' . $view_url . '" viewer_height="640px;" print="false" download="false"]' ); ?>
 <?php //echo do_shortcode( '[embeddoc url="' . $view_url . '" width="550px" height="700px" viewer="google"]' ); ?>
 <?php //echo apply_filters( 'the_content', rtrim( $view_url, '/' ) ); ?>
-<?php humcore_embed_resource( $item_url, $file_metadata ); ?>
+<?php //humcore_embed_resource( $item_url, $file_metadata ); ?>
 <?php
 
 }
@@ -1456,6 +1482,7 @@ function humcore_deposit_item_review_content() {
 	$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
 	$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
 	$authors_list           = array();
+	$contribs_list          = array();
 	$editors_list           = array();
 	$translators_list       = array();
 	$project_directors_list = array();
@@ -1463,6 +1490,8 @@ function humcore_deposit_item_review_content() {
 	foreach ( $contributors_list as $contributor ) {
 		if ( in_array( $contributor[2], array( 'creator', 'author' ) ) || empty( $contributor[2] ) ) {
 				$authors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
+		} elseif ( 'contributor' === $contributor[2] ) {
+				$contribs_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} elseif ( 'editor' === $contributor[2] ) {
 				$editors_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		} elseif ( 'project director' === $contributor[2] ) {
@@ -1618,6 +1647,10 @@ elseif ( 'Dissertation' == $metadata['genre'] || 'Technical report' == $metadata
 <?php if ( ! empty( $authors_list ) ) : ?>
 <dt><?php _e( 'Author(s):', 'humcore_domain' ); ?></dt>
 <dd><?php echo implode( ', ', $authors_list ); // XSS OK. ?></dd>
+<?php endif; ?>
+<?php if ( ! empty( $contribs_list ) ) : ?>
+<dt><?php _e( 'Contributor(s):', 'humcore_domain' ); ?></dt>
+<dd><?php echo implode( ', ', $editors_list ); // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $editors_list ) ) : ?>
 <dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>

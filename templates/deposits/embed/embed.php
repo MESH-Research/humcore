@@ -2,7 +2,7 @@
 
 			<?php //while ( bp_activities() ) : bp_the_activity(); ?>
 				<div class="bp-embed-excerpt"><?php //bp_activity_embed_excerpt(); ?></div>
-assets/embeds/deposits.php
+deposits/embeds/embed.php
 				<?php //bp_activity_embed_media(); ?>
 
 			<?php //endwhile; ?>

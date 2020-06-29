@@ -1296,17 +1296,14 @@ function humcore_embed_resource( $deposit_url, $file_metadata = array(), $width 
 
 	$site_url = get_option( 'siteurl' );
         $view_url = sprintf(
-                '%s/deposits/view/%s/%s/%s/',
+                '%1$s/deposits/objects/%2$s/datastreams/CONTENT/content',
                 $site_url,
-                $file_metadata['files'][0]['pid'],
-                $file_metadata['files'][0]['datastream_id'],
-                $file_metadata['files'][0]['filename']
+                $file_metadata['files'][0]['pid']
         );
-
 
         if ( in_array( $file_metadata['files'][0]['filetype'], array( 'application/pdf', 'text/html', 'text/plain' ) ) ) { 
 		$embed = sprintf(
-			'<iframe width="%s" height="%s" src="%s/app/plugins/pdfjs-viewer-shortcode/pdfjs/web/viewer.html?file=%s&download=false&print=false&openfile=false"></iframe>',
+			'<iframe width="%s" height="%s" src="%s/app/plugins/humcore/pdf-viewer/web/viewer.html?file=%s&download=false&print=false&openfile=false"></iframe>',
 			$width,
 			$height,
 			$site_url,

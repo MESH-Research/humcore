@@ -1493,7 +1493,7 @@ function humcore_deposits_item_embed_screen() {
 			remove_action( 'wp_head', 'rel_canonical' );
 			//add_action( 'wp_head', 'humcore_deposit_item_search_meta' );
 error_log('HCHCHCHCHCHCHCHCHC'.var_export($wp->query_vars,true));
-			bp_get_template_part( apply_filters( 'humcore_deposits_item_embed_screen', 'deposits/assets/embed' ) );
+			bp_get_template_part( apply_filters( 'humcore_deposits_item_embed_screen', 'deposits/embed/embed' ) );
 		} else {
 			//bp_get_template_part( apply_filters( 'humcore_deposits_item_embed_screen', 'deposits/404' ) );
 			bp_do_404();
@@ -1740,6 +1740,7 @@ function humcore_deposits_genre_list() {
 	$genre_list['Technical report']                    = 'Technical report';
 	$genre_list['Thesis']                              = 'Thesis';
 	$genre_list['Translation']                         = 'Translation';
+	$genre_list['Video']                               = 'Video';
 	$genre_list['Video essay']                         = 'Video essay';
 	$genre_list['Visual art']                          = 'Visual art';
 	$genre_list['White paper']                         = 'White paper';
