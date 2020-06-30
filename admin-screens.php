@@ -216,7 +216,7 @@ foreach ( $genre_list as $genre_key => $genre_value ) {
 			<select name="aggregator_group[]" multiple size="10">
 			<option class="level-0" value="">(No groups)</option>
 <?php
-	$group_list        = humcore_deposits_group_list();
+	$group_list        = humcore_deposits_group_list( $aggregator_metadata['submitter'] );
 	$posted_group_list = array();
 if ( ! empty( $aggregator_metadata['group'] ) ) {
 	foreach ( $aggregator_metadata['group_ids'] as $group_id ) {

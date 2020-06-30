@@ -274,7 +274,6 @@ class Humcore_Deposit_Search_Results {
 		$this->facet_counts = isset($results['facets'])?$results['facets']:0;
 		$this->deposits     = isset($results['documents'])?$results['documents']:false;
 
-
 		if ( $max ) {
 			if ( $max >= count( $this->deposits ) ) { // TODO count must be changed.
 				$this->deposit_count = count( $this->deposits ); // TODO count must be changed.

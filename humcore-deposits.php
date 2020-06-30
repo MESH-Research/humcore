@@ -422,6 +422,18 @@ function humcore_add_rewrite_rule() {
 	);
 
 	add_rewrite_rule(
+		'(deposits/item)/([^/]+)(/(embed))?/?$',
+		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
+		'top'
+	);
+/*
+	add_rewrite_rule(
+		'(deposits/item)/([^/]+)/?(\?(embed[^\&]+))?\&?',
+		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
+		'top'
+	);
+*/
+	add_rewrite_rule(
 		'(deposits/download)/([^/]+)/([^/]+)/([^/]+)/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_datastream=$matches[3]&deposits_filename=$matches[4]',
 		'top'

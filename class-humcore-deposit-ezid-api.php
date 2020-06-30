@@ -609,7 +609,7 @@ class Humcore_Deposit_Ezid_Api {
 			}
 			$doi_contributors = $doi_metadata->addChild( 'contributors' );
 			foreach ( $metadata['authors'] as $contributor ) {
-				if ( in_array( $contributor['role'], array( 'editor', 'translator' ) ) && ! empty( $contributor['fullname'] ) ) {
+				if ( in_array( $contributor['role'], array( 'contributor', 'editor', 'translator' ) ) && ! empty( $contributor['fullname'] ) ) {
 					$doi_contributor = $doi_contributors->addChild( 'contributor' );
 					if ( 'editor' === $contributor['role'] ) {
 						$doi_contributor->addAttribute( 'contributorType', 'Editor' );
@@ -621,7 +621,7 @@ class Humcore_Deposit_Ezid_Api {
 					} else {
 						$doi_contributor_name = $doi_contributor->addChild( 'contributorName', $contributor['family'] . ', ' . $contributor['given'] );
 					}
-					if ( in_array( $contributor['role'], array( 'editor', 'translator' ) ) ) {
+					if ( in_array( $contributor['role'], array( 'contributor', 'editor', 'translator' ) ) ) {
 						if ( ! empty( $contributor['given'] ) ) {
 							$doi_contributor_given = $doi_contributor->addChild( 'givenName', $contributor['given'] );
 						}
