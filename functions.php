@@ -782,6 +782,7 @@ function humcore_is_bot_user_agent() {
 		'pss-webkit-request',
 		'pythumbnail',
 		'scooter',
+		'scraper',
 		'slurp',
 		'snapbot',
 		'spider',
@@ -822,6 +823,11 @@ function humcore_is_bot_user_agent() {
 		'socscibot',
 		'coccoc',
 		'browsershots',
+		'httrack',
+		'linkcheck',
+		'SemanticScholarBot',
+		'The Knowledge AI',
+		'OSPScraper',
 	);
 
 	foreach ( $bot_agents as $bot_agent ) {
