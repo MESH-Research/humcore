@@ -969,8 +969,8 @@ function humcore_deposits_feed_item_content() {
 		}
 	}
 
-	foreach ( $authors as $author ) {
-	}
+//	foreach ( $authors as $author ) {
+//	}
 
 	$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 	$pub_date = DateTime::createFromFormat( 'Y-m-d\TH:i:s\Z', $metadata['record_creation_date'] );
@@ -1282,7 +1282,7 @@ function humcore_deposit_item_content() {
 <dt><?php _e( 'Item Type:', 'humcore_domain' ); ?></dt>
 <dd><a href="/deposits/?facets[genre_facet][]=<?php echo urlencode( $metadata['genre'] ); ?>"><?php echo esc_html( $metadata['genre'] ); ?></a></dd>
 <?php endif; ?>
-<?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] ) : ?>
+<?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] || 'Conference poster' == $metadata['genre'] ) : ?>
 <?php if ( ! empty( $metadata['conference_title'] ) ) : ?>
 <dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
 <dd><span><?php echo $metadata['conference_title']; // XSS OK. ?></span></dd>
@@ -1591,7 +1591,7 @@ function humcore_deposit_item_review_content() {
 <dt><?php _e( 'Item Type:', 'humcore_domain' ); ?></dt>
 <dd><?php echo esc_html( $metadata['genre'] ); ?></dd>
 <!-- //new stuff -->
-<?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] ) : ?>
+<?php if ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] || 'Conference poster' == $metadata['genre'] ) : ?>
 <dt><?php _e( 'Conf. Title:', 'humcore_domain' ); ?></dt>
 <?php if ( ! empty( $metadata['conference_title'] ) ) : ?>
 <dd><span><?php echo $metadata['conference_title']; // XSS OK. ?></span></dd>

@@ -146,7 +146,7 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 		$metadata['institution'] = $metadata['organization'];
 	}
 
-	if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
+	if ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] || 'Conference poster' == $metadata['genre'] ) ) {
 		$metadata['conference_title']        = sanitize_text_field( $curr_val['deposit-conference-title'] );
 		$metadata['conference_organization'] = sanitize_text_field( $curr_val['deposit-conference-organization'] );
 		$metadata['conference_location']     = sanitize_text_field( $curr_val['deposit-conference-location'] );
@@ -933,7 +933,7 @@ function create_mods_xml( $metadata ) {
 		}
 		$related_item_mods .= '
 				</relatedItem>';
-	} elseif ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] ) ) {
+	} elseif ( ! empty( $metadata['genre'] ) && ( 'Conference proceeding' == $metadata['genre'] || 'Conference paper' == $metadata['genre'] || 'Conference poster' == $metadata['genre'] ) ) {
 		$related_item_mods = '
 				<relatedItem type="host">
 					<titleInfo>';

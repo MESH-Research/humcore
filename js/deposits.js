@@ -20,7 +20,7 @@ jQuery(document).ready( function($) {
 			$('#deposit-conference-entries').hide();
 		   	$('#deposit-institution-entries').show();
 			$('#deposit-meeting-entries').hide();
-		} else if ( value == 'Conference paper' || value == 'Conference proceeding' ) {
+		} else if ( value == 'Conference paper' || value == 'Conference proceeding' || value == 'Conference poster' ) {
 			$('#deposit-conference-entries').show();
 			$('#deposit-institution-entries').hide();
 			$('#deposit-meeting-entries').hide();

@@ -439,7 +439,8 @@ function humcore_deposit_item_search_meta() {
 	if ( ! empty( $metadata['genre'] ) && 'Technical report' == $metadata['genre'] && ! empty( $metadata['institution'] ) ) {
 		printf( '<meta name="citation_technical_report_institution" content="%1$s">' . "\n\r", htmlentities( $metadata['institution'] ) );
 	}
-	if ( ! empty( $metadata['genre'] ) && ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] ) && ! empty( $metadata['conference_title'] ) ) {
+	if ( ! empty( $metadata['genre'] ) && ( 'Conference paper' == $metadata['genre'] || 'Conference proceeding' == $metadata['genre'] || 'Conference poster' == $metadata['genre'] ) &&
+			! empty( $metadata['conference_title'] ) ) {
 		printf( '<meta name="citation_conference_title" content="%1$s">' . "\n\r", htmlentities( $metadata['conference_title'] ) );
 	}
 	if ( ! empty( $metadata['book_journal_title'] ) ) {
@@ -1717,6 +1718,7 @@ function humcore_deposits_genre_list() {
 	$genre_list['Chart']                               = 'Chart';
 	$genre_list['Code or software']                    = 'Code or software';
 	$genre_list['Conference paper']                    = 'Conference paper';
+	$genre_list['Conference poster']                   = 'Conference poster';
 	$genre_list['Conference proceeding']               = 'Conference proceeding';
 	$genre_list['Course material or learning objects'] = 'Course material or learning objects';
 	$genre_list['Data set']                            = 'Data set';
