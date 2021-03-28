@@ -1256,7 +1256,7 @@ function humcore_deposit_item_content() {
 <?php endif; ?>
 <?php if ( ! empty( $contribs_list ) ) : ?>
 <dt><?php _e( 'Contributor(s):', 'humcore_domain' ); ?></dt>
-<dd><?php echo implode( ', ', $editors_list ); // XSS OK. ?></dd>
+<dd><?php echo implode( ', ', $contribs_list ); // XSS OK. ?></dd>
 <?php endif; ?>
 <?php if ( ! empty( $editors_list ) ) : ?>
 <dt><?php _e( 'Editor(s):', 'humcore_domain' ); ?></dt>

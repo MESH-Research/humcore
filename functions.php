@@ -1724,11 +1724,15 @@ function humcore_deposits_genre_list() {
 	$genre_list['Data set']                            = 'Data set';
 	$genre_list['Dissertation']                        = 'Dissertation';
 	$genre_list['Documentary']                         = 'Documentary';
+	$genre_list['Editorial']                           = 'Editorial';
 	$genre_list['Essay']                               = 'Essay';
 	$genre_list['Fictional work']                      = 'Fictional work';
 	$genre_list['Finding aid']                         = 'Finding aid';
 	$genre_list['Image']                               = 'Image';
 	$genre_list['Interview']                           = 'Interview';
+	$genre_list['Lecture']                             = 'Lecture';
+	$genre_list['Legal Comment']                       = 'Legal Comment';
+	$genre_list['Legal Response']                      = 'Legal Response';
 	$genre_list['Magazine section']                    = 'Magazine section';
 	$genre_list['Map']                                 = 'Map';
 	$genre_list['Monograph']                           = 'Monograph';
