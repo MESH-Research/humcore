@@ -135,7 +135,7 @@ function humcore_edit_deposit_form() {
 	$prev_val['selected_file_name'] = $file_metadata['files'][0]['filename'];
 	$prev_val['selected_file_type'] = $file_metadata['files'][0]['filetype'];
 	$prev_val['selected_file_size'] = $file_metadata['files'][0]['filesize'];
-	if ( 'yes' == $prev_val['deposit-on-behalf-flag'] ) {
+	if ( 'yes' == $prev_val['deposit-on-behalf-flag'] || 'yes' == $prev_val['deposit-for-others-flag'] ) {
 		$user = get_user_by( 'ID', sanitize_text_field( $prev_val['submitter'] ) );
 	} else {
 		$user = get_user_by( 'login', $prev_val['deposit-author-uni'] );
@@ -421,6 +421,34 @@ if ( ! empty( $prev_val['deposit-abstract-unchanged'] ) ) {
 		<span class="description">*</span>
 	<div class="character-count"></div>
 	</div>
+	<p>Depositor</p>
+	<div id="deposit-for-others-flag-entry">
+<?php
+		$can_deposit_for_others = humcore_deposits_can_deposit_for_others( $user_id );
+if ( ! $can_deposit_for_others ) {
+?>
+<input type="hidden" name="deposit-for-others-flag" id="deposit-for-others-flag" value="" />
+<?php } else { ?>
+		<span class="description">Is this deposit authored by others?</span>
+			<input type="radio" name="deposit-for-others-flag" value="yes"
+			<?php
+			if ( ! empty( $prev_val['deposit-for-others-flag'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-for-others-flag'] ), 'yes' ); }
+?>
+>Yes &nbsp;
+			<input type="radio" name="deposit-for-others-flag" value="no"
+			<?php
+			if ( ! empty( $prev_val['deposit-for-others-flag'] ) ) {
+				checked( sanitize_text_field( $prev_val['deposit-for-others-flag'] ), 'no' );
+			} else {
+				echo 'checked="checked"'; }
+?>
+>No &nbsp;
+<?php
+}
+	?>
+	</div>
+
 	<div id="deposit-on-behalf-flag-entry">
 <?php
 		$committee_list = humcore_deposits_user_committee_list( $user_id );
@@ -428,8 +456,7 @@ if ( empty( $committee_list ) ) {
 ?>
 <input type="hidden" name="deposit-on-behalf-flag" id="deposit-on-behalf-flag" value="" />
 <?php } else { ?>
-		<label for="deposit-on-behalf-flag-list">Depositor</label>
-		<span class="description">Is this deposit being made on behalf of a group?</span>
+		<span class="description">Is this deposit authored by a group?</span>
 			<input type="radio" name="deposit-on-behalf-flag" value="yes"
 			<?php
 			if ( ! empty( $prev_val['deposit-on-behalf-flag'] ) ) {
@@ -448,6 +475,7 @@ if ( empty( $committee_list ) ) {
 }
 	?>
 	</div>
+
 	<div id="deposit-committee-entry">
 <?php
 if ( empty( $committee_list ) ) {
@@ -515,7 +543,7 @@ foreach ( $committee_list as $committee_key => $committee_value ) {
 			checked( sanitize_text_field( $prev_val['deposit-author-role'] ), 'editor' ); }
 ?>
 >Editor &nbsp;</span>
-		<?php if ( is_super_admin() ) : ?>
+		<?php if ( humcore_deposits_can_deposit_for_others( $user_id) ) : ?>
 		<span style="white-space: nowrap;"><input type="radio" name="deposit-author-role" class="styled" value="submitter"
 		<?php
 		if ( ! empty( $prev_val['deposit-author-role'] ) ) {

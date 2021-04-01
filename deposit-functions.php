@@ -38,6 +38,7 @@ function prepare_user_entered_metadata( $user, $curr_val ) {
 		)
 	);
 	$metadata['genre']              = sanitize_text_field( $curr_val['deposit-genre'] );
+	$metadata['deposit_for_others'] = sanitize_text_field( $curr_val['deposit-for-others-flag'] );
 	$metadata['committee_deposit']  = sanitize_text_field( $curr_val['deposit-on-behalf-flag'] );
 	if ( ! empty( $curr_val['deposit-committee'] ) ) {
 		$metadata['committee_id'] = sanitize_text_field( $curr_val['deposit-committee'] );
@@ -1016,6 +1017,7 @@ function humcore_prepare_edit_page_metadata( $curr_val ) {
 		$metadata['deposit-notes-unchanged'] = $curr_val['notes'];
 	}
 	$metadata['deposit-genre']          = $curr_val['genre'];
+	$metadata['deposit-for-others-flag'] = $curr_val['deposit_for_others'];
 	$metadata['deposit-on-behalf-flag'] = $curr_val['committee_deposit'];
 	if ( ! empty( $curr_val['committee_id'] ) ) {
 		$metadata['deposit-committee'] = $curr_val['committee_id'];

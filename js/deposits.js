@@ -35,16 +35,34 @@ jQuery(document).ready( function($) {
 		}
 	}
 
+ 	function maybe_show_submitter_fields(event) {
+		var value = $(this).val();
+		if ( value == 'yes' ) {
+			$('#deposit-author-display').hide();
+			$('input[type=radio][name="deposit-author-role"][value="submitter"]').prop('checked', true);
+			$('#deposit-other-authors-entry span.description').html('Add the authors and any other contributors to this work.');
+			$('#deposit-insert-other-author-button').click();
+		} else {
+			$('#deposit-author-display').show();
+			$('input[type=radio][name="deposit-author-role"][value="submitter"]').prop('checked', false);
+	 	 	$('input[type=radio][name="deposit-on-behalf-flag"][value="no"]').prop('checked', true);
+	 	 	$('input[type=radio][name="deposit-on-behalf-flag"][value="no"]').click();
+			$('#deposit-other-authors-entry span.description').html('Add any other contributors in addition to yourself.');
+		}
+	}
+
  	function maybe_show_committee_fields(event) {
 		var value = $(this).val();
 		if ( value == 'yes' ) {
 			$('#deposit-author-display').hide();
 			$('#deposit-committee-entry').show();
-			$('#deposit-other-authors-entry span.description').html('Add any authors in addition to the group.');
+			$('input[type=radio][name="deposit-author-role"][value="submitter"]').prop('checked', true);
+			$('#deposit-other-authors-entry span.description').html('Add any other contributors in addition to the group.');
 		} else {
 			$('#deposit-author-display').show();
 			$('#deposit-committee-entry').hide();
-			$('#deposit-other-authors-entry span.description').html('Add any contributors in addition to yourself.');
+			$('input[type=radio][name="deposit-author-role"][value="submitter"]').prop('checked', false);
+			$('#deposit-other-authors-entry span.description').html('Add any other contributors in addition to yourself.');
 		}
 	}
 
@@ -291,6 +309,8 @@ jQuery(document).ready( function($) {
 	// Show any selected conditional fields.
 	$('select[name=deposit-genre]').on('change', maybe_show_extra_genre_fields);
 	$('select[name=deposit-genre]').on('genreload', maybe_show_extra_genre_fields);
+	$('input[type=radio][name=deposit-for-others-flag]').on('click', maybe_show_submitter_fields);
+	$('input[type=radio][name=deposit-for-others-flag]').on('submitterload', maybe_show_submitter_fields);
 	$('input[type=radio][name=deposit-on-behalf-flag]').on('click', maybe_show_committee_fields);
 	$('input[type=radio][name=deposit-on-behalf-flag]').on('committeeload', maybe_show_committee_fields);
 	$('input[type=radio][name=deposit-publication-type]').on('click', maybe_show_publication_type_fields);
@@ -302,6 +322,7 @@ jQuery(document).ready( function($) {
 
 	// Setup triggers for page load from server.
 	$('select[name=deposit-genre]').trigger('genreload');
+	$('input[type=radio][name=deposit-for-others-flag]:checked').trigger('submitterload');
 	$('input[type=radio][name=deposit-on-behalf-flag]:checked').trigger('committeeload');
 	$('input[type=radio][name=deposit-publication-type]:checked').trigger('pubtypeload');
 	$('input[type=radio][name=deposit-published]:checked').trigger('pubload');
@@ -359,7 +380,10 @@ jQuery(document).ready( function($) {
 		var description = $.trim($('#deposit-abstract-unchanged').val());
 		var description_length = $('#deposit-abstract-unchanged').val().length;
 		var deposit_on_behalf_of = $('input[type=radio][name=deposit-on-behalf-flag]:checked').val();
+		var deposit_for_others = $('input[type=radio][name=deposit-for-others-flag]:checked').val();
 		var committee = $('#deposit-committee').val();
+		var first_names = $.trim($('#deposit-other-authors-first-name[]').val());
+		var last_names = $.trim($('#deposit-other-authors-last-name[]').val());
 		var groups = $('select[name="deposit-group[]"]').val();
 		var subjects = $('select[name="deposit-subject[]"]').val();
 		var notes_length = $('#deposit-notes-unchanged').val().length;
@@ -405,6 +429,10 @@ jQuery(document).ready( function($) {
 			warning_message += '<li>We noticed you haven’t shared your deposit with any groups. Group members receive a notification about the work you’ve uploaded to <em>CORE</em>.</li>';
 			$('#deposit-group-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
+		if ( deposit_for_others === 'yes' && ( first_names === null && last_names === null ) ) {
+			warning_message += '<li>Please add at least one contributor.</li>';
+			$('#deposit-other-authors-first-name').addClass('deposit-input-highlight');
+		}
 		if ( subjects === null ) {
 			warning_message += '<li>We noticed you did not select a subject for your item, which could make it harder for others to find.</li>';
 			$('#deposit-subject-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
@@ -412,7 +440,8 @@ jQuery(document).ready( function($) {
 
 		// Show a dialog if needed, otherwise submit the form.
 		if ( title === '' || item_type === '' || description === '' || selected_file === '' || description_length > 2000 || notes_length > 500 ||
-			( committee === '' && deposit_on_behalf_of === 'yes' ) ) {
+			( committee === '' && deposit_on_behalf_of === 'yes' ) ||
+		( deposit_for_others === 'yes' && ( first_names === null && last_names === null ) ) ) {
 			$('#deposit-error-dialog').html(error_message).dialog('open');
 			return false;
 		} else if ( ( groups === null ) || subjects === null ) {

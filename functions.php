@@ -1821,6 +1821,19 @@ function humcore_deposits_user_committee_list( $user_id ) {
 }
 
 /**
+ * Return true if the user can deposit on behalf of others.
+ *
+ * @param string $user_id User ID.
+ * @return boolean
+ */
+function humcore_deposits_can_deposit_for_others( $user_id ) {
+
+	return in_array( $user_id, array( '60', '4381', '5610', '1027782', '1015176', '1020610', '1006552' ) );
+	return apply_filters( 'humcore_deposits_can_deposit_for_others', $user_id );
+
+}
+
+/**
  * Return the subject list.
  *
  * @return array

@@ -147,6 +147,12 @@ foreach ( $genre_list as $genre_key => $genre_value ) {
 			</label>
 		</p>
 		<p>
+			<label>Deposit for Others<br>
+				<input type="hidden" name="aggregator_deposit_for_others" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['deposit_for_others'] ); ?>">
+				<input type="text" name="aggregator_deposit_for_others_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['deposit_for_others'] ); ?>">
+			</label>
+		</p>
+		<p>
 			<label>Committee Deposit<br>
 				<input type="hidden" name="aggregator_committee_deposit" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['committee_deposit'] ); ?>">
 				<input type="text" name="aggregator_committee_deposit_display" class="widefat" disabled="disabled" value="<?php echo esc_attr( $aggregator_metadata['committee_deposit'] ); ?>">
@@ -723,6 +729,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 	$aggregator_metadata['meeting_date']            = sanitize_text_field( stripslashes( $_POST['aggregator_meeting_date'] ) );
 
 	// No changes allowed.
+	//$aggregator_metadata['deposit_for_others'] = sanitize_text_field( $_POST['aggregator_deposit_for_others'] );
 	//$aggregator_metadata['committee_deposit'] = sanitize_text_field( $_POST['aggregator_committee_deposit'] );
 	//$aggregator_metadata['committee_id'] = sanitize_text_field( $_POST['aggregator_committee_id'] );
 	$aggregator_metadata['submitter'] = sanitize_text_field( $_POST['aggregator_submitter'] );
