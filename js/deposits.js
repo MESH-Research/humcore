@@ -38,8 +38,9 @@ jQuery(document).ready( function($) {
  	function maybe_show_submitter_fields(event) {
 		var value = $(this).val();
 		if ( value == 'yes' ) {
-			$('#deposit-author-display').hide();
+			$('input[type=radio][name="deposit-author-role"][value="author"]').prop('checked', false);
 			$('input[type=radio][name="deposit-author-role"][value="submitter"]').prop('checked', true);
+			$('#deposit-author-display').hide();
 			$('#deposit-other-authors-entry span.description').html('Add the authors and any other contributors to this work.');
 			$('#deposit-insert-other-author-button').click();
 		} else {
@@ -54,9 +55,9 @@ jQuery(document).ready( function($) {
  	function maybe_show_committee_fields(event) {
 		var value = $(this).val();
 		if ( value == 'yes' ) {
+			$('input[type=radio][name="deposit-author-role"][value="submitter"]').prop('checked', true);
 			$('#deposit-author-display').hide();
 			$('#deposit-committee-entry').show();
-			$('input[type=radio][name="deposit-author-role"][value="submitter"]').prop('checked', true);
 			$('#deposit-other-authors-entry span.description').html('Add any other contributors in addition to the group.');
 		} else {
 			$('#deposit-author-display').show();
@@ -382,8 +383,8 @@ jQuery(document).ready( function($) {
 		var deposit_on_behalf_of = $('input[type=radio][name=deposit-on-behalf-flag]:checked').val();
 		var deposit_for_others = $('input[type=radio][name=deposit-for-others-flag]:checked').val();
 		var committee = $('#deposit-committee').val();
-		var first_names = $.trim($('#deposit-other-authors-first-name[]').val());
-		var last_names = $.trim($('#deposit-other-authors-last-name[]').val());
+		var other_first_name = $("input[name^='deposit-other-authors-first-name']").val();
+		var other_last_name = $("input[name^='deposit-other-authors-last-name']").val();
 		var groups = $('select[name="deposit-group[]"]').val();
 		var subjects = $('select[name="deposit-subject[]"]').val();
 		var notes_length = $('#deposit-notes-unchanged').val().length;
@@ -429,9 +430,16 @@ jQuery(document).ready( function($) {
 			warning_message += '<li>We noticed you haven’t shared your deposit with any groups. Group members receive a notification about the work you’ve uploaded to <em>CORE</em>.</li>';
 			$('#deposit-group-entry span.select2.select2-container span.selection span.select2-selection').addClass('deposit-input-highlight');
 		}
-		if ( deposit_for_others === 'yes' && ( first_names === null && last_names === null ) ) {
-			warning_message += '<li>Please add at least one contributor.</li>';
+		//console.log(typeof other_first_name === 'undefined' || other_first_name === '');
+		//console.log(deposit_for_others);
+		//console.log(other_first_name);
+		//console.log(other_last_name);
+		//console.log(deposit_for_others === 'yes' && (typeof other_first_name === 'undefined' || other_first_name === ''));
+		if ( deposit_for_others === 'yes' && ( (typeof other_first_name === 'undefined' || other_first_name === '') &&
+							(typeof other_first_name === 'undefined' || other_first_name === '') ) ) {
+			error_message += '<li>Please add at least one author to deposit on behalf of others.</li>';
 			$('#deposit-other-authors-first-name').addClass('deposit-input-highlight');
+			$('#deposit-other-authors-last-name').addClass('deposit-input-highlight');
 		}
 		if ( subjects === null ) {
 			warning_message += '<li>We noticed you did not select a subject for your item, which could make it harder for others to find.</li>';
@@ -441,7 +449,8 @@ jQuery(document).ready( function($) {
 		// Show a dialog if needed, otherwise submit the form.
 		if ( title === '' || item_type === '' || description === '' || selected_file === '' || description_length > 2000 || notes_length > 500 ||
 			( committee === '' && deposit_on_behalf_of === 'yes' ) ||
-		( deposit_for_others === 'yes' && ( first_names === null && last_names === null ) ) ) {
+			( deposit_for_others === 'yes' && ( (typeof other_first_name === 'undefined' || other_first_name === '') &&
+								(typeof other_first_name === 'undefined' || other_first_name === '') ) ) ) {
 			$('#deposit-error-dialog').html(error_message).dialog('open');
 			return false;
 		} else if ( ( groups === null ) || subjects === null ) {

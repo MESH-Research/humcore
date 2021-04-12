@@ -1,7 +1,6 @@
 <?php
 // phpcs:ignoreFile -- this is not a core file
 
-
 define('PLUPLOAD_MOVE_ERR', 103);
 define('PLUPLOAD_INPUT_ERR', 101);
 define('PLUPLOAD_OUTPUT_ERR', 102);
@@ -66,9 +65,6 @@ class PluploadHandler {
 	 */
 	static function handle($conf = array())
 	{
-		// 5 minutes execution time
-		@set_time_limit(5 * 60);
-
 		self::$_error = null; // start fresh
 
 		$conf = self::$conf = array_merge(array(
@@ -77,6 +73,7 @@ class PluploadHandler {
 			'target_dir' => false,
 			'cleanup' => true,
 			'max_file_age' => 5 * 3600,
+			'max_execution_time' => 5 * 60, // in seconds (5 minutes by default)
 			'chunk' => isset($_REQUEST['chunk']) ? intval($_REQUEST['chunk']) : 0,
 			'chunks' => isset($_REQUEST['chunks']) ? intval($_REQUEST['chunks']) : 0,
 			'file_name' => isset($_REQUEST['name']) ? $_REQUEST['name'] : false,
@@ -86,10 +83,11 @@ class PluploadHandler {
 			'cb_check_file' => false,
 		), $conf);
 
+		@set_time_limit($conf['max_execution_time']);
 
 		try {
 			if (!$conf['file_name']) {
-			 	if (! empty($_FILES)) {
+			 	if (!empty($_FILES)) {
 					$conf['file_name'] = $_FILES[$conf['file_data_name']]['name'];
 				} else {
 					throw new Exception('', PLUPLOAD_INPUT_ERR);
@@ -184,11 +182,14 @@ class PluploadHandler {
 			throw new Exception('', PLUPLOAD_TMPDIR_ERR);
 		}
 
-		if (! empty($_FILES) && isset($_FILES[$file_data_name])) {
+		if (!empty($_FILES) && isset($_FILES[$file_data_name])) {
 			if ($_FILES[$file_data_name]["error"] || !is_uploaded_file($_FILES[$file_data_name]["tmp_name"])) {
 				throw new Exception('', PLUPLOAD_MOVE_ERR);
 			}
-			move_uploaded_file($_FILES[$file_data_name]["tmp_name"], $file_path);
+
+			if (!move_uploaded_file($_FILES[$file_data_name]["tmp_name"], $file_path)) {
+				throw new Exception('', PLUPLOAD_MOVE_ERR);
+			}
 		} else {	
 			// Handle binary streams
 			if (!$in = @fopen("php://input", "rb")) {
@@ -263,7 +264,7 @@ class PluploadHandler {
 	{
 		$allow_origin_present = false;
 
-		if (! empty($headers)) {
+		if (!empty($headers)) {
 			foreach ($headers as $header => $value) {
 				if (strtolower($header) == 'access-control-allow-origin') {
 					$allow_origin_present = true;
@@ -342,4 +343,3 @@ class PluploadHandler {
 		rmdir($dir);
 	}
 }
-
