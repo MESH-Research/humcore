@@ -2263,9 +2263,9 @@ function humcore_social_sharing_shortcode( $share_context, $metadata ) {
 	}
 
 	if ( 'deposit' === $share_context ) {
-		$share_text = esc_html( 'I just uploaded "' . $metadata['title'] . '" to @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
+		$share_text = esc_html( 'I just uploaded "' . urlencode( $metadata['title'] ) . '" to @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
 	} else {
-		$share_text = esc_html( 'I just found "' . $metadata['title'] . '" on @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
+		$share_text = esc_html( 'I just found "' . urlencode( $metadata['title'] ) . '" on @' . $mashsb_options['mashsharer_hashtag'] . ' CORE ' );
 	}
 	$share_command = sprintf( "[mashshare text='%s' url='%s']",
 		$share_text,
