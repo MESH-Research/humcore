@@ -58,7 +58,7 @@ class Solr_Command extends WP_CLI_Command {
 		$s_status = $solr_client->get_solr_status();
 
 		if ( is_wp_error( $s_status ) ) {
-			WP_CLI::error( sprintf( 'Error getting Solr status : %2$s-%3$s', $s_status->get_error_code(), $s_status->get_error_message() ) );
+			WP_CLI::error( sprintf( 'Error getting Solr status : %1$s-%2$s', $s_status->get_error_code(), $s_status->get_error_message() ) );
 		} else {
 
 			// Print a success message
