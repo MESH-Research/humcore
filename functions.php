@@ -1014,7 +1014,7 @@ function humcore_publish_handle( $metadata ) {
 	$e_status = $datacite_api->modify_identifier(
 		array(
 			'doi'   => $metadata['deposit_doi'],
-			'state' => 'findable',
+			'event' => 'publish',
 		)
 	);
 
