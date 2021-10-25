@@ -260,7 +260,7 @@ function humcore_deposit_file() {
 	}
 
 	/**
-	 * Mint and reserve a DOI.
+	 * Create a draft DOI.
 	 */
 	$deposit_doi = humcore_create_handle(
 		$metadata
@@ -576,9 +576,9 @@ function humcore_deposit_file() {
 	if ( ! empty( $metadata['deposit_doi'] ) ) {
 		$e_status = humcore_publish_handle( $metadata );
 		if ( false === $e_status ) {
-			echo '<h3>', __( 'There was an EZID API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
+			echo '<h3>', __( 'There was a DataCite API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
 		}
-					humcore_write_error_log( 'info', 'HumCORE deposit DOI published' );
+		humcore_write_error_log( 'info', 'HumCORE deposit DOI published' );
 	}
 
 	/**
