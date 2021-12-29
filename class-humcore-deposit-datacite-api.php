@@ -508,15 +508,15 @@ class Humcore_Deposit_Datacite_Api {
 				}
 			}
 			if ( ! $creator_found ) {
-				$doi_metadata['creators']['name'] =  'HC User';
+				$doi_metadata['data']['attributes']['creators']['name'] =  'HC User';
 			}
 			foreach ( $metadata['authors'] as $contributor ) {
 				if ( in_array( $contributor['role'], array( 'contributor', 'editor', 'translator' ) ) && ! empty( $contributor['fullname'] ) ) {
 					$doi_contributor = [];
 					if ( 'editor' === $contributor['role'] ) {
-						$doi_contributor['contributor']['contributorType'] = 'Editor';
+						$doi_contributor['contributorType'] = 'Editor';
 					} else {
-						$doi_contributor['contributor']['contributorType'] = 'Other';
+						$doi_contributor['contributorType'] = 'Other';
 					}
 					if ( empty( $contributor['given'] ) ) {
 						$doi_contributor['name'] = htmlspecialchars( $contributor['fullname'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
