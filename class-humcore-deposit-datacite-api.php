@@ -106,7 +106,7 @@ class Humcore_Deposit_Datacite_Api {
 		}
 
 		$url = sprintf( '%1$s/dois/%2$s', $this->base_url, $doi );
-		$request_args           = $this->options['api'];
+		$request_args           = $this->options['api-auth'];
 		$request_args['method'] = 'GET';
 		$request_args['headers']['Accept'] = 'application/vnd.api+json';
 
