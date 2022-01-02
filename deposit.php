@@ -43,7 +43,7 @@ function humcore_deposit_file() {
 		return false;
 	}
 
-	global $fedora_api, $solr_client;
+	global $fedora_api, $solr_client, $datacite_api;
 	//$tika_client = \Vaites\ApacheTika\Client::make('localhost', 9998);
 	$tika_client = \Vaites\ApacheTika\Client::make( '/srv/www/commons/current/vendor/tika/tika-app-1.16.jar' );     // app mode
 
@@ -268,9 +268,23 @@ function humcore_deposit_file() {
 	if ( ! $deposit_doi ) {
 		$metadata['handle']      = sprintf( HC_SITE_URL . '/deposits/item/%s/', $next_pids[0] );
 		$metadata['deposit_doi'] = ''; // Not stored in solr.
+		humcore_write_error_log( 'info', 'HumCORE deposit DOI creation error' );
 	} else {
-		$metadata['handle']      = 'http://dx.doi.org/' . str_replace( 'doi:', '', $deposit_doi );
+		$metadata['handle']      = $datacite_api->datacite_proxy . str_replace( 'doi:', '', $deposit_doi );
 		$metadata['deposit_doi'] = $deposit_doi; // Not stored in solr.
+		humcore_write_error_log( 'info', 'HumCORE deposit DOI created' );
+	}
+
+	/**
+	 * Publish the reserved DOI.
+	 */
+	if ( ! empty( $metadata['deposit_doi'] ) ) {
+		$e_status = humcore_publish_handle( $metadata );
+		if ( false === $e_status ) {
+			$metadata['handle']      = sprintf( HC_SITE_URL . '/deposits/item/%s/', $next_pids[0] );
+		} else {
+			humcore_write_error_log( 'info', 'HumCORE deposit DOI published' );
+		}
 	}
 
 	/**
@@ -568,17 +582,6 @@ function humcore_deposit_file() {
 	 */
 	if ( $deposit_activity_needed ) {
 		$activity_id = humcore_new_deposit_activity( $deposit_post_id, $metadata['abstract'], $local_link, $user->ID );
-	}
-
-	/**
-	 * Publish the reserved DOI.
-	 */
-	if ( ! empty( $metadata['deposit_doi'] ) ) {
-		$e_status = humcore_publish_handle( $metadata );
-		if ( false === $e_status ) {
-			echo '<h3>', __( 'There was a DataCite API error, the DOI was not sucessfully published.', 'humcore_domain' ), '</h3><br />';
-		}
-		humcore_write_error_log( 'info', 'HumCORE deposit DOI published' );
 	}
 
 	/**

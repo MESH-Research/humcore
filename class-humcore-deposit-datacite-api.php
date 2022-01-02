@@ -17,6 +17,7 @@ class Humcore_Deposit_Datacite_Api {
 	private $datacite_path;
 	private $datacite_prefix;
 
+	public $datacite_proxy;
 	public $service_status;
 	public $namespace;
 	public $temp_dir;
@@ -61,6 +62,9 @@ class Humcore_Deposit_Datacite_Api {
 		if ( defined( 'CORE_DATACITE_PASSWORD' ) ) {
 				$this->datacite_settings['password'] = CORE_DATACITE_PASSWORD;
 		}
+		if ( defined( 'CORE_DATACITE_PROXY' ) ) {
+				$this->datacite_settings['proxy'] = CORE_DATACITE_PROXY;
+		}
 		if ( defined( 'CORE_DATACITE_PREFIX' ) ) {
 				$this->datacite_settings['prefix'] = CORE_DATACITE_PREFIX;
 		}
@@ -72,8 +76,10 @@ class Humcore_Deposit_Datacite_Api {
 		}
 
 		$this->datacite_path                                   = $this->datacite_settings['path'];
+		$this->datacite_proxy                                  = $this->datacite_settings['proxy'];
 		$this->datacite_prefix                                 = $this->datacite_settings['prefix'];
 		$this->options['api-auth']['headers']['Authorization'] = 'Basic ' . base64_encode( $this->datacite_settings['login'] . ':' . $this->datacite_settings['password'] );
+		$this->options['api-auth']['timeout']                  = '10';
 		$this->options['api-auth']['httpversion']              = '1.1';
 		$this->options['api-auth']['sslverify']                = true;
 		$this->options['api']['httpversion']                   = '1.1';
