@@ -209,7 +209,8 @@ function humcore_deposit_file() {
 		}
 	}
 
-	$metadata = humcore_reclassify_subjects_and_keywords( $metadata );
+	// do not need this function for FAST subjects
+	// $metadata = humcore_reclassify_subjects_and_keywords( $metadata );
 
 	/**
 	 * Set object terms for subjects.

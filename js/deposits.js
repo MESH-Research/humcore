@@ -571,6 +571,116 @@ var uploader = new plupload.Uploader( {
 uploader.init();
 } );
 
+//
+// FAST subject functions
+/**
+ * description: this controls the format of the actual FAST subject drop down list
+ *
+ * @param subject
+ */
+ function formatFASTSubjectResult(subject){
+    if (subject.loading){
+        return "Loading FAST data ...";
+    }
+
+	/*
+    var $subject = $(
+        // alternative text to FAST authorized subject heading
+        `<span>${subject[facet][0]}</span> &nbsp;` +
+        // authorized FAST subject heading
+        `<span>(<b>${subject["auth"]}</b></span> &nbsp;` +
+        // facet
+        //`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>))</span>`
+        `<span>(<em>BOO</em>))</span>`
+        // we'll leave the FAST ID out for now
+        //`<span>(${subject["idroot"]})</span>`
+    );
+	*/
+
+	var $subject = $(
+		`<span>${subject["suggestall"][0]}</span> &nbsp;` +
+		`<span><b>${subject["auth"]}</b></span> &nbsp;` +
+		`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>` // &nbsp;` +
+		//`<span><b>${subject["idroot"].slice(3)}</b></span>`
+	);
+
+    return $subject;
+
+}
+
+/**
+ *
+ * description: Controls what the FAST subject select field looks like after
+ *              the user has made a choice (may be "" (blank)
+ *              if you want the select filed to be empty)
+ *              It also can be used to do any side affects such as writing to other parts of the page
+ * @param subject
+ * @returns {string}
+ */
+function formatFASTSubjectSelection(subject) {
+	var $subject = "";
+    if (subject.auth) {
+        // what the choosen item will look like in the select field
+        $subject = $(
+            // `<span><b>${subject["auth"]}</b></span> &nbsp;` +
+            // `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`
+            `<span><b>${subject["auth"]}</b></span> &nbsp;` +
+            `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>` // &nbsp;`
+            //`<span><b>${subject["idroot"].slice(3)}</b></span>`
+        );
+    } else {
+		//
+		// if there is no subject.auth create the display string from subject.text
+		const [id, auth, facet] = subject.text.split(":");
+		$subject = $(
+			`<span><b>${auth}</b></span> &nbsp;` +
+			`<span>(<em>${facet}</em>)</span>` // &nbsp;`
+		);
+	}
+	return $subject;
+}
+
+/**
+ * Returns FAST subject facet name (e.g. Topic, Meeting, etc.) as a string
+ * based on the FAST facet tag (numeric code)
+ *
+ * @param tag
+ * @returns {string}
+ */
+ function getFASTTypeFromTag(tag) {
+    switch (tag) {
+        case 100:
+            return "Personal Name";
+            break;
+        case 110:
+            return "Corporate Name";
+            break;
+        case 111:
+            return "Meeting";
+            break;
+        case 130:
+            return "Uniform Title";
+            break;
+        case 147:
+            return "Event";
+            break;
+        case 148:
+            return "Period";
+            break;
+        case 150:
+            return "Topic";
+            break;
+        case 151:
+            return "Geographic";
+            break;
+        case 155:
+            return "Form/Genre";
+            break;
+        default:
+            return "unknown";
+    }
+}
+
 // Deposit select 2 controls
 jQuery(document).ready( function($) {
 
@@ -695,4 +805,73 @@ jQuery(document).ready( function($) {
 		minimumResultsForSearch: "36",
 		width: "40%"
 	});
-} );
+	// FAST subjects
+	var facet = "suggestall";
+	var queryIndices = ",idroot,auth,tag,type,raw,breaker,indicator";
+    var subjectDB = "autoSubject";
+	var numRows = 20;
+
+	$('.js-basic-multiple-fast-subjects').select2({
+		// multiple: is set from the HTML select field option
+		theme: $(this).data('theme') ? $(this).data('theme') : 'default',
+		width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+		placeholder: $(this).data('placeholder') ? $(this).data('placeholder') : "Please make a selection",
+		allowClear: $(this).data('allow-clear') ? Boolean($(this).data('allow-clear')) : true,
+		closeOnSelect: $(this).data('close-on-select') ? Boolean($(this).data('close-on-select')) : true,
+		dir: $(this).data('dir') ? $(this).data('dir') : 'ltr',
+		disabled: $(this).data('disabled') ? Boolean($(this).data('disabled')) : false,
+		debug: $(this).data('debug') ? Boolean($(this).data('debug')) : false,
+		delay: $(this).data('delay') ? Number($(this).data('delay')) : 250,
+		minimumInputLength: $(this).data('minimum-input-length') ? Number($(this).data('minimum-input-length')) : 3,
+		maximumSelectionLength: $(this).data('maximum-selection-length') ? Number($(this).data('maximum-selection-length')) : 5,
+		ajax: {
+			url: "https://fast.oclc.org/searchfast/fastsuggest",
+			// we need to use "padded" json (jsonp)
+			// using regular json gives a CORS error
+			dataType: 'jsonp',
+			// not sure what this does. it was copied from sample OCLC code
+			// jsonp: 'json.wrf', ????
+			type: 'GET',
+			// query parameters
+			data: function (params) {
+				return {
+					query: params.term, // search term
+					queryIndex: facet,
+					queryReturn: facet + queryIndices,
+					rows: numRows,
+					suggest: subjectDB,
+				};
+			},
+			/**
+			 * description: format FAST data into Select2 format
+			 *
+			 * @param data data returned by FAST API call
+			 * @returns {results: array usable by Select2}}
+			 */
+			processResults: function (data) {
+				// the docs array from FAST the actual data we need
+				var arraySelect2 = data.response.docs;
+	
+				/**
+				 * function used to modify the raw data from FAST into a Select2 format.
+				 * all we need to do is to add a field called ["id"] to the array
+				 *
+				 * @param value
+				 * @param index
+				 */
+				function convertFastToSelect2(value, index) {
+					var data = value;
+					// Select2 requires a field called ["id"]
+					// ["id"] needs to have all the data we want to save for later use
+					data.id = value["idroot"] + ":" + value["auth"] + ":" + getFASTTypeFromTag(value["tag"]);
+				}
+				arraySelect2.forEach(convertFastToSelect2);
+				return {
+					results: arraySelect2
+				};
+			},
+		},
+		templateResult: formatFASTSubjectResult,
+		templateSelection: formatFASTSubjectSelection,
+	});
+});

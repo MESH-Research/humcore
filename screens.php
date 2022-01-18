@@ -652,7 +652,27 @@ foreach ( $group_list as $group_key => $group_value ) {
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
 		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:core@hcommons.org?subject=CORE" target="_blank">suggest additional subject fields</a>.</span><br />
+		<!-- MLA subjects
 		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple-subjects" multiple="multiple" data-placeholder="Select subjects">
+        -->
+		<!-- FAST subjects -->
+		<select 
+			name="deposit-subject[]" 
+			id="deposit-subject[]" 
+			class="js-basic-multiple-fast-subjects"
+			data-placeholder="Pick a FAST subject heading"
+			multiple="multiple"
+			data-allow-clear="false"
+			data-width="75%"
+			data-theme="default"
+			data-dir="ltr"
+			data-minimum-input-length="2"
+			data-maximum-selection-length="5"
+			data-close-on-select="true"
+			data-disabled="false"
+			data-debug="false"
+			data-delay="250"
+		>
 <?php
 	$posted_subject_list = array();
 if ( ! empty( $prev_val['deposit-subject'] ) ) {

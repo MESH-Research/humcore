@@ -4,3 +4,4 @@ vendor/
 # IDEs
 *.code-workspace
 .idea
+.vscode
