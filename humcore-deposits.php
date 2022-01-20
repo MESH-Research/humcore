@@ -282,8 +282,11 @@ function humcore_release_provisional_fire() {
 	foreach ( $deposit_posts as $deposit_post ) {
 		$now        = time();
 		$metadata   = json_decode( get_post_meta( $deposit_post->ID, '_deposit_metadata', true ), true );
-		$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
-		//$local_link  = $metadata['handle']; // Let's try doi.
+		if ( false === strpos( $metadata['handle'], HC_SITE_URL ) && false === strpos( $metadata['handle'], CORE_DATACITE_PROXY ) ) {
+			$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
+		} else {
+			$local_link  = $metadata['handle']; // Let's try doi.
+		}
 		$post_name   = str_replace( ':', '', $metadata['pid'] );
 		$diff        = (int) abs( $now - strtotime( $metadata['record_change_date'] ) );
 		$hours_since = round( $diff / HOUR_IN_SECONDS );

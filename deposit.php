@@ -576,6 +576,12 @@ function humcore_deposit_file() {
 
 	//DOI's are taking too long to resolve, put the permalink in the activity records.
 	$local_link = sprintf( HC_SITE_URL . '/deposits/item/%s/', $next_pids[0] );
+	if ( false === strpos( $metadata['handle'], HC_SITE_URL ) && false === strpos( $metadata['handle'], CORE_DATACITE_PROXY ) ) {
+		$local_link = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
+	} else {
+		$local_link = $metadata['handle']; // Let's try doi.
+	}
+
 
 	/**
 	 * Add the activity entry for the author.
