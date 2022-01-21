@@ -59,6 +59,17 @@ function humcore_new_deposit_form() {
 		return;
 	}
 
+	if ( ! humanities_commons::hcommons_vet_user() ) {
+		echo '<h3>New <em>CORE</em> Deposit</h3>';
+		echo "<p>We're sorry, but uploading to <em>CORE</em> is currently unavailable. We're we're delighted that you want to share your work so please come back and try again later.</p>";
+		$wp_referer = wp_get_referer();
+		printf(
+			'<a href="%1$s" class="button white" style="line-height: 1.2em;">Go Back</a>',
+			( ! empty( $wp_referer ) && ! strpos( $wp_referer, 'item/new' ) ) ? $wp_referer : '/deposits/'
+		);
+		return;
+	}
+
 	$current_group_id = '';
 	preg_match( '~.*?/groups/(.*[^/]?)/deposits/~i', wp_get_referer(), $slug_match );
 	if ( ! empty( $slug_match ) ) {
