@@ -55,7 +55,7 @@
 							$displayed_user_fullname = bp_get_displayed_user_fullname();
 
 							if ( ( ! empty( $displayed_user_fullname ) && bp_get_loggedin_user_fullname() == $displayed_user_fullname )
-									&& is_user_logged_in() ) {
+									&& is_user_logged_in() && humanities_commons::hcommons_vet_user() ) {
 								echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work" style="float: right;">Upload Your Work</a><p />';
 							}
 							?>
