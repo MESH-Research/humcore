@@ -1198,6 +1198,9 @@ function humcore_prepare_edit_page_metadata( $curr_val ) {
 }
 
 /**
+ * 
+ * OBSOLETE: NO loger used after switching to FAST subjects
+ * 
  * Reclassify subjects and keywords. Subjects must be known, keywords should not duplicate a subject.
  *
  * @param array $metadata

@@ -582,26 +582,11 @@ uploader.init();
     if (subject.loading){
         return "Loading FAST data ...";
     }
-
-	/*
-    var $subject = $(
-        // alternative text to FAST authorized subject heading
-        `<span>${subject[facet][0]}</span> &nbsp;` +
-        // authorized FAST subject heading
-        `<span>(<b>${subject["auth"]}</b></span> &nbsp;` +
-        // facet
-        //`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>))</span>`
-        `<span>(<em>BOO</em>))</span>`
-        // we'll leave the FAST ID out for now
-        //`<span>(${subject["idroot"]})</span>`
-    );
-	*/
-
+    // what the choosen item will look like in the drop down list
 	var $subject = $(
 		`<span>${subject["suggestall"][0]}</span> &nbsp;` +
 		`<span><b>${subject["auth"]}</b></span> &nbsp;` +
-		`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>` // &nbsp;` +
-		//`<span><b>${subject["idroot"].slice(3)}</b></span>`
+		`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`;
 	);
 
     return $subject;
@@ -611,8 +596,7 @@ uploader.init();
 /**
  *
  * description: Controls what the FAST subject select field looks like after
- *              the user has made a choice (may be "" (blank)
- *              if you want the select filed to be empty)
+ *              the user has made a choice (may be "" (blank) if you want the select field to be empty)
  *              It also can be used to do any side affects such as writing to other parts of the page
  * @param subject
  * @returns {string}
@@ -622,11 +606,8 @@ function formatFASTSubjectSelection(subject) {
     if (subject.auth) {
         // what the choosen item will look like in the select field
         $subject = $(
-            // `<span><b>${subject["auth"]}</b></span> &nbsp;` +
-            // `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`
             `<span><b>${subject["auth"]}</b></span> &nbsp;` +
-            `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>` // &nbsp;`
-            //`<span><b>${subject["idroot"].slice(3)}</b></span>`
+            `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`;
         );
     } else {
 		//
@@ -829,8 +810,6 @@ jQuery(document).ready( function($) {
 			// we need to use "padded" json (jsonp)
 			// using regular json gives a CORS error
 			dataType: 'jsonp',
-			// not sure what this does. it was copied from sample OCLC code
-			// jsonp: 'json.wrf', ????
 			type: 'GET',
 			// query parameters
 			data: function (params) {
@@ -853,7 +832,7 @@ jQuery(document).ready( function($) {
 				var arraySelect2 = data.response.docs;
 	
 				/**
-				 * function used to modify the raw data from FAST into a Select2 format.
+				 * description: modify the raw data from FAST into a Select2 format.
 				 * all we need to do is to add a field called ["id"] to the array
 				 *
 				 * @param value

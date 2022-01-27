@@ -652,9 +652,6 @@ foreach ( $group_list as $group_key => $group_value ) {
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
 		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:core@hcommons.org?subject=CORE" target="_blank">suggest additional subject fields</a>.</span><br />
-		<!-- MLA subjects
-		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple-subjects" multiple="multiple" data-placeholder="Select subjects">
-        -->
 		<!-- FAST subjects -->
 		<select 
 			name="deposit-subject[]" 
