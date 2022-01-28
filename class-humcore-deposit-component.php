@@ -365,7 +365,7 @@ class Humcore_Deposit_Component extends BP_Component {
 	 */
 	public function humcore_before_directory_deposits_content() {
 
-		if ( is_user_logged_in() && humanities_commons::hcommons_vet_user() && humcore_is_deposit_directory() ) {
+		if ( 1 === 2 && is_user_logged_in() && humanities_commons::hcommons_vet_user() && humcore_is_deposit_directory() ) {
 			echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work">Upload Your Work</a>';
 		}
 

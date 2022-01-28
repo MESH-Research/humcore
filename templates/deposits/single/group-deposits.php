@@ -90,7 +90,7 @@
 
 				$displayed_user_fullname = bp_get_displayed_user_fullname();
 
-				if ( is_user_logged_in() && humanities_commons::hcommons_vet_user() && 'public' === bp_get_group_status() ) {
+				if ( 1 === 2 && is_user_logged_in() && humanities_commons::hcommons_vet_user() && 'public' === bp_get_group_status() ) {
 					echo '<a href="/deposits/item/new/" class="bp-deposits-deposit button" title="Upload Your Work" style="float: right;">Upload Your Work</a><p />';
 				}
 				?>

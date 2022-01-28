@@ -59,7 +59,7 @@ function humcore_new_deposit_form() {
 		return;
 	}
 
-	if ( ! humanities_commons::hcommons_vet_user() ) {
+	if ( 1 !== 2 || ! humanities_commons::hcommons_vet_user() ) {
 		echo '<h3>New <em>CORE</em> Deposit</h3>';
 		echo "<p>We're sorry, but uploading to <em>CORE</em> is currently unavailable. We're we're delighted that you want to share your work so please come back and try again later.</p>";
 		$wp_referer = wp_get_referer();
@@ -1415,10 +1415,10 @@ endif;
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
-<?php if ( humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
+<?php if ( 1 === 2 && humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
 &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
-<?php if ( hcommons_is_global_super_admin() ) : ?>
+<?php if ( 1 === 2 && hcommons_is_global_super_admin() ) : ?>
 &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Admin Edit" href="<?php echo esc_url( $admin_url ); ?>"><?php _e( 'Admin Edit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
@@ -1768,7 +1768,7 @@ endif;
 <?php elseif ( 'future' === $post_data->post_status ) : ?>
 <dd><?php echo 'Scheduled'; ?>
 <?php endif; ?>
-<?php if ( humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
+<?php if ( 1 === 2 && humcore_user_can_edit_deposit( $wpmn_record_identifier ) ) : ?>
 &nbsp; &nbsp; <a class="bp-deposits-edit-button" title="Edit this Deposit" href="<?php echo esc_url( $edit_url ); ?>"><?php _e( 'Edit this Deposit', 'humcore_domain' ); ?></a>
 <?php endif; ?>
 </dd>
