@@ -586,7 +586,7 @@ uploader.init();
 	var $subject = $(
 		`<span>${subject["suggestall"][0]}</span> &nbsp;` +
 		`<span><b>${subject["auth"]}</b></span> &nbsp;` +
-		`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`;
+		`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`
 	);
 
     return $subject;
@@ -607,7 +607,7 @@ function formatFASTSubjectSelection(subject) {
         // what the choosen item will look like in the select field
         $subject = $(
             `<span><b>${subject["auth"]}</b></span> &nbsp;` +
-            `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`;
+            `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`
         );
     } else {
 		//
@@ -615,7 +615,7 @@ function formatFASTSubjectSelection(subject) {
 		const [id, auth, facet] = subject.text.split(":");
 		$subject = $(
 			`<span><b>${auth}</b></span> &nbsp;` +
-			`<span>(<em>${facet}</em>)</span>` // &nbsp;`
+			`<span>(<em>${facet}</em>)</span>`
 		);
 	}
 	return $subject;
