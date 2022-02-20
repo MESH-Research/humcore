@@ -579,17 +579,18 @@ uploader.init();
  * @param subject
  */
  function formatFASTSubjectResult(subject){
+	var formatted_subject = "";
     if (subject.loading){
         return "Loading FAST data ...";
     }
     // what the choosen item will look like in the drop down list
-	var $subject = $(
+	formatted_subject = $(
 		`<span>${subject["suggestall"][0]}</span> &nbsp;` +
 		`<span><b>${subject["auth"]}</b></span> &nbsp;` +
 		`<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`
 	);
 
-    return $subject;
+    return formatted_subject;
 
 }
 
@@ -602,10 +603,10 @@ uploader.init();
  * @returns {string}
  */
 function formatFASTSubjectSelection(subject) {
-	var $subject = "";
+	var formatted_subject = "";
     if (subject.auth) {
         // what the choosen item will look like in the select field
-        $subject = $(
+        formatted_subject = $(
             `<span><b>${subject["auth"]}</b></span> &nbsp;` +
             `<span>(<em>${getFASTTypeFromTag(subject["tag"])}</em>)</span>`
         );
@@ -613,12 +614,12 @@ function formatFASTSubjectSelection(subject) {
 		//
 		// if there is no subject.auth create the display string from subject.text
 		const [id, auth, facet] = subject.text.split(":");
-		$subject = $(
+		formatted_subject = $(
 			`<span><b>${auth}</b></span> &nbsp;` +
 			`<span>(<em>${facet}</em>)</span>`
 		);
 	}
-	return $subject;
+	return formatted_subject;
 }
 
 /**
