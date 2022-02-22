@@ -1507,6 +1507,21 @@ There is a problem retrieving some of the data for this item. This error has bee
 }
 
 /**
+ * format subjects for newly depositd item
+ */
+function text_format_subject($subject) {
+	$formatted_subject = "";
+	// if $subject contains colons, it is a FAST subject ("ID:subject:facet")
+	// else it is a legacy/MLA subject ("subject")
+	if (str_contains($subject, ':')) {
+		[$fast_id, $fast_subject, $fast_facet] = explode(":", $subject);
+		$formatted_subject = $fast_subject . " (" . $fast_facet . ")";
+		return $formatted_subject;
+	} else {
+		$formatted_subject = $subject;
+	}
+}
+/**
  * Output deposits single item review page html.
  */
 function humcore_deposit_item_review_content() {
@@ -1520,10 +1535,12 @@ function humcore_deposit_item_review_content() {
 			$group_list = implode( ', ', array_map( 'esc_html', $groups ) );
 	}
 	if ( ! empty( $metadata['subject'] ) ) {
+			// remove any empty elements
 			$subjects = array_filter( $metadata['subject'] );
+			$formatted_subjects = array_map( 'text_format_subject', $subjects );
 	}
-	if ( ! empty( $subjects ) ) {
-			$subject_list = implode( ', ', array_map( 'esc_html', $subjects ) );
+	if ( ! empty( $formatted_subjects ) ) {
+			$subject_list = implode( ', ', array_map( 'esc_html', $formatted_subjects ) );
 	}
 	if ( ! empty( $metadata['keyword'] ) ) {
 			$keywords               = array_filter( $metadata['keyword'] );
