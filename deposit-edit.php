@@ -194,6 +194,7 @@ function humcore_deposit_edit_file() {
 		$term_ids = array();
 		foreach ( $metadata['subject'] as $subject ) {
 			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
+			/*
 			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
 				$term                = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
 				$current_subject_key = array_search( $subject, $metadata['subject'] );
@@ -204,6 +205,18 @@ function humcore_deposit_edit_file() {
 			} else {
 				humcore_write_error_log(
 					'error', '*****HumCORE Deposit Edit Error - bad subject***** ' . $subject
+				);
+			}
+			*/
+			if ( empty( $term_key ) ) {
+				$term_key = wpmn_insert_term( sanitize_text_field( $subject ), 'humcore_deposit_subject' );
+			}
+			if ( ! is_wp_error( $term_key ) ) {
+				$term_ids[] = intval( $term_key['term_id'] );
+			} else {
+				humcore_write_error_log(
+					'error', '*****HumCORE Deposit Edit Error - bad subject*****' .
+					var_export( $term_key, true )
 				);
 			}
 		}

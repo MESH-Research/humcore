@@ -843,7 +843,12 @@ jQuery(document).ready( function($) {
 					var data = value;
 					// Select2 requires a field called ["id"]
 					// ["id"] needs to have all the data we want to save for later use
-					data.id = value["idroot"] + ":" + value["auth"] + ":" + getFASTTypeFromTag(value["tag"]);
+					// we want just the numeric form (without leading zeros for the fastid)
+					// so we removr "fst" and any leading zeros
+					let idroot = value["idroot"];
+					let re = /(fst0*)/;
+					let fastid = idroot.replace(re, '');
+					data.id = fastid + ":" + value["auth"] + ":" + getFASTTypeFromTag(value["tag"]);
 				}
 				arraySelect2.forEach(convertFastToSelect2);
 				return {

@@ -675,7 +675,7 @@ foreach ( $group_list as $group_key => $group_value ) {
 			data-theme="default"
 			data-dir="ltr"
 			data-minimum-input-length="2"
-			data-maximum-selection-length="5"
+			data-maximum-selection-length="10"
 			data-close-on-select="true"
 			data-disabled="false"
 			data-debug="false"
@@ -1516,10 +1516,10 @@ function text_format_subject($subject) {
 	if (str_contains($subject, ':')) {
 		[$fast_id, $fast_subject, $fast_facet] = explode(":", $subject);
 		$formatted_subject = $fast_subject . " (" . $fast_facet . ")";
-		return $formatted_subject;
 	} else {
 		$formatted_subject = $subject;
 	}
+	return $formatted_subject;
 }
 /**
  * Output deposits single item review page html.

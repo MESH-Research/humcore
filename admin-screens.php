@@ -245,9 +245,31 @@ foreach ( $group_list as $group_key => $group_value ) {
 		</p>
 		<p>
 			<label>Subject(s)<br>
+			<!--
 			<select name="aggregator_subject[]" multiple size="10">
 			<option class="level-0" value="">(No subjects)</option>
-<?php
+			-->
+			<!-- -->
+			<select 
+				name="aggregator_subject[]" 
+				id="aggregator_subject[]" 
+				class="js-basic-multiple-fast-subjects"
+				data-placeholder="Pick a FAST subject heading"
+				multiple="multiple"
+				size=40
+				data-allow-clear="false"
+				data-width="75%"
+				data-theme="default"
+				data-dir="ltr"
+				data-minimum-input-length="2"
+				data-maximum-selection-length="5"
+				data-close-on-select="true"
+				data-disabled="false"
+				data-debug="false"
+				data-delay="250"
+			>
+			<!--  -->
+			<?php
 	$subject_list        = humcore_deposits_subject_list();
 	$posted_subject_list = array();
 if ( ! empty( $aggregator_metadata['subject'] ) ) {
@@ -256,16 +278,44 @@ if ( ! empty( $aggregator_metadata['subject'] ) ) {
 			$posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
 	}
 }
+/* */
 foreach ( $subject_list as $subject_key => $subject_value ) {
 	printf(
 		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
 		( in_array( $subject_key, $posted_subject_list ) ) ? 'selected="selected"' : '',
 		$subject_key,
+		text_format_subject($subject_value)
+	);
+}
+/* */
+/* 
+foreach ( $posted_subject_list as $subject_value ) {
+	printf(
+		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+		'selected="selected"',
+		$subject_value,
+		"FOO 1 " . $subject_value
+	);
+}
+*/
+/*
+foreach ( $posted_subject_list as $subject_value ) {
+	printf(
+		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+		'selected="selected"',
+		$subject_value,
 		$subject_value
 	);
 }
+*/
 ?>
 			</select>
+			<?php
+			$screen = get_current_screen(); 
+			echo("<p><b>");
+			//print_r($screen);
+			echo("</b></p>");
+			?>
 			</label>
 		</p>
 		<p>

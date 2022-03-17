@@ -689,3 +689,18 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	/*    require_once dirname( __FILE__ ) . '/humcore-cli.php'; */
 	require_once dirname( __FILE__ ) . '/class-solr-command.php';
 }
+
+/**
+ * Enqueue a script in the WordPress admin on edit.php.
+ *
+ * @param int $hook Hook suffix for the current admin page.
+ */
+/*
+function wpdocs_selectively_enqueue_admin_script( $hook ) {
+    if ( 'edit.php' != $hook ) {
+        return;
+    }
+    wp_enqueue_script( 'my_custom_script', plugin_dir_url( __FILE__ ) . 'js/deposits.js', array(), '1.0' );
+}
+add_action( 'admin_enqueue_scripts', 'wpdocs_selectively_enqueue_admin_script' );
+*/
