@@ -1548,8 +1548,8 @@ function humcore_linkify_subject( $subject ) {
 	$formatted_subject = '';
 	// if the $subject contains colons (":") it is in the FAST format
 	if ( strpos($subject, ':') ) {
-		[$fast_id, $fast_subject, $fast_topic] = explode(':', $subject);
-		$formatted_subject = '<b>' . $fast_subject . '</b>' . ' (<em>' . $fast_topic . '</em>)';
+		[$fast_id, $fast_subject, $fast_facet] = explode(':', $subject);
+		$formatted_subject = '<b>' . $fast_subject . '</b>';
  	} else {
 		// otherwise it is in the MLA/legacy format
 		$formatted_subject = $subject;

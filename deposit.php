@@ -210,21 +210,22 @@ function humcore_deposit_file() {
 	}
 
 	/**
-	 * Set object terms for subjects.
+	 * Add any new subjects and set object terms for subjects.
 	 */
 	if ( ! empty( $metadata['subject'] ) ) {
 		$term_ids = array();
 		foreach ( $metadata['subject'] as $subject ) {
 			$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
-			if ( ! is_wp_error( $term_key ) && ! empty( $term_key ) ) {
-				$term                = wpmn_get_term( $term_key['term_id'], 'humcore_deposit_subject' );
-				$current_subject_key = array_search( $subject, $metadata['subject'] );
-				if ( false !== $current_subject_key ) {
-					$metadata['subject'][ $current_subject_key ] = $term->name;
-				}
+			if ( empty( $term_key ) ) {
+				$term_key = wpmn_insert_term( sanitize_text_field( $subject ), 'humcore_deposit_subject' );
+			}
+			if ( ! is_wp_error( $term_key ) ) {
 				$term_ids[] = intval( $term_key['term_id'] );
 			} else {
-				humcore_write_error_log( 'error', '*****HumCORE Deposit Error - bad subject***** ' . $subject );
+				humcore_write_error_log(
+					'error', '*****HumCORE Deposit Edit Error - bad subject*****' .
+					var_export( $term_key, true )
+				);
 			}
 		}
 		if ( ! empty( $term_ids ) ) {

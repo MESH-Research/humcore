@@ -27,6 +27,9 @@ function humcore_deposits_front_cssjs() {
 		wp_register_script( 'humcore_deposits_js', plugins_url( 'js/deposits.js', __FILE__ ), array( 'jquery' ), '010218', true );
 		wp_enqueue_script( 'humcore_deposits_js' );
 
+		wp_register_script( 'humcore_deposit_select2_js', plugins_url( 'js/deposit-select2.js', __FILE__ ), array( 'jquery' ), '010218', true );
+		wp_enqueue_script( 'humcore_deposit_select2_js' );
+
 		/*
 		wp_register_script( 'humcore_deposits_select2_js', plugins_url( 'select2/dist/js/select2.min.js', __FILE__ ), array( 'jquery' ), '022316', true );
 		wp_enqueue_script( 'humcore_deposits_select2_js' );

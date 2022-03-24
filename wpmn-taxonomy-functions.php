@@ -379,7 +379,7 @@ if ( ! function_exists( 'wpmn_term_exists' ) ) {
  *
  * @since x.x.x
  *
- * @see wp_inseet_term() for a full description of function and parameters.
+ * @see wp_insert_term() for a full description of function and parameters.
  *
  * @param string       $term     Term to add.
  * @param string       $taxonomy Taxonomy name.

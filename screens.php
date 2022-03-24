@@ -1507,7 +1507,7 @@ There is a problem retrieving some of the data for this item. This error has bee
 }
 
 /**
- * format subjects for newly depositd item
+ * format subjects for newly depositd item (for review by the author)
  */
 function text_format_subject($subject) {
 	$formatted_subject = "";
