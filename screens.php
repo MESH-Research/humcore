@@ -662,7 +662,7 @@ foreach ( $group_list as $group_key => $group_value ) {
 	</div>
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
-		<span class="description">Assign up to five subject fields to your item.
+		<span class="description">Assign up to ten subject fields to your item.
 		<!-- FAST subjects -->
 		<select 
 			name="deposit-subject[]" 
@@ -699,8 +699,13 @@ foreach ( $posted_subject_list as $subject_value ) {
 	</div>
 	<div id="deposit-keyword-entry">
 		<label for="deposit-keyword">Tags</label>
-		<span class="description">Enter up to five tags to further categorize this item.</span><br />
-		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-keywords" multiple="multiple" data-placeholder="Enter tags">
+		<span class="description">Enter up to ten tags to further categorize this item.</span><br />
+		<select 
+			name="deposit-keyword[]"
+			id="deposit-keyword[]"
+			class="js-basic-multiple-keywords"
+			multiple="multiple" 
+			data-placeholder="Enter tags">
 <?php
 	$posted_keyword_list = array();
 if ( ! empty( $prev_val['deposit-keyword'] ) ) {
