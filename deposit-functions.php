@@ -801,11 +801,45 @@ function create_mods_xml( $metadata ) {
 	$full_subject_list = $metadata['subject'];
 	$subject_mods      = '';
 	foreach ( $full_subject_list as $subject ) {
-
-		$subject_mods .= '
-			<subject>
-				<topic>' . htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) . '</topic>
-			</subject>';
+		$subject_xml = '';
+		[$fast_id, $fast_subject, $fast_facet] = explode(":", $subject);
+		$fast_subject = htmlspecialchars( $fast_subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+		switch ($fast_facet) {
+			case "Topic":
+			case "Event":
+				$subject_xml = "<topic>{$fast_subject}</topic>";
+				break;
+			case "Form/Genre":
+				$subject_xml = "<form>{$fast_subject}</form>";
+				break;
+			case "Period": // same as chronological?
+				$subject_xml = "<temporal>{$fast_subject}</temporal>";
+				break;
+			case "Personal Name":
+				$subject_xml = "<name type=\"personal\"><namePart>{$fast_subject}</namePart></name>";
+				break;
+			case "Corporate Name":
+				$subject_xml = "<name type=\"corporate\"><namePart>{$fast_subject}</namePart></name>";
+				break;
+			case "Meeting":
+				$subject_xml = "<name type=\"conference\"><namePart>{$fast_subject}</namePart></name>";
+				break;
+			case "Uniform Title":
+				$subject_xml = "<titleInfo type=\"uniform\"><title>{$fast_subject}</title></titleInfo>";
+				break;
+			case "Geographic":
+				$subject_xml = "<geographic>{$fast_subject}</geographic>";
+				break;
+			default:
+				$subject_xml = "<topic>{$fast_subject}</topic>";
+				break;
+		}
+		// the outer <subject> tag is the same for all facets
+		$subject_xml = "<subject authority=\"fast\" authorityURI=\"http://id.worldcat.org/fast\" valueURI=\"http://id.worldcat.org/fast/{$fast_id}\">" .
+		"{$subject_xml}</subject>";
+		//
+		// concatenate all the subjects
+		$subject_mods .= $subject_xml;			
 	}
 
 	$related_item_mods = '';
