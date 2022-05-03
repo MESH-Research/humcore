@@ -283,7 +283,7 @@ function humcore_display_deposit_form( $current_group_id, $user_id, $user_login,
 	<div id="deposit-title-entry">
 <br />
 		<label for="deposit-title">Title</label>
-		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" class="long"
+		<input type="text" id="deposit-title-unchanged" name="deposit-title-unchanged" size="75" maxlength="255" class="long"
 		<?php
 		if ( ! empty( $prev_val['deposit-title-unchanged'] ) ) {
 			echo ' value="' . wp_kses(

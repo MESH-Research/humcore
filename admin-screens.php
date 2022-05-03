@@ -66,7 +66,7 @@ function humcore_deposit_metabox( $post ) {
 		</p>
 		<p>
 			<label>Title<br>
-				<input type="text" name="aggregator_title_unchanged" class="widefat" value="<?php echo esc_attr( $aggregator_metadata['title_unchanged'] ); ?>">
+				<input type="text" name="aggregator_title_unchanged" class="widefat" maxlength="255" value="<?php echo esc_attr( $aggregator_metadata['title_unchanged'] ); ?>">
 			</label>
 		</p>
 		<p>
