@@ -389,8 +389,8 @@ class Humcore_Deposit_Datacite_Api {
 
 		$license_link_list = array();
 
-		$license_link_list['All Rights Reserved']                     = '';
 		$license_link_list['Attribution']                             = 'https://creativecommons.org/licenses/by/4.0/';
+		$license_link_list['All Rights Reserved']                     = '';
 		$license_link_list['Attribution-NonCommercial']               = 'https://creativecommons.org/licenses/by-nc/4.0/';
 		$license_link_list['Attribution-ShareAlike']                  = 'https://creativecommons.org/licenses/by-sa/4.0/';
 		$license_link_list['Attribution-NonCommercial-ShareAlike']    = 'https://creativecommons.org/licenses/by-nc-sa/4.0/';

@@ -1602,8 +1602,8 @@ function humcore_linkify_license( $license ) {
 
 	$license_link_list = array();
 
-	$license_link_list['All Rights Reserved']                     = '';
 	$license_link_list['Attribution']                             = 'https://creativecommons.org/licenses/by/4.0/';
+	$license_link_list['All Rights Reserved']                     = '';
 	$license_link_list['Attribution-NonCommercial']               = 'https://creativecommons.org/licenses/by-nc/4.0/';
 	$license_link_list['Attribution-ShareAlike']                  = 'https://creativecommons.org/licenses/by-sa/4.0/';
 	$license_link_list['Attribution-NonCommercial-ShareAlike']    = 'https://creativecommons.org/licenses/by-nc-sa/4.0/';
@@ -1824,7 +1824,27 @@ function humcore_deposits_user_committee_list( $user_id ) {
  */
 function humcore_deposits_can_deposit_for_others( $user_id ) {
 
-	return in_array( $user_id, array( '60', '4381', '5610', '1027782', '1015176', '1020610', '1006552', '1018587', '1010049', '1031444', '1020814', '1026032' ) );
+	return in_array( 
+		$user_id, 
+		array( 
+			'60', 
+			'4381', 
+			'5610', 
+			'1027782', 
+			'1015176', 
+			'1020610', 
+			'1006552', 
+			'1018587', 
+			'1010049', 
+			'1031444', 
+			'1020814', 
+			'1026032',
+			'1022051', // kdase
+			'1022057', // tristanbtaylor
+			'1030540', // drmisslynsey
+			'1014421', // patrickhenryhart
+		) 
+	);
 	return apply_filters( 'humcore_deposits_can_deposit_for_others', $user_id );
 
 }
@@ -1919,8 +1939,8 @@ function humcore_deposits_license_type_list() {
 
 	$license_type_list = array();
 
-	$license_type_list['All Rights Reserved']                     = 'All Rights Reserved';
 	$license_type_list['Attribution']                             = 'Attribution';
+	$license_type_list['All Rights Reserved']                     = 'All Rights Reserved';
 	$license_type_list['Attribution-NonCommercial']               = 'Attribution-NonCommercial';
 	$license_type_list['Attribution-ShareAlike']                  = 'Attribution-ShareAlike';
 	$license_type_list['Attribution-NonCommercial-ShareAlike']    = 'Attribution-NonCommercial-ShareAlike';
