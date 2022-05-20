@@ -290,21 +290,13 @@ foreach ( $group_list as $group_key => $group_value ) {
 			>
 			<option class="level-0" value="">(No subjects)</option>
 	<?php
-	$subject_list        = humcore_deposits_subject_list();
-	$posted_subject_list = array();
 	if ( ! empty( $aggregator_metadata['subject'] ) ) {
-		foreach ( $aggregator_metadata['subject_ids'] as $subject_id ) {
-			$term                  = wpmn_get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
-			$posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
-		}
-	}
-	foreach ( $subject_list as $subject_key => $subject_value ) {
-		if (in_array( $subject_key, $posted_subject_list )) {
+		foreach ( $aggregator_metadata['subject'] as $subject ) {
 			printf(
 				'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
 				'selected="selected"',
-				$subject_key,
-				$subject_key
+				$subject,
+				$subject
 			);
 		}
 	}
