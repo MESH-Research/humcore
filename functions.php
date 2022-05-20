@@ -1824,7 +1824,27 @@ function humcore_deposits_user_committee_list( $user_id ) {
  */
 function humcore_deposits_can_deposit_for_others( $user_id ) {
 
-	return in_array( $user_id, array( '60', '4381', '5610', '1027782', '1015176', '1020610', '1006552', '1018587', '1010049', '1031444', '1020814', '1026032' ) );
+	return in_array( 
+		$user_id, 
+		array( 
+			'60', 
+			'4381', 
+			'5610', 
+			'1027782', 
+			'1015176', 
+			'1020610', 
+			'1006552', 
+			'1018587', 
+			'1010049', 
+			'1031444', 
+			'1020814', 
+			'1026032',
+			'1022051', // kdase
+			'1022057', // tristanbtaylor
+			'1030540', // drmisslynsey
+			'1014421', // patrickhenryhart
+		) 
+	);
 	return apply_filters( 'humcore_deposits_can_deposit_for_others', $user_id );
 
 }
