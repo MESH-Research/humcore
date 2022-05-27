@@ -1254,6 +1254,7 @@ function humcore_deposits_item_screen() {
 		}
 		$item_found = humcore_has_deposits( 'include=' . $deposit_id );
 		if ( $item_found ) {
+			status_header( 200 );
 			add_filter( 'body_class', 'humcore_deposit_item_page_class_names' );
 			do_action( 'humcore_deposits_item_screen' );
 			remove_action( 'wp_head', 'wp_shortlink_wp_head', 10, 0 );
