@@ -270,7 +270,7 @@ foreach ( $group_list as $group_key => $group_value ) {
 			</label>
 		</p>
 		<p>
-			<label>Subject(s)<br>
+			<label>Subject(s) (Remove a subject by clicking on the 'x' in the subject's label)<br>
 			<select 
 				name="aggregator_subject[]" 
 				id="aggregator_subject[]" 
@@ -290,16 +290,19 @@ foreach ( $group_list as $group_key => $group_value ) {
 			>
 			<option class="level-0" value="">(No subjects)</option>
 	<?php
+  $posted_subject_list = array();
 	if ( ! empty( $aggregator_metadata['subject'] ) ) {
-		foreach ( $aggregator_metadata['subject'] as $subject ) {
-			printf(
-				'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-				'selected="selected"',
-				$subject,
-				$subject
-			);
-		}
-	}
+    $posted_subject_list = array_map( 'sanitize_text_field', $aggregator_metadata['subject'] );
+  }
+  foreach ( $posted_subject_list as $subject ) {
+      printf(
+      '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+      'selected="selected"',
+      $subject,
+      $subject
+    );
+  }
+	//}
 	?>
 			</select>
 			<?php

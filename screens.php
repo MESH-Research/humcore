@@ -682,16 +682,16 @@ foreach ( $group_list as $group_key => $group_value ) {
 			data-delay="250"
 		>
 <?php
-	$posted_subject_list = array();
+$posted_subject_list = array();
 if ( ! empty( $prev_val['deposit-subject'] ) ) {
 	$posted_subject_list = array_map( 'sanitize_text_field', $prev_val['deposit-subject'] );
 }
-foreach ( $posted_subject_list as $subject_value ) {
+foreach ( $posted_subject_list as $subject ) {
 	printf(
 		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
 		'selected="selected"',
-		$subject_value,
-		$subject_value
+		$subject,
+		$subject
 	);
 }
 ?>
