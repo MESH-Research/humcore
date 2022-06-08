@@ -70,6 +70,14 @@ function humcore_new_deposit_form() {
 		return;
 	}
 
+	if ( ! Humanities_Commons::hcommons_user_in_current_society() && ! is_super_admin() ) {
+		$society_name = Humanities_Commons::society_name();
+		echo '<h3>New <em>CORE</em> Deposit</h3>';
+		echo "<br/>";
+        echo "<p>Only members of $society_name can upload CORE deposits on this network.</p>";
+		return;
+	}
+	
 	$current_group_id = '';
 	preg_match( '~.*?/groups/(.*[^/]?)/deposits/~i', wp_get_referer(), $slug_match );
 	if ( ! empty( $slug_match ) ) {
