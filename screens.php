@@ -1893,12 +1893,20 @@ function humcore_search_sidebar_content() {
 						( $facet_list_item_selected ) ? '' : ' style="display: none !important;"',
 						'X'
 					);
+          // if we are doing the subject_facet we need to format the Subject clean it up
+          // (for display ONLY, the link URL stays the same)
+          // "123:Art:Topic" -> "Art"
+          $facet_display_string = $facet_value_counts[0];
+          if($facet_key == 'subject_facet') {
+            [$fast_id, $fast_subject, $fast_facet] = explode(":", $facet_display_string);
+            $facet_display_string = $fast_subject;
+          }  
 					echo sprintf(
 						'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
 						( $facet_list_count < 2 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
 						trim( $facet_key ),
 						urlencode( trim( $facet_value_counts[0] ) ),
-						trim( $facet_value_counts[0] ),
+						trim( $facet_display_string ),
 						$display_count,
 						$display_selected
 					); // XSS OK.
@@ -1958,12 +1966,20 @@ function humcore_directory_sidebar_content() {
 						( $facet_list_item_selected ) ? ' style="display: none;"' : '',
 						$facet_value_counts[1]
 					);
+          // if we are doing the subject_facet we need to format the Subject clean it up
+          // (for display ONLY, the link URL stays the same)
+          // "123:Art:Topic" -> "Art"
+          $facet_display_string = $facet_value_counts[0];
+          if($facet_key == 'subject_facet') {
+            [$fast_id, $fast_subject, $fast_facet] = explode(":", $facet_display_string);
+            $facet_display_string = $fast_subject;
+          }  
 					echo sprintf(
 						'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
 						( $facet_list_count < 4 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
 						trim( $facet_key ),
 						urlencode( trim( $facet_value_counts[0] ) ),
-						trim( $facet_value_counts[0] ),
+						trim( $facet_display_string ),
 						$display_count
 					); // XSS OK.
 					$facet_list_count++;
