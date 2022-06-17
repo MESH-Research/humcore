@@ -62,7 +62,7 @@
 
       $.ajax({
           type: "GET",
-          accepts: "application/vnd.citationstyles.csl+json",
+          //accepts: "application/vnd.citationstyles.csl+json",
           url: url,
 //          async: false,
           crossDomain: true,
