@@ -70,6 +70,14 @@ function humcore_new_deposit_form() {
 		return;
 	}
 
+	if ( ! Humanities_Commons::hcommons_user_in_current_society() && ! is_super_admin() ) {
+		$society_name = Humanities_Commons::society_name();
+		echo '<h3>New <em>CORE</em> Deposit</h3>';
+		echo "<br/>";
+        echo "<p>Only members of $society_name can upload CORE deposits on this network.</p>";
+		return;
+	}
+	
 	$current_group_id = '';
 	preg_match( '~.*?/groups/(.*[^/]?)/deposits/~i', wp_get_referer(), $slug_match );
 	if ( ! empty( $slug_match ) ) {
@@ -662,19 +670,36 @@ foreach ( $group_list as $group_key => $group_value ) {
 	</div>
 	<div id="deposit-subject-entry">
 		<label for="deposit-subject">Subjects</label>
-		<span class="description">Assign up to five subject fields to your item.<br />Please let us know if you would like to <a href="mailto:core@hcommons.org?subject=CORE" target="_blank">suggest additional subject fields</a>.</span><br />
-		<select name="deposit-subject[]" id="deposit-subject[]" class="js-basic-multiple-subjects" multiple="multiple" data-placeholder="Select subjects">
+		<span class="description">Assign up to ten subject fields to your item.
+		<!-- FAST subjects -->
+		<select 
+			name="deposit-subject[]" 
+			id="deposit-subject[]" 
+			class="js-basic-multiple-fast-subjects"
+			data-placeholder="Pick a FAST subject heading"
+			multiple="multiple"
+			data-allow-clear="false"
+			data-width="75%"
+			data-theme="default"
+			data-dir="ltr"
+			data-minimum-input-length="2"
+			data-maximum-selection-length="10"
+			data-close-on-select="true"
+			data-disabled="false"
+			data-debug="false"
+			data-delay="250"
+		>
 <?php
-	$posted_subject_list = array();
+$posted_subject_list = array();
 if ( ! empty( $prev_val['deposit-subject'] ) ) {
 	$posted_subject_list = array_map( 'sanitize_text_field', $prev_val['deposit-subject'] );
 }
-foreach ( $posted_subject_list as $subject_value ) {
+foreach ( $posted_subject_list as $subject ) {
 	printf(
 		'			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
 		'selected="selected"',
-		$subject_value,
-		$subject_value
+		$subject,
+		$subject
 	);
 }
 ?>
@@ -682,8 +707,13 @@ foreach ( $posted_subject_list as $subject_value ) {
 	</div>
 	<div id="deposit-keyword-entry">
 		<label for="deposit-keyword">Tags</label>
-		<span class="description">Enter up to five tags to further categorize this item.</span><br />
-		<select name="deposit-keyword[]" id="deposit-keyword[]" class="js-basic-multiple-keywords" multiple="multiple" data-placeholder="Enter tags">
+		<span class="description">Enter up to ten tags to further categorize this item.</span><br />
+		<select 
+			name="deposit-keyword[]"
+			id="deposit-keyword[]"
+			class="js-basic-multiple-keywords"
+			multiple="multiple" 
+			data-placeholder="Enter tags">
 <?php
 	$posted_keyword_list = array();
 if ( ! empty( $prev_val['deposit-keyword'] ) ) {
@@ -1490,6 +1520,21 @@ There is a problem retrieving some of the data for this item. This error has bee
 }
 
 /**
+ * format subjects for newly depositd item (for review by the author)
+ */
+function text_format_subject($subject) {
+	$formatted_subject = "";
+	// if $subject contains colons, it is a FAST subject ("ID:subject:facet")
+	// else it is a legacy/MLA subject ("subject")
+	if (str_contains($subject, ':')) {
+		[$fast_id, $fast_subject, $fast_facet] = explode(":", $subject);
+		$formatted_subject = $fast_subject . " (" . $fast_facet . ")";
+	} else {
+		$formatted_subject = $subject;
+	}
+	return $formatted_subject;
+}
+/**
  * Output deposits single item review page html.
  */
 function humcore_deposit_item_review_content() {
@@ -1503,10 +1548,12 @@ function humcore_deposit_item_review_content() {
 			$group_list = implode( ', ', array_map( 'esc_html', $groups ) );
 	}
 	if ( ! empty( $metadata['subject'] ) ) {
+			// remove any empty elements
 			$subjects = array_filter( $metadata['subject'] );
+			$formatted_subjects = array_map( 'text_format_subject', $subjects );
 	}
-	if ( ! empty( $subjects ) ) {
-			$subject_list = implode( ', ', array_map( 'esc_html', $subjects ) );
+	if ( ! empty( $formatted_subjects ) ) {
+			$subject_list = implode( ', ', array_map( 'esc_html', $formatted_subjects ) );
 	}
 	if ( ! empty( $metadata['keyword'] ) ) {
 			$keywords               = array_filter( $metadata['keyword'] );
@@ -1846,12 +1893,20 @@ function humcore_search_sidebar_content() {
 						( $facet_list_item_selected ) ? '' : ' style="display: none !important;"',
 						'X'
 					);
+          // if we are doing the subject_facet we need to format the Subject clean it up
+          // (for display ONLY, the link URL stays the same)
+          // "123:Art:Topic" -> "Art"
+          $facet_display_string = $facet_value_counts[0];
+          if($facet_key == 'subject_facet') {
+            [$fast_id, $fast_subject, $fast_facet] = explode(":", $facet_display_string);
+            $facet_display_string = $fast_subject;
+          }  
 					echo sprintf(
 						'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s%6$s</a></li>',
 						( $facet_list_count < 2 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
 						trim( $facet_key ),
 						urlencode( trim( $facet_value_counts[0] ) ),
-						trim( $facet_value_counts[0] ),
+						trim( $facet_display_string ),
 						$display_count,
 						$display_selected
 					); // XSS OK.
@@ -1911,12 +1966,20 @@ function humcore_directory_sidebar_content() {
 						( $facet_list_item_selected ) ? ' style="display: none;"' : '',
 						$facet_value_counts[1]
 					);
+          // if we are doing the subject_facet we need to format the Subject clean it up
+          // (for display ONLY, the link URL stays the same)
+          // "123:Art:Topic" -> "Art"
+          $facet_display_string = $facet_value_counts[0];
+          if($facet_key == 'subject_facet') {
+            [$fast_id, $fast_subject, $fast_facet] = explode(":", $facet_display_string);
+            $facet_display_string = $fast_subject;
+          }  
 					echo sprintf(
 						'<li class="facet-list-item"%1$s><a class="facet-search-link" rel="nofollow" href="/deposits/?facets[%2$s][]=%3$s">%4$s %5$s</a></li>',
 						( $facet_list_count < 4 || $facet_list_item_selected ) ? '' : ' style="display: none;"',
 						trim( $facet_key ),
 						urlencode( trim( $facet_value_counts[0] ) ),
-						trim( $facet_value_counts[0] ),
+						trim( $facet_display_string ),
 						$display_count
 					); // XSS OK.
 					$facet_list_count++;

@@ -7,6 +7,32 @@
  */
 
 /**
+ * Enqueue a script in the WordPress admin on edit.php.
+ *
+ * @param int $hook Hook suffix for the current admin page.
+ */
+ function deposit_load_admin_scripts() {
+	hcommons_write_error_log( 'info', 'humcore deposit load admin scripts' );
+
+	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '011818' );
+	wp_enqueue_style( 'humcore_deposits_css' );
+
+	wp_enqueue_script( 'plupload', array( 'jquery' ) );
+
+	wp_register_script( 'humcore_deposits_js',   plugins_url( 'js/deposits.js',        __FILE__ ), array( 'jquery' ), '010218', true );
+	wp_enqueue_script( 'humcore_deposits_js' );
+
+	wp_register_script('deposit-select2-script', plugins_url( 'js/deposit-select2.js', __FILE__ ), array('jquery'), '1.0.0', true);
+	wp_enqueue_script('deposit-select2-script'); 
+	
+	wp_register_script( 'admin_select2_js', '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js', array( 'jquery' ), '022416', true );
+	wp_enqueue_script( 'admin_select2_js' );
+	wp_register_style( 'admin_select2_css', '//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css', '', '022416' );
+	wp_enqueue_style( 'admin_select2_css' );
+}
+add_action( 'admin_enqueue_scripts', 'deposit_load_admin_scripts' );
+
+/**
  * Add a meta box to the humcore_deposit custom post screen.
  */
 function humcore_add_post_type_metabox() {
@@ -244,33 +270,57 @@ foreach ( $group_list as $group_key => $group_value ) {
 			</label>
 		</p>
 		<p>
-			<label>Subject(s)<br>
-			<select name="aggregator_subject[]" multiple size="10">
+			<label>Subject(s) (Remove a subject by clicking on the 'x' in the subject's label)<br>
+			<select 
+				name="aggregator_subject[]" 
+				id="aggregator_subject[]" 
+				class="js-basic-multiple-fast-subjects-admin"
+				data-placeholder="Pick a FAST subject heading"
+				multiple="multiple"				
+				data-allow-clear="false"
+				data-width="75%"
+				data-theme="default"
+				data-dir="ltr"
+				data-minimum-input-length="2"
+				data-maximum-selection-length="10"
+				data-close-on-select="true"
+				data-disabled="false"
+				data-debug="false"
+				data-delay="250"
+			>
 			<option class="level-0" value="">(No subjects)</option>
-<?php
-	$subject_list        = humcore_deposits_subject_list();
-	$posted_subject_list = array();
-if ( ! empty( $aggregator_metadata['subject'] ) ) {
-	foreach ( $aggregator_metadata['subject_ids'] as $subject_id ) {
-			$term                  = wpmn_get_term_by( 'term_taxonomy_id', $subject_id, 'humcore_deposit_subject' );
-			$posted_subject_list[] = sanitize_text_field( stripslashes( $term->name ) );
-	}
-}
-foreach ( $subject_list as $subject_key => $subject_value ) {
-	printf(
-		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-		( in_array( $subject_key, $posted_subject_list ) ) ? 'selected="selected"' : '',
-		$subject_key,
-		$subject_value
-	);
-}
-?>
+	<?php
+  $posted_subject_list = array();
+	if ( ! empty( $aggregator_metadata['subject'] ) ) {
+    $posted_subject_list = array_map( 'sanitize_text_field', $aggregator_metadata['subject'] );
+  }
+  foreach ( $posted_subject_list as $subject ) {
+      printf(
+      '			<option class="level-1" %1$s value="%2$s">%3$s</option>' . "\n",
+      'selected="selected"',
+      $subject,
+      $subject
+    );
+  }
+	//}
+	?>
 			</select>
+			<?php
+			$screen = get_current_screen(); 
+			echo("<p><b>");
+			//print_r($screen);
+			echo("</b></p>");
+			?>
 			</label>
 		</p>
 		<p>
-			<label>Tag(s)<br>
-			<select name="aggregator_keyword[]" multiple size="10">
+		<label>Tag(s)<br>
+		<select 
+			name="aggregator_keyword[]" 
+			id="aggregator_keyword[]" 
+			class="js-basic-multiple-keywords" 
+			multiple="multiple" 
+			data-placeholder="Enter tags">
 			<option class="level-0" value="">(No keywords)</option>
 <?php
 	$keyword_list        = humcore_deposits_keyword_list();
@@ -282,12 +332,14 @@ if ( ! empty( $aggregator_metadata['keyword'] ) ) {
 	}
 }
 foreach ( $keyword_list as $keyword_key => $keyword_value ) {
-	printf(
-		'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
-		( in_array( $keyword_key, $posted_keyword_list ) ) ? 'selected="selected"' : '',
-		$keyword_key,
-		$keyword_value
-	);
+	if (in_array( $keyword_key, $posted_keyword_list )) {
+		printf(
+			'			<option class="level-0" %1$s value="%2$s">%3$s</option>' . "\n",
+			'selected="selected"',
+			$keyword_key,
+			$keyword_value
+		);
+	}
 }
 ?>
 			</select>
@@ -783,6 +835,9 @@ function humcore_deposit_metabox_save( $post_id ) {
 			$aggregator_metadata['subject_ids'] = array();
 			foreach ( $_POST['aggregator_subject'] as $subject ) {
 				$term_key = wpmn_term_exists( $subject, 'humcore_deposit_subject' );
+				if ( empty( $term_key ) ) {
+					$term_key = wpmn_insert_term( sanitize_text_field( $subject ), 'humcore_deposit_subject' );
+				}
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );
 				} else {
@@ -807,7 +862,7 @@ function humcore_deposit_metabox_save( $post_id ) {
 			foreach ( $_POST['aggregator_keyword'] as $keyword ) {
 				$term_key = wpmn_term_exists( $keyword, 'humcore_deposit_tag' );
 				if ( empty( $term_key ) ) {
-					$term_key = wpmn_insert_term( strtolower( sanitize_text_field( $keyword ) ), 'humcore_deposit_tag' );
+					$term_key = wpmn_insert_term( sanitize_text_field( $keyword ), 'humcore_deposit_tag' );
 				}
 				if ( ! is_wp_error( $term_key ) ) {
 					$term_ids[] = intval( $term_key['term_id'] );

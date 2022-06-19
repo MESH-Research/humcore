@@ -432,7 +432,7 @@ input[type="search"].select2-search__field {
 	border: 0px;
 	box-shadow: inset 0 0px 2px rgba( 0, 0, 0, 0 );
 	padding: 5px 0 0 0;
-	width: auto !important;
+	/* width: auto !important; */
 }
 .select2-container {
 	margin-top: 5px;
