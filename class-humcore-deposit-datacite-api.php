@@ -550,8 +550,22 @@ class Humcore_Deposit_Datacite_Api {
 		}
 
 		if ( ! empty( $metadata['subject'] ) ) {
+			$next_subject = [];
 			foreach ( $metadata['subject'] as $subject ) {
-				$doi_metadata['data']['attributes']['subjects']['subject'] = htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+				[$fast_id, $fast_subject, $fast_facet] = explode(":", $subject);
+				//$doi_metadata['data']['attributes']['subjects']['subject'] = htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+				if( $fast_subject ) {
+					// FAST subject
+					$next_subject['subject'] = htmlspecialchars( $fast_subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+					$next_subject['subjectScheme'] = "fast";
+					$next_subject['schemeURI'] = htmlspecialchars( "http://id.worldcat.org/fast", ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );					
+					$next_subject['valueURI'] = htmlspecialchars( "http://id.worldcat.org/fast/" . $fast_id, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+					$next_subject['xml:lang'] = "en-US";
+				} else{
+					// legacy/MLA subject
+					$next_subject['subject'] = htmlspecialchars( $fast_subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
+				}
+				$doi_metadata['data']['attributes']['subjects'][] = $next_subject;
 			}
 		}
 
@@ -572,6 +586,15 @@ class Humcore_Deposit_Datacite_Api {
 		$doi_metadata['data']['attributes']['descriptions']['description'] = htmlspecialchars( str_replace( "\n", ' ', $metadata['abstract'] ), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false );
                 $doi_metadata['data']['attributes']['descriptions']['descriptionType'] = 'Abstract';
 		$doi_metadata['data']['attributes']['url'] = sprintf( HC_SITE_URL . '/deposits/item/%s/', $metadata['pid'] );
+
+		//--------------------
+		// this is for debugging:
+		//	subject attributes are not all getting set
+		//
+		// goes to /srv/www/commons/logs/hcommons_error.loh
+		//hcommons_write_error_log( 'debug', '(FAST) doi_metadata = ' . var_dump($doi_metadata) ); 
+		//hcommons_write_error_log( 'debug', '(FAST) JSON conversion of (doi_metadata) = ' . json_encode($doi_metadata) ); 
+		//--------------------
 
 		return json_encode( $doi_metadata );
 	}

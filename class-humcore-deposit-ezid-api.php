@@ -640,11 +640,23 @@ class Humcore_Deposit_Ezid_Api {
 				}
 			}
 		}
-
 		if ( ! empty( $metadata['subject'] ) ) {
 			$doi_subjects = $doi_metadata->addChild( 'subjects' );
 			foreach ( $metadata['subject'] as $subject ) {
-				$doi_subject = $doi_subjects->addChild( 'subject', htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+		    	// split subject on ":"
+        		[$fast_id, $fast_subject, $fast_facet] = explode(":", $subject);
+				if( $fast_subject ) {
+					// FAST style subject
+					//$doi_subject = $doi_subjects->addChild( 'subject', htmlspecialchars( $fast_subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+					$doi_subject = $doi_subjects->addChild( 'subject', "the way is void" );
+					$doi_subject->addAttribute("xml:lang", "en-US");
+					$doi_subject->addAttribute("subjectScheme","fast");
+					$doi_subject->addAttribute("schemeURI","http://id.worldcat.org/fast");
+					$doi_subject->addAttribute("valueURI", "http://id.worldcat.org/fast/" . $fast_id);
+				} else {
+					// MLA/legacy style subject
+					$doi_subject = $doi_subjects->addChild( 'subject', htmlspecialchars( $subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false ) );
+				}
 			}
 		}
 

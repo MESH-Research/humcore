@@ -1541,13 +1541,22 @@ function humcore_linkify_group( $group, $link_type = 'facet' ) {
 }
 
 /**
- * Returns subject with link.
+ * Returns (html) formatted subject with link.
  *
  * @return string
  */
 function humcore_linkify_subject( $subject ) {
+	$formatted_subject = '';
+	// if the $subject contains colons (":") it is in the FAST format
+	if ( strpos($subject, ':') ) {
+		[$fast_id, $fast_subject, $fast_facet] = explode(':', $subject);
+		$formatted_subject = '<b>' . $fast_subject . '</b>';
+ 	} else {
+		// otherwise it is in the MLA/legacy format
+		$formatted_subject = $subject;
+	}
 
-	$linked_subject = sprintf( '<a href="/deposits/?facets[subject_facet][]=%s">%s</a>', urlencode( $subject ), $subject );
+	$linked_subject = sprintf( '<a href="/deposits/?facets[subject_facet][]=%s">%s</a>', urlencode( $subject ), $formatted_subject );
 	return $linked_subject;
 }
 
