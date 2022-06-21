@@ -1159,6 +1159,15 @@ if ( ! empty( $highlights ) ) {
 <dt>Search term matches:</dt><dd></dd>
 <?php
 foreach ( $highlights as $field => $highlight ) {
+  // for Subject ONLY we extract the subject from "1234:Music:topic"
+  if($field == "Subject"){
+    $subject_list = array();
+    foreach ( $highlight as $fast_subject ){
+      [$id, $subject, $topic] = explode(":", $fast_subject);
+      $subject_list[] = $subject;
+    }
+    $highlight = $subject_list;
+  }
 	echo '<dt>' . $field . '</dt>';
 	echo '<dd>... ' . implode( ' ( ... ) ', $highlight ) . ' ...</dd>';
 }
