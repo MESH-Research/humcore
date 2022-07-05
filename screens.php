@@ -1478,7 +1478,9 @@ endif;
 <dd><span><?php echo do_shortcode( $share_command ); ?></span></dd>
 <?php endif; ?>
 </dl>
-<?php if ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) { ?>
+<?php if ( 'yes' === $post_metadata['embargoed'] && '2099/12/31' == date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) { ?>
+<div><h4>This deposit has been removed as requested by a subsequent publisher. <br />See https://team.hcommons.org/2022/07/05/on-prior-publication/</h4></div> 
+<?php } elseif ( 'yes' === $post_metadata['embargoed'] && current_time( 'Y/m/d' ) < date( 'Y/m/d', strtotime( $post_metadata['embargo_end_date'] ) ) ) { ?>
 <div><h4>This item will be available for download beginning <?php echo $post_metadata['embargo_end_date']; ?></h4></div> 
 <?php } elseif ( ! $post_data ) { ?>
 <div><h3>Note</h3>
