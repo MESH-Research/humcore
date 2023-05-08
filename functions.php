@@ -299,7 +299,7 @@ function humcore_new_group_deposit_activity( $deposit_id, $group_id, $deposit_co
 	}
 	/*
 	$group_root_blog_id = '';
-	$group_society_id = strtoupper( bp_groups_get_group_type( $group_id ) );
+	$group_society_id = strtoupper( hcommons_get_group_society_id( $group_id ) );
 	if ( defined( $group_society_id . '_ROOT_BLOG_ID' ) ) {
 		$group_root_blog_id = constant( $group_society_id . '_ROOT_BLOG_ID' );
 	}
@@ -1786,7 +1786,7 @@ function humcore_deposits_group_list( $user_id ) {
 	$d_groups = groups_get_groups( $args );
 
 	foreach ( $d_groups['groups'] as $group ) {
-		$group_type                = bp_groups_get_group_type( $group->id );
+		$group_type                = hcommons_get_group_society_id( $group->id );
 		$groups_list[ $group->id ] = htmlspecialchars( stripslashes( $group->name . ' (' . strtoupper( $group_type ) . ')' ) );
 	}
 
