@@ -1,9 +1,16 @@
+<!DOCTYPE html>
 <?php
 /**
  * Template Name: HumCORE Welcome
  */
-	Humcore_Theme_Compatibility::get_header();
+
+	wp_head();
+//get_header();
 ?>
+<div class="wp-site-blocks">
+<header class="wp-block-template-part site-header">
+<?php block_header_area(); ?>
+</header>
 <!-- Frontpage Slider -->
 <?php get_template_part( 'content', 'slides' ); ?>
 
@@ -27,7 +34,8 @@
 										<?php if ( is_home() ) : ?>
 												<?php get_template_part( 'content' ); ?>
 										<?php else : ?>
-												<?php get_template_part( 'content', 'only' ); ?>
+												<?php // get_template_part( 'content', 'only' ); ?>
+												<?php the_content(); ?></div>
 										<?php endif; ?>
 
 										<?php comments_template( '', true ); ?>
@@ -55,6 +63,11 @@
 
 		</div><!-- .page-right-sidebar -->
 
+
+<footer class="wp-block-template-part site-footer">
+<?php block_footer_area(); ?>
+</footer>
+</div>
 <?php
-	Humcore_Theme_Compatibility::get_footer();
+	wp_footer();
 ?>

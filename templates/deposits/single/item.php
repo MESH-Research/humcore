@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 
 /**
@@ -9,10 +10,12 @@
  * @package BuddyPress
  * @subpackage bp-default
  */
-
+	wp_head();
 ?>
-
-<?php Humcore_Theme_Compatibility::get_header(); ?>
+<div class="wp-site-blocks">
+<header class="wp-block-template-part site-header">
+<?php block_header_area(); ?>
+</header>
 
 		<div class="page-right-sidebar">
 	<div id="primary" class="site-content">
@@ -136,4 +139,11 @@ while ( humcore_deposits() ) :
 </div><!-- #secondary -->
 </div><!-- .page-right-sidebar -->
 
-<?php Humcore_Theme_Compatibility::get_footer(); ?>
+<footer class="wp-block-template-part site-footer">
+<?php block_footer_area(); ?>
+</footer>
+</div>
+<?php
+	wp_footer();
+?>
+

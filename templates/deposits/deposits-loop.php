@@ -10,7 +10,6 @@
  */
 
 ?>
-
 <?php do_action( 'bp_before_deposits_loop' ); ?>
 
 <?php

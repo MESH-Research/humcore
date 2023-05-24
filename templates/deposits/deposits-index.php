@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 /**
  * Template Name: HumCORE Deposits Directory
@@ -5,7 +6,14 @@
 
 $society_id = humcore_get_current_society_id();
 
-Humcore_Theme_Compatibility::get_header(); ?>
+//Humcore_Theme_Compatibility::get_header();
+	
+	wp_head();
+?>
+<div class="wp-site-blocks">
+<header class="wp-block-template-part site-header">
+<?php block_header_area(); ?>
+</header>
 
 <?php do_action( 'bp_before_directory_deposits_page' ); ?>
 
@@ -91,13 +99,18 @@ Humcore_Theme_Compatibility::get_header(); ?>
 		</div><!-- #buddypress -->
 	</div><!-- #content -->
 	</div><!-- #primary -->
-
+	</div><!-- .page-right-sidebar -->
 	<div id="secondary" class="widget-area" role="complementary">
 	<aside id="deposits-sidebar" role="complementary">
 	<?php dynamic_sidebar( 'deposits-directory-sidebar' ); ?>
 	</aside>
 	</div><!-- #secondary -->
-	</div><!-- .page-right-sidebar -->
 	<?php do_action( 'bp_after_directory_deposits_page' ); ?>
 
-<?php Humcore_Theme_Compatibility::get_footer(); ?>
+	<footer class="wp-block-template-part site-footer">
+<?php block_footer_area(); ?>
+</footer>
+</div>
+<?php
+	wp_footer();
+?>

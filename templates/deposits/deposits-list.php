@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 /**
  * Deposits List
@@ -6,8 +7,13 @@
  * @subpackage bp-default
  */
 
-Humcore_Theme_Compatibility::get_header(); ?>
-
+//Humcore_Theme_Compatibility::get_header(); 
+	wp_head();
+?>
+<div class="wp-site-blocks">
+<header class="wp-block-template-part site-header">
+<?php block_header_area(); ?>
+</header>
 <?php do_action( 'bp_before_deposits_list_page' ); ?>
 
 <div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
@@ -61,4 +67,11 @@ Humcore_Theme_Compatibility::get_header(); ?>
 
 <?php do_action( 'bp_after_deposits_list_page' ); ?>
 
-<?php Humcore_Theme_Compatibility::get_footer(); ?>
+<footer class="wp-block-template-part site-footer">
+<?php block_footer_area(); ?>
+</footer>
+</div>
+<?php
+	wp_footer();
+?>
+

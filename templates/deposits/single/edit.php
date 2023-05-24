@@ -1,13 +1,17 @@
+<!DOCTYPE html>
 <?php
 
 /**
  * BuddyPress - Edit
  *
  */
-
+	wp_head();
 ?>
+<div class="wp-site-blocks">
+<header class="wp-block-template-part site-header">
+<?php block_header_area(); ?>
+</header>
 
-<?php Humcore_Theme_Compatibility::get_header(); ?>
 
 	<div id="content">
 		<div id="buddypress">
@@ -60,4 +64,11 @@
 	</div><!-- #content -->
 
 <?php //get_sidebar( 'buddypress' ); ?>
-<?php Humcore_Theme_Compatibility::get_footer(); ?>
+<footer class="wp-block-template-part site-footer">
+<?php block_footer_area(); ?>
+</footer>
+</div>
+<?php
+	wp_footer();
+?>
+

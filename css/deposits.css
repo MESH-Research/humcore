@@ -8,6 +8,42 @@
     margin-left: -70px;
     margin-right: -70px;
 }
+
+/* Header CSS fixes for HUMCore pages */
+
+.wp-block-site-logo {
+	margin-right: auto !important;
+}
+
+.page-right-sidebar { 
+	display: flex; 
+	
+}
+.page-right-sidebar { width: 60%; float:left; }
+#secondary {
+	width: 38%;
+	padding-left: 50px;
+	float:right;
+	
+}
+.wp-block-template-part.site-footer {
+	clear:both;
+}
+
+a.button {
+	background:grey;
+	border: 2px solid grey;
+	padding: 10px 20px;
+	display:block;
+	margin: 10px 0;
+	color: black;;
+}
+
+a.button:hover {
+	font-weight: bold;
+	box-shadow: 0 0 20px grey;
+}
+
 /* orphan */
 /*
 ul#deposit-other-authors-entry-list {

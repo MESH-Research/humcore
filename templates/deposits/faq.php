@@ -1,10 +1,15 @@
+<!DOCTYPE html>
 <?php
 /**
  * Template Name: HumCORE FAQ
  */
 
-	Humcore_Theme_Compatibility::get_header();
+	wp_head();
 ?>
+<div class="wp-site-blocks">
+<header class="wp-block-template-part site-header">
+<?php block_header_area(); ?>
+</header>
 	<div class="page-full-width">
 	<div id="primary" class="site-content">
 	<div id="content" role="main" class="<?php do_action( 'content_class' ); ?>">
@@ -26,6 +31,10 @@
 
 	</div><!-- .page-full-width -->
 
+	<footer class="wp-block-template-part site-footer">
+<?php block_footer_area(); ?>
+</footer>
+</div>
 <?php
-	Humcore_Theme_Compatibility::get_footer();
+	wp_footer();
 ?>

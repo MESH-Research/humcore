@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 /**
  * Template Name: HumCORE Search Results
@@ -6,9 +7,12 @@
 $society_id   = humcore_get_current_society_id();
 $scope_cookie = $_COOKIE['bp-deposits-scope'];
 
-Humcore_Theme_Compatibility::get_header();
+wp_head();
 ?>
-
+<div class="wp-site-blocks">
+<header class="wp-block-template-part site-header">
+<?php block_header_area(); ?>
+</header>
 <?php do_action( 'bp_before_deposits_results_page' ); ?>
 
 	<div class="page-right-sidebar">
@@ -19,9 +23,9 @@ Humcore_Theme_Compatibility::get_header();
 		<?php do_action( 'bp_before_deposits_results' ); ?>
 
 		<header class="deposits-header page-header">
-			<h3 class="entry-title main-title"><?php printf( __( '%1$sCORE%2$s Search Results', 'humcore_domain' ), '<em>', '</em>' ); ?>
+			<h3 class="entry-title main-title"><?php printf( __( '%1$sCORE%2$s Search Results', 'humcore_domain' ), '<em>', '</em>' ); ?></h3>
 			<!-- <?php do_action( 'bp_before_deposits_results_content' ); ?> -->
-			<a href="/deposits/" class="button">Start Search Over</a></h3>
+			<a href="/deposits/" class="button">Start Search Over</a>
 		</header>
 
 	<div class="filters">
@@ -103,4 +107,10 @@ Humcore_Theme_Compatibility::get_header();
 </div><!-- .page-right-sidebar -->
 <?php do_action( 'bp_after_deposits_results_page' ); ?>
 
-<?php Humcore_Theme_Compatibility::get_footer(); ?>
+<footer class="wp-block-template-part site-footer">
+<?php block_footer_area(); ?>
+</footer>
+</div>
+<?php
+	wp_footer();
+?>
