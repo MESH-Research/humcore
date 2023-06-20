@@ -1857,8 +1857,6 @@ function humcore_deposits_can_deposit_for_others( $user_id ) {
 			'1032610', // hannahjorgensen
 			'1032004', // ashukla
 			'1015542', // babaklar
-			'1053480', // emeryma4
-			'1053525', // denniss9
 		) 
 	);
 	return apply_filters( 'humcore_deposits_can_deposit_for_others', $user_id );
