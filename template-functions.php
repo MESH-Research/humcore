@@ -206,13 +206,26 @@ function humcore_has_deposits( $args = '' ) {
 	}
 	if ( ! empty( $_REQUEST['facets'] ) ) {
 		$params['search_facets'] = array_merge( (array) $params['search_facets'], $_REQUEST['facets'] );
-		foreach ( $params['search_facets'] as $key => &$value) {
-			if ( is_array( $value ) ) {
-				$value = array_map( 'stripslashes', $value );
-			} else {
-				$value = stripslashes( $value );
-			}
+	}
+
+	$quote_fix_lambda = function ( $bad_string ) {
+		return  str_replace( [ '”','“' ], '"', $bad_string ); 
+	};
+
+	foreach ( $params['search_facets'] as $key => &$value) {
+		if ( is_array( $value ) ) {
+			$value = array_map( 'stripslashes', $value );
+			$value = array_map( 'html_entity_decode', $value );
+			$value = array_map( $quote_fix_lambda, $value );
+		} else {
+			$value = stripslashes( $value );
+			$value = html_entity_decode( $value );
+			$value = $quote_fix_lambda( $value );
 		}
+	}
+
+	if ( array_key_exists( 'search_facets', $params ) && is_array( $params['search_facets'] ) ) {
+		hcommons_write_error_log( 'info', 'search_facets: '. var_export( $params['search_facets'], true ) );
 	}
 
 	if ( ! empty( $_REQUEST['sort'] ) ) {
