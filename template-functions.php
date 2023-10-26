@@ -206,6 +206,13 @@ function humcore_has_deposits( $args = '' ) {
 	}
 	if ( ! empty( $_REQUEST['facets'] ) ) {
 		$params['search_facets'] = array_merge( (array) $params['search_facets'], $_REQUEST['facets'] );
+		foreach ( $params['search_facets'] as $key => &$value) {
+			if ( is_array( $value ) ) {
+				$value = array_map( 'stripslashes', $value );
+			} else {
+				$value = stripslashes( $value );
+			}
+		}
 	}
 
 	if ( ! empty( $_REQUEST['sort'] ) ) {
