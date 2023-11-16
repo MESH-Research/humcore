@@ -20,15 +20,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-// Creates the namespace next used
-require_once dirname( __FILE__ ) . '/class-logger.php';
-
-use MLA\Commons\Plugin\Logging\Logger;
-
-global $humcore_logger;
-$humcore_logger = new Logger( 'humcore_error' );
-$humcore_logger->createLog( 'humcore_error' );
-
 // Wrapper around wp taxonomy functions for multi-sites, from 'humanities-commons'
 require_once dirname( __FILE__ ) . '/wpmn-taxonomy-functions.php';
 
@@ -566,19 +557,9 @@ add_action( 'bp_include', 'humcore_deposit_component_include' );
  * Write a formatted HumCORE error or informational message.
  */
 function humcore_write_error_log( $error_type, $error_message, $info = null ) {
-
-	global $humcore_logger;
-
-	if ( 'info' === $error_type ) {
-		if ( empty( $info ) ) {
-			$humcore_logger->addInfo( $error_message );
-		} else {
-			$humcore_logger->addInfo( $error_message . ' : ', $info );
-		}
-	} else {
-			$humcore_logger->addError( $error_message );
-	}
-
+	$info_text = $info ? ': ' . serialize( $info ) : '';
+	$message = '[' . strtoupper($error_type) . '] ' . $error_message . $info_text . "\n";
+	error_log( $message );
 }
 
 /**
