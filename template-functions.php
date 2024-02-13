@@ -212,14 +212,13 @@ function humcore_has_deposits( $args = '' ) {
 		return  str_replace( [ '”','“' ], '"', $bad_string ); 
 	};
 
+	hcommons_write_error_log('info', print_r($params['search_facets'], true));
 	foreach ( $params['search_facets'] as $key => &$value) {
 		if ( is_array( $value ) ) {
 			$value = array_map( 'stripslashes', $value );
-			$value = array_map( 'html_entity_decode', $value );
 			$value = array_map( $quote_fix_lambda, $value );
 		} else {
 			$value = stripslashes( $value );
-			$value = html_entity_decode( $value );
 			$value = $quote_fix_lambda( $value );
 		}
 	}
