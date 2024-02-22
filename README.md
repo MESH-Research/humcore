@@ -1,5 +1,5 @@
 Humanities Commons Open Repository Exchange (HumCORE)
-================
+=================
 
 HumCORE is a library-quality repository for sharing, discovering, retrieving, and archiving digital work. HumCORE provides CBOX members with a permanent, Open Access storage facility for their scholarly output, facilitating maximum discoverability and encouraging peer feedback.
 
