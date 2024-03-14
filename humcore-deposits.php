@@ -401,19 +401,19 @@ register_deactivation_hook( __FILE__, 'humcore_deactivate' );
 function humcore_add_rewrite_rule() {
 
 	add_rewrite_rule(
-		'(deposits/item)/([^/]+)(/(review))?/?$',
+		'[^/]*/?(deposits/item)/([^/]+)(/(review))?/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
 		'top'
 	);
 
 	add_rewrite_rule(
-		'(deposits/item)/([^/]+)(/(edit))?/?$',
+		'[^/]*/?(deposits/item)/([^/]+)(/(edit))?/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
 		'top'
 	);
 
 	add_rewrite_rule(
-		'(deposits/item)/([^/]+)(/(embed))?/?$',
+		'[^/]*/?(deposits/item)/([^/]+)(/(embed))?/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_command=$matches[4]',
 		'top'
 	);
@@ -425,7 +425,7 @@ function humcore_add_rewrite_rule() {
 	);
 */
 	add_rewrite_rule(
-		'(deposits/download)/([^/]+)/([^/]+)/([^/]+)/?$',
+		'[^/]*/?(deposits/download)/([^/]+)/([^/]+)/([^/]+)/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_datastream=$matches[3]&deposits_filename=$matches[4]',
 		'top'
 	);
@@ -433,16 +433,16 @@ function humcore_add_rewrite_rule() {
 	// Rewrite for deposits/objects handled as ngix proxy pass.
 
 	add_rewrite_rule(
-		'(deposits/view)/([^/]+)/([^/]+)/([^/]+)/?$',
+		'[^/]*/?(deposits/view)/([^/]+)/([^/]+)/([^/]+)/?$',
 		'index.php?pagename=$matches[1]&deposits_item=$matches[2]&deposits_datastream=$matches[3]&deposits_filename=$matches[4]',
 		'top'
 	);
 
-		add_rewrite_rule(
-			'(deposits/list)/?$',
-			'index.php?pagename=$matches[1]',
-			'top'
-		);
+	add_rewrite_rule(
+		'[^/]*/?(deposits/list)/?$',
+		'index.php?pagename=$matches[1]',
+		'top'
+	);
 
 }
 // Hook into the init action and call humcore_add_rewrite_rule when init fires.

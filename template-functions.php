@@ -40,7 +40,7 @@ function humcore_ajax_querystring_filter( $query ) {
 			}
 
 			if ( ! empty( $search_params ) ) {
-				$query = '?' . implode( $search_params, '&' );
+				$query = '?' . implode( '&', $search_params );
 			} else {
 				$query = '';
 			}
@@ -467,7 +467,7 @@ function humcore_deposit_has_more_items() {
  * @global object $deposits_results {@link Humcore_Deposit_Search_Results}
  * @uses apply_filters() To call the 'humcore_get_deposit_record_identifier' hook.
  *
- * @return The deposit record identifier ( post_id ).
+ * @return string The deposit record identifier ( post_id ).
  */
 function humcore_get_deposit_record_identifier() {
 	global $deposits_results;

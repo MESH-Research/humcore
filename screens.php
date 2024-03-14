@@ -1081,10 +1081,15 @@ function humcore_deposits_entry_content() {
 			$keyword_list = implode( ', ', array_map( 'humcore_linkify_tag', $keywords, $keyword_display_values ) );
 	}
 
-	$contributors           = array_filter( $metadata['authors'] );
-	$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
-	$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
-	$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	if ( ! empty( $contributors ) ) {
+		$contributors = array_filter( $metadata['authors'] );
+		$contributor_uni        = humcore_deposit_parse_author_info( $metadata['author_info'][0], 1 );
+		$contributor_type       = humcore_deposit_parse_author_info( $metadata['author_info'][0], 3 );
+		$contributors_list      = array_map( null, $contributors, $contributor_uni, $contributor_type );
+	} else {
+		$contributors_list = array();
+	}
+
 	$authors_list           = array();
 	$contribs_list          = array();
 	$editors_list           = array();
@@ -1103,7 +1108,6 @@ function humcore_deposits_entry_content() {
 						$translators_list[] = humcore_linkify_author( $contributor[0], $contributor[1], $contributor[2] );
 		}
 	}
-	//$item_url = sprintf( '%1$s/deposits/item/%2$s', HC_SITE_URL, $metadata['pid'] );
 	$item_url = sprintf( '/deposits/item/%1$s', $metadata['pid'] );
 ?>
 <h4 class="bp-group-documents-title"><a href="<?php echo esc_url( $item_url ); ?>/"><?php echo $metadata['title_unchanged']; ?></a></h4>
@@ -1254,11 +1258,11 @@ function humcore_deposit_item_content() {
 	}
 	$file_metadata              = json_decode( get_post_meta( $deposit_post_id, '_deposit_file_metadata', true ), true );
 	$content_downloads_meta_key = sprintf( '_total_downloads_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
-	$total_content_downloads    = get_post_meta( $deposit_post_id, $content_downloads_meta_key, true );
+	$total_content_downloads    = intval( get_post_meta( $deposit_post_id, $content_downloads_meta_key, true ) );
 	$content_views_meta_key     = sprintf( '_total_views_%s_%s', $file_metadata['files'][0]['datastream_id'], $file_metadata['files'][0]['pid'] );
 	$total_content_views        = get_post_meta( $deposit_post_id, $content_views_meta_key, true );
 	$views_meta_key             = sprintf( '_total_views_%s', $metadata['pid'] );
-	$total_views                = get_post_meta( $deposit_post_id, $views_meta_key, true ) + 1; // Views counted at item page level.
+	$total_views                = intval( get_post_meta( $deposit_post_id, $views_meta_key, true ) ) + 1; // Views counted at item page level.
 	if ( bp_loggedin_user_id() != $post_data->post_author && ! humcore_is_bot_user_agent() ) {
 		$post_meta_id = update_post_meta( $deposit_post_id, $views_meta_key, $total_views );
 	}
@@ -1512,7 +1516,7 @@ There is a problem retrieving some of the data for this item. This error has bee
 		<td class="value">
 		<?php
 		_e( 'Downloads:', 'humcore_domain' );
-		echo ' ' . esc_html( $total_content_downloads + $total_content_views );
+		echo ' ' . esc_html( intval( $total_content_downloads ) + intval( $total_content_views ) );
 ?>
 </td>
 	</tr>
@@ -1982,7 +1986,10 @@ function humcore_directory_sidebar_content() {
           // "123:Art:Topic" -> "Art"
           $facet_display_string = $facet_value_counts[0];
           if($facet_key == 'subject_facet') {
-            [$fast_id, $fast_subject, $fast_facet] = explode(":", $facet_display_string);
+            $facet_data = explode(":", $facet_display_string);
+			if ( count( $facet_data ) === 3 ) {
+				$fast_subject = $facet_data[1];
+			}
             $facet_display_string = $fast_subject;
           }  
 					echo sprintf(
