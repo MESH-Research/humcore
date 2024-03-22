@@ -12,7 +12,6 @@
  * @param int $hook Hook suffix for the current admin page.
  */
  function deposit_load_admin_scripts() {
-	hcommons_write_error_log( 'info', 'humcore deposit load admin scripts' );
 
 	wp_register_style( 'humcore_deposits_css', plugins_url( 'css/deposits.css', __FILE__ ), '', '011818' );
 	wp_enqueue_style( 'humcore_deposits_css' );
