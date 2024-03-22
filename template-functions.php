@@ -193,17 +193,18 @@ function humcore_has_deposits( $args = '' ) {
 		$params['search_title_exact'] = $_REQUEST['title_exact'];
 	}
 
-	$scope_cookie = $_COOKIE['bp-deposits-scope'];
+	$scope_cookie = isset($_COOKIE['bp-deposits-scope']) ? $_COOKIE['bp-deposits-scope'] : null;
 	if ( ! empty( $scope_cookie ) and 'society' === $scope_cookie ) {
 		$params['facets']['society_facet'][] = humcore_get_current_society_id();
 	}
 
-	// TODO rework the logic for the other search fields
-	if ( ! empty( $params['search_facets'] ) ) {
-		$params['search_facets'] = array_merge( $params['search_facets'], (array) $params['facets'] );
-	} else {
-		$params['search_facets'] = $params['facets'];
+	if ( empty ( $params['facets'] ) ) {
+		$params['facets'] = array();
 	}
+	if ( empty ( $params['search_facets'] ) ) {
+		$params['search_facets'] = array();
+	}
+	$params['search_facets'] = array_merge( $params['search_facets'], (array) $params['facets'] );
 	if ( ! empty( $_REQUEST['facets'] ) ) {
 		$params['search_facets'] = array_merge( (array) $params['search_facets'], $_REQUEST['facets'] );
 	}
@@ -212,19 +213,16 @@ function humcore_has_deposits( $args = '' ) {
 		return  str_replace( [ '”','“' ], '"', $bad_string ); 
 	};
 
-	hcommons_write_error_log('info', print_r($params['search_facets'], true));
-	foreach ( $params['search_facets'] as $key => &$value) {
-		if ( is_array( $value ) ) {
-			$value = array_map( 'stripslashes', $value );
-			$value = array_map( $quote_fix_lambda, $value );
-		} else {
-			$value = stripslashes( $value );
-			$value = $quote_fix_lambda( $value );
+	if ( is_array( $params['search_facets'] ) ) {
+		foreach ( $params['search_facets'] as $key => &$value) {
+			if ( is_array( $value ) ) {
+				$value = array_map( 'stripslashes', $value );
+				$value = array_map( $quote_fix_lambda, $value );
+			} else {
+				$value = stripslashes( $value );
+				$value = $quote_fix_lambda( $value );
+			}
 		}
-	}
-
-	if ( array_key_exists( 'search_facets', $params ) && is_array( $params['search_facets'] ) ) {
-		hcommons_write_error_log( 'info', 'search_facets: '. var_export( $params['search_facets'], true ) );
 	}
 
 	if ( ! empty( $_REQUEST['sort'] ) ) {
