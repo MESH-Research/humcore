@@ -52,15 +52,8 @@ class Humcore_Deposit_Fedora_Api {
 				$this->fedora_settings['password'] = CORE_FEDORA_PASSWORD;
 		}
 		$this->base_url = $this->fedora_settings['protocol'] . $this->fedora_settings['host'] . ':' . $this->fedora_settings['port'] . $this->fedora_settings['path'];
-		/* getting removed
-				if ( defined( 'CORE_FEDORA_HOST' ) && ! empty( CORE_FEDORA_HOST ) ) { // Better have a value if defined.
-						$this->servername_hash = md5( $humcore_settings['servername'] );
-				} else {
-						$this->servername_hash = $humcore_settings['servername_hash'];
-				}
-		*/
 
-				$this->service_status = $humcore_settings['service_status'];
+		$this->service_status = $humcore_settings ? $humcore_settings['service_status'] : '';
 
 		if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) {
 				$this->namespace = CORE_HUMCORE_NAMESPACE;
@@ -1457,7 +1450,7 @@ class Humcore_Deposit_Fedora_Api {
 	 * Handle the WP_HTTP inability to process file uploads by hooking curl settings.
 	 * Handle PHP versions before and after 5.5.
 	 *
-	 * @param resource $curl    The cURL handle returned by curl_init().
+	 * @param CurlHandle $curl    The cURL handle returned by curl_init().
 	 * @param array    $r       The HTTP request arguments.
 	 * @param string   $url     The request URL.
 	 * @see upload()
