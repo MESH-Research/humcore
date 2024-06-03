@@ -40,7 +40,7 @@ class Humcore_Deposit_Solr_Api {
 				}
 		*/
 
-				$this->service_status = $humcore_settings['service_status'];
+		$this->service_status = $humcore_settings['service_status'];
 
 		if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) {
 				$this->namespace = CORE_HUMCORE_NAMESPACE;
@@ -1006,7 +1006,7 @@ class Humcore_Deposit_Solr_Api {
 				$record['notes_unchanged'] = implode( ' ', (array) $document->notes );
 			}
 			$record['book_journal_title']      = $document->book_journal_title;
-			$record['book_author']             = $document->book_author[0];
+			$record['book_author']             = $document->book_author[0] ?? null;
 			$record['publisher']               = $document->publisher;
 			$record['isbn']                    = $document->isbn;
 			$record['issn']                    = $document->issn;

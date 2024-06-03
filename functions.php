@@ -713,14 +713,16 @@ function humcore_is_deposit_new_page() {
  * @return true If the current request is a download request.
  */
 function humcore_is_deposit_download() {
-
 	global $wp;
-	if ( ! empty( $wp->query_vars['pagename'] ) ) {
-		if ( 'deposits/download' == $wp->query_vars['pagename'] ) {
-			return true;
-		}
+
+	if ( empty( $wp->query_vars['pagename'] ) ) {
+		return false;
 	}
-	return false;
+
+	error_log( 'humcore_is_deposit_download pagename: ' . $wp->query_vars['pagename'] );
+	error_log( 'humcore_is_deposit_download query_vars: ' . implode( ', ', array_keys( $wp->query_vars ) ) );
+
+	return ( $wp->query_vars['pagename'] === 'deposits/download' );
 }
 
 /**
@@ -729,14 +731,15 @@ function humcore_is_deposit_download() {
  * @return true If the current request is a view request.
  */
 function humcore_is_deposit_view() {
-
 	global $wp;
-	if ( ! empty( $wp->query_vars['pagename'] ) ) {
-		if ( 'deposits/view' == $wp->query_vars['pagename'] ) {
-			return true;
-		}
+
+	if ( empty( $wp->query_vars['pagename'] ) ) {
+		return false;
 	}
-	return false;
+
+	error_log( 'humcore_is_deposit_view pagename: ' . $wp->query_vars['pagename'] );
+
+	return ( $wp->query_vars['pagename'] === 'deposits/view'  );
 }
 
 /**
@@ -1395,10 +1398,13 @@ add_action( 'bp_screens', 'humcore_deposits_edit_item_screen' );
  */
 function humcore_deposits_download() {
 
+	error_log( 'humcore_deposits_download' );
+
 	global $wp;
 	if ( humcore_is_deposit_download() ) {
 		bp_update_is_directory( false, 'humcore_deposits' );
 		if ( ! humcore_check_internal_status() ) {
+			error_log( 'humcore_deposits_download redirecting to: /deposits/offline/' );
 			wp_redirect( '/deposits/offline/' );
 			exit();
 		}
@@ -1406,6 +1412,9 @@ function humcore_deposits_download() {
 		$deposit_id         = $wp->query_vars['deposits_item'];
 		$deposit_datastream = $wp->query_vars['deposits_datastream'];
 		if ( empty( $deposit_id ) || empty( $deposit_datastream ) ) {
+			error_log( 'humcore_deposits_download 404');
+			error_log( 'humcore_deposits_download $deposit_id: ' . $deposit_id );
+			error_log( 'humcore_deposits_download $deposit_datastream: ' . $deposit_datastream );
 			bp_do_404();
 			return;
 		}
@@ -1419,12 +1428,13 @@ function humcore_deposits_download() {
 			bp_do_404();
 			return;
 		}
-		$total_downloads = get_post_meta( $deposit_post_id, $downloads_meta_key, true ) + 1; // Downloads counted at file level.
+		$total_downloads = intval( get_post_meta( $deposit_post_id, $downloads_meta_key, true ) ) + 1; // Downloads counted at file level.
 		if ( bp_loggedin_user_id() != $post_data->post_author && ! humcore_is_bot_user_agent() ) {
 			$post_meta_id = update_post_meta( $deposit_post_id, $downloads_meta_key, $total_downloads );
 		}
 		$download_url = sprintf( '/deposits/objects/%1$s/datastreams/%2$s/content%3$s', $deposit_id, $deposit_datastream, $download_param );
 
+		error_log( 'humcore_deposits_download redirecting to: ' . $download_url );
 		wp_redirect( $download_url );
 		exit();
 	}

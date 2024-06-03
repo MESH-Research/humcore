@@ -29,7 +29,7 @@ class Humcore_Deposit_Datacite_Api {
 
 		$humcore_settings = get_option( 'humcore-deposits-humcore-settings' );
 
-		$this->service_status = $humcore_settings['service_status'];
+		$this->service_status = $humcore_settings ? $humcore_settings['service_status'] : '';
 
 		if ( defined( 'CORE_HUMCORE_NAMESPACE' ) && ! empty( CORE_HUMCORE_NAMESPACE ) ) {
 			$this->namespace = CORE_HUMCORE_NAMESPACE;

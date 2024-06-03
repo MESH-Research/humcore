@@ -330,6 +330,10 @@ jQuery(document).ready( function($) {
             // we want just the numeric form (without leading zeros for the fastid)
             // so we removr "fst" and any leading zeros
             let idroot = value["idroot"];
+            // 24-06-03: Possibly a FAST API change, idroot is now an array.
+            if (typeof idroot === 'object') {
+              idroot = idroot[0];
+            }
             let re = /(fst0*)/;
             let fastid = idroot.replace(re, '');
             data.id = fastid + ":" + value["auth"] + ":" + getFASTTypeFromTag(value["tag"]);
